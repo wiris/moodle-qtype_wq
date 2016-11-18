@@ -9,6 +9,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 	}}
 	public function moveAnswers($correct, $user) {
+		$this->id = null;
 		$i = null;
 		$answers = new _hx_array(array());
 		{
@@ -128,7 +129,13 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 	}
 	public function setAlgorithm($session) {
-		$this->wirisCasSession = $session;
+		if(com_wiris_quizzes_impl_HTMLTools::emptyCasSession($session)) {
+			$session = null;
+		}
+		if($session !== $this->wirisCasSession || $session !== null && !($session === $this->wirisCasSession)) {
+			$this->id = null;
+			$this->wirisCasSession = $session;
+		}
 	}
 	public function setAnswerFieldType($type) {
 		if(com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_INLINE_EDITOR === $type || com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_PLAIN_TEXT === $type || com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_POPUP_EDITOR === $type || com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_INLINE_HAND === $type) {
@@ -497,6 +504,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		return com_wiris_quizzes_impl_QuestionImpl::$defaultOptions->get($name);
 	}
 	public function removeCorrectAnswer($index) {
+		$this->id = null;
 		$this->correctAnswers->remove($this->correctAnswers[$index]);
 		if($this->assertions !== null) {
 			$i = $this->assertions->length - 1;

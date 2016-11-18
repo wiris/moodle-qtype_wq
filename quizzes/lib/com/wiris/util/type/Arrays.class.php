@@ -26,33 +26,39 @@ class com_wiris_util_type_Arrays {
 	static function contains($array, $element) {
 		return com_wiris_util_type_Arrays::indexOfElement($array, $element) >= 0;
 	}
-	static function containsArray($array, $element) {
+	static function indexOfElementArray($array, $element) {
 		$i = null;
 		{
 			$_g1 = 0; $_g = $array->length;
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
 				if($array[$i1] !== null && _hx_equal($array[$i1], $element)) {
-					return true;
+					return $i1;
 				}
 				unset($i1);
 			}
 		}
-		return false;
+		return -1;
 	}
-	static function containsInt($array, $element) {
+	static function indexOfElementInt($array, $element) {
 		$i = null;
 		{
 			$_g1 = 0; $_g = $array->length;
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
 				if($array[$i1] === $element) {
-					return true;
+					return $i1;
 				}
 				unset($i1);
 			}
 		}
-		return false;
+		return -1;
+	}
+	static function containsArray($array, $element) {
+		return com_wiris_util_type_Arrays::indexOfElementArray($array, $element) >= 0;
+	}
+	static function containsInt($array, $element) {
+		return com_wiris_util_type_Arrays::indexOfElementInt($array, $element) >= 0;
 	}
 	static function clear($a) {
 		$i = $a->length - 1;
@@ -90,6 +96,14 @@ class com_wiris_util_type_Arrays {
 			unset($imid,$cmp);
 		}
 		$a->insert($imin, $e);
+	}
+	static function copyArray($a) {
+		$b = new _hx_array(array());
+		$i = $a->iterator();
+		while($i->hasNext()) {
+			$b->push($i->next());
+		}
+		return $b;
 	}
 	function __toString() { return 'com.wiris.util.type.Arrays'; }
 }

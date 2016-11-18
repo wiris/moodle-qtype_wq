@@ -217,6 +217,9 @@ class com_wiris_quizzes_impl_HTMLTableTools {
 		}
 	}
 	public function isCellExpandableImpl($cell, $variables, $is2d) {
+		if(_hx_index_of($cell, "<math", null) !== -1) {
+			return false;
+		}
 		$content = trim(com_wiris_quizzes_impl_HTMLTableTools::stripTags($cell));
 		if(StringTools::startsWith($content, "#")) {
 			$content = _hx_substr($content, 1, null);
@@ -716,12 +719,13 @@ class com_wiris_quizzes_impl_HTMLTableTools {
 									$this->expandOnEmptySubgrid($grid, $i1, $j1, $row);
 									$expanded = true;
 									unset($row);
-								}
-								if($this->isSubgridEmpty($grid, $i1, $j1, $p->length, 1)) {
-									$column = $this->transposeColumn($p);
-									$this->expandOnEmptySubgrid($grid, $i1, $j1, $column);
-									$expanded = true;
-									unset($column);
+								} else {
+									if($this->isSubgridEmpty($grid, $i1, $j1, $p->length, 1)) {
+										$column = $this->transposeColumn($p);
+										$this->expandOnEmptySubgrid($grid, $i1, $j1, $column);
+										$expanded = true;
+										unset($column);
+									}
 								}
 								unset($p,$name);
 							}

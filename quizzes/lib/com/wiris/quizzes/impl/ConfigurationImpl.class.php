@@ -14,19 +14,28 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 		$this->properties->set(com_wiris_quizzes_impl_ConfigurationImpl::$CONFIG_FILE, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_CONFIG_FILE);
 		$this->properties->set(com_wiris_quizzes_impl_ConfigurationImpl::$CONFIG_CLASS, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_CONFIG_CLASS);
 		$this->properties->set(com_wiris_quizzes_impl_ConfigurationImpl::$CONFIG_CLASSPATH, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_CONFIG_CLASSPATH);
+		$this->properties->set(com_wiris_quizzes_impl_ConfigurationImpl::$IMAGESCACHE_CLASS, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_IMAGESCACHE_CLASS);
+		$this->properties->set(com_wiris_quizzes_impl_ConfigurationImpl::$VARIABLESCACHE_CLASS, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_VARIABLESCACHE_CLASS);
+		$this->properties->set(com_wiris_quizzes_impl_ConfigurationImpl::$LOCKPROVIDER_CLASS, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_LOCKPROVIDER_CLASS);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_HOST, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_HTTPPROXY_HOST);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_PORT, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_HTTPPROXY_PORT);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_USER, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_HTTPPROXY_USER);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_PASS, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_HTTPPROXY_PASS);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$REFERER_URL, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_REFERER_URL);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$HAND_ENABLED, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_HAND_ENABLED);
+		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_OFFLINE, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_SERVICE_OFFLINE);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$WIRISLAUNCHER_URL, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_WIRISLAUNCHER_URL);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$CROSSORIGINCALLS_ENABLED, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_CROSSORIGINCALLS_ENABLED);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_STATIC, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_RESOURCES_STATIC);
 		$this->properties->set(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_URL, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_RESOURCES_URL);
 		if(!com_wiris_settings_PlatformSettings::$IS_JAVASCRIPT) {
 			try {
-				$ini = com_wiris_util_sys_IniFile::newIniFileFromFilename(com_wiris_quizzes_impl_ConfigurationImpl::$DEF_DIST_CONFIG_FILE);
+				$s = com_wiris_system_Storage::newStorage(com_wiris_quizzes_impl_ConfigurationImpl::$DEF_DIST_CONFIG_FILE);
+				if(!$s->exists()) {
+					$s = com_wiris_system_Storage::newResourceStorage(com_wiris_quizzes_impl_ConfigurationImpl::$DEF_DIST_CONFIG_FILE);
+				}
+				$content = $s->read();
+				$ini = com_wiris_util_sys_IniFile::newIniFileFromString($content);
 				$this->setAll($ini->getProperties());
 			}catch(Exception $»e) {
 				$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
@@ -43,7 +52,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 			if(!($className === "")) {
 				try {
 					$config = Type::createInstance(Type::resolveClass($className), new _hx_array(array()));
-					$keys = new _hx_array(array(com_wiris_quizzes_api_ConfigurationKeys::$WIRIS_URL, com_wiris_quizzes_api_ConfigurationKeys::$WIRISLAUNCHER_URL, com_wiris_quizzes_api_ConfigurationKeys::$EDITOR_URL, com_wiris_quizzes_api_ConfigurationKeys::$HAND_URL, com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL, com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL, com_wiris_quizzes_api_ConfigurationKeys::$CACHE_DIR, com_wiris_quizzes_api_ConfigurationKeys::$MAXCONNECTIONS, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_HOST, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_PORT, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_USER, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_PASS, com_wiris_quizzes_api_ConfigurationKeys::$REFERER_URL, com_wiris_quizzes_api_ConfigurationKeys::$HAND_ENABLED, com_wiris_quizzes_api_ConfigurationKeys::$CROSSORIGINCALLS_ENABLED, com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_STATIC, com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_URL));
+					$keys = new _hx_array(array(com_wiris_quizzes_api_ConfigurationKeys::$WIRIS_URL, com_wiris_quizzes_api_ConfigurationKeys::$WIRISLAUNCHER_URL, com_wiris_quizzes_api_ConfigurationKeys::$EDITOR_URL, com_wiris_quizzes_api_ConfigurationKeys::$HAND_URL, com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL, com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL, com_wiris_quizzes_api_ConfigurationKeys::$CACHE_DIR, com_wiris_quizzes_api_ConfigurationKeys::$MAXCONNECTIONS, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_HOST, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_PORT, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_USER, com_wiris_quizzes_api_ConfigurationKeys::$HTTPPROXY_PASS, com_wiris_quizzes_api_ConfigurationKeys::$REFERER_URL, com_wiris_quizzes_api_ConfigurationKeys::$HAND_ENABLED, com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_OFFLINE, com_wiris_quizzes_api_ConfigurationKeys::$CROSSORIGINCALLS_ENABLED, com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_STATIC, com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_URL, com_wiris_quizzes_impl_ConfigurationImpl::$IMAGESCACHE_CLASS, com_wiris_quizzes_impl_ConfigurationImpl::$VARIABLESCACHE_CLASS, com_wiris_quizzes_impl_ConfigurationImpl::$LOCKPROVIDER_CLASS));
 					$i = null;
 					{
 						$_g1 = 0; $_g = $keys->length;
@@ -98,6 +107,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 		$sb->add($prefix . "DEF_CACHE_DIR" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$CACHE_DIR)) . "\";\x0A");
 		$sb->add($prefix . "DEF_MAXCONNECTIONS" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$MAXCONNECTIONS)) . "\";\x0A");
 		$sb->add($prefix . "DEF_HAND_ENABLED" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$HAND_ENABLED)) . "\";\x0A");
+		$sb->add($prefix . "DEF_SERVICE_OFFLINE" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_OFFLINE)) . "\";\x0A");
 		$sb->add($prefix . "DEF_WIRISLAUNCHER_URL" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$WIRISLAUNCHER_URL)) . "\";\x0A");
 		$sb->add($prefix . "DEF_CROSSORIGINCALLS_ENABLED" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$CROSSORIGINCALLS_ENABLED)) . "\";\x0A");
 		$sb->add($prefix . "DEF_RESOURCES_STATIC" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_STATIC)) . "\";\x0A");
@@ -144,6 +154,12 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_CONFIG_CLASS = "";
 	static $CONFIG_CLASSPATH = "quizzes.configuration.classpath";
 	static $DEF_CONFIG_CLASSPATH = "";
+	static $IMAGESCACHE_CLASS = "quizzes.imagescache.class";
+	static $DEF_IMAGESCACHE_CLASS = "";
+	static $VARIABLESCACHE_CLASS = "quizzes.variablescache.class";
+	static $DEF_VARIABLESCACHE_CLASS = "";
+	static $LOCKPROVIDER_CLASS = "quizzes.lockprovider.class";
+	static $DEF_LOCKPROVIDER_CLASS = "";
 	static $DEF_WIRIS_URL = "http://www.wiris.net/demo/wiris";
 	static $DEF_EDITOR_URL = "http://www.wiris.net/demo/editor";
 	static $DEF_HAND_URL = "http://www.wiris.net/demo/hand";
@@ -158,6 +174,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_HTTPPROXY_PASS = "";
 	static $DEF_REFERER_URL = "";
 	static $DEF_HAND_ENABLED = "true";
+	static $DEF_SERVICE_OFFLINE = "false";
 	static $DEF_CROSSORIGINCALLS_ENABLED = "false";
 	static $DEF_RESOURCES_STATIC = "false";
 	static $DEF_RESOURCES_URL = "quizzes/resources";

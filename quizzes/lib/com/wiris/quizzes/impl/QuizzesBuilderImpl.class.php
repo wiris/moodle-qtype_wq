@@ -1,9 +1,46 @@
 <?php
 
 class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_QuizzesBuilder {
-	public function __construct() { if(!php_Boot::$skip_constructor) {
+	public function __construct() {
+		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
 	}}
+	public function getLockProvider() {
+		if($this->locker === null) {
+			$className = $this->getConfiguration()->get(com_wiris_quizzes_impl_ConfigurationImpl::$LOCKPROVIDER_CLASS);
+			if(!($className === "")) {
+				$this->locker = Type::createInstance(Type::resolveClass($className), new _hx_array(array()));
+			} else {
+				$this->locker = new com_wiris_quizzes_impl_FileLockProvider($this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$CACHE_DIR));
+			}
+		}
+		return $this->locker;
+	}
+	public function getVariablesCache() {
+		if($this->variablesCache === null) {
+			$this->variablesCache = $this->createCache(com_wiris_quizzes_impl_ConfigurationImpl::$VARIABLESCACHE_CLASS);
+		}
+		return $this->variablesCache;
+	}
+	public function getImagesCache() {
+		if($this->imagesCache === null) {
+			$this->imagesCache = $this->createCache(com_wiris_quizzes_impl_ConfigurationImpl::$IMAGESCACHE_CLASS);
+		}
+		return $this->imagesCache;
+	}
+	public function createCache($configKey) {
+		$cache = null;
+		$className = $this->getConfiguration()->get($configKey);
+		if(!($className === "")) {
+			$cache = Type::createInstance(Type::resolveClass($className), new _hx_array(array()));
+		} else {
+			$cache = $this->newStoreCache();
+		}
+		return $cache;
+	}
+	public function newStoreCache() {
+		return new com_wiris_util_sys_StoreCache($this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$CACHE_DIR));
+	}
 	public function getResourceUrl($name) {
 		$c = $this->getConfiguration();
 		if("true" === $c->get(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_STATIC)) {
@@ -22,6 +59,9 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 			$c = $u;
 			$u = $aux;
 			$reverse = true;
+		}
+		if($u === 0) {
+			return $p;
 		}
 		$n = Math::floor($c / $u);
 		$d = Math::floor(_hx_mod($c, $u));
@@ -233,34 +273,6 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$q->assertions = $assertions;
 		$u->answers = $userAnswers;
 	}
-	public function stripAnnotation($mathml) {
-		$start = null;
-		$end = 0;
-		while(($start = _hx_index_of($mathml, "<semantics>", $end)) !== -1) {
-			$end = _hx_index_of($mathml, "</semantics>", $start);
-			if($end === -1) {
-				throw new HException("Error parsing semantics tag in MathML.");
-			}
-			$a = _hx_index_of($mathml, "<annotation encoding=\"application/json\">", $start);
-			if($a !== -1 && $a < $end) {
-				$b = _hx_index_of($mathml, "</annotation>", $a);
-				if($b === -1 || $b >= $end) {
-					throw new HException("Error parsing annotation tag in MathML.");
-				}
-				$b += 13;
-				$mathml = _hx_substr($mathml, 0, $a) . _hx_substr($mathml, $b, null);
-				$end -= $b - $a;
-				$x = _hx_index_of($mathml, "<annotation", $start);
-				if($x === -1 || $x > $end) {
-					$mathml = _hx_substr($mathml, 0, $start) . _hx_substr($mathml, $start + 11, $end - ($start + 11)) . _hx_substr($mathml, $end + 12, null);
-					$end -= 11;
-				}
-				unset($x,$b);
-			}
-			unset($a);
-		}
-		return $mathml;
-	}
 	public function newEvalMultipleAnswersRequest($correctAnswers, $userAnswers, $question, $instance) {
 		$q = null;
 		$qi = null;
@@ -306,16 +318,25 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 			}
 		} else {
 			if($q !== null) {
-				$qq->correctAnswers = $q->correctAnswers;
+				$_g1 = 0; $_g = $q->getCorrectAnswersLength();
+				while($_g1 < $_g) {
+					$i1 = $_g1++;
+					$ca = $q->getCorrectAnswer($i1);
+					if($ca !== null) {
+						$qq->setCorrectAnswer($i1, $ca);
+						_hx_array_get($qq->correctAnswers, $i1)->weight = _hx_array_get($q->correctAnswers, $i1)->weight;
+					}
+					unset($i1,$ca);
+				}
 			}
 		}
 		{
-			$_g1 = 0; $_g = $qq->correctAnswers->length;
+			$_g1 = 0; $_g = $qq->getCorrectAnswersLength();
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
 				$ca = $qq->correctAnswers[$i1];
 				if($ca !== null && $ca->content !== null) {
-					$ca->content = $this->stripAnnotation($ca->content);
+					$ca->content = com_wiris_quizzes_impl_HTMLTools::removeStrokesAnnotation($ca->content);
 				}
 				unset($i1,$ca);
 			}
@@ -329,8 +350,19 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 			}
 		} else {
 			if($qi !== null) {
-				$uu->answers = $qi->userData->answers;
+				$_g1 = 0; $_g = $qi->getStudentAnswersLength();
+				while($_g1 < $_g) {
+					$i1 = $_g1++;
+					$sa = $qi->getStudentAnswer($i1);
+					if($sa !== null) {
+						$uu->setUserAnswer($i1, $sa);
+					}
+					unset($sa,$i1);
+				}
 			}
+		}
+		if($uu->answers === null) {
+			$uu->answers = new _hx_array(array());
 		}
 		{
 			$_g1 = 0; $_g = $uu->answers->length;
@@ -339,10 +371,13 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 				if($uu->answers[$i1] === null || _hx_array_get($uu->answers, $i1)->content === null) {
 					$uu->setUserAnswer($i1, "");
 				} else {
-					$uu->setUserAnswer($i1, $this->stripAnnotation(_hx_array_get($uu->answers, $i1)->content));
+					$uu->setUserAnswer($i1, com_wiris_quizzes_impl_HTMLTools::removeStrokesAnnotation(_hx_array_get($uu->answers, $i1)->content));
 				}
 				unset($i1);
 			}
+		}
+		if($qq->assertions === null) {
+			$qq->assertions = new _hx_array(array());
 		}
 		$syntax = null;
 		{
@@ -385,7 +420,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 			}
 		}
 		if($qi !== null && $qi->hasVariables()) {
-			$_g1 = 0; $_g = $qq->correctAnswers->length;
+			$_g1 = 0; $_g = $qq->getCorrectAnswersLength();
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
 				$value = $qq->getCorrectAnswer($i1);
@@ -422,7 +457,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		}
 		$usedcorrectanswers = new _hx_array(array());
 		{
-			$_g1 = 0; $_g = $qq->correctAnswers->length;
+			$_g1 = 0; $_g = $qq->getCorrectAnswersLength();
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
 				$usedcorrectanswers[$i1] = false;
@@ -454,7 +489,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 				unset($i1,$ass);
 			}
 		}
-		$pairs = $this->getPairings($qq->correctAnswers->length, $uu->answers->length);
+		$pairs = $this->getPairings($qq->getCorrectAnswersLength(), $uu->answers->length);
 		{
 			$_g1 = 0; $_g = $usedcorrectanswers->length;
 			while($_g1 < $_g) {
@@ -586,6 +621,26 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 	}
 	public function newQuestion() {
 		return new com_wiris_quizzes_impl_QuestionImpl();
+	}
+	public function getQuizzesUIBuilder() {
+		if($this->uibuilder === null) {
+			$this->uibuilder = new com_wiris_quizzes_impl_QuizzesUIBuilderImpl();
+		}
+		return $this->uibuilder;
+	}
+	public $locker;
+	public $imagesCache;
+	public $variablesCache;
+	public $uibuilder = null;
+	public function __call($m, $a) {
+		if(isset($this->$m) && is_callable($this->$m))
+			return call_user_func_array($this->$m, $a);
+		else if(isset($this->»dynamics[$m]) && is_callable($this->»dynamics[$m]))
+			return call_user_func_array($this->»dynamics[$m], $a);
+		else if('toString' == $m)
+			return $this->__toString();
+		else
+			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $singleton = null;
 	static function getInstance() {
