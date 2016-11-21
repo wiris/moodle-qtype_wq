@@ -2,9 +2,9 @@
 [![Build Status](https://travis-ci.org/wiris/moodle-qtype_wq.svg?branch=master)](https://travis-ci.org/wiris/moodle-qtype_wq)
 
 ## Information
-The WIRIS Quizzes question type belongs to WIRIS Quizzes set of question which enhances Moodle question types with math functionalities. 
+The WIRIS Quizzes question type belongs to the WIRIS Quizzes set of questions which enhances the usual Moodle question types with mathematical functionality.
 
-WIRIS Quizzes question type is the engine needed for each WIRIS question type to work properly. Is a necessary component for each WIRIS Quizzes question type.
+WIRIS Quizzes question type is the engine needed for each WIRIS question type to work properly. It is a necessary component for all WIRIS Quizzes question types.
 
 ## Install instructions
 To install it using git, type this command in the root of your Moodle install:
