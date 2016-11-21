@@ -1,4 +1,4 @@
-# WIRIS Quizzes Common question type
+# WIRIS Quizzes Commons question type
 [![Build Status](https://travis-ci.org/wiris/moodle-qtype_wq.svg?branch=master)](https://travis-ci.org/wiris/moodle-qtype_wq)
 
 ## Information
