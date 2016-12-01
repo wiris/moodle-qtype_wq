@@ -10,7 +10,8 @@ class com_wiris_quizzes_impl_HTMLGuiConfig {
 		$classArray = _hx_explode(" ", $classes);
 		$i = null;
 		{
-			$_g1 = 0; $_g = $classArray->length;
+			$_g1 = 0; 
+			$_g = $classArray->length;
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
 				$className = $classArray[$i1];
@@ -41,7 +42,8 @@ class com_wiris_quizzes_impl_HTMLGuiConfig {
 			}
 		}
 		{
-			$_g1 = 0; $_g = $classArray->length;
+			$_g1 = 0; 
+			$_g = $classArray->length;
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
 				$className = $classArray[$i1];
@@ -193,14 +195,15 @@ class com_wiris_quizzes_impl_HTMLGuiConfig {
 	public $tabValidation;
 	public $tabCorrectAnswer;
 	public function __call($m, $a) {
-		if(isset($this->$m) && is_callable($this->$m))
+		if(isset($this->$m) && is_callable($this->$m)) {
 			return call_user_func_array($this->$m, $a);
-		else if(isset($this->»dynamics[$m]) && is_callable($this->»dynamics[$m]))
-			return call_user_func_array($this->»dynamics[$m], $a);
-		else if('toString' == $m)
+		} else if(isset($this->Â»dynamics[$m]) && is_callable($this->Â»dynamics[$m])) {
+			return call_user_func_array($this->Â»dynamics[$m], $a);
+		} else if('toString' == $m) {
 			return $this->__toString();
-		else
-			throw new HException('Unable to call «'.$m.'»');
+		} else {
+			throw new HException('Unable to call Â«'.$m.'Â»');
+	        }
 	}
 	static $WIRISMULTICHOICE = "wirismultichoice";
 	static $WIRISOPENANSWER = "wirisopenanswer";
@@ -220,5 +223,7 @@ class com_wiris_quizzes_impl_HTMLGuiConfig {
 	static $WIRISEMBEDDEDFEEDBACK = "wirisembeddedfeedback";
 	static $WIRISASSERTIONSFEEDBACK = "wirisassertionsfeedback";
 	static $WIRISCORRECTFEEDBACK = "wiriscorrectfeedback";
-	function __toString() { return 'com.wiris.quizzes.impl.HTMLGuiConfig'; }
+	function __toString() { 
+		return 'com.wiris.quizzes.impl.HTMLGuiConfig'; 
+	}
 }
