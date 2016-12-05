@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('moodlelock.php');
+require_once($CFG->dirroot . '/question/type/classes/moodlelock.php');
 
 class moodlelockprovider {
 
@@ -44,10 +44,8 @@ class moodlelockprovider {
     // @codingStandardsIgnoreStart
     public function getLock($id) {
     // @codingStandardsIgnoreStop
-        global $DB;
         $timeout = 5;
 
-        $locktype = 'qtype_wq_persistenvariables';
         $resource = $id;
 
         $lockfactory = new \core\lock\db_record_lock_factory('qtype_wq_persistenvariables');
