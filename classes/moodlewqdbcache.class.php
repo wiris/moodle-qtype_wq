@@ -25,7 +25,7 @@
  */
 
 if (!class_exists('moodledbcache')) {
-    require_once('moodledbcache.php');
+    require_once($CFG->dirroot . '/question/type/wq/classes/moodledbcache.php');
 }
 
 class moodlewqdbcache {
