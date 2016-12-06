@@ -210,10 +210,8 @@ class qtype_wq_question extends question_with_responses {
 
     public function is_same_response(array $prevresponse, array $newresponse) {
         $baseresponse = $this->base->is_same_response($prevresponse, $newresponse);
-        return $baseresponse && (
-               (empty($newresponse['_sqi']) && empty($prevresponse['_sqi']))
-            || (!empty($prevresponse['_sqi']) && !empty($newresponse['_sqi']) && $newresponse['_sqi'] == $prevresponse['_sqi'])
-                                );
+        return $baseresponse && ((empty($newresponse['_sqi']) && empty($prevresponse['_sqi'])) || (!empty($prevresponse['_sqi']) && 
+                !empty($newresponse['_sqi']) && $newresponse['_sqi'] == $prevresponse['_sqi']));
 
     }
 
