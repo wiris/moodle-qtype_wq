@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+
 require_once($CFG->dirroot . '/question/type/wq/classes/moodlelock.php');
 
 class moodlelockprovider {

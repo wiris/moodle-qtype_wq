@@ -192,7 +192,7 @@ class qtype_wq extends question_type {
     }
 
     protected function wrsqz_get_cas_for_computations($data) {
-        
+
         $wrap = com_wiris_system_CallWrapper::getInstance();
 
         $wirisquestion = '';
@@ -227,7 +227,7 @@ class qtype_wq extends question_type {
     }
 
     protected function wrsqz_hidden_initial_cas_value($data) {
-        
+
         $wrap = com_wiris_system_CallWrapper::getInstance();
 
         $wirisquestion = '';

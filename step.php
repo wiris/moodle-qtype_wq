@@ -47,8 +47,7 @@ class qtype_wirisstep {
     public function load($step) {
         $conditiona = !($step instanceof question_attempt_step_read_only);
         $conditionb = $step instanceof question_attempt_step_subquestion_adapter;
-        $conditionc = $step->realqas instanceof question_attempt_step_read_only;
-        if ($conditiona && !($conditionb && $conditionc)) {
+        if ($conditiona && !($conditionb && $step->realqas instanceof question_attempt_step_read_only)) {
             $this->step = $step;
             // It is a regrade or the first attempt.
             try {
