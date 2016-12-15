@@ -18,6 +18,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Checking that WIRIS plugin is installed.
 $filterexists = file_exists($CFG->dirroot . '/filter/wiris/filter.php');
+require_once($CFG->dirroot . '/question/type/wq/lib.php');
 
 $output = '';
 if (!$filterexists) {
@@ -30,23 +31,12 @@ if (!$filterexists) {
 }
 
 // Checkbox to enable/disable all the WIRIS quizzes question types.
-$qtypes = array('essay', 'match', 'multianswer', 'multichoice', 'shortanswer', 'truefalse');
 $quizzesdisabled = get_config('question', 'wq_disabled');
 
 if ($quizzesdisabled == '1') {
-    foreach ($qtypes as $key => $value) {
-        if (get_config('question', $value . 'wiris_disabled') != 1) {
-            set_config($value . 'wiris_disabled', 1, 'question');
-            set_config('wq_disabled', 1, 'question');
-        }
-    }
+    disable_wirisquizzes_questions();
 } else {
-    foreach ($qtypes as $key => $value) {
-        if (get_config('question', $value . 'wiris_disabled') == 1) {
-            set_config($value . 'wiris_disabled', 0, 'question');
-            set_config('wq_disabled', 0, 'question');
-        }
-    }
+    enable_wirisquizzes_questions();
 }
 
 $settings->add(new admin_setting_configcheckbox('question/wq_disabled', 'WIRIS quizzes', $output, '0', '0', '1'));
