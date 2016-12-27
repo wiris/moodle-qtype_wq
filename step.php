@@ -45,9 +45,9 @@ class qtype_wirisstep {
     }
 
     public function load($step) {
-        if (!($step instanceof question_attempt_step_read_only) &&
-            !(($step instanceof question_attempt_step_subquestion_adapter) &&
-            ($step->realqas instanceof question_attempt_step_read_only) )) {
+        $conditiona = !($step instanceof question_attempt_step_read_only);
+        $conditionb = $step instanceof question_attempt_step_subquestion_adapter;
+        if ($conditiona && !($conditionb && $step->realqas instanceof question_attempt_step_read_only)) {
             $this->step = $step;
             // It is a regrade or the first attempt.
             try {
@@ -108,11 +108,8 @@ class qtype_wirisstep {
             $gc->value = $value;
             $DB->insert_record('question_attempt_step_data', $gc);
         } else {
-            $DB->set_field('question_attempt_step_data',
-                           'value',
-                            $value,
-                            array('attemptstepid' => $this->step_id,
-                            'name' => $name));
+            $DB->set_field('question_attempt_step_data', 'value',
+                    $value, array('attemptstepid' => $this->step_id, 'name' => $name));
         }
 
     }

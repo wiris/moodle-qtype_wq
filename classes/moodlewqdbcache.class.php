@@ -24,8 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+global $CFG;
+
 if (!class_exists('moodledbcache')) {
-    require_once('moodledbcache.php');
+    require_once($CFG->dirroot . '/question/type/wq/classes/moodledbcache.php');
 }
 
 class moodlewqdbcache {

@@ -24,10 +24,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (!class_exists('moodlefilecache')) {
-    require_once('moodlefilecache.php');
-}
+global $CFG;
 
+if (!class_exists('moodlefilecache')) {
+    require_once($CFG->dirroot . '/question/type/wq/classes/moodlefilecache.php');
+}
 class moodlewqfilecache {
 
     private $cache;

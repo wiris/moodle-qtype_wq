@@ -26,7 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
 
 class moodlelock {
 

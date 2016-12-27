@@ -85,7 +85,7 @@ echo $output;
 $output = '';
 
 $plugin = new stdClass();
-require_once('version.php');
+require_once($CFG->dirroot . '/question/type/wq/version.php');
 $testname = 'WIRIS quizzes version';
 if (isset($plugin->release)) {
     $version = $plugin->release;
@@ -103,7 +103,7 @@ $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'
 echo $output;
 $output = '';
 
-require_once('../../../filter/wiris/version.php');
+require_once($CFG->dirroot . '/filter/wiris/version.php');
 $testname = 'WIRIS plugin version';
 $link2plugininfo = '../../../filter/wiris/info.php';
 $plugininfo = 'Check WIRIS plugin <a href="' . $link2plugininfo . '" target="_blank">info page</a>';
@@ -128,7 +128,7 @@ $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'
 echo $output;
 $output = '';
 
-require_once('../../../version.php');
+require_once($CFG->dirroot . '/question/type/wq/version.php');
 $testname = 'Moodle version';
 if (isset($version)) {
     if ($version >= '2011060313') {
