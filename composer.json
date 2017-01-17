@@ -1,0 +1,12 @@
+{
+	"name": "lambda-solutions/qtype_wq",
+	"description": "Wiris question type WQ",
+        "license": "GPL-3.0",
+	"type": "moodle-qtype",
+	"require": {
+		"composer/installers": "~1.0"
+	},
+	"extra": {
+		"installer-name": "wq"
+	}
+}
