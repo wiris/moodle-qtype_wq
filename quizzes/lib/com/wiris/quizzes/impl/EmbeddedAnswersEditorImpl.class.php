@@ -6,6 +6,9 @@ class com_wiris_quizzes_impl_EmbeddedAnswersEditorImpl implements com_wiris_quiz
 		$this->question = $question;
 		$this->instance = $instance;
 	}}
+	public function setStyle($key, $value) {
+		com_wiris_quizzes_impl_QuizzesUIBuilderImpl::throwNotImplementedInServerTechnology();
+	}
 	public function showAnswerFieldPlainText($visible) {
 		com_wiris_quizzes_impl_QuizzesUIBuilderImpl::throwNotImplementedInServerTechnology();
 	}

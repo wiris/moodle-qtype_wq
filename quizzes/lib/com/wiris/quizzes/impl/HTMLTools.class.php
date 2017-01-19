@@ -7,6 +7,18 @@ class com_wiris_quizzes_impl_HTMLTools {
 	public function setItemSeparator($sep) {
 		$this->separator = (($sep === null) ? "," : $sep);
 	}
+	public function isImplicitArgumentFactor($x) {
+		if($x->getNodeName() === "mi" || $x->getNodeName() === "mn") {
+			return true;
+		}
+		if($x->getNodeName() === "msup") {
+			$c = $x->firstElement();
+			if($c !== null && $c->getNodeName() === "mi" || $c->getNodeName() === "mn") {
+				return true;
+			}
+		}
+		return false;
+	}
 	public function fullMathML2TextImpl($e) {
 		$sb = new StringBuf();
 		if($e->getNodeName() === "mo" || $e->getNodeName() === "mn" || $e->getNodeName() === "mi") {
@@ -106,14 +118,33 @@ class com_wiris_quizzes_impl_HTMLTools {
 										while($it->hasNext()) {
 											$x = $it->next();
 											$sb->add($this->fullMathML2TextImpl($x));
-											if($x->getNodeName() === "mi" && $it->hasNext()) {
+											if($x->getNodeName() === "mi" && $this->isFunctionName(com_wiris_util_xml_WXmlUtils::getNodeValue($x->firstChild())) && $it->hasNext()) {
 												$y = $it->next();
-												if($this->isFunctionName(com_wiris_util_xml_WXmlUtils::getNodeValue($x->firstChild())) && ($y->getNodeName() === "msqrt" || $y->getNodeName() === "mfrac" || $y->getNodeName() === "mroot")) {
+												if($y->getNodeName() === "msqrt" || $y->getNodeName() === "mfrac" || $y->getNodeName() === "mroot") {
 													$sb->add("(");
 													$sb->add($this->fullMathML2TextImpl($y));
 													$sb->add(")");
 												} else {
-													$sb->add($this->fullMathML2TextImpl($y));
+													$parentheses = false;
+													$argument = new StringBuf();
+													while($y !== null && $this->isImplicitArgumentFactor($y)) {
+														if($y->getNodeName() === "msup") {
+															$parentheses = true;
+														}
+														$argument->add($this->fullMathML2TextImpl($y));
+														$y = (($it->hasNext()) ? $it->next() : null);
+													}
+													if($parentheses) {
+														$sb->add("(");
+													}
+													$sb->add($argument->b);
+													if($parentheses) {
+														$sb->add(")");
+													}
+													if($y !== null) {
+														$sb->add($this->fullMathML2TextImpl($y));
+													}
+													unset($parentheses,$argument);
 												}
 												unset($y);
 											}
@@ -134,6 +165,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		if($root->nodeType == Xml::$Document) {
 			$root = $root->firstElement();
 		}
+		$this->removeMrows($root);
 		return $this->fullMathML2TextImpl($root);
 	}
 	public function isReservedWordPrefix($token, $words) {

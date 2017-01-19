@@ -77,7 +77,7 @@ function xmldb_qtype_wq_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014100300, 'qtype', 'wq');
     }
 
-    if ($oldversion < 2016110800) {
+    if ($oldversion < 2017011300) {
 
          // Define table qtype_wq_variables to be created.
         $table = new xmldb_table('qtype_wq_variables');
@@ -96,7 +96,7 @@ function xmldb_qtype_wq_upgrade($oldversion) {
         }
 
         // Wq savepoint reached.
-        upgrade_plugin_savepoint(true, 2016110800, 'qtype', 'wq');
+        upgrade_plugin_savepoint(true, 2017011300, 'qtype', 'wq');
     }
 
     return true;

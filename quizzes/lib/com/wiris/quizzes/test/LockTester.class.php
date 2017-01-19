@@ -17,7 +17,7 @@ class com_wiris_quizzes_test_LockTester {
 		$v->unlockVariable(com_wiris_quizzes_test_LockTester::$VAR_TESTLOCKVARIABLES);
 	}
 	static $VAR_TESTLOCKVARIABLES = "testlockvariables";
-	static function main() {
+	static function main($argv) {
 		$t = new com_wiris_quizzes_test_LockTester();
 		$t->run();
 	}

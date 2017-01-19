@@ -21,7 +21,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 			if($mode === com_wiris_quizzes_api_ui_QuizzesUIConstants::$AUTHORING) {
 				$value = $q->getCorrectAnswer($i);
 				if(com_wiris_quizzes_impl_MathContent::getMathType($value) === com_wiris_quizzes_impl_MathContent::$TYPE_MATHML) {
-					$src = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL) . "?service=render&mml=" . rawurlencode($value) . "&" . "centerBaseline=false";
+					$src = com_wiris_quizzes_impl_HTMLGui::mathMLImgSrc($value, false, 1.0);
 					$sb->add("<img class=\"wirisembeddedauthoringfield\" src=\"" . $src . "\" data-answer-index=\"" . _hx_string_rec($i, "") . "\" />");
 					unset($src);
 				} else {
@@ -48,18 +48,13 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$sb->add(_hx_substr($html, $start, null));
 		return $sb->b;
 	}
-	public function printMathML($h, $mathml) {
-		$safeMathML = com_wiris_quizzes_impl_HTMLTools::encodeUnicodeChars($mathml);
-		$src = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL) . "?service=render&stats-app=quizzes&mml=" . rawurlencode($safeMathML);
-		$h->openclose("img", new _hx_array(array(new _hx_array(array("src", $src)), new _hx_array(array("align", "middle")), new _hx_array(array("class", "wirismathml")))));
-	}
 	public function printMath($h, $math) {
 		if(com_wiris_quizzes_impl_MathContent::getMathType($math) === com_wiris_quizzes_impl_MathContent::$TYPE_MATHML) {
 			$tools = new com_wiris_quizzes_impl_HTMLTools();
 			if($tools->isTokensMathML($math)) {
 				$h->text($tools->mathMLToText($math));
 			} else {
-				$this->printMathML($h, $math);
+				$h->raw($math);
 			}
 		} else {
 			$h->text($math);
@@ -273,7 +268,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$h->jsComponent("wirisanswer" . _hx_string_rec($unique, "") . "[" . _hx_string_rec($userAnswer, "") . "]", "JsInput", com_wiris_quizzes_impl_HTMLGui_0($this, $correctAnswer, $h, $hasUserAnswer, $q, $qi, $unique, $userAnswer));
 		$h->close();
 		$h->openDivClass("wiristestbuttons" . _hx_string_rec($unique, ""), "wiristestbuttons");
-		$h->input("button", "wiristestbutton" . _hx_string_rec($unique, ""), null, $this->t->t("test"), null, "wirisbutton");
+		$h->input("button", "wiristestbutton", null, $this->t->t("test"), null, "wirisbutton");
 		$h->open("span", new _hx_array(array(new _hx_array(array("id", "wirisclicktesttoevaluate")))));
 		$h->text($this->t->t("clicktesttoevaluate"));
 		$h->close();
@@ -962,6 +957,26 @@ class com_wiris_quizzes_impl_HTMLGui {
 			return $this->__toString();
 		else
 			throw new HException('Unable to call «'.$m.'»');
+	}
+	static function mathMLImgSrc($mathml, $centerBaseline, $zoom) {
+		$c = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration();
+		$src = null;
+		if("true" === $c->get(com_wiris_quizzes_api_ConfigurationKeys::$CROSSORIGINCALLS_ENABLED)) {
+			$src = $c->get(com_wiris_quizzes_api_ConfigurationKeys::$EDITOR_URL) . "/render?";
+		} else {
+			$src = $c->get(com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL) . "?service=render&";
+		}
+		$src .= "stats-app=quizzes&";
+		if(!$centerBaseline) {
+			$src .= "centerbaseline=false&";
+		}
+		if($zoom !== 1.0) {
+			$src .= "zoom=" . _hx_string_rec($zoom, "") . "&";
+		}
+		$mathml = com_wiris_quizzes_impl_HTMLTools::removeStrokesAnnotation($mathml);
+		$mathml = rawurlencode(com_wiris_quizzes_impl_HTMLTools::encodeUnicodeChars($mathml));
+		$src .= "mml=" . $mathml;
+		return $src;
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLGui'; }
 }

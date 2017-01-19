@@ -842,8 +842,17 @@ class com_wiris_quizzes_test_Tester {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static function main() {
-		$t = new com_wiris_quizzes_test_Tester();
-		$t->run();
+		$argv = Sys::args();
+		try {
+			$t = new com_wiris_quizzes_test_Tester();
+			$t->run();
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			$x = $_ex_;
+			{
+				throw new HException($x);
+			}
+		}
 	}
 	function __toString() { return 'com.wiris.quizzes.test.Tester'; }
 }

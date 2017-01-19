@@ -43,6 +43,7 @@ YUI.add('moodle-qtype_wq-question_chooser', function(Y) {
          * */
         wiris_section: function() {
             var label = Y.one('label[for=qtype_qtype_wq]');
+            var label = label ? label : Y.one('label[for=item_qtype_wq]');
             if(label){
                 // Convert qtype option into section title and move to the bottom.
                 var wq = label.ancestor('div');

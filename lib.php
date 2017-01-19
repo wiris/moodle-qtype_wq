@@ -68,23 +68,3 @@ function qtype_wq_cron() {
 
     return true;
 }
-
-function disable_wirisquizzes_questions() {
-    $qtypes = array('essay', 'match', 'multianswer', 'multichoice', 'shortanswer', 'truefalse');
-    foreach ($qtypes as $key => $value) {
-        if (get_config('question', $value . 'wiris_disabled') != 1) {
-            set_config($value . 'wiris_disabled', 1, 'question');
-            set_config('wq_disabled', 1, 'question');
-        }
-    }
-}
-
-function enable_wirisquizzes_questions() {
-    $qtypes = array('essay', 'match', 'multianswer', 'multichoice', 'shortanswer', 'truefalse');
-    foreach ($qtypes as $key => $value) {
-        if (get_config('question', $value . 'wiris_disabled') == 1) {
-            set_config($value . 'wiris_disabled', 0, 'question');
-            set_config('wq_disabled', 0, 'question');
-        }
-    }
-}

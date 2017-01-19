@@ -102,7 +102,7 @@ class qtype_wirisstep {
 
         $gc = $DB->get_record('question_attempt_step_data', array('attemptstepid' => $this->step_id, 'name' => $name), 'value');
         if ($gc == null) {
-            $gc = new Object();
+            $gc = new stdClass();
             $gc->attemptstepid = $this->step_id;
             $gc->name = $name;
             $gc->value = $value;

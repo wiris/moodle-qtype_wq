@@ -1,12 +1,10 @@
-html, body, form.wirisform {
-    height: 100%;
+body.wirisquizzespopup {
+    overflow: hidden;
+	width: 100%;
+	height: 100%;
+	position: absolute;
     margin: 0;
     padding: 0;
-    position: relative;
-    width: 100%;
-}
-body.wirisquizzespopup{
-    overflow: hidden;
 }
 div.wiristabs div.wiristabsleftcolumn {
     position: absolute;
@@ -627,6 +625,7 @@ img.wirisembeddedauthoringfield {
     font-size: 11pt;
 	vertical-align: middle;
     margin: 4px 0;
+	box-sizing: content-box;
 }
 input.wirisembeddedtextinput{
 	border: solid 1px #bbb;
@@ -637,6 +636,7 @@ input.wirisembeddedtextinput{
 	height: 16px;
     width: 100px;
 	margin: 4px 0;
+	box-sizing: content-box;
 }
 
 /*
