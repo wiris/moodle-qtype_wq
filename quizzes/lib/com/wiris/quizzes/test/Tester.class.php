@@ -90,7 +90,11 @@ class com_wiris_quizzes_test_Tester {
 																									if($id === "floatformat1") {
 																										$this->responseFloatFormat1($res, $q, $qi);
 																									} else {
-																										throw new HException("Unknown test id.");
+																										if($id === "feedback") {
+																											$this->responseFeedback($res, $q, $qi);
+																										} else {
+																											throw new HException("Unknown test id.");
+																										}
 																									}
 																								}
 																							}
@@ -114,16 +118,40 @@ class com_wiris_quizzes_test_Tester {
 					}
 				}
 			}
-			haxe_Log::trace("Test " . $id . " OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 919, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
+			haxe_Log::trace("Test " . $id . " OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 954, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
 			$this->endCall();
 		}catch(Exception $ªe) {
 			$_ex_ = ($ªe instanceof HException) ? $ªe->e : $ªe;
 			$e = $_ex_;
 			{
-				haxe_Log::trace("Failed test " . $id . "!!!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 922, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
+				haxe_Log::trace("Failed test " . $id . "!!!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 957, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
 				throw new HException($e);
 			}
 		}
+	}
+	public function responseFeedback($s, $q, $qi) {
+		$qi->update($s);
+		if(!($qi->getAnswerGrade(0, 0, $q) === 1.0)) {
+			throw new HException("Failed test!");
+		}
+		$t = $qi->expandVariablesText("#c");
+		if(!($t === "124")) {
+			throw new HException("Failed test!");
+		}
+	}
+	public function testFeedback() {
+		$b = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance();
+		$s = "<session lang=\"en\" version=\"2.0\"><library closed=\"false\"><mtext style=\"color:#ffc800\" xml:lang=\"en\">variables</mtext><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>parameter</mi><mo>&nbsp;</mo><mi>answer</mi><mo>=</mo><mn>0</mn></math></input></command><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>c</mi><mo>=</mo><mi>answer</mi><mo>+</mo><mn>1</mn></math></input></command></group></library></session>";
+		$html = "#c";
+		$q = $b->newQuestion();
+		$q->setAlgorithm($s);
+		$q->setCorrectAnswer(0, "123");
+		$q->setOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_STUDENT_ANSWER_PARAMETER, "true");
+		$i = $b->newQuestionInstance($q);
+		$i->setStudentAnswer(0, "123");
+		$r = $b->newFeedbackRequest($html, $q, $i);
+		$this->numCalls++;
+		$b->getQuizzesService()->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("feedback", $this, $q, $i));
 	}
 	public function responseUnicode2($s, $q, $qi) {
 		$qi->update($s);
@@ -236,7 +264,7 @@ class com_wiris_quizzes_test_Tester {
 			throw new HException("Failed test");
 		}
 		if($t2 >= $t1) {
-			haxe_Log::trace("WARNING: Uncached question was faster than cached one! time miss: " . _hx_string_rec($t1, "") . "ms, time hit: " . _hx_string_rec($t2, "") . "ms.", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 757, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCache")));
+			haxe_Log::trace("WARNING: Uncached question was faster than cached one! time miss: " . _hx_string_rec($t1, "") . "ms, time hit: " . _hx_string_rec($t2, "") . "ms.", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 758, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCache")));
 		}
 	}
 	public function testFilter() {
@@ -259,7 +287,7 @@ class com_wiris_quizzes_test_Tester {
 		$r = $qb->newVariablesRequest($text, $q, $qi);
 		$qi->update($qb->getQuizzesService()->execute($r));
 		$expanded = $qi->expandVariables($text);
-		haxe_Log::trace($expanded, _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 715, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testPerformance")));
+		haxe_Log::trace($expanded, _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 716, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testPerformance")));
 	}
 	public function responseTranslation1($s, $q) {
 		$fr = "<session lang=\"fr\" version=\"2.0\"><library closed=\"false\"><mtext style=\"color:#ffc800\">library</mtext><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mi>al√©a</mi><mo>(</mo><mn>1</mn><mo>.</mo><mo>.</mo><mn>10</mn><mo>)</mo></math></input></command></group></library></session>";
@@ -298,7 +326,7 @@ class com_wiris_quizzes_test_Tester {
 	}
 	public function responseEncodings1($s, $q, $qi) {
 		$text = "Encode #a.";
-		$result = "Encode <math><mrow><mi mathvariant=\"normal\">&#960;</mi><mo>&#183;</mo><mfenced><mrow><mo>&#176;</mo><mo>'</mo></mrow></mfenced><mo>+</mo><mfenced><mrow><mo>&#8477;</mo><mo>+</mo><mo>-&#8734;</mo><mo>+</mo><mi>x</mi><mo>&#183;</mo><mi>y</mi></mrow></mfenced><mo>+</mo><mi>&#920;</mi></mrow></math>.";
+		$result = "Encode <math><mrow><mi mathvariant=\"normal\">&#960;</mi><mo>&#183;</mo><mfenced><mrow><mo>&#176;</mo><mo>'</mo></mrow></mfenced><mo>+</mo><mfenced><mrow><mi mathvariant=\"normal\">&#8477;</mi><mo>+</mo><mo>-&#8734;</mo><mo>+</mo><mi>x</mi><mo>&#183;</mo><mi>y</mi></mrow></mfenced><mo>+</mo><mi>&#920;</mi></mrow></math>.";
 		$qi->update($s);
 		$expanded = $qi->expandVariables($text);
 		if(!($expanded === $result)) {
@@ -794,6 +822,7 @@ class com_wiris_quizzes_test_Tester {
 		$h = new com_wiris_quizzes_impl_HTMLToolsUnitTests();
 		$h->run();
 		haxe_Log::trace("HTML unit test OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 63, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "run")));
+		$this->testFeedback();
 		$this->testUnicode();
 		$this->testParameters();
 		$this->testHandwritingConstraints();

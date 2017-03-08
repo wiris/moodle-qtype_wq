@@ -803,10 +803,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 					$s = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getSerializer();
 					$tag = $s->getTagName($r);
 					if($tag === com_wiris_quizzes_impl_ResultGetVariables::$tagName) {
-						if(!$variables) {
-							$variables = true;
-							$this->variables = null;
-						}
+						$variables = true;
 						$rgv = $r;
 						$resultVars = $rgv->variables;
 						$j = null;

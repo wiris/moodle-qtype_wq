@@ -17,9 +17,11 @@ class com_wiris_quizzes_api_ConfigurationKeys {
 	static $CONFIGURATION_FILE = "quizzes.configuration.file";
 	static $REFERER_URL = "quizzes.referer.url";
 	static $HAND_ENABLED = "quizzes.hand.enabled";
-	static $WIRISLAUNCHER_URL = "quizzes.wiris.url";
+	static $HAND_LOGTRACES = "quizzes.hand.logtraces";
+	static $WIRISLAUNCHER_URL = "quizzes.wirislauncher.url";
 	static $CROSSORIGINCALLS_ENABLED = "quizzes.crossorigincalls.enabled";
 	static $RESOURCES_STATIC = "quizzes.resources.static";
 	static $RESOURCES_URL = "quizzes.resources.url";
+	static $GRAPH_URL = "quizzes.graph.url";
 	function __toString() { return 'com.wiris.quizzes.api.ConfigurationKeys'; }
 }

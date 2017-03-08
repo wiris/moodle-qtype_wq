@@ -89,7 +89,8 @@ div.wiristabs div.wiriscasbottomwrapper {
 }
 div.wiriseditorwrapper {
     height: 200px;
-    width: 450px;
+    width: auto;
+    max-width: 450px; 
     margin-bottom: 5px;
 }
 div.wirispopupsimplecontent.wiriseditorwrapper{
@@ -634,7 +635,7 @@ input.wirisembeddedtextinput{
 	font-size: 11pt;
 	vertical-align: middle;
 	height: 16px;
-    width: 100px;
+    /* width: 100px; set dinamically */
 	margin: 4px 0;
 	box-sizing: content-box;
 }
@@ -671,12 +672,16 @@ span.wirisembeddedstudioinput {
 input.wirisembeddedmathinput,
 input.wirisembeddedauthoringfield {
 	height: 16px;
-    width: 100px;
-	background-position: 105px 3px;
+    /*
+	Set dinamically.
+	width: 100px;
+	background-position: 105px 3px;*/
 }
+/*
+Moodle hack no longer needed.
 .formulation input.wirisembeddedmathinput[type="text"] {
 	width: 100px;
-}
+}*/
 input.wirisembeddedstudioinput {
 	height: 24px;
 }
@@ -688,7 +693,8 @@ input.wirisembeddedstudioinput {
     border-radius: 3px;
     line-height: 15pt;
     margin: 10px 0px;
-    width: 428px;
+    width: auto;
+	max-width: 428px;
 }
 /*override assertion feedback design in studio*/
 div.wiristabs .wirisassertionfeedback {
@@ -729,6 +735,11 @@ div.wirisanswerfielddecoration {
 }
 div.wirisanswerfielddecoration.wirisembeddeddecoration {
 	display: inline-block;
+}
+div.wirisanswerfielddecoration.wiriseditordecoration {
+	width: auto;
+	max-width: 450px; /*editor wrapper's max-width*/
+	box-sizing: content-box;
 }
 
 div.wirisanswerfielddecoration.wiriscorrect {

@@ -124,6 +124,13 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$s->register(new com_wiris_quizzes_impl_Variable());
 		return $s;
 	}
+	public function removeHandAnnotations($mathml) {
+		$conf = $this->getConfiguration();
+		if(!($conf->get(com_wiris_quizzes_api_ConfigurationKeys::$HAND_LOGTRACES) === "true") || _hx_index_of($conf->get(com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL), "www.wiris.net", null) === -1) {
+			return com_wiris_util_xml_MathMLUtils::removeStrokesAnnotation($mathml);
+		}
+		return $mathml;
+	}
 	public function newMultipleResponseFromXml($xml) {
 		$s = $this->getSerializer();
 		$elem = $s->read($xml);
@@ -273,6 +280,13 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$q->assertions = $assertions;
 		$u->answers = $userAnswers;
 	}
+	public function newFeedbackRequest($html, $question, $instance) {
+		$r = $this->newEvalMultipleAnswersRequest(null, null, $question, $instance);
+		$qr = $r;
+		$qi = $instance;
+		$this->setVariables($html, $qi, $qr);
+		return $r;
+	}
 	public function newEvalMultipleAnswersRequest($correctAnswers, $userAnswers, $question, $instance) {
 		$q = null;
 		$qi = null;
@@ -336,7 +350,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 				$i1 = $_g1++;
 				$ca = $qq->correctAnswers[$i1];
 				if($ca !== null && $ca->content !== null) {
-					$ca->content = com_wiris_quizzes_impl_HTMLTools::removeStrokesAnnotation($ca->content);
+					$ca->content = com_wiris_util_xml_MathMLUtils::removeStrokesAnnotation($ca->content);
 				}
 				unset($i1,$ca);
 			}
@@ -371,7 +385,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 				if($uu->answers[$i1] === null || _hx_array_get($uu->answers, $i1)->content === null) {
 					$uu->setUserAnswer($i1, "");
 				} else {
-					$uu->setUserAnswer($i1, com_wiris_quizzes_impl_HTMLTools::removeStrokesAnnotation(_hx_array_get($uu->answers, $i1)->content));
+					$uu->setUserAnswer($i1, $this->removeHandAnnotations(_hx_array_get($uu->answers, $i1)->content));
 				}
 				unset($i1);
 			}
@@ -559,6 +573,19 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 	public function getConfiguration() {
 		return com_wiris_quizzes_impl_ConfigurationImpl::getInstance();
 	}
+	public function setVariables($html, $qi, $qr) {
+		$variables = null;
+		if($html === null) {
+			$variables = $this->extractQuestionInstanceVariableNames($qi);
+		} else {
+			$h = new com_wiris_quizzes_impl_HTMLTools();
+			$variables = $h->extractVariableNames($html);
+		}
+		if($variables->length > 0) {
+			$qr->variables($variables, com_wiris_quizzes_impl_MathContent::$TYPE_TEXT);
+			$qr->variables($variables, com_wiris_quizzes_impl_MathContent::$TYPE_MATHML);
+		}
+	}
 	public function newVariablesRequest($html, $question, $instance) {
 		if($question === null) {
 			throw new HException("Question q cannot be null.");
@@ -571,20 +598,10 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		if($qi === null || $qi->userData === null) {
 			$qi = new com_wiris_quizzes_impl_QuestionInstanceImpl();
 		}
-		$variables = null;
-		if($html === null) {
-			$variables = $this->extractQuestionInstanceVariableNames($qi);
-		} else {
-			$h = new com_wiris_quizzes_impl_HTMLTools();
-			$variables = $h->extractVariableNames($html);
-		}
 		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
 		$qr->question = $q;
 		$qr->userData = $qi->userData;
-		if($variables->length > 0) {
-			$qr->variables($variables, com_wiris_quizzes_impl_MathContent::$TYPE_TEXT);
-			$qr->variables($variables, com_wiris_quizzes_impl_MathContent::$TYPE_MATHML);
-		}
+		$this->setVariables($html, $qi, $qr);
 		return $qr;
 	}
 	public function readQuestionInstance($xml) {
@@ -620,7 +637,8 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		return $qi;
 	}
 	public function newQuestion() {
-		return new com_wiris_quizzes_impl_QuestionImpl();
+		$q = new com_wiris_quizzes_impl_QuestionImpl();
+		return $q;
 	}
 	public function getQuizzesUIBuilder() {
 		if($this->uibuilder === null) {

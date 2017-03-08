@@ -5,6 +5,37 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 		if(!php_Boot::$skip_constructor) {
 		$this->h = new com_wiris_quizzes_impl_HTMLTools();
 	}}
+	public function unitTestUtf8() {
+		$s = com_wiris_quizzes_impl_HTMLToolsUnitTests_0($this) . "a" . com_wiris_quizzes_impl_HTMLToolsUnitTests_1($this) . "a";
+		$i = com_wiris_system_Utf8::getIterator($s);
+		if(!$i->hasNext()) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if($i->next() !== 120120) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if(!$i->hasNext()) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if($i->next() !== 97) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if(!$i->hasNext()) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if($i->next() !== 960) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if(!$i->hasNext()) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if($i->next() !== 97) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+		if($i->hasNext()) {
+			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
+		}
+	}
 	public function unitTestParseCompoundAnswers() {
 		$inputs = new _hx_array(array("<math><mi>x</mi><mo>=</mo><semantics><mn>1</mn><annotation encoding=\"application/json\">[...]</annotation></semantics><mspace linebreak=\"newline\"/><mi>y</mi><mo>=</mo><semantics><mrow><mn>1</mn><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/json\">[...]</annotation></semantics></math>", "<math><mi>x</mi><mo>=</mo><semantics><mn>1</mn><annotation encoding=\"text/plain\">1</annotation></semantics><mspace linebreak=\"newline\"/><mi>y</mi><mo>=</mo><semantics><mn>2</mn></mrow><annotation encoding=\"text/plain\">2</annotation></semantics></math>"));
 		$outputs = new _hx_array(array(new _hx_array(array(new _hx_array(array("<math><mi>x</mi><mo>=</mo></math>", "<math><semantics><mn>1</mn><annotation encoding=\"application/json\">[...]</annotation></semantics></math>")), new _hx_array(array("<math><mi>y</mi><mo>=</mo></math>", "<math><semantics><mrow><mn>1</mn><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/json\">[...]</annotation></semantics></math>")))), new _hx_array(array(new _hx_array(array("<math><mi>x</mi><mo>=</mo></math>", "1")), new _hx_array(array("<math><mi>y</mi><mo>=</mo></math>", "2"))))));
@@ -247,6 +278,7 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 		$this->unitTestMathMLToText();
 		$this->unitTestTables();
 		$this->unitTestParseCompoundAnswers();
+		$this->unitTestUtf8();
 	}
 	public $h;
 	public function __call($m, $a) {
@@ -264,5 +296,22 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 		$t = new com_wiris_quizzes_impl_HTMLToolsUnitTests();
 		$t->run();
 	}
+	static function error() {
+		throw new HException("String encoding error.");
+	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLToolsUnitTests'; }
+}
+function com_wiris_quizzes_impl_HTMLToolsUnitTests_0(&$»this) {
+	{
+		$s = new haxe_Utf8(null);
+		$s->addChar(120120);
+		return $s->toString();
+	}
+}
+function com_wiris_quizzes_impl_HTMLToolsUnitTests_1(&$»this) {
+	{
+		$s = new haxe_Utf8(null);
+		$s->addChar(960);
+		return $s->toString();
+	}
 }

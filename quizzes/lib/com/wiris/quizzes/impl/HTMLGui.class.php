@@ -973,7 +973,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 		if($zoom !== 1.0) {
 			$src .= "zoom=" . _hx_string_rec($zoom, "") . "&";
 		}
-		$mathml = com_wiris_quizzes_impl_HTMLTools::removeStrokesAnnotation($mathml);
+		$mathml = com_wiris_util_xml_MathMLUtils::removeStrokesAnnotation($mathml);
 		$mathml = rawurlencode(com_wiris_quizzes_impl_HTMLTools::encodeUnicodeChars($mathml));
 		$src .= "mml=" . $mathml;
 		return $src;

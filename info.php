@@ -13,11 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 require_once('../../../config.php');
 require_once($CFG->dirroot . '/question/type/wq/config.php');
-global $DB;
 
+// BEGIN HELPERS FUNCTIONS.
 function wrs_assert_simple($condition) {
     if ($condition) {
         return '<span class="ok wrs_filter wrs_plugin">OK</span>';
@@ -53,143 +52,203 @@ function wrs_createtablerow($testname, $reporttext, $solutionlink, $condition) {
     $output .= '<td class="wrs_filter wrs_plugin">' . wrs_getstatus($condition) . '</td>';
     return $output;
 }
+// END HELPERS FUNCTIONS.
 
-
+// BEGUIN PAGE PROLOGUE.
 $PAGE->set_context(context_system::instance());
-$PAGE->set_title('Moodle 2.x WIRIS quizzes test page');
+$PAGE->set_title(get_string('info_maintitle', 'qtype_wq'));
 $PAGE->set_url('/wq/info.php', array());
 echo $OUTPUT->header();
 
 $output = '';
 $output .= html_writer::start_tag('h1');
-$output .= "Moodle 2.x WIRIS quizzes test page";
+$output .= get_string('info_maintitle', 'qtype_wq');
 $output .= html_writer::end_tag('h1');
 
 $output .= html_writer::start_tag('table', array('id' => 'wrs_filter_info_table', 'class' => 'wrs_filter wrs_plugin'));
 
 $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 $output .= html_writer::start_tag('th', array('class' => 'wrs_filter wrs_plugin'));
-$output .= "Test";
+$output .= get_string('info_tableheader_test', 'qtype_wq');
 $output .= html_writer::end_tag('th');
 $output .= html_writer::start_tag('th', array('class' => 'wrs_filter wrs_plugin'));
-$output .= "Report";
+$output .= get_string('info_tableheader_report', 'qtype_wq');
 $output .= html_writer::end_tag('th');
 $output .= html_writer::start_tag('th', array('class' => 'wrs_filter wrs_plugin'));
-$output .= "Status";
+$output .= get_string('info_tableheader_status', 'qtype_wq');
 $output .= html_writer::end_tag('th');
 $output .= html_writer::end_tag('tr');
+echo $output;
+// END PAGE PROLOGUE.
+
+// BEGIN TEST 1.
+$testname = get_string('info_test1_name', 'qtype_wq');
+$solutionlink = 'http://www.wiris.com/quizzes/download';
+$output = '';
 
 $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
-
-echo $output;
-$output = '';
 
 $plugin = new stdClass();
 require_once($CFG->dirroot . '/question/type/wq/version.php');
-$testname = 'WIRIS quizzes version';
 if (isset($plugin->release)) {
     $version = $plugin->release;
-    $reporttext = 'WIRIS quizzes version is ' . $version;
+    $reporttext = get_string('info_test1_rt1', 'qtype_wq') . $version;
     $condition = true;
 } else {
-    $reporttext = 'Impossible to find WIRIS quizzes version.';
+    $reporttext = get_string('info_test1_rt2', 'qtype_wq');
     $condition = false;
 }
-$solutionlink = 'http://www.wiris.com/quizzes/download';
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
-
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
 $output .= html_writer::end_tag('tr');
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 1.
+
+// BEGIN TEST 2.
+$testname = get_string('info_test2_name', 'qtype_wq');
+$solutionlink = 'http://www.wiris.com/plugins/moodle/download';
 $output = '';
 
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 require_once($CFG->dirroot . '/filter/wiris/version.php');
-$testname = 'WIRIS plugin version';
-$link2plugininfo = '../../../filter/wiris/info.php';
-$plugininfo = 'Check WIRIS plugin <a href="' . $link2plugininfo . '" target="_blank">info page</a>';
+$plugininfo = get_string('info_test2_info', 'qtype_wq') . '<a href="../../../filter/wiris/info.php" target="_blank">' . get_string('info_test2_infopage', 'qtype_wq') . '</a>';
 if (isset($plugin->release)) {
     $version = $plugin->release;
     if ($version >= '3.17.20') {
-        $reporttext = 'WIRIS plugin is properly installed. ' . $plugininfo;
+        $reporttext = get_string('info_test2_rt1', 'qtype_wq') . ' ' . $plugininfo;
         $condition = true;
     } else {
-        $reporttext = 'WIRIS quizzes requires WIRIS plugin 3.17.20 or greater. Your version is '. $version . ' ' . $plugininfo;
+        $reporttext = get_string('info_test2_rt2', 'qtype_wq') . ' ' . $version . ' ' . $plugininfo;
         $condition = false;
     }
 } else {
-    $reporttext = 'Impossible to find WIRIS plugin version file. ' . $plugininfo;
+    $reporttext = get_string('info_test2_rt3', 'qtype_wq') . ' ' . $plugininfo;
     $condition = false;
 }
-$solutionlink = 'http://www.wiris.com/plugins/moodle/download';
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
-
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
 $output .= html_writer::end_tag('tr');
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 2.
+
+// BEGIN TEST 3.
+$testname = get_string('info_test3_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
-require_once($CFG->dirroot . '/question/type/wq/version.php');
-$testname = 'Moodle version';
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 if (isset($version)) {
     if ($version >= '2011060313') {
-        $reporttext = 'Your moodle version is sufficiently new.';
+        $reporttext = get_string('info_test3_rt1', 'qtype_wq');
         $condition = true;
     } else {
-        $reporttext = 'Your Moodle version is ' . $version .
-        '. WIRIS quizzes could not work correctly with Moodle version prior to 2011060313';
+        $reporttext = sprintf(get_string('info_test3_rt2', 'qtype_wq'), $version);
         $condition = false;
     }
 } else {
-    $reporttext = 'Impossible to find Moodle version file.';
+    $reporttext = get_string('info_test3_rt3', 'qtype_wq');
     $condition = false;
 }
-$solutionlink = '';
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
-
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 3.
+
+// BEGIN TEST 4.
+$testname = get_string('info_test4_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
-$testname = 'Files';
-global $CFG;
-$questiontypefolders = array(
-        $CFG->dirroot . '/question/type/essaywiris',
-        $CFG->dirroot . '/question/type/matchwiris',
-        $CFG->dirroot . '/question/type/truefalsewiris',
-        $CFG->dirroot . '/question/type/multianswerwiris',
-        $CFG->dirroot . '/question/type/multichoicewiris',
-        $CFG->dirroot . '/question/type/shortanswerwiris',
-        $CFG->dirroot . '/question/type/wq'
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
+$expectedplugins = array(
+    'TrueFalse' => [
+        'name' => get_string('info_test4_pluginname1', 'qtype_wq'),
+        'path' => $CFG->dirroot . '/question/type/truefalsewiris',
+        'url' => 'https://moodle.org/plugins/qtype_truefalsewiris'
+    ],
+    'ShortAnswer' => [
+        'name' => get_string('info_test4_pluginname2', 'qtype_wq'),
+        'path' => $CFG->dirroot . '/question/type/shortanswerwiris',
+        'url' => 'https://moodle.org/plugins/qtype_shortanswerwiris'
+    ],
+    'MultiAnswer' => [
+        'name' => get_string('info_test4_pluginname3', 'qtype_wq'),
+        'path' => $CFG->dirroot . '/question/type/multianswerwiris',
+        'url' => 'https://moodle.org/plugins/qtype_multianswerwiris'
+    ],
+    'MultipleChoice' => [
+        'name' => get_string('info_test4_pluginname4', 'qtype_wq'),
+        'path' => $CFG->dirroot . '/question/type/multichoicewiris',
+        'url' => 'https://moodle.org/plugins/qtype_multichoicewiris'
+    ],
+    'Matching' => [
+        'name' => get_string('info_test4_pluginname5', 'qtype_wq'),
+        'path' => $CFG->dirroot . '/question/type/matchwiris',
+        'url' => 'https://moodle.org/plugins/qtype_matchwiris'
+    ],
+    'Essay' => [
+        'name' => get_string('info_test4_pluginname6', 'qtype_wq'),
+        'path' => $CFG->dirroot . '/question/type/essaywiris',
+        'url' => 'https://moodle.org/plugins/qtype_essaywiris'
+    ],
+    'WQ' => [
+        'name' => get_string('info_test4_pluginname7', 'qtype_wq'),
+        'path' => $CFG->dirroot . '/question/type/wq',
+        'url' => 'https://moodle.org/plugins/qtype_shortanswerwiris'
+    ]
 );
-$ok = true;
-foreach ($questiontypefolders as $folder) {
-    if ($ok) {
-        if (!is_dir($folder)) {
-            $ok = false;
+$missingplugins = [];
+$installedplugins = [];
+
+foreach ($expectedplugins as $key => $plugin) {
+    if (! empty($plugin['path']) ) {
+        if (! is_dir($plugin['path']) ) {
+            $missingplugins[$key] = $plugin;
+        } else {
+            $installedplugins[$key] = $plugin;
         }
     }
 }
-if ($ok) {
-    $condition = true;
-    $reporttext = 'All WIRIS question type folders are present.';
-} else {
-    $condition = false;
-    $reporttext = 'One or more of WIRIS question type folders are missing.';
+
+$reporttext = '';
+if ( ! empty($installedplugins) ) {
+    $reporttext .= get_string('info_test4_rt1', 'qtype_wq');
+    $reporttext .= html_writer::start_tag('ul', array('class' => 'wrs_filter wrs_plugin'));
+    foreach ($installedplugins as $key => $plugin) {
+        $reporttext .= html_writer::start_tag('li');
+        $reporttext .= $plugin['name'];
+        $reporttext .= html_writer::end_tag('li');
+    }
+    $reporttext .= html_writer::end_tag('ul');
 }
-$solutionlink = 'http://www.wiris.com/quizzes/download';
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
 
+if ( ! empty($missingplugins) ) {
+    $reporttext .= get_string('info_test4_rt2', 'qtype_wq');
+    $reporttext .= html_writer::start_tag('ul', array('class' => 'wrs_filter wrs_plugin'));
+    foreach ($missingplugins as $key => $plugin) {
+        $reporttext .= html_writer::start_tag('li');
+        $reporttext .= $plugin['name'] . ' ';
+        $reporttext .= html_writer::start_tag('a', array('href' => $plugin['url']));
+        $reporttext .= get_string('info_test4_rt3', 'qtype_wq');
+        $reporttext .= html_writer::end_tag('a');
+        $reporttext .= html_writer::end_tag('li');
+    }
+    $reporttext .= html_writer::end_tag('ul');
+}
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, true);
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 4.
+
+// BEGIN TEST 5.
+$testname = get_string('info_test5_name', 'qtype_wq');
+$solutionlink = 'http://www.wiris.com/quizzes/download';
 $output = '';
 
-global $DB;
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 $dbman = $DB->get_manager();
-$testname = 'Database';
 $tables = array(
         'qtype_wq'
 );
@@ -203,39 +262,42 @@ foreach ($tables as $table) {
 }
 if ($ok) {
     $condition = true;
-    $reporttext = 'All WIRIS tables are present.';
+    $reporttext = get_string('info_test5_rt1', 'qtype_wq');
 } else {
     $condition = false;
-    $reporttext = 'One or more of WIRIS tables are missing.';
+    $reporttext = get_string('info_test5_rt2', 'qtype_wq');
 }
-$solutionlink = 'http://www.wiris.com/quizzes/download';
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
-
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, $condition);
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 5.
+
+// BEGIN TEST 6.
+$testname = get_string('info_test6_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
-$testname = 'WIRIS quizzes';
-$solutionlink = '';
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 $quizzesdisabled = get_config('question', 'wq_disabled');
 if ($quizzesdisabled) {
-    $reporttext = 'DISABLED';
+    $reporttext = get_string('info_disabled', 'qtype_wq');
 } else {
-    $reporttext = 'ENABLED';
+    $reporttext = get_string('info_enabled', 'qtype_wq');
 }
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, !$quizzesdisabled);
-
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, !$quizzesdisabled);
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 6.
+
+// BEGIN TEST 7.
+$testname = get_string('info_test7_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 $wrap = com_wiris_system_CallWrapper::getInstance();
-$testname = 'Checking WIRIS configuration';
-$solutionlink = '';
 $wrap->start();
 $configuration = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration();
 // @codingStandardsIgnoreStart
@@ -244,17 +306,19 @@ $reporttext .= 'CACHE_DIR: ' . $configuration->get(com_wiris_quizzes_api_Configu
 $reporttext .= 'SERVICE_URL: ' . $configuration->get(com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL) . '<br>';
 // @codingStandardsIgnoreEnd
 $wrap->stop();
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, true);
-
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, true);
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 7.
+
+// BEGIN TEST 8.
+$testname = get_string('info_test8_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 $wrap = com_wiris_system_CallWrapper::getInstance();
-$testname = 'Checking if WIRIS server is reachable';
-$solutionlink = '';
 $wrap->start();
 $configuration = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration();
 // @codingStandardsIgnoreStart
@@ -264,31 +328,37 @@ $wrap->stop();
 if (!isset($parsedurl['port'])) {
     $parsedurl['port'] = 80;
 }
-$reporttext = 'Connecting to ' . $parsedurl['host'] . ' at port ' . $parsedurl['port'];
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, fsockopen($parsedurl['host'], $parsedurl['port']));
-
+$reporttext = sprintf(get_string('info_test8_rt1', 'qtype_wq'), $parsedurl['host'], $parsedurl['port']);
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, fsockopen($parsedurl['host'], $parsedurl['port']));
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 8.
+
+// BEGIN TEST 9.
+$testname = get_string('info_test9_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 $wrap = com_wiris_system_CallWrapper::getInstance();
-$testname = 'WIRIS quizzes service';
-$solutionlink = '';
 $wrap->start();
 $configuration = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration();
 // @codingStandardsIgnoreStart
 $reporttext = $configuration->get(com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL);
 // @codingStandardsIgnoreEnd
 $wrap->stop();
-echo wrs_createTableRow($testname, $reporttext, $solutionlink, true);
-
+$output .= wrs_createTableRow($testname, $reporttext, $solutionlink, true);
 $output .= html_writer::end_tag('tr');
+echo $output;
+// END TEST 9.
+
+// BEGIN TEST 10.
+$testname = get_string('info_test10_name', 'qtype_wq');
+$solutionlink = null;
+$output = '';
 
 $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
-echo $output;
-$output = '';
 
 require_once($CFG->dirroot . '/lib/editor/tinymce/lib.php');
 $tinyeditor = new tinymce_texteditor();
@@ -378,28 +448,32 @@ global $PAGE;
 $context = context_course::instance(SITEID);
 $PAGE->set_context($context);
 $function = format_text($function, FORMAT_HTML, array('noclean' => true));
-$testname = 'Checking WIRIS quizzes functionality (variable)';
-$solutionlink = '';
-echo wrs_createTableRow($testname, $function, $solutionlink, true);
-
+$output .= wrs_createTableRow($testname, $function, $solutionlink, true);
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 10.
+
+// BEGIN TEST 11.
+$testname = get_string('info_test11_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
-$testname = 'Checking WIRIS quizzes functionality (plot)';
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 $plot = '#q';
 $plot = $qi->expandVariables($plot);
-echo wrs_createTableRow($testname, $plot, $solutionlink, true);
-
+$output .= wrs_createTableRow($testname, $plot, $solutionlink, true);
 $output .= html_writer::end_tag('tr');
-
-$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 echo $output;
+// END TEST 11.
+
+// BEGIN TEST 12.
+$testname = get_string('info_test12_name', 'qtype_wq');
+$solutionlink = null;
 $output = '';
 
-$testname = 'Max server connections';
+$output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
+
 $wrap = com_wiris_system_CallWrapper::getInstance();
 $wrap->start();
 try {
@@ -432,84 +506,69 @@ try {
         }
     }
     $p->unlockVariable('wiris_maxconnections');
-    echo wrs_createTableRow($testname, 'There are currently '
-      . $count . ' active concurrent connections out of a maximum of '
-      . $configmaxconnections . '. Greatest number of concurrent connections is ' . $maxconnections . '.', '', true);
+    echo wrs_createTableRow($testname, sprintf(get_string('info_test12_rt1', 'qtype_wq'), $count, $configmaxconnections, $maxconnections), '', true);
 } catch (Exception $e) {
-    echo wrs_createTableRow($testname, 'Error with the maximum connections security system. See details: <br/><pre>' .
-                            $e->getMessage() . "<br/><pre>" . $e->getTraceAsString() . '</pre>', '', false);
+    echo wrs_createTableRow($testname, sprintf(get_string('info_test12_rt2', 'qtype_wq'), $e->getMessage(), $e->getTraceAsString()), '', false);
 }
 $wrap->stop();
 
 $output .= html_writer::end_tag('tr');
+// END TEST 12.
 
 $output .= html_writer::end_tag('table');
-
 $output .= html_writer::start_tag('br');
 echo $output;
-$output = '';
 
+$output = '';
 $output .= html_writer::start_tag('table', array('class' => 'wrs_filter wrs_plugin'));
 
 $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
 $output .= html_writer::start_tag('th', array('class' => 'wrs_filter wrs_plugin'));
-$output .= "Test";
+$output .= get_string('info_tableheader_test', 'qtype_wq');
 $output .= html_writer::end_tag('th');
 $output .= html_writer::start_tag('th', array('class' => 'wrs_filter wrs_plugin'));
-$output .= "Status";
+$output .= get_string('info_tableheader_status', 'qtype_wq');
 $output .= html_writer::end_tag('th');
 $output .= html_writer::end_tag('tr');
-
 $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
-
 $output .= html_writer::start_tag('td', array('class' => 'wrs_filter wrs_plugin'));
 $output .= 'mod_security1';
 $output .= html_writer::end_tag('td');
-
 $output .= html_writer::start_tag('td', array('class' => 'wrs_filter wrs_plugin'));
-echo $output;
-$output = '';
-
 set_error_handler('_hx_error_handler', E_ERROR);
 $disabled = true;
 @$result = file_get_contents('http://' . $_SERVER['SERVER_NAME'] . '/?test=<>');
 if ($result == '') {
     $disabled = false;
 }
-echo wrs_assert_simple($disabled);
-
+$output .= wrs_assert_simple($disabled);
 $output .= html_writer::end_tag('td');
-
 $output .= html_writer::end_tag('tr');
+echo $output;
 
-
+$output = '';
 $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'));
-
 $output .= html_writer::start_tag('td', array('class' => 'wrs_filter wrs_plugin'));
 $output .= 'mod_security1';
 $output .= html_writer::end_tag('td');
-
 $output .= html_writer::start_tag('td', array('class' => 'wrs_filter wrs_plugin'));
-echo $output;
-$output = '';
-
 $disabled = true;
 @$result = file_get_contents('http://' . $_SERVER['SERVER_NAME'] . '/?test=><');
 if ($result == '') {
     $disabled = false;
 }
-echo wrs_assert_simple($disabled);
-
+$output .= wrs_assert_simple($disabled);
 $output .= html_writer::end_tag('td');
-
 $output .= html_writer::end_tag('tr');
-
 $output .= html_writer::end_tag('table');
+echo $output;
+
+$output = '';
 $output .= html_writer::start_tag('p', array('class' => 'wrs_filter wrs_plugin'));
 $output .= html_writer::end_tag('br');
-$output .= html_writer::start_tag('span', array('class' => 'wrs_filter wrs_plugin',
-                                    'style' => 'font-size:14px; font-weight:normal;'));
-$output .= "For more information or if you have any doubt contact WIRIS Support:";
+$output .= html_writer::start_tag('span', array('class' => 'wrs_filter wrs_plugin', 'style' => 'font-size:14px; font-weight:normal;'));
+$output .= get_string('info_information', 'qtype_wq');
 $output .= " (<a href=\"mailto:support@wiris.com\">support@wiris.com</a>)";
 $output .= html_writer::end_tag('span');
 $output .= html_writer::end_tag('p');
+echo $output;

@@ -8,6 +8,12 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			com_wiris_quizzes_impl_QuestionImpl::$defaultOptions = com_wiris_quizzes_impl_QuestionImpl::getDefaultOptions();
 		}
 	}}
+	public function getProperty($name) {
+		return $this->getLocalData($name);
+	}
+	public function setProperty($name, $value) {
+		$this->setLocalData($name, $value);
+	}
 	public function moveAnswers($correct, $user) {
 		$this->id = null;
 		$i = null;
@@ -694,6 +700,8 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_FLOAT_FORMAT, "mg");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_DECIMAL_SEPARATOR, ".");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_DIGIT_GROUP_SEPARATOR, ",");
+		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_STUDENT_ANSWER_PARAMETER, "false");
+		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_STUDENT_ANSWER_PARAMETER_NAME, "answer");
 		return $dopt;
 	}
 	static function syntacticAssertionToURL($a) {

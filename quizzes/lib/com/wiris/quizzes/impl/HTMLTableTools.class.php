@@ -219,6 +219,10 @@ class com_wiris_quizzes_impl_HTMLTableTools {
 	public function isCellExpandableImpl($cell, $variables, $is2d) {
 		if(_hx_index_of($cell, "<math", null) !== -1) {
 			return false;
+		} else {
+			if(_hx_index_of($cell, "<input", null) !== -1) {
+				return false;
+			}
 		}
 		$content = trim(com_wiris_quizzes_impl_HTMLTableTools::stripTags($cell));
 		if(StringTools::startsWith($content, "#")) {

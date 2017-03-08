@@ -12,6 +12,29 @@ class com_wiris_util_xml_WXmlUtils {
 		}
 		return $sb->b;
 	}
+	static function hasSameAttributes($a, $b) {
+		if($a === null && $b === null) {
+			return true;
+		} else {
+			if($a === null || $b === null) {
+				return false;
+			}
+		}
+		$iteratorA = $a->attributes();
+		$iteratorB = $b->attributes();
+		while($iteratorA->hasNext()) {
+			if(!$iteratorB->hasNext()) {
+				return false;
+			}
+			$iteratorB->next();
+			$attr = $iteratorA->next();
+			if(!(com_wiris_util_xml_WXmlUtils::getAttribute($a, $attr) === com_wiris_util_xml_WXmlUtils::getAttribute($b, $attr))) {
+				return false;
+			}
+			unset($attr);
+		}
+		return !$iteratorB->hasNext();
+	}
 	static function getElementsByAttributeValue($nodeList, $attributeName, $attributeValue) {
 		$nodes = new _hx_array(array());
 		while($nodeList->hasNext()) {
@@ -379,6 +402,19 @@ class com_wiris_util_xml_WXmlUtils {
 		}
 		return $r;
 	}
+	static function setText($xml, $text) {
+		if($xml->nodeType != Xml::$Element) {
+			return;
+		}
+		$it = $xml->iterator();
+		if($it->hasNext()) {
+			$child = $it->next();
+			if($child->nodeType == Xml::$PCData) {
+				$xml->removeChild($child);
+			}
+		}
+		$xml->addChild(Xml::createPCData($text));
+	}
 	static function copyXml($elem) {
 		return com_wiris_util_xml_WXmlUtils::importXml($elem, $elem);
 	}
@@ -520,7 +556,7 @@ class com_wiris_util_xml_WXmlUtils {
 						if($cdata->match($aux)) {
 							$res->add($aux);
 						} else {
-							haxe_Log::trace("WARNING! malformed XML at character " . _hx_string_rec($end, "") . ":" . $xml, _hx_anonymous(array("fileName" => "WXmlUtils.hx", "lineNumber" => 616, "className" => "com.wiris.util.xml.WXmlUtils", "methodName" => "indentXml")));
+							haxe_Log::trace("WARNING! malformed XML at character " . _hx_string_rec($end, "") . ":" . $xml, _hx_anonymous(array("fileName" => "WXmlUtils.hx", "lineNumber" => 662, "className" => "com.wiris.util.xml.WXmlUtils", "methodName" => "indentXml")));
 							$res->add($aux);
 						}
 					}

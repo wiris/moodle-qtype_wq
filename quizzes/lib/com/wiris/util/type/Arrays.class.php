@@ -23,6 +23,22 @@ class com_wiris_util_type_Arrays {
 		}
 		return -1;
 	}
+	static function fromCSV($s) {
+		$words = _hx_explode(",", $s);
+		$i = 0;
+		$n = $words->length;
+		while($i < $n) {
+			$w = trim($words[$i]);
+			if(strlen($w) > 0) {
+				$words[$i] = $w;
+				++$i;
+			} else {
+				$words->splice($i, 1);
+			}
+			unset($w);
+		}
+		return $words;
+	}
 	static function contains($array, $element) {
 		return com_wiris_util_type_Arrays::indexOfElement($array, $element) >= 0;
 	}
