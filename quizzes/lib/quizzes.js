@@ -1920,6 +1920,9 @@ com.wiris.quizzes.JsCasInput = $hxClasses["com.wiris.quizzes.JsCasInput"] = func
 	this.input = d.createElement("input");
 	this.input.type = "hidden";
 	this.input.id = com.wiris.quizzes.JsComponent.getNewUniqueId();
+	com.wiris.quizzes.JsDomUtils.addEvent(this.input,"change",function(e) {
+		_g.setValue(_g.input.value);
+	});
 	this.element.appendChild(this.input);
 	this.appletWrapper = d.createElement("div");
 	com.wiris.quizzes.JsDomUtils.addClass(this.appletWrapper,"wiriscaswrapper");
@@ -2000,22 +2003,10 @@ com.wiris.quizzes.JsCasInput.prototype = $extend(com.wiris.quizzes.JsInput.proto
 		var langs = [["ca",this.t("catalan")],["en",this.t("english")],["es",this.t("spanish")],["et",this.t("estonian")],["eu",this.t("basque")],["fr",this.t("french")],["de",this.t("german")],["it",this.t("italian")],["nl",this.t("dutch")],["pt",this.t("portuguese")]];
 		return langs;
 	}
-	,loadApplet2: function() {
-		var appletHtml = "<applet name=\"WIRIS cas\" codeBase=\"" + com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL) + "/wiris-codebase\" " + "code=\"WirisApplet_net_" + this.caslang + "\" archive=\"wrs_net_" + this.caslang + ".jar\" height=\"100%\" width=\"100%\" >" + "<param name=\"command\" value=\"false\"/>" + "<param name=\"commands\" value=\"false\"/>" + "<param name=\"interface\" value=\"false\"/>" + "<param name=\"syncElementId\" value=\"" + this.input.id + "\"/>" + "<p>" + this.t("javaAppletMissing") + "</p>" + "</applet>";
-		this.appletWrapper.innerHTML = appletHtml;
-		this.applet = this.appletWrapper.getElementsByTagName("applet")[0];
-	}
 	,buildCasApplet: function(d) {
-		var browser = this.getBrowser();
-		if(browser.isChrome() && Std.parseFloat(browser.getVersion()) >= 42) {
-			this.casJnlpLauncher = new com.wiris.quizzes.JsCasJnlpLauncher(d,this.value,this.caslang);
-			this.casJnlpLauncher.addOnChangeHandler($bind(this,this.setValue));
-			this.appletWrapper.appendChild(this.casJnlpLauncher.getElement());
-		} else {
-			this.delay($bind(this,this.loadApplet2),150);
-			this.listenChanges = true;
-			this.pollChanges();
-		}
+		this.casJnlpLauncher = new com.wiris.quizzes.JsCasJnlpLauncher(d,this.value,this.caslang);
+		this.casJnlpLauncher.addOnChangeHandler($bind(this,this.setValue));
+		this.appletWrapper.appendChild(this.casJnlpLauncher.getElement());
 	}
 	,languageSelected: function(e) {
 		var newlang = this.langChooser.getValue();
@@ -2149,7 +2140,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1451, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1458, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -15088,6 +15079,15 @@ com.wiris.util.xml.WCharacterBase.isDisplayedWithStix = function(c) {
 	if(c == 12398 || c == 42791 || c == 42898) return true;
 	return false;
 }
+com.wiris.util.xml.WCharacterBase.latinToDoublestruck = function(codepoint) {
+	if(codepoint == 67) return 8450; else if(codepoint == 72) return 8461; else if(codepoint == 78) return 8469; else if(codepoint == 80) return 8473; else if(codepoint == 81) return 8474; else if(codepoint == 82) return 8477; else if(codepoint == 90) return 8484; else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_DOUBLE_STRUCK_CAPITAL_A - com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A); else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_DOUBLE_STRUCK_SMALL_A - com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A); else if(codepoint >= com.wiris.util.xml.WCharacterBase.DIGIT_ZERO && codepoint <= com.wiris.util.xml.WCharacterBase.DIGIT_NINE) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_DOUBLE_STRUCK_DIGIT_ZERO - com.wiris.util.xml.WCharacterBase.DIGIT_ZERO); else return codepoint;
+}
+com.wiris.util.xml.WCharacterBase.latinToScript = function(codepoint) {
+	if(codepoint == 66) return 8492; else if(codepoint == 69) return 8496; else if(codepoint == 70) return 8497; else if(codepoint == 72) return 8459; else if(codepoint == 73) return 8464; else if(codepoint == 76) return 8466; else if(codepoint == 77) return 8499; else if(codepoint == 82) return 8475; else if(codepoint == 101) return 8495; else if(codepoint == 103) return 8458; else if(codepoint == 111) return 8500; else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_SCRIPT_CAPITAL_A - com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A); else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_SCRIPT_SMALL_A - com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A); else return codepoint;
+}
+com.wiris.util.xml.WCharacterBase.latinToFraktur = function(codepoint) {
+	if(codepoint == 67) return 8493; else if(codepoint == 72) return 8460; else if(codepoint == 73) return 8465; else if(codepoint == 82) return 8476; else if(codepoint == 90) return 8488; else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_FRAKTUR_CAPITAL_A - com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A); else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_FRAKTUR_SMALL_A - com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A); else return codepoint;
+}
 com.wiris.util.xml.WEntities = $hxClasses["com.wiris.util.xml.WEntities"] = function() { }
 com.wiris.util.xml.WEntities.__name__ = ["com","wiris","util","xml","WEntities"];
 com.wiris.util.xml.WXmlUtils = $hxClasses["com.wiris.util.xml.WXmlUtils"] = function() { }
@@ -18509,6 +18509,19 @@ com.wiris.util.xml.WCharacterBase.DOUBLE_STRUCK_ITALIC_SMALL_E = 8519;
 com.wiris.util.xml.WCharacterBase.DOUBLE_STRUCK_ITALIC_SMALL_I = 8520;
 com.wiris.util.xml.WCharacterBase.EPSILON = 949;
 com.wiris.util.xml.WCharacterBase.VAREPSILON = 1013;
+com.wiris.util.xml.WCharacterBase.DIGIT_ZERO = 48;
+com.wiris.util.xml.WCharacterBase.DIGIT_NINE = 57;
+com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A = 65;
+com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_Z = 90;
+com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A = 97;
+com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_Z = 122;
+com.wiris.util.xml.WCharacterBase.MATHEMATICAL_SCRIPT_CAPITAL_A = 119964;
+com.wiris.util.xml.WCharacterBase.MATHEMATICAL_SCRIPT_SMALL_A = 119990;
+com.wiris.util.xml.WCharacterBase.MATHEMATICAL_FRAKTUR_CAPITAL_A = 120068;
+com.wiris.util.xml.WCharacterBase.MATHEMATICAL_FRAKTUR_SMALL_A = 120094;
+com.wiris.util.xml.WCharacterBase.MATHEMATICAL_DOUBLE_STRUCK_CAPITAL_A = 120120;
+com.wiris.util.xml.WCharacterBase.MATHEMATICAL_DOUBLE_STRUCK_SMALL_A = 120146;
+com.wiris.util.xml.WCharacterBase.MATHEMATICAL_DOUBLE_STRUCK_DIGIT_ZERO = 120792;
 com.wiris.util.xml.WCharacterBase.binaryOps = [43,45,47,177,183,215,247,8226,8722,8723,8724,8726,8727,8728,8743,8744,8745,8746,8760,8768,8846,8851,8852,8853,8854,8855,8856,8857,8858,8859,8861,8862,8863,8864,8865,8890,8891,8900,8901,8902,8903,8905,8906,8907,8908,8910,8911,8914,8915,8966,9021,9675,10678,10789,10794,10797,10798,10799,10804,10805,10812,10815,10835,10836,10837,10838,10846,10847,10851];
 com.wiris.util.xml.WCharacterBase.relations = [60,61,62,8592,8593,8594,8595,8596,8597,8598,8599,8600,8601,8602,8603,8604,8605,8606,8608,8610,8611,8614,8617,8618,8619,8620,8621,8622,8624,8625,8627,8630,8631,8636,8637,8638,8639,8640,8641,8642,8643,8644,8645,8646,8647,8648,8649,8650,8651,8652,8653,8654,8655,8656,8657,8658,8659,8660,8661,8666,8667,8669,8693,8712,8713,8715,8716,8733,8739,8740,8741,8742,8764,8765,8769,8770,8771,8772,8773,8774,8775,8776,8777,8778,8779,8781,8782,8783,8784,8785,8786,8787,8788,8789,8790,8791,8793,8794,8795,8796,8799,8800,8801,8802,8804,8805,8806,8807,8808,8809,8810,8811,8812,8814,8815,8816,8817,8818,8819,8820,8821,8822,8823,8824,8825,8826,8827,8828,8829,8830,8831,8832,8833,8834,8835,8836,8837,8838,8839,8840,8841,8842,8843,8847,8848,8849,8850,8866,8867,8869,8871,8872,8873,8874,8875,8876,8877,8878,8879,8882,8883,8884,8885,8886,8887,8888,8904,8909,8912,8913,8918,8919,8920,8921,8922,8923,8926,8927,8930,8931,8934,8935,8936,8937,8938,8939,8940,8941,8994,8995,9123,10229,10230,10231,10232,10233,10234,10236,10239,10501,10514,10515,10531,10532,10533,10534,10535,10536,10537,10538,10547,10550,10551,10560,10561,10562,10564,10567,10574,10575,10576,10577,10578,10579,10580,10581,10582,10583,10584,10585,10586,10587,10588,10589,10590,10591,10592,10593,10606,10607,10608,10620,10621,10869,10877,10878,10885,10886,10887,10888,10889,10890,10891,10892,10901,10902,10909,10910,10913,10914,10927,10928,10933,10934,10935,10936,10937,10938,10949,10950,10955,10956,10987,11005];
 com.wiris.util.xml.WCharacterBase.largeOps = [8719,8720,8721,8896,8897,8898,8899,10756,10757,10758,10759,10760];
