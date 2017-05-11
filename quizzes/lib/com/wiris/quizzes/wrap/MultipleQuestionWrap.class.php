@@ -1,27 +1,29 @@
 <?php
 
-class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_QuizzesBuilder {
-	public function __construct() {
+class com_wiris_quizzes_wrap_MultipleQuestionWrap implements com_wiris_quizzes_api_MultipleQuestion{
+	public function __construct($impl) {
 		if(!php_Boot::$skip_constructor) {
-		parent::__construct();
-		try {
-			$this->wrapper = com_wiris_system_CallWrapper::getInstance();
-			$this->wrapper->start();
-			$this->builder = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance();
-			$this->wrapper->stop();
-		}catch(Exception $»e) {
-			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
-			$e = $_ex_;
-			{
-				$this->wrapper->stop();
-				throw new HException($e);
-			}
-		}
+		$this->question = $impl;
+		$this->wrapper = com_wiris_system_CallWrapper::getInstance();
 	}}
-	public function getResourceUrl($name) {
+	public function setProperty($name, $value) {
 		try {
 			$this->wrapper->start();
-			$r = $this->builder->getResourceUrl($name);
+			$this->question->setProperty($name, $value);
+			$this->wrapper->stop();
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			$e = $_ex_;
+			{
+				$this->wrapper->stop();
+				throw new HException($e);
+			}
+		}
+	}
+	public function getProperty($name) {
+		try {
+			$this->wrapper->start();
+			$r = $this->question->getProperty($name);
 			$this->wrapper->stop();
 			return $r;
 		}catch(Exception $»e) {
@@ -33,10 +35,10 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function getConfiguration() {
+	public function serialize() {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_ConfigurationWrap($this->builder->getConfiguration());
+			$r = $this->question->serialize();
 			$this->wrapper->stop();
 			return $r;
 		}catch(Exception $»e) {
@@ -48,10 +50,10 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function getMathFilter() {
+	public function getAlgorithm() {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_MathFilterWrap($this->builder->getMathFilter());
+			$r = $this->question->getAlgorithm();
 			$this->wrapper->stop();
 			return $r;
 		}catch(Exception $»e) {
@@ -63,10 +65,24 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function getQuizzesService() {
+	public function setAlgorithm($session) {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuizzesServiceWrap($this->builder->getQuizzesService());
+			$this->question->setAlgorithm($session);
+			$this->wrapper->stop();
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			$e = $_ex_;
+			{
+				$this->wrapper->stop();
+				throw new HException($e);
+			}
+		}
+	}
+	public function getCorrectAnswer($index) {
+		try {
+			$this->wrapper->start();
+			$r = $this->question->getCorrectAnswer($index);
 			$this->wrapper->stop();
 			return $r;
 		}catch(Exception $»e) {
@@ -78,18 +94,10 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newFeedbackRequest($html, $question, $instance) {
+	public function getCorrectAnswersLength() {
 		try {
-			$qw = $question;
-			$iw = $instance;
-			if($qw !== null) {
-				$question = $qw->question;
-			}
-			if($iw !== null) {
-				$instance = $iw->instance;
-			}
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuestionRequestWrap($this->builder->newFeedbackRequest($html, $question, $instance));
+			$r = $this->question->getCorrectAnswersLength();
 			$this->wrapper->stop();
 			return $r;
 		}catch(Exception $»e) {
@@ -101,22 +109,11 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newEvalMultipleAnswersRequest($correctAnswers, $studentAnswers, $question, $instance) {
-		$correctAnswers = new _hx_array($correctAnswers);
-		$studentAnswers = new _hx_array($studentAnswers);
+	public function setCorrectAnswer($index, $answer) {
 		try {
-			$qw = $question;
-			$iw = $instance;
-			if($qw !== null) {
-				$question = $qw->question;
-			}
-			if($iw !== null) {
-				$instance = $iw->instance;
-			}
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuestionRequestWrap($this->builder->newEvalMultipleAnswersRequest($correctAnswers, $studentAnswers, $question, $instance));
+			$this->question->setCorrectAnswer($index, $answer);
 			$this->wrapper->stop();
-			return $r;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -126,20 +123,11 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newEvalRequest($correctAnswer, $studentAnswer, $question, $instance) {
+	public function setAnswerFieldType($type) {
 		try {
-			$qw = $question;
-			$iw = $instance;
-			if($qw !== null) {
-				$question = $qw->question;
-			}
-			if($iw !== null) {
-				$instance = $iw->instance;
-			}
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuestionRequestWrap($this->builder->newEvalRequest($correctAnswer, $studentAnswer, $question, $instance));
+			$this->question->setAnswerFieldType($type);
 			$this->wrapper->stop();
-			return $r;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -149,20 +137,11 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newVariablesRequest($html, $question, $instance) {
+	public function setOption($name, $value) {
 		try {
-			$qw = $question;
-			$iw = $instance;
-			if($qw !== null) {
-				$question = $qw->question;
-			}
-			if($iw !== null) {
-				$instance = $iw->instance;
-			}
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuestionRequestWrap($this->builder->newVariablesRequest($html, $question, $instance));
+			$this->question->setOption($name, $value);
 			$this->wrapper->stop();
-			return $r;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -172,12 +151,11 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function readQuestionInstance($xml) {
+	public function addAssertion($name, $correctAnswer, $studentAnswer, $parameters) {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuestionInstanceWrap($this->builder->readQuestionInstance($xml));
+			$this->question->addAssertion($name, $correctAnswer, $studentAnswer, $parameters);
 			$this->wrapper->stop();
-			return $r;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -187,12 +165,12 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function readQuestion($xml) {
+	public function getStudentQuestion() {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuestionWrap($this->builder->readQuestion($xml));
+			$response = new com_wiris_quizzes_wrap_QuestionWrap($this->question->getStudentQuestion());
 			$this->wrapper->stop();
-			return $r;
+			return $response;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -202,16 +180,11 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newMultipleQuestionInstance($question = null) {
+	public function addAssertionOfSubquestion($sub, $name, $correctAnswer, $studentAnswer, $parameters) {
 		try {
 			$this->wrapper->start();
-			$qw = $question;
-			if($qw !== null) {
-				$question = $qw->question;
-			}
-			$r = new com_wiris_quizzes_wrap_MultipleQuestionInstanceWrap($this->builder->newMultipleQuestionInstance($question));
+			$this->question->addAssertionOfSubquestion($sub, $name, $correctAnswer, $studentAnswer, $parameters);
 			$this->wrapper->stop();
-			return $r;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -221,16 +194,11 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newQuestionInstance($question = null) {
+	public function setPropertyOfSubquestion($sub, $name, $value) {
 		try {
 			$this->wrapper->start();
-			$qw = $question;
-			if($qw !== null) {
-				$question = $qw->question;
-			}
-			$r = new com_wiris_quizzes_wrap_QuestionInstanceWrap($this->builder->newQuestionInstance($question));
+			$this->question->setPropertyOfSubquestion($sub, $name, $value);
 			$this->wrapper->stop();
-			return $r;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -240,12 +208,12 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newMultipleQuestion() {
+	public function getPropertyOfSubquestion($sub, $name) {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_MultipleQuestionWrap($this->builder->newMultipleQuestion());
+			$value = $this->question->getPropertyOfSubquestion($sub, $name);
 			$this->wrapper->stop();
-			return $r;
+			return $value;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -255,12 +223,11 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function newQuestion() {
+	public function setCorrectAnswerOfSubquestion($sub, $index, $correctAnswer) {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuestionWrap($this->builder->newQuestion());
+			$this->question->setCorrectAnswerOfSubquestion($sub, $index, $correctAnswer);
 			$this->wrapper->stop();
-			return $r;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -270,12 +237,42 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 			}
 		}
 	}
-	public function getQuizzesUIBuilder() {
+	public function getCorrectAnswerOfSubquestion($sub, $index) {
 		try {
 			$this->wrapper->start();
-			$r = new com_wiris_quizzes_wrap_QuizzesUIBuilderWrap($this->builder->getQuizzesUIBuilder());
+			$value = $this->question->getCorrectAnswerOfSubquestion($sub, $index);
 			$this->wrapper->stop();
-			return $r;
+			return $value;
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			$e = $_ex_;
+			{
+				$this->wrapper->stop();
+				throw new HException($e);
+			}
+		}
+	}
+	public function getCorrectAnswersLengthOfSubquestion($sub) {
+		try {
+			$this->wrapper->start();
+			$len = $this->question->getCorrectAnswersLengthOfSubquestion($sub);
+			$this->wrapper->stop();
+			return $len;
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			$e = $_ex_;
+			{
+				$this->wrapper->stop();
+				throw new HException($e);
+			}
+		}
+	}
+	public function getNumberOfSubquestions() {
+		try {
+			$this->wrapper->start();
+			$len = $this->question->getNumberOfSubquestions();
+			$this->wrapper->stop();
+			return $len;
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
@@ -286,7 +283,7 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 		}
 	}
 	public $wrapper;
-	public $builder;
+	public $question;
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -297,12 +294,5 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	static $builderwrap;
-	static function getInstance() {
-		if(com_wiris_quizzes_wrap_QuizzesBuilderWrap::$builderwrap === null) {
-			com_wiris_quizzes_wrap_QuizzesBuilderWrap::$builderwrap = new com_wiris_quizzes_wrap_QuizzesBuilderWrap();
-		}
-		return com_wiris_quizzes_wrap_QuizzesBuilderWrap::$builderwrap;
-	}
-	function __toString() { return 'com.wiris.quizzes.wrap.QuizzesBuilderWrap'; }
+	function __toString() { return 'com.wiris.quizzes.wrap.MultipleQuestionWrap'; }
 }
