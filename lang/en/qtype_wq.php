@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['wq'] = 'Math & Science by WIRIS';
-$string['pluginname'] = 'Math & Science by WIRIS';
-$string['pluginnamesummary'] = '';
+$string['pluginname'] = 'Math & Science by WIRIS';$string['pluginnamesummary'] = '';
 $string['wq_help'] = 'Generic WIRIS quizzes Help';
 $string['editingwq'] = 'Editing a generic WIRIS question';
 $string['addingwq'] = 'Adding a generic WIRIS question';
