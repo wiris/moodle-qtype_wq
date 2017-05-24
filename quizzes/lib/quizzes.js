@@ -1483,10 +1483,11 @@ com.wiris.quizzes.JsInitialCasInput.prototype = $extend(com.wiris.quizzes.JsPopu
 	,button: null
 	,__class__: com.wiris.quizzes.JsInitialCasInput
 });
-com.wiris.quizzes.JsImageMathInput = $hxClasses["com.wiris.quizzes.JsImageMathInput"] = function(d,v,grammar,handConstraints) {
+com.wiris.quizzes.JsImageMathInput = $hxClasses["com.wiris.quizzes.JsImageMathInput"] = function(d,v,grammar,handConstraints,editorParams) {
 	com.wiris.quizzes.JsPopupInput.call(this,d,v);
 	this.grammar = grammar;
 	this.handConstraints = handConstraints;
+	this.setEditorInitialParams(editorParams);
 	this.popupWidth = 470;
 	this.popupHeight = 300;
 	this.popupName = "wiriseditorpopup";
@@ -1516,9 +1517,7 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		com.wiris.quizzes.JsPopupInput.prototype.buildPopup.call(this);
 		var container = new com.wiris.quizzes.JsContainer(this.popup.document);
 		container.addClass("wirismaincontainer");
-		var params = { };
-		params.toolbar = "quizzes";
-		var editor = new com.wiris.quizzes.JsEditorInput(this.popup.document,this.getValue(),params);
+		var editor = new com.wiris.quizzes.JsEditorInput(this.popup.document,this.getValue(),this.editorParams);
 		editor.setGrammarUrl(this.grammar);
 		editor.setHandConstraints(haxe.Json.parse(this.handConstraints));
 		editor.addClass("wirispopupsimplecontent");
@@ -1636,6 +1635,12 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		}
 		this.configureElement();
 	}
+	,setEditorInitialParams: function(editorParams) {
+		this.editorParams = editorParams;
+		if(this.editorParams == null) this.editorParams = { };
+		if(this.editorParams.toolbar == null) this.editorParams.toolbar = "quizzes";
+	}
+	,editorParams: null
 	,fieldMinWidth: null
 	,tools: null
 	,button: null
@@ -1647,9 +1652,10 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 	,grammar: null
 	,__class__: com.wiris.quizzes.JsImageMathInput
 });
-com.wiris.quizzes.JsCompoundMathInput = $hxClasses["com.wiris.quizzes.JsCompoundMathInput"] = function(d,v,image,grammar,handConstraints) {
+com.wiris.quizzes.JsCompoundMathInput = $hxClasses["com.wiris.quizzes.JsCompoundMathInput"] = function(d,v,image,grammar,handConstraints,editorParams) {
 	com.wiris.quizzes.JsInput.call(this,d,v);
 	if(com.wiris.quizzes.JsCompoundMathInput.htmltools == null) com.wiris.quizzes.JsCompoundMathInput.htmltools = new com.wiris.quizzes.impl.HTMLTools();
+	this.editorParams = editorParams;
 	this.image = image;
 	this.grammar = grammar;
 	this.handConstraints = handConstraints;
@@ -1672,6 +1678,17 @@ com.wiris.quizzes.JsCompoundMathInput.prototype = $extend(com.wiris.quizzes.JsIn
 			this.inputs[i].addOnChangeHandler(function(value) {
 				_g2.changeHandler(_g2.getValue());
 			});
+		}
+	}
+	,setEditorInitialParams: function(editorParams) {
+		this.editorParams = editorParams;
+		if(this.image) {
+			var _g1 = 0, _g = this.inputs.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var mathinput = this.inputs[i];
+				mathinput.setEditorInitialParams(this.editorParams);
+			}
 		}
 	}
 	,setHandConstraints: function(handConstraints) {
@@ -1723,7 +1740,7 @@ com.wiris.quizzes.JsCompoundMathInput.prototype = $extend(com.wiris.quizzes.JsIn
 	}
 	,getMathInput: function(d,v) {
 		var input;
-		if(this.image) input = new com.wiris.quizzes.JsImageMathInput(d,v,this.grammar,this.handConstraints); else {
+		if(this.image) input = new com.wiris.quizzes.JsImageMathInput(d,v,this.grammar,this.handConstraints,this.editorParams); else {
 			if(com.wiris.quizzes.impl.MathContent.getMathType(v) == com.wiris.quizzes.impl.MathContent.TYPE_MATHML) v = com.wiris.quizzes.JsCompoundMathInput.htmltools.mathMLToText(v);
 			input = new com.wiris.quizzes.JsTextInput(d,v);
 			input.addClass("wirisembeddedtextinput");
@@ -1751,6 +1768,7 @@ com.wiris.quizzes.JsCompoundMathInput.prototype = $extend(com.wiris.quizzes.JsIn
 		var old = this.element.firstChild;
 		if(old == null) this.element.appendChild(elem.element); else this.element.replaceChild(elem.element,old);
 	}
+	,editorParams: null
 	,handConstraints: null
 	,grammar: null
 	,answers: null
@@ -2161,7 +2179,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1535, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1557, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2521,8 +2539,16 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 		return null;
 	}
 	,setEditorInitialParams: function(editorParams) {
-		if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_EDITOR && this.input != null) throw "WIRIS editor already initialized.";
 		this.editorParams = editorParams;
+		if(this.input != null) {
+			if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_IMAGEMATH) {
+				var popupEditor = this.input;
+				popupEditor.setEditorInitialParams(editorParams);
+			} else if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_COMPOUND_IMAGEMATH) {
+				var popupEditor = this.input;
+				popupEditor.setEditorInitialParams(editorParams);
+			} else if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_EDITOR) throw "WIRIS editor already initialized.";
+		}
 	}
 	,addQuizzesFieldListener: function(listener) {
 		var _g = this;
@@ -2589,16 +2615,16 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 			this.input.addClass("wirisembeddedtextinput");
 			break;
 		case com.wiris.quizzes.JsStudentAnswerInput.TYPE_IMAGEMATH:
-			this.input = new com.wiris.quizzes.JsImageMathInput(d,this.value,this.grammar,this.handConstraints);
+			this.input = new com.wiris.quizzes.JsImageMathInput(d,this.value,this.grammar,this.handConstraints,this.editorParams);
 			break;
 		case com.wiris.quizzes.JsStudentAnswerInput.TYPE_EDITOR:
 			this.getEditor();
 			break;
 		case com.wiris.quizzes.JsStudentAnswerInput.TYPE_COMPOUND_TEXTFIELD:
-			this.input = new com.wiris.quizzes.JsCompoundMathInput(d,this.value,false,this.grammar,this.handConstraints);
+			this.input = new com.wiris.quizzes.JsCompoundMathInput(d,this.value,false,this.grammar,this.handConstraints,this.editorParams);
 			break;
 		case com.wiris.quizzes.JsStudentAnswerInput.TYPE_COMPOUND_IMAGEMATH:
-			this.input = new com.wiris.quizzes.JsCompoundMathInput(d,this.value,true,this.grammar,this.handConstraints);
+			this.input = new com.wiris.quizzes.JsCompoundMathInput(d,this.value,true,this.grammar,this.handConstraints,this.editorParams);
 			break;
 		default:
 			throw "Illegal student answer input type " + this.type + ".";
@@ -2685,7 +2711,7 @@ com.wiris.quizzes.JsStudioInput = $hxClasses["com.wiris.quizzes.JsStudioInput"] 
 	this.userAnswer = userAnswer;
 	this.question = q;
 	this.instance = qi;
-	com.wiris.quizzes.JsImageMathInput.call(this,d,v,null,null);
+	com.wiris.quizzes.JsImageMathInput.call(this,d,v,null,null,null);
 	this.htmlgui = new com.wiris.quizzes.impl.HTMLGui(this.getLang());
 	this.popupWidth = 800;
 	this.popupHeight = 600;
