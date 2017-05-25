@@ -811,8 +811,8 @@ class com_wiris_quizzes_test_Tester {
 		if($qqi->getBooleanVariableValue("f")) {
 			throw new HException("Failed test!. f was false");
 		}
-		$langs = new _hx_array(array("en", "es", "ca", "it", "fr", "de", "el", "pt"));
-		$tests = new _hx_array(array("Input method", "Método de entrada", "Mètode d'entrada", "Metodo di input", "Méthode de saisie", "Eingabemethode", "Μέθοδος εισόδου", "Método de entrada"));
+		$langs = new _hx_array(array("en", "es", "ca", "it", "fr", "de", "el", "pt", "no", "nn", "da"));
+		$tests = new _hx_array(array("Input method", "Método de entrada", "Mètode d'entrada", "Metodo di input", "Méthode de saisie", "Eingabemethode", "Μέθοδος εισόδου", "Método de entrada", "Inndatametode", "Inndatametode", "Inputmetode"));
 		$i = null;
 		{
 			$_g1 = 0; $_g = $langs->length;
