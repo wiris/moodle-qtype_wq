@@ -23,6 +23,13 @@ class com_wiris_util_type_Arrays {
 		}
 		return -1;
 	}
+	static function fromIterator($iterator) {
+		$array = new _hx_array(array());
+		while($iterator->hasNext()) {
+			$array->push($iterator->next());
+		}
+		return $array;
+	}
 	static function fromCSV($s) {
 		$words = _hx_explode(",", $s);
 		$i = 0;
