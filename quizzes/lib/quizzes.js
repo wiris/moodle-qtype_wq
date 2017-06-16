@@ -16519,6 +16519,11 @@ com.wiris.util.xml.XmlSerializer.prototype = {
 		}
 		return res;
 	}
+	,readXml: function(xml) {
+		this.setCurrentElement(xml);
+		this.mode = com.wiris.util.xml.XmlSerializer.MODE_READ;
+		return this.readNode();
+	}
 	,read: function(xml) {
 		var document = Xml.parse(xml);
 		this.setCurrentElement(document);
