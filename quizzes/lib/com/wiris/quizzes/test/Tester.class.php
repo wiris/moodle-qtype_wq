@@ -1039,7 +1039,7 @@ class com_wiris_quizzes_test_Tester {
 		$i2->setStudentAnswer(2, $userIncorrectAnswer3);
 		$this->numCalls++;
 		$r = $builder->newFeedbackRequest("#answer1 #answer2 #answer3 #answer4", $q2, $i2);
-		$builder->getQuizzesService()->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("compound4", $this, $q, $qi));
+		$builder->getQuizzesService()->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("compound4", $this, $q2, $i2));
 	}
 	public function responseHandwritingConstraints($s, $q, $qi) {
 		$qi->update($s);
