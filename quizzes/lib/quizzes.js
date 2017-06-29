@@ -2147,7 +2147,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 	}
 	,updateSession: function(session) {
 		var sessionRevision = Std.parseInt(session.get("revision"));
-		var update = this.revision < sessionRevision;
+		var update = this.revision < sessionRevision && session.exists("value");
 		if(update) {
 			this.revision = sessionRevision;
 			this.setValue(session.get("value"));
@@ -2179,7 +2179,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1557, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1558, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -4878,14 +4878,17 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 	,createAnswerFeedback: function(index,question,instance,options) {
 		var component = null;
 		var ii = instance;
-		if(ii.hasEvaluation()) {
+		var incorrectClass = com.wiris.quizzes.JsDomUtils.hasClassString(options,"wirisincorrect");
+		var correctClass = com.wiris.quizzes.JsDomUtils.hasClassString(options,"wiriscorrect");
+		var partiallyCorrectClass = com.wiris.quizzes.JsDomUtils.hasClassString(options,"wirispartiallycorrect");
+		if(ii.hasEvaluation() || incorrectClass || correctClass || partiallyCorrectClass) {
 			var cfg = new com.wiris.quizzes.impl.HTMLGuiConfig(options);
 			var correctAnswer = ii.getMatchingCorrectAnswer(index,question);
 			component = this.uibuilder.newAnswerFeedback(question,instance,correctAnswer,index);
 			component.showCorrectAnswerFeedback(cfg.showCorrectAnswerFeedback);
 			component.showAssertionsFeedback(cfg.showAssertionsFeedback);
 			component.showFieldDecorationFeedback(cfg.showFieldDecorationFeedback);
-			if(com.wiris.quizzes.JsDomUtils.hasClassString(options,"wirisincorrect")) component.setAnswerWeight(0.0); else if(com.wiris.quizzes.JsDomUtils.hasClassString(options,"wirispartiallycorrect")) component.setAnswerWeight(0.5);
+			if(incorrectClass) component.setAnswerWeight(0.0); else if(partiallyCorrectClass) component.setAnswerWeight(0.5);
 		}
 		return component;
 	}
@@ -16143,6 +16146,13 @@ com.wiris.util.xml.WXmlUtils.getText = function(xml) {
 	while(iter.hasNext()) r += com.wiris.util.xml.WXmlUtils.getText(iter.next());
 	return r;
 }
+com.wiris.util.xml.WXmlUtils.getInnerText = function(xml) {
+	if(xml.nodeType == Xml.PCData || xml.nodeType == Xml.CData) return com.wiris.util.xml.WXmlUtils.getNodeValue(xml);
+	var r = "";
+	var iter = xml.iterator();
+	while(iter.hasNext()) r += com.wiris.util.xml.WXmlUtils.getInnerText(iter.next());
+	return r;
+}
 com.wiris.util.xml.WXmlUtils.setText = function(xml,text) {
 	if(xml.nodeType != Xml.Element) return;
 	var it = xml.iterator();
@@ -16251,7 +16261,7 @@ com.wiris.util.xml.WXmlUtils.indentXml = function(xml,space) {
 			}
 			res.b += Std.string(aux);
 		} else if(cdata.match(aux)) res.b += Std.string(aux); else {
-			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 717, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
+			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 730, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
 			res.b += Std.string(aux);
 		}
 	}
