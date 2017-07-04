@@ -8177,7 +8177,6 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 	}
 	,getWirisTestDynamic: function(q,qi,correctAnswer,userAnswer,unique) {
 		var h = new com.wiris.quizzes.impl.HTML();
-		var hasCorrectAnswer = q.correctAnswers != null && correctAnswer < q.correctAnswers.length;
 		h.openDivClass("wiristestresult" + unique,"wiristestresult");
 		h.openDivClass("wiristestassertions" + unique,"wiristestassertions");
 		h.openDivClass("wiristestassertionslistwrapper","wiristestassertionslistwrapper");
@@ -8187,12 +8186,10 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openDivClass("wiristestcorrectanswer" + unique + "[" + correctAnswer + "]","wiristestcorrectanswer");
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wiristestcorrectanswerfieldset" + unique,this.t.t("correctanswer"),"wirismainfieldset wiristestcorrectanswerfieldset");
-		if(hasCorrectAnswer) {
-			h.open("span",[["id","wiriscorrectanswerlabel"],["class","mathml wiriscorrectanswerlabel"]]);
-			h.close();
-			h.input("button","wirisfillwithcorrectbutton",null,null,this.t.t("fillwithcorrect"),"wirisfillwithcorrectbutton");
-			h.input("button","wirisrefreshbutton",null,null,this.t.t("refresh"),"wirisrefreshbutton");
-		}
+		h.open("span",[["id","wiriscorrectanswerlabel"],["class","mathml wiriscorrectanswerlabel"]]);
+		h.close();
+		h.input("button","wirisfillwithcorrectbutton",null,null,this.t.t("fillwithcorrect"),"wirisfillwithcorrectbutton");
+		h.input("button","wirisrefreshbutton",null,null,this.t.t("refresh"),"wirisrefreshbutton");
 		h.close();
 		h.close();
 		h.close();

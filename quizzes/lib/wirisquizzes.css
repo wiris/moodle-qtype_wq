@@ -792,6 +792,7 @@ table.wiristable td, th {
 	border-color: rgba(0,0,0,0.15);
     padding: 5px;
     text-align: center;
+	vertical-align: baseline;
 }
 
 #wirisclicktesttoevaluate {
