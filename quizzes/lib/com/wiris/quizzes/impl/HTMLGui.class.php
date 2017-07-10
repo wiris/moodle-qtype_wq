@@ -234,7 +234,6 @@ class com_wiris_quizzes_impl_HTMLGui {
 	}
 	public function getWirisTestDynamic($q, $qi, $correctAnswer, $userAnswer, $unique) {
 		$h = new com_wiris_quizzes_impl_HTML();
-		$hasCorrectAnswer = $q->correctAnswers !== null && $correctAnswer < $q->correctAnswers->length;
 		$h->openDivClass("wiristestresult" . _hx_string_rec($unique, ""), "wiristestresult");
 		$h->openDivClass("wiristestassertions" . _hx_string_rec($unique, ""), "wiristestassertions");
 		$h->openDivClass("wiristestassertionslistwrapper", "wiristestassertionslistwrapper");
@@ -244,12 +243,10 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$h->openDivClass("wiristestcorrectanswer" . _hx_string_rec($unique, "") . "[" . _hx_string_rec($correctAnswer, "") . "]", "wiristestcorrectanswer");
 		$h->openDivClass(null, "wirisfieldsetwrapper");
 		$h->openFieldset("wiristestcorrectanswerfieldset" . _hx_string_rec($unique, ""), $this->t->t("correctanswer"), "wirismainfieldset wiristestcorrectanswerfieldset");
-		if($hasCorrectAnswer) {
-			$h->open("span", new _hx_array(array(new _hx_array(array("id", "wiriscorrectanswerlabel")), new _hx_array(array("class", "mathml wiriscorrectanswerlabel")))));
-			$h->close();
-			$h->input("button", "wirisfillwithcorrectbutton", null, null, $this->t->t("fillwithcorrect"), "wirisfillwithcorrectbutton");
-			$h->input("button", "wirisrefreshbutton", null, null, $this->t->t("refresh"), "wirisrefreshbutton");
-		}
+		$h->open("span", new _hx_array(array(new _hx_array(array("id", "wiriscorrectanswerlabel")), new _hx_array(array("class", "mathml wiriscorrectanswerlabel")))));
+		$h->close();
+		$h->input("button", "wirisfillwithcorrectbutton", null, null, $this->t->t("fillwithcorrect"), "wirisfillwithcorrectbutton");
+		$h->input("button", "wirisrefreshbutton", null, null, $this->t->t("refresh"), "wirisrefreshbutton");
 		$h->close();
 		$h->close();
 		$h->close();

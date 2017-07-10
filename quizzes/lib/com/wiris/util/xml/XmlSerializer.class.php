@@ -473,6 +473,11 @@ class com_wiris_util_xml_XmlSerializer {
 		}
 		return $res;
 	}
+	public function readXml($xml) {
+		$this->setCurrentElement($xml);
+		$this->mode = com_wiris_util_xml_XmlSerializer::$MODE_READ;
+		return $this->readNode();
+	}
 	public function read($xml) {
 		$document = Xml::parse($xml);
 		$this->setCurrentElement($document);

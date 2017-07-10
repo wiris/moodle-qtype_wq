@@ -811,8 +811,8 @@ class com_wiris_quizzes_test_Tester {
 		if($qqi->getBooleanVariableValue("f")) {
 			throw new HException("Failed test!. f was false");
 		}
-		$langs = new _hx_array(array("en", "es", "ca", "it", "fr", "de", "el", "pt"));
-		$tests = new _hx_array(array("Input method", "Método de entrada", "Mètode d'entrada", "Metodo di input", "Méthode de saisie", "Eingabemethode", "Μέθοδος εισόδου", "Método de entrada"));
+		$langs = new _hx_array(array("en", "es", "ca", "it", "fr", "de", "el", "pt", "no", "nn", "da"));
+		$tests = new _hx_array(array("Input method", "Método de entrada", "Mètode d'entrada", "Metodo di input", "Méthode de saisie", "Eingabemethode", "Μέθοδος εισόδου", "Método de entrada", "Inndatametode", "Inndatametode", "Inputmetode"));
 		$i = null;
 		{
 			$_g1 = 0; $_g = $langs->length;
@@ -1039,7 +1039,7 @@ class com_wiris_quizzes_test_Tester {
 		$i2->setStudentAnswer(2, $userIncorrectAnswer3);
 		$this->numCalls++;
 		$r = $builder->newFeedbackRequest("#answer1 #answer2 #answer3 #answer4", $q2, $i2);
-		$builder->getQuizzesService()->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("compound4", $this, $q, $qi));
+		$builder->getQuizzesService()->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("compound4", $this, $q2, $i2));
 	}
 	public function responseHandwritingConstraints($s, $q, $qi) {
 		$qi->update($s);
