@@ -15279,6 +15279,9 @@ com.wiris.util.type.Arrays.clear = function(a) {
 		i--;
 	}
 }
+com.wiris.util.type.Arrays.sort = function(elements,comparator) {
+	com.wiris.util.type.Arrays.quicksort(elements,0,elements.length - 1,comparator);
+}
 com.wiris.util.type.Arrays.insertSorted = function(a,e) {
 	com.wiris.util.type.Arrays.insertSortedImpl(a,e,false);
 }
@@ -15310,8 +15313,41 @@ com.wiris.util.type.Arrays.addAll = function(baseArray,additionArray) {
 	var i = HxOverrides.iter(additionArray);
 	while(i.hasNext()) baseArray.push(i.next());
 }
+com.wiris.util.type.Arrays.quicksort = function(elements,lower,higher,comparator) {
+	if(lower < higher) {
+		var p = com.wiris.util.type.Arrays.partition(elements,lower,higher,comparator);
+		com.wiris.util.type.Arrays.quicksort(elements,lower,p - 1,comparator);
+		com.wiris.util.type.Arrays.quicksort(elements,p,higher,comparator);
+	}
+}
+com.wiris.util.type.Arrays.partition = function(elements,lower,higher,comparator) {
+	var pivot = elements[higher];
+	var i = lower - 1;
+	var j = lower;
+	while(j < higher) {
+		if(comparator.compare(pivot,elements[j]) == 1) {
+			i++;
+			if(i != j) {
+				var swapper = elements[i];
+				elements[i] = elements[j];
+				elements[j] = swapper;
+			}
+		}
+		j++;
+	}
+	var finalSwap = elements[i + 1];
+	elements[i + 1] = elements[higher];
+	elements[higher] = finalSwap;
+	return i + 1;
+}
 com.wiris.util.type.Arrays.prototype = {
 	__class__: com.wiris.util.type.Arrays
+}
+com.wiris.util.type.Comparator = $hxClasses["com.wiris.util.type.Comparator"] = function() { }
+com.wiris.util.type.Comparator.__name__ = ["com","wiris","util","type","Comparator"];
+com.wiris.util.type.Comparator.prototype = {
+	compare: null
+	,__class__: com.wiris.util.type.Comparator
 }
 com.wiris.util.type.IntegerTools = $hxClasses["com.wiris.util.type.IntegerTools"] = function() { }
 com.wiris.util.type.IntegerTools.__name__ = ["com","wiris","util","type","IntegerTools"];
