@@ -11687,7 +11687,7 @@ com.wiris.quizzes.impl.ProcessStoreQuestion.__name__ = ["com","wiris","quizzes",
 com.wiris.quizzes.impl.ProcessStoreQuestion.__super__ = com.wiris.quizzes.impl.Process;
 com.wiris.quizzes.impl.ProcessStoreQuestion.prototype = $extend(com.wiris.quizzes.impl.Process.prototype,{
 	newInstance: function() {
-		return new com.wiris.quizzes.impl.ProcessGetCheckAssertions();
+		return new com.wiris.quizzes.impl.ProcessStoreQuestion();
 	}
 	,onSerialize: function(s) {
 		s.beginTag(com.wiris.quizzes.impl.ProcessStoreQuestion.TAGNAME);
