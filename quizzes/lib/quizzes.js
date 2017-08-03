@@ -15317,7 +15317,7 @@ com.wiris.util.type.Arrays.quicksort = function(elements,lower,higher,comparator
 	if(lower < higher) {
 		var p = com.wiris.util.type.Arrays.partition(elements,lower,higher,comparator);
 		com.wiris.util.type.Arrays.quicksort(elements,lower,p - 1,comparator);
-		com.wiris.util.type.Arrays.quicksort(elements,p,higher,comparator);
+		com.wiris.util.type.Arrays.quicksort(elements,p + 1,higher,comparator);
 	}
 }
 com.wiris.util.type.Arrays.partition = function(elements,lower,higher,comparator) {
@@ -15335,9 +15335,11 @@ com.wiris.util.type.Arrays.partition = function(elements,lower,higher,comparator
 		}
 		j++;
 	}
-	var finalSwap = elements[i + 1];
-	elements[i + 1] = elements[higher];
-	elements[higher] = finalSwap;
+	if(comparator.compare(elements[i + 1],elements[higher]) == 1) {
+		var finalSwap = elements[i + 1];
+		elements[i + 1] = elements[higher];
+		elements[higher] = finalSwap;
+	}
 	return i + 1;
 }
 com.wiris.util.type.Arrays.prototype = {

@@ -140,7 +140,7 @@ class com_wiris_util_type_Arrays {
 		if($lower < $higher) {
 			$p = com_wiris_util_type_Arrays::partition($elements, $lower, $higher, $comparator);
 			com_wiris_util_type_Arrays::quicksort($elements, $lower, $p - 1, $comparator);
-			com_wiris_util_type_Arrays::quicksort($elements, $p, $higher, $comparator);
+			com_wiris_util_type_Arrays::quicksort($elements, $p + 1, $higher, $comparator);
 		}
 	}
 	static function partition($elements, $lower, $higher, $comparator) {
@@ -159,9 +159,11 @@ class com_wiris_util_type_Arrays {
 			}
 			$j++;
 		}
-		$finalSwap = $elements[$i + 1];
-		$elements[$i + 1] = $elements[$higher];
-		$elements[$higher] = $finalSwap;
+		if($comparator->compare($elements[$i + 1], $elements[$higher]) === 1) {
+			$finalSwap = $elements[$i + 1];
+			$elements[$i + 1] = $elements[$higher];
+			$elements[$higher] = $finalSwap;
+		}
 		return $i + 1;
 	}
 	function __toString() { return 'com.wiris.util.type.Arrays'; }
