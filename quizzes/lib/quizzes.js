@@ -11801,7 +11801,13 @@ com.wiris.quizzes.impl.QuestionImpl.syntacticAssertionToURL = function(a) {
 }
 com.wiris.quizzes.impl.QuestionImpl.__super__ = com.wiris.quizzes.impl.QuestionInternal;
 com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.QuestionInternal.prototype,{
-	addAssertionOfSubquestion: function(sub,name,correctAnswer,studentAnswer,parameters) {
+	getAssertion: function(i) {
+		return this.assertions[i];
+	}
+	,getAssertionsLength: function() {
+		return this.assertions == null?0:this.assertions.length;
+	}
+	,addAssertionOfSubquestion: function(sub,name,correctAnswer,studentAnswer,parameters) {
 		if(this.subquestions != null && sub < this.subquestions.length) this.subquestions[sub].addAssertion(name,correctAnswer,studentAnswer,parameters);
 	}
 	,setPropertyOfSubquestion: function(sub,name,value) {
