@@ -89,6 +89,9 @@ class com_wiris_util_type_Arrays {
 			$i--;
 		}
 	}
+	static function sort($elements, $comparator) {
+		com_wiris_util_type_Arrays::quicksort($elements, 0, $elements->length - 1, $comparator);
+	}
 	static function insertSorted($a, $e) {
 		com_wiris_util_type_Arrays::insertSortedImpl($a, $e, false);
 	}
@@ -132,6 +135,36 @@ class com_wiris_util_type_Arrays {
 		while($i->hasNext()) {
 			$baseArray->push($i->next());
 		}
+	}
+	static function quicksort($elements, $lower, $higher, $comparator) {
+		if($lower < $higher) {
+			$p = com_wiris_util_type_Arrays::partition($elements, $lower, $higher, $comparator);
+			com_wiris_util_type_Arrays::quicksort($elements, $lower, $p - 1, $comparator);
+			com_wiris_util_type_Arrays::quicksort($elements, $p + 1, $higher, $comparator);
+		}
+	}
+	static function partition($elements, $lower, $higher, $comparator) {
+		$pivot = $elements[$higher];
+		$i = $lower - 1;
+		$j = $lower;
+		while($j < $higher) {
+			if($comparator->compare($pivot, $elements[$j]) === 1) {
+				$i++;
+				if($i !== $j) {
+					$swapper = $elements[$i];
+					$elements[$i] = $elements[$j];
+					$elements[$j] = $swapper;
+					unset($swapper);
+				}
+			}
+			$j++;
+		}
+		if($comparator->compare($elements[$i + 1], $elements[$higher]) === 1) {
+			$finalSwap = $elements[$i + 1];
+			$elements[$i + 1] = $elements[$higher];
+			$elements[$higher] = $finalSwap;
+		}
+		return $i + 1;
 	}
 	function __toString() { return 'com.wiris.util.type.Arrays'; }
 }

@@ -8,6 +8,12 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			com_wiris_quizzes_impl_QuestionImpl::$defaultOptions = com_wiris_quizzes_impl_QuestionImpl::getDefaultOptions();
 		}
 	}}
+	public function getAssertion($i) {
+		return $this->assertions[$i];
+	}
+	public function getAssertionsLength() {
+		return com_wiris_quizzes_impl_QuestionImpl_0($this);
+	}
 	public function addAssertionOfSubquestion($sub, $name, $correctAnswer, $studentAnswer, $parameters) {
 		if($this->subquestions !== null && $sub < $this->subquestions->length) {
 			_hx_array_get($this->subquestions, $sub)->addAssertion($name, $correctAnswer, $studentAnswer, $parameters);
@@ -52,7 +58,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 	}
 	public function getNumberOfSubquestions() {
-		return com_wiris_quizzes_impl_QuestionImpl_0($this);
+		return com_wiris_quizzes_impl_QuestionImpl_1($this);
 	}
 	public function getProperty($name) {
 		return $this->getLocalData($name);
@@ -524,7 +530,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		return -1;
 	}
 	public function getCorrectAnswersLength() {
-		return com_wiris_quizzes_impl_QuestionImpl_1($this);
+		return com_wiris_quizzes_impl_QuestionImpl_2($this);
 	}
 	public function getCorrectAnswer($index) {
 		if($this->correctAnswers !== null && $this->correctAnswers->length > $index) {
@@ -657,7 +663,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		$names = com_wiris_quizzes_impl_Assertion::getParameterNames($name);
 		if($parameters !== null && $names !== null) {
 			$a->parameters = new _hx_array(array());
-			$n = com_wiris_quizzes_impl_QuestionImpl_2($this, $a, $correctAnswer, $name, $names, $parameters, $userAnswer);
+			$n = com_wiris_quizzes_impl_QuestionImpl_3($this, $a, $correctAnswer, $name, $names, $parameters, $userAnswer);
 			$i = null;
 			{
 				$_g = 0;
@@ -740,10 +746,10 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_EXPONENTIAL_E, "e");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_IMAGINARY_UNIT, "i");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_IMPLICIT_TIMES_OPERATOR, "false");
-		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_NUMBER_PI, com_wiris_quizzes_impl_QuestionImpl_3($dopt));
+		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_NUMBER_PI, com_wiris_quizzes_impl_QuestionImpl_4($dopt));
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_PRECISION, "4");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE, "true");
-		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TIMES_OPERATOR, com_wiris_quizzes_impl_QuestionImpl_4($dopt));
+		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TIMES_OPERATOR, com_wiris_quizzes_impl_QuestionImpl_5($dopt));
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, "10^(-3)");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_FLOAT_FORMAT, "mg");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_DECIMAL_SEPARATOR, ".");
@@ -792,34 +798,41 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 	function __toString() { return 'com.wiris.quizzes.impl.QuestionImpl'; }
 }
 function com_wiris_quizzes_impl_QuestionImpl_0(&$퍁his) {
+	if($퍁his->assertions === null) {
+		return 0;
+	} else {
+		return $퍁his->assertions->length;
+	}
+}
+function com_wiris_quizzes_impl_QuestionImpl_1(&$퍁his) {
 	if($퍁his->subquestions === null) {
 		return 0;
 	} else {
 		return $퍁his->subquestions->length;
 	}
 }
-function com_wiris_quizzes_impl_QuestionImpl_1(&$퍁his) {
+function com_wiris_quizzes_impl_QuestionImpl_2(&$퍁his) {
 	if($퍁his->correctAnswers === null) {
 		return 0;
 	} else {
 		return $퍁his->correctAnswers->length;
 	}
 }
-function com_wiris_quizzes_impl_QuestionImpl_2(&$퍁his, &$a, &$correctAnswer, &$name, &$names, &$parameters, &$userAnswer) {
+function com_wiris_quizzes_impl_QuestionImpl_3(&$퍁his, &$a, &$correctAnswer, &$name, &$names, &$parameters, &$userAnswer) {
 	if($parameters->length < $names->length) {
 		return $parameters->length;
 	} else {
 		return $names->length;
 	}
 }
-function com_wiris_quizzes_impl_QuestionImpl_3(&$dopt) {
+function com_wiris_quizzes_impl_QuestionImpl_4(&$dopt) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(960);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_QuestionImpl_4(&$dopt) {
+function com_wiris_quizzes_impl_QuestionImpl_5(&$dopt) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(183);

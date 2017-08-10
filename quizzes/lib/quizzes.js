@@ -11687,7 +11687,7 @@ com.wiris.quizzes.impl.ProcessStoreQuestion.__name__ = ["com","wiris","quizzes",
 com.wiris.quizzes.impl.ProcessStoreQuestion.__super__ = com.wiris.quizzes.impl.Process;
 com.wiris.quizzes.impl.ProcessStoreQuestion.prototype = $extend(com.wiris.quizzes.impl.Process.prototype,{
 	newInstance: function() {
-		return new com.wiris.quizzes.impl.ProcessGetCheckAssertions();
+		return new com.wiris.quizzes.impl.ProcessStoreQuestion();
 	}
 	,onSerialize: function(s) {
 		s.beginTag(com.wiris.quizzes.impl.ProcessStoreQuestion.TAGNAME);
@@ -11801,7 +11801,13 @@ com.wiris.quizzes.impl.QuestionImpl.syntacticAssertionToURL = function(a) {
 }
 com.wiris.quizzes.impl.QuestionImpl.__super__ = com.wiris.quizzes.impl.QuestionInternal;
 com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.QuestionInternal.prototype,{
-	addAssertionOfSubquestion: function(sub,name,correctAnswer,studentAnswer,parameters) {
+	getAssertion: function(i) {
+		return this.assertions[i];
+	}
+	,getAssertionsLength: function() {
+		return this.assertions == null?0:this.assertions.length;
+	}
+	,addAssertionOfSubquestion: function(sub,name,correctAnswer,studentAnswer,parameters) {
 		if(this.subquestions != null && sub < this.subquestions.length) this.subquestions[sub].addAssertion(name,correctAnswer,studentAnswer,parameters);
 	}
 	,setPropertyOfSubquestion: function(sub,name,value) {
@@ -15279,6 +15285,9 @@ com.wiris.util.type.Arrays.clear = function(a) {
 		i--;
 	}
 }
+com.wiris.util.type.Arrays.sort = function(elements,comparator) {
+	com.wiris.util.type.Arrays.quicksort(elements,0,elements.length - 1,comparator);
+}
 com.wiris.util.type.Arrays.insertSorted = function(a,e) {
 	com.wiris.util.type.Arrays.insertSortedImpl(a,e,false);
 }
@@ -15310,8 +15319,43 @@ com.wiris.util.type.Arrays.addAll = function(baseArray,additionArray) {
 	var i = HxOverrides.iter(additionArray);
 	while(i.hasNext()) baseArray.push(i.next());
 }
+com.wiris.util.type.Arrays.quicksort = function(elements,lower,higher,comparator) {
+	if(lower < higher) {
+		var p = com.wiris.util.type.Arrays.partition(elements,lower,higher,comparator);
+		com.wiris.util.type.Arrays.quicksort(elements,lower,p - 1,comparator);
+		com.wiris.util.type.Arrays.quicksort(elements,p + 1,higher,comparator);
+	}
+}
+com.wiris.util.type.Arrays.partition = function(elements,lower,higher,comparator) {
+	var pivot = elements[higher];
+	var i = lower - 1;
+	var j = lower;
+	while(j < higher) {
+		if(comparator.compare(pivot,elements[j]) == 1) {
+			i++;
+			if(i != j) {
+				var swapper = elements[i];
+				elements[i] = elements[j];
+				elements[j] = swapper;
+			}
+		}
+		j++;
+	}
+	if(comparator.compare(elements[i + 1],elements[higher]) == 1) {
+		var finalSwap = elements[i + 1];
+		elements[i + 1] = elements[higher];
+		elements[higher] = finalSwap;
+	}
+	return i + 1;
+}
 com.wiris.util.type.Arrays.prototype = {
 	__class__: com.wiris.util.type.Arrays
+}
+com.wiris.util.type.Comparator = $hxClasses["com.wiris.util.type.Comparator"] = function() { }
+com.wiris.util.type.Comparator.__name__ = ["com","wiris","util","type","Comparator"];
+com.wiris.util.type.Comparator.prototype = {
+	compare: null
+	,__class__: com.wiris.util.type.Comparator
 }
 com.wiris.util.type.IntegerTools = $hxClasses["com.wiris.util.type.IntegerTools"] = function() { }
 com.wiris.util.type.IntegerTools.__name__ = ["com","wiris","util","type","IntegerTools"];
