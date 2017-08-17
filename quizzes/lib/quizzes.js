@@ -15309,6 +15309,16 @@ com.wiris.util.type.Arrays.insertSortedImpl = function(a,e,set) {
 	}
 	a.splice(imin,0,e);
 }
+com.wiris.util.type.Arrays.binarySearch = function(array,key) {
+	var imin = 0;
+	var imax = array.length;
+	while(imin < imax) {
+		var imid = Math.floor((imin + imax) / 2);
+		var cmp = Reflect.compare(array[imid],key);
+		if(cmp == 0) return imid; else if(cmp < 0) imin = imid + 1; else imax = imid;
+	}
+	return -1;
+}
 com.wiris.util.type.Arrays.copyArray = function(a) {
 	var b = new Array();
 	var i = HxOverrides.iter(a);

@@ -122,6 +122,25 @@ class com_wiris_util_type_Arrays {
 		}
 		$a->insert($imin, $e);
 	}
+	static function binarySearch($array, $key) {
+		$imin = 0;
+		$imax = $array->length;
+		while($imin < $imax) {
+			$imid = Math::floor(($imin + $imax) / 2);
+			$cmp = Reflect::compare($array[$imid], $key);
+			if($cmp === 0) {
+				return $imid;
+			} else {
+				if($cmp < 0) {
+					$imin = $imid + 1;
+				} else {
+					$imax = $imid;
+				}
+			}
+			unset($imid,$cmp);
+		}
+		return -1;
+	}
 	static function copyArray($a) {
 		$b = new _hx_array(array());
 		$i = $a->iterator();
