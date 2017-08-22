@@ -1197,6 +1197,12 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		}
 		return $this->defaultLocalData($name);
 	}
+	public function getProperty($name) {
+		return $this->getLocalData($name);
+	}
+	public function setProperty($name, $value) {
+		$this->setLocalData($name, $value);
+	}
 	public function getLocalData($name) {
 		if($name === com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) {
 			if($this->hasHandwritingConstraints()) {

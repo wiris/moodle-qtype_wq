@@ -1527,6 +1527,12 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 			_g.setValue(editor.getValue());
 			if(_g.changeHandler != null) _g.changeHandler(_g.value);
 		});
+		editor.addOnChangeStartHandler(function() {
+			submit.setAcceptEnabled(false);
+		});
+		editor.addOnChangeHandler(function(s) {
+			submit.setAcceptEnabled(true);
+		});
 		container.addChild(submit);
 		this.addPopupChild(container);
 	}
@@ -1839,7 +1845,10 @@ com.wiris.quizzes.JsSubmitButtons = $hxClasses["com.wiris.quizzes.JsSubmitButton
 com.wiris.quizzes.JsSubmitButtons.__name__ = ["com","wiris","quizzes","JsSubmitButtons"];
 com.wiris.quizzes.JsSubmitButtons.__super__ = com.wiris.quizzes.JsComponent;
 com.wiris.quizzes.JsSubmitButtons.prototype = $extend(com.wiris.quizzes.JsComponent.prototype,{
-	setCorporateLogo: function(src,title,url) {
+	setAcceptEnabled: function(enabled) {
+		if(this.accept != null) this.accept.setEnabled(enabled);
+	}
+	,setCorporateLogo: function(src,title,url) {
 		var doc = this.getOwnerDocument();
 		var img = doc.createElement("img");
 		img.src = src;
@@ -2179,7 +2188,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1558, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1571, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -6738,6 +6747,8 @@ com.wiris.quizzes.api.QuestionInstance.__name__ = ["com","wiris","quizzes","api"
 com.wiris.quizzes.api.QuestionInstance.__interfaces__ = [com.wiris.quizzes.api.Serializable];
 com.wiris.quizzes.api.QuestionInstance.prototype = {
 	setParameter: null
+	,getProperty: null
+	,setProperty: null
 	,areVariablesReady: null
 	,getAssertionChecks: null
 	,getStudentAnswersLength: null
@@ -13181,6 +13192,12 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 			}
 		}
 		return this.defaultLocalData(name);
+	}
+	,getProperty: function(name) {
+		return this.getLocalData(name);
+	}
+	,setProperty: function(name,value) {
+		this.setLocalData(name,value);
 	}
 	,getLocalData: function(name) {
 		if(name == com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) {
