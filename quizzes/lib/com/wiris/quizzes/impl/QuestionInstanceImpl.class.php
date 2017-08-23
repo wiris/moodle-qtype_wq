@@ -1236,6 +1236,9 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		if(!$found) {
 			$this->localData->push($data);
 		}
+		if($name === com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) {
+			$this->handConstraints = com_wiris_quizzes_impl_HandwritingConstraints::readHandwritingConstraints($value);
+		}
 	}
 	public function newInstance() {
 		return new com_wiris_quizzes_impl_QuestionInstanceImpl();

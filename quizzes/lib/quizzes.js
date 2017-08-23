@@ -1518,7 +1518,9 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		var container = new com.wiris.quizzes.JsContainer(this.popup.document);
 		container.addClass("wirismaincontainer");
 		var editor = new com.wiris.quizzes.JsEditorInput(this.popup.document,this.getValue(),this.editorParams);
-		editor.setGrammarUrl(this.grammar);
+		var check = true;
+		if(this.editorParams != null && this.editorParams.checkSyntax != null) check = this.editorParams.checkSyntax == "true";
+		editor.setGrammarUrl(this.grammar,check);
 		editor.setHandConstraints(haxe.Json.parse(this.handConstraints));
 		editor.addClass("wirispopupsimplecontent");
 		container.addChild(editor);
@@ -2188,7 +2190,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1571, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1575, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2549,6 +2551,7 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 	}
 	,setEditorInitialParams: function(editorParams) {
 		this.editorParams = editorParams;
+		if(this.editorParams.checkSyntax != null) this.checkSyntax = this.editorParams.checkSyntax == "true";
 		if(this.input != null) {
 			if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_IMAGEMATH) {
 				var popupEditor = this.input;
@@ -13221,6 +13224,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 			}
 		}
 		if(!found) this.localData.push(data);
+		if(name == com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) this.handConstraints = com.wiris.quizzes.impl.HandwritingConstraints.readHandwritingConstraints(value);
 	}
 	,newInstance: function() {
 		return new com.wiris.quizzes.impl.QuestionInstanceImpl();
