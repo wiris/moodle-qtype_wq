@@ -14,15 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['wq'] = 'Math & Science by WIRIS';
-$string['pluginname'] = 'Math & Science by WIRIS';$string['pluginnamesummary'] = '';
+$string['wq'] = 'Math & Science by WIRIS';;
+$string['pluginname'] = 'Math & Science by WIRIS';;
+$string['pluginnamesummary'] = '';
 $string['wq_help'] = 'Generic WIRIS quizzes Help';
 $string['editingwq'] = 'Editing a generic WIRIS question';
 $string['addingwq'] = 'Adding a generic WIRIS question';
-$string['wqsummary'] = 'This adds a generic WIRIS question. Only for test purpose. It will be hide from here.';
-$string['wirisquestionincorrect'] = 'Sorry! The system can not generate one of the questions of the quiz. <br />Maybe there is a temporary connection problem right now. <br />Maybe the question algorithm has a bug, and fails sometimes. <br />Maybe it will fail always. <br />Don\'t panic... <br />You can retry the quiz, without penalty, just clicking Continue. <br />You can also tell the Teachers that there is an issue with the question titled: \'{$a->questionname}\'';
-$string['wirisquizzeserror'] = 'Sorry! There was an error in WIRIS quizzes.';
 $string['cachedef_images'] = "WIRIS Quizzes images.";
+$string['error'] = 'ERROR';
 $string['info_maintitle'] = "Moodle 2.x WIRIS quizzes test page";
 $string['info_tableheader_test'] = "Test";
 $string['info_tableheader_report'] = "Report";
@@ -68,3 +67,11 @@ $string['info_test11_name'] = "Checking WIRIS quizzes functionality (plot)";
 $string['info_test12_name'] = "Max server connections";
 $string['info_test12_rt1'] = "There are currently %s active concurrent connections out of a maximum of %s. Greatest number of concurrent connections is %s.";
 $string['info_test12_rt2'] = "Error with the maximum connections security system. See details: <br/><pre>%s<br/>%s</pre>";
+$string['ok'] = 'OK';
+$string['proxyurl'] = 'PROXY_URL:';
+$string['cachedir'] = 'CACHE_DIR:';
+$string['serviceurl'] = 'SERVICE_URL:';
+$string['wqsummary'] = 'This adds a generic WIRIS question. Only for test purpose. It will be hide from here.';
+$string['wirisquestionincorrect'] = 'Sorry! The system can not generate one of the questions of the quiz. <br />Maybe there is a temporary connection problem right now. <br />Maybe the question algorithm has a bug, and fails sometimes. <br />Maybe it will fail always. <br />Don\'t panic... <br />You can retry the quiz, without penalty, just clicking Continue. <br />You can also tell the Teachers that there is an issue with the question titled: \'{$a->questionname}\'';
+$string['wirisquizzeserror'] = 'Sorry! There was an error in WIRIS quizzes.';
+$string['failedtoloadwirisquizzesfromxml'] = 'Failed to load WIRIS quizzes XML definition for question id';

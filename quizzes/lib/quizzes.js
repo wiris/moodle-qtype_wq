@@ -1518,7 +1518,9 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		var container = new com.wiris.quizzes.JsContainer(this.popup.document);
 		container.addClass("wirismaincontainer");
 		var editor = new com.wiris.quizzes.JsEditorInput(this.popup.document,this.getValue(),this.editorParams);
-		editor.setGrammarUrl(this.grammar);
+		var check = true;
+		if(this.editorParams != null && this.editorParams.checkSyntax != null) check = this.editorParams.checkSyntax == "true";
+		editor.setGrammarUrl(this.grammar,check);
 		editor.setHandConstraints(haxe.Json.parse(this.handConstraints));
 		editor.addClass("wirispopupsimplecontent");
 		container.addChild(editor);
@@ -1526,6 +1528,12 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		submit.setAcceptHandler(function(e) {
 			_g.setValue(editor.getValue());
 			if(_g.changeHandler != null) _g.changeHandler(_g.value);
+		});
+		editor.addOnChangeStartHandler(function() {
+			submit.setAcceptEnabled(false);
+		});
+		editor.addOnChangeHandler(function(s) {
+			submit.setAcceptEnabled(true);
 		});
 		container.addChild(submit);
 		this.addPopupChild(container);
@@ -1839,7 +1847,10 @@ com.wiris.quizzes.JsSubmitButtons = $hxClasses["com.wiris.quizzes.JsSubmitButton
 com.wiris.quizzes.JsSubmitButtons.__name__ = ["com","wiris","quizzes","JsSubmitButtons"];
 com.wiris.quizzes.JsSubmitButtons.__super__ = com.wiris.quizzes.JsComponent;
 com.wiris.quizzes.JsSubmitButtons.prototype = $extend(com.wiris.quizzes.JsComponent.prototype,{
-	setCorporateLogo: function(src,title,url) {
+	setAcceptEnabled: function(enabled) {
+		if(this.accept != null) this.accept.setEnabled(enabled);
+	}
+	,setCorporateLogo: function(src,title,url) {
 		var doc = this.getOwnerDocument();
 		var img = doc.createElement("img");
 		img.src = src;
@@ -2179,7 +2190,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1558, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1575, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2540,6 +2551,7 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 	}
 	,setEditorInitialParams: function(editorParams) {
 		this.editorParams = editorParams;
+		if(this.editorParams.checkSyntax != null) this.checkSyntax = this.editorParams.checkSyntax == "true";
 		if(this.input != null) {
 			if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_IMAGEMATH) {
 				var popupEditor = this.input;
@@ -6738,6 +6750,8 @@ com.wiris.quizzes.api.QuestionInstance.__name__ = ["com","wiris","quizzes","api"
 com.wiris.quizzes.api.QuestionInstance.__interfaces__ = [com.wiris.quizzes.api.Serializable];
 com.wiris.quizzes.api.QuestionInstance.prototype = {
 	setParameter: null
+	,getProperty: null
+	,setProperty: null
 	,areVariablesReady: null
 	,getAssertionChecks: null
 	,getStudentAnswersLength: null
@@ -13182,6 +13196,12 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		}
 		return this.defaultLocalData(name);
 	}
+	,getProperty: function(name) {
+		return this.getLocalData(name);
+	}
+	,setProperty: function(name,value) {
+		this.setLocalData(name,value);
+	}
 	,getLocalData: function(name) {
 		if(name == com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) {
 			if(this.hasHandwritingConstraints()) return this.getHandwritingConstraints().getNegativeConstraints().toJSON(); else return null;
@@ -13204,6 +13224,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 			}
 		}
 		if(!found) this.localData.push(data);
+		if(name == com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) this.handConstraints = com.wiris.quizzes.impl.HandwritingConstraints.readHandwritingConstraints(value);
 	}
 	,newInstance: function() {
 		return new com.wiris.quizzes.impl.QuestionInstanceImpl();
@@ -15308,6 +15329,16 @@ com.wiris.util.type.Arrays.insertSortedImpl = function(a,e,set) {
 		} else if(cmp < 0) imin = imid + 1; else imax = imid;
 	}
 	a.splice(imin,0,e);
+}
+com.wiris.util.type.Arrays.binarySearch = function(array,key) {
+	var imin = 0;
+	var imax = array.length;
+	while(imin < imax) {
+		var imid = Math.floor((imin + imax) / 2);
+		var cmp = Reflect.compare(array[imid],key);
+		if(cmp == 0) return imid; else if(cmp < 0) imin = imid + 1; else imax = imid;
+	}
+	return -1;
 }
 com.wiris.util.type.Arrays.copyArray = function(a) {
 	var b = new Array();
