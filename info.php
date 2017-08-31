@@ -90,8 +90,8 @@ $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'
 
 $plugin = new stdClass();
 require_once($CFG->dirroot . '/question/type/wq/version.php');
-if (isset($plugin->version)) {
-    $version = $plugin->version;
+if (isset($plugin->release)) {
+    $version = $plugin->release;
     $reporttext = get_string('info_test1_rt1', 'qtype_wq') . $version;
     $condition = true;
 } else {
@@ -112,8 +112,8 @@ $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'
 
 require_once($CFG->dirroot . '/filter/wiris/version.php');
 $plugininfo = get_string('info_test2_info', 'qtype_wq') . '<a href="../../../filter/wiris/info.php" target="_blank">' . get_string('info_test2_infopage', 'qtype_wq') . '</a>';
-if (isset($plugin->version)) {
-    $version = $plugin->version;
+if (isset($plugin->release)) {
+    $version = $plugin->release;
     if ($version >= '3.17.20') {
         $reporttext = get_string('info_test2_rt1', 'qtype_wq') . ' ' . $plugininfo;
         $condition = true;
