@@ -2466,10 +2466,13 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			}
 			this.editor.insertInto(this.element);
 			this.setValue(this.value);
-			if(this.changeHandler == null) {
-				this.changeHandler = function(value) {
-					_g.value = value;
-				};
+			var setHandler = this.startHandler == null || this.changeHandler == null;
+			if(this.startHandler == null) this.startHandler = function() {
+			};
+			if(this.changeHandler == null) this.changeHandler = function(value) {
+				_g.value = value;
+			};
+			if(setHandler) {
 				this.setEditorListener();
 				this.setHandListener();
 			}
@@ -4479,9 +4482,10 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 			while(_g1 < _g) {
 				var j1 = _g1++;
 				var ass = qq.assertions[j1];
+				var corr = this.getIndex(ass.getCorrectAnswer());
 				var ans = this.getIndex(ass.getAnswer());
 				if(ass.isEquivalence()) {
-					usedcorrectanswers[this.getIndex(ass.getCorrectAnswer())] = true;
+					if(corr < usedcorrectanswers.length) usedcorrectanswers[corr] = true;
 					if(ans < usedanswers.length) usedanswers[ans] = true;
 				} else if(ass.isCheck()) {
 					if(ans < usedanswers.length) usedanswers[ans] = true;
@@ -4640,7 +4644,7 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 				var i1 = _g1++;
 				if(StringTools.startsWith(variables[i1],name)) {
 					var after = HxOverrides.substr(variables[i1],name.length,null);
-					if(after.length == 0 || com.wiris.util.type.IntegerTools.isInt(after) && Std.parseInt(after) <= qi.getStudentAnswersLength()) {
+					if(after.length == 0 || qq.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE && com.wiris.util.type.IntegerTools.isInt(after) && Std.parseInt(after) <= qi.getStudentAnswersLength()) {
 						variables[i1] = null;
 						n++;
 					}

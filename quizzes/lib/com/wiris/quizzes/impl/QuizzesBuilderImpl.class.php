@@ -430,9 +430,12 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 				while($_g1 < $_g) {
 					$j1 = $_g1++;
 					$ass = $qq->assertions[$j1];
+					$corr = $this->getIndex($ass->getCorrectAnswer());
 					$ans = $this->getIndex($ass->getAnswer());
 					if($ass->isEquivalence()) {
-						$usedcorrectanswers[$this->getIndex($ass->getCorrectAnswer())] = true;
+						if($corr < $usedcorrectanswers->length) {
+							$usedcorrectanswers[$corr] = true;
+						}
 						if($ans < $usedanswers->length) {
 							$usedanswers[$ans] = true;
 						}
@@ -443,7 +446,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 							}
 						}
 					}
-					unset($j1,$ass,$ans);
+					unset($j1,$corr,$ass,$ans);
 				}
 				unset($_g1,$_g);
 			}
@@ -651,7 +654,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 					$i1 = $_g1++;
 					if(StringTools::startsWith($variables[$i1], $name)) {
 						$after = _hx_substr($variables[$i1], strlen($name), null);
-						if(strlen($after) === 0 || com_wiris_util_type_IntegerTools::isInt($after) && Std::parseInt($after) <= $qi->getStudentAnswersLength()) {
+						if(strlen($after) === 0 || $qq->getLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER) === com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE && com_wiris_util_type_IntegerTools::isInt($after) && Std::parseInt($after) <= $qi->getStudentAnswersLength()) {
 							$variables[$i1] = null;
 							$n++;
 						}
