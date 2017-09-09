@@ -2466,13 +2466,10 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			}
 			this.editor.insertInto(this.element);
 			this.setValue(this.value);
-			var setHandler = this.startHandler == null || this.changeHandler == null;
-			if(this.startHandler == null) this.startHandler = function() {
-			};
-			if(this.changeHandler == null) this.changeHandler = function(value) {
-				_g.value = value;
-			};
-			if(setHandler) {
+			if(this.changeHandler == null) {
+				this.changeHandler = function(value) {
+					_g.value = value;
+				};
 				this.setEditorListener();
 				this.setHandListener();
 			}
