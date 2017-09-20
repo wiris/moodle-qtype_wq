@@ -2466,15 +2466,16 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			}
 			this.editor.insertInto(this.element);
 			this.setValue(this.value);
-			var setHandler = this.startHandler == null || this.changeHandler == null;
-			if(this.startHandler == null) this.startHandler = function() {
-			};
-			if(this.changeHandler == null) this.changeHandler = function(value) {
-				_g.value = value;
-			};
-			if(setHandler) {
-				this.setEditorListener();
+			if(this.startHandler == null) {
+				this.startHandler = function() {
+				};
 				this.setHandListener();
+			}
+			if(this.changeHandler == null) {
+				this.changeHandler = function(value) {
+					_g.value = value;
+				};
+				this.setEditorListener();
 			}
 		} else if(win != null && !win.closed) this.delay($bind(this,this.loadEditor),200);
 	}
@@ -15366,7 +15367,7 @@ com.wiris.util.type.Arrays.partition = function(elements,lower,higher,comparator
 	var i = lower - 1;
 	var j = lower;
 	while(j < higher) {
-		if(comparator.compare(pivot,elements[j]) == 1) {
+		if(comparator.compare(pivot,elements[j]) > 0) {
 			i++;
 			if(i != j) {
 				var swapper = elements[i];
@@ -15376,7 +15377,7 @@ com.wiris.util.type.Arrays.partition = function(elements,lower,higher,comparator
 		}
 		j++;
 	}
-	if(comparator.compare(elements[i + 1],elements[higher]) == 1) {
+	if(comparator.compare(elements[i + 1],elements[higher]) > 0) {
 		var finalSwap = elements[i + 1];
 		elements[i + 1] = elements[higher];
 		elements[higher] = finalSwap;
