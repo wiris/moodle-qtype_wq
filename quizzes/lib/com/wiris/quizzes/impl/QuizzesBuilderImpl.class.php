@@ -654,9 +654,19 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 					$i1 = $_g1++;
 					if(StringTools::startsWith($variables[$i1], $name)) {
 						$after = _hx_substr($variables[$i1], strlen($name), null);
-						if(strlen($after) === 0 || $qq->getLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER) === com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE && com_wiris_util_type_IntegerTools::isInt($after) && Std::parseInt($after) <= $qi->getStudentAnswersLength()) {
+						if(strlen($after) === 0 || com_wiris_util_type_IntegerTools::isInt($after) && Std::parseInt($after) <= $qi->getStudentAnswersLength()) {
 							$variables[$i1] = null;
 							$n++;
+						} else {
+							if($qq->getLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER) === com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE) {
+								$qqi = $qi;
+								$parts = com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswer($qqi->userData->answers[0]);
+								if(com_wiris_util_type_IntegerTools::isInt($after) && Std::parseInt($after) <= $parts->length) {
+									$variables[$i1] = null;
+									$n++;
+								}
+								unset($qqi,$parts);
+							}
 						}
 						unset($after);
 					}

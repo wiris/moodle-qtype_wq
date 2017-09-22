@@ -9,6 +9,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$this->variables = null;
 		$this->checks = null;
 		$this->subinstances = null;
+		$this->compoundChecks = null;
 	}}
 	public function pushSubinstance($subquestion) {
 		$this->addSubinstance($subquestion->getStepNumber() - 1);
@@ -863,7 +864,10 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$w->name = $v->name;
 		return $w;
 	}
-	public function isCompoundAnswer($checks) {
+	public function isCompoundAnswer() {
+		return $this->compoundChecks !== null;
+	}
+	public function isCompoundAnswerChecks($checks) {
 		if($checks !== null && $checks->length > 0) {
 			$id = _hx_array_get($checks, 0)->getCorrectAnswer();
 			if(_hx_index_of($id, "c", null) > -1) {
@@ -1005,7 +1009,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 								while($_g3 < $_g2) {
 									$j1 = $_g3++;
 									$resultChecks = $subchecks[$j1];
-									if($this->isCompoundAnswer($resultChecks)) {
+									if($this->isCompoundAnswerChecks($resultChecks)) {
 										if($j1 === 0) {
 											$this->collapseCompoundAnswerChecks($resultChecks);
 										} else {
@@ -1118,7 +1122,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 			$text = $h->expandVariablesText($text, $textvars);
 		}
 		if($this->userData->answers !== null) {
-			$text = $h->expandAnswersText($text, $this->userData->answers, $this->getAnswerParameterName());
+			$text = $h->expandAnswersText($text, $this->userData->answers, $this->getAnswerParameterName(), $this->isCompoundAnswer());
 		}
 		return $text;
 	}
@@ -1165,7 +1169,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 			$equation = $h->textToMathML($equation);
 		}
 		$equation = $h->expandVariables($equation, $this->variables);
-		$equation = $h->expandAnswers($equation, $this->userData->answers, $this->getAnswerParameterName());
+		$equation = $h->expandAnswers($equation, $this->userData->answers, $this->getAnswerParameterName(), $this->isCompoundAnswer());
 		return $equation;
 	}
 	public function expandVariables($text) {
@@ -1175,7 +1179,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$h = new com_wiris_quizzes_impl_HTMLTools();
 		$h->setItemSeparator($this->getLocalData(com_wiris_quizzes_impl_LocalData::$KEY_ITEM_SEPARATOR));
 		$text = $h->expandVariables($text, $this->variables);
-		$text = $h->expandAnswers($text, $this->userData->answers, $this->getAnswerParameterName());
+		$text = $h->expandAnswers($text, $this->userData->answers, $this->getAnswerParameterName(), $this->isCompoundAnswer());
 		return $text;
 	}
 	public function defaultLocalData($name) {
@@ -1248,7 +1252,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$this->userData = $s->serializeChildName($this->userData, com_wiris_quizzes_impl_UserData::$TAGNAME);
 		$this->setChecksCompoundAnswers();
 		$a = $s->serializeArrayName($this->hashToChecks($this->checks), "checks");
-		if($this->isCompoundAnswer($a)) {
+		if($this->isCompoundAnswerChecks($a)) {
 			$this->collapseCompoundAnswerChecks($a);
 		}
 		$this->checks = $this->checksToHash($a, null);

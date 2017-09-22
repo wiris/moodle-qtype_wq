@@ -173,7 +173,7 @@ class com_wiris_quizzes_test_Tester {
 	}
 	public function responseFeedback3($r, $q, $qi) {
 		$qi->update($r);
-		if(!($qi->expandVariablesText("#answer1") === "2" && $qi->expandVariablesText("#answer2") === "3")) {
+		if(!($qi->expandVariables("#answer1") === "<math><mn>2</mn></math>" && $qi->expandVariables("#answer2") === "<math><mn>3</mn></math>")) {
 			throw new HException(new com_wiris_system_Exception("Failed test feedback3!", null));
 		}
 	}

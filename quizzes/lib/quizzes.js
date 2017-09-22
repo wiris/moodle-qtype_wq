@@ -1315,7 +1315,7 @@ com.wiris.quizzes.JsInput.__super__ = com.wiris.quizzes.JsComponent;
 com.wiris.quizzes.JsInput.prototype = $extend(com.wiris.quizzes.JsComponent.prototype,{
 	addQuizzesFieldListener: function(listener) {
 		var _g = this;
-		if($bind(listener,listener.contentChanged)) this.addOnChangeHandler(function(value) {
+		if(listener.contentChanged) this.addOnChangeHandler(function(value) {
 			listener.contentChanged(_g);
 		});
 	}
@@ -2466,16 +2466,12 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			}
 			this.editor.insertInto(this.element);
 			this.setValue(this.value);
-			if(this.startHandler == null) {
-				this.startHandler = function() {
-				};
-				this.setHandListener();
-			}
 			if(this.changeHandler == null) {
 				this.changeHandler = function(value) {
 					_g.value = value;
 				};
 				this.setEditorListener();
+				this.setHandListener();
 			}
 		} else if(win != null && !win.closed) this.delay($bind(this,this.loadEditor),200);
 	}
@@ -2569,7 +2565,7 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 	,addQuizzesFieldListener: function(listener) {
 		var _g = this;
 		com.wiris.quizzes.JsInput.prototype.addQuizzesFieldListener.call(this,listener);
-		if($bind(listener,listener.contentChangeStarted)) this.addOnChangeStartHandler(function() {
+		if(listener.contentChangeStarted) this.addOnChangeStartHandler(function() {
 			listener.contentChangeStarted(_g);
 		});
 	}
@@ -4645,9 +4641,16 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 				var i1 = _g1++;
 				if(StringTools.startsWith(variables[i1],name)) {
 					var after = HxOverrides.substr(variables[i1],name.length,null);
-					if(after.length == 0 || qq.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE && com.wiris.util.type.IntegerTools.isInt(after) && Std.parseInt(after) <= qi.getStudentAnswersLength()) {
+					if(after.length == 0 || com.wiris.util.type.IntegerTools.isInt(after) && Std.parseInt(after) <= qi.getStudentAnswersLength()) {
 						variables[i1] = null;
 						n++;
+					} else if(qq.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE) {
+						var qqi = js.Boot.__cast(qi , com.wiris.quizzes.impl.QuestionInstanceImpl);
+						var parts = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(qqi.userData.answers[0]);
+						if(com.wiris.util.type.IntegerTools.isInt(after) && Std.parseInt(after) <= parts.length) {
+							variables[i1] = null;
+							n++;
+						}
 					}
 				}
 			}
@@ -9877,28 +9880,47 @@ com.wiris.quizzes.impl.HTMLTools.casSessionLang = function(value) {
 	return HxOverrides.substr(value,start,2);
 }
 com.wiris.quizzes.impl.HTMLTools.prototype = {
-	getAnswerVariables: function(answers,keyword) {
+	isMathMLString: function(math) {
+		math = StringTools.trim(math);
+		return StringTools.startsWith(math,"<math") && StringTools.endsWith(math,"</math>");
+	}
+	,getAnswerVariables: function(answers,keyword,compound) {
 		var h = new Hash();
 		var i;
-		var _g1 = 0, _g = answers.length;
-		while(_g1 < _g) {
-			var i1 = _g1++;
-			var a = answers[i1];
-			if(!h.exists(a.type)) h.set(a.type,new Hash());
-			h.get(a.type).set(keyword + (i1 + 1),a.content);
+		if(!compound) {
+			var _g1 = 0, _g = answers.length;
+			while(_g1 < _g) {
+				var i1 = _g1++;
+				var a = answers[i1];
+				if(!h.exists(a.type)) h.set(a.type,new Hash());
+				h.get(a.type).set(keyword + (i1 + 1),a.content);
+			}
+			if(answers.length == 1) h.get(answers[0].type).set(keyword,answers[0].content);
+		} else {
+			var answer = answers[0];
+			var a = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(answer);
+			var _g1 = 0, _g = a.length;
+			while(_g1 < _g) {
+				var i1 = _g1++;
+				var s = a[i1][1];
+				var type = this.isMathMLString(s)?com.wiris.quizzes.impl.MathContent.TYPE_MATHML:com.wiris.quizzes.impl.MathContent.TYPE_TEXT;
+				if(!h.exists(type)) h.set(type,new Hash());
+				h.get(type).set(keyword + (i1 + 1),s);
+			}
+			if(!h.exists(answer.type)) h.set(answer.type,new Hash());
+			h.get(answer.type).set(keyword,answer.content);
 		}
-		if(answers.length == 1) h.get(answers[0].type).set(keyword,answers[0].content);
 		return h;
 	}
-	,expandAnswersText: function(text,answers,keyword) {
+	,expandAnswersText: function(text,answers,keyword,compound) {
 		if(answers == null || answers.length == 0 || text.indexOf("#" + keyword) == -1) return text;
-		var h = this.getAnswerVariables(answers,keyword);
+		var h = this.getAnswerVariables(answers,keyword,compound);
 		var textvariables = h.get(com.wiris.quizzes.impl.MathContent.TYPE_TEXT);
 		return this.expandVariablesText(text,textvariables);
 	}
-	,expandAnswers: function(text,answers,keyword) {
+	,expandAnswers: function(text,answers,keyword,compound) {
 		if(answers == null || answers.length == 0 || text.indexOf("#" + keyword) == -1) return text;
-		var h = this.getAnswerVariables(answers,keyword);
+		var h = this.getAnswerVariables(answers,keyword,compound);
 		return this.expandVariables(text,h);
 	}
 	,setItemSeparator: function(sep) {
@@ -12334,6 +12356,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl = $hxClasses["com.wiris.quizzes.impl
 	this.variables = null;
 	this.checks = null;
 	this.subinstances = null;
+	this.compoundChecks = null;
 };
 com.wiris.quizzes.impl.QuestionInstanceImpl.__name__ = ["com","wiris","quizzes","impl","QuestionInstanceImpl"];
 com.wiris.quizzes.impl.QuestionInstanceImpl.__interfaces__ = [com.wiris.quizzes.api.MultipleQuestionInstance];
@@ -12970,7 +12993,10 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		w.name = v.name;
 		return w;
 	}
-	,isCompoundAnswer: function(checks) {
+	,isCompoundAnswer: function() {
+		return this.compoundChecks != null;
+	}
+	,isCompoundAnswerChecks: function(checks) {
 		if(checks != null && checks.length > 0) {
 			var id = checks[0].getCorrectAnswer();
 			if(id.indexOf("c") > -1) return true;
@@ -13073,7 +13099,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 					while(_g3 < _g2) {
 						var j1 = _g3++;
 						var resultChecks = subchecks[j1];
-						if(this.isCompoundAnswer(resultChecks)) {
+						if(this.isCompoundAnswerChecks(resultChecks)) {
 							if(j1 == 0) this.collapseCompoundAnswerChecks(resultChecks); else this.subinstances[j1 - 1].collapseCompoundAnswerChecks(resultChecks);
 						}
 						if(j1 == 0) this.checks = this.checksToHash(resultChecks,this.checks); else this.subinstances[j1 - 1].checks = this.checksToHash(resultChecks,this.subinstances[j1 - 1].checks);
@@ -13139,7 +13165,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 			var textvars = this.variables.get(com.wiris.quizzes.impl.MathContent.TYPE_TEXT);
 			text = h.expandVariablesText(text,textvars);
 		}
-		if(this.userData.answers != null) text = h.expandAnswersText(text,this.userData.answers,this.getAnswerParameterName());
+		if(this.userData.answers != null) text = h.expandAnswersText(text,this.userData.answers,this.getAnswerParameterName(),this.isCompoundAnswer());
 		return text;
 	}
 	,addAllHashElements: function(src,dest) {
@@ -13176,7 +13202,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		var h = new com.wiris.quizzes.impl.HTMLTools();
 		if(com.wiris.quizzes.impl.MathContent.getMathType(equation) == com.wiris.quizzes.impl.MathContent.TYPE_TEXT) equation = h.textToMathML(equation);
 		equation = h.expandVariables(equation,this.variables);
-		equation = h.expandAnswers(equation,this.userData.answers,this.getAnswerParameterName());
+		equation = h.expandAnswers(equation,this.userData.answers,this.getAnswerParameterName(),this.isCompoundAnswer());
 		return equation;
 	}
 	,expandVariables: function(text) {
@@ -13184,7 +13210,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		var h = new com.wiris.quizzes.impl.HTMLTools();
 		h.setItemSeparator(this.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_ITEM_SEPARATOR));
 		text = h.expandVariables(text,this.variables);
-		text = h.expandAnswers(text,this.userData.answers,this.getAnswerParameterName());
+		text = h.expandAnswers(text,this.userData.answers,this.getAnswerParameterName(),this.isCompoundAnswer());
 		return text;
 	}
 	,defaultLocalData: function(name) {
@@ -13239,7 +13265,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		this.userData = s.serializeChildName(this.userData,com.wiris.quizzes.impl.UserData.TAGNAME);
 		this.setChecksCompoundAnswers();
 		var a = s.serializeArrayName(this.hashToChecks(this.checks),"checks");
-		if(this.isCompoundAnswer(a)) this.collapseCompoundAnswerChecks(a);
+		if(this.isCompoundAnswerChecks(a)) this.collapseCompoundAnswerChecks(a);
 		this.checks = this.checksToHash(a,null);
 		this.variables = this.variablesToHash(s.serializeArrayName(this.hashToVariables(this.variables,null),"variables"),null);
 		this.serializeHandConstraints();
@@ -13687,7 +13713,7 @@ com.wiris.quizzes.impl.SubQuestionInstance.prototype = $extend(com.wiris.quizzes
 		this.userData = s.serializeChildName(this.userData,com.wiris.quizzes.impl.UserData.TAGNAME);
 		this.setChecksCompoundAnswers();
 		var a = s.serializeArrayName(this.hashToChecks(this.checks),"checks");
-		if(this.isCompoundAnswer(a)) this.collapseCompoundAnswerChecks(a);
+		if(this.isCompoundAnswerChecks(a)) this.collapseCompoundAnswerChecks(a);
 		this.checks = this.checksToHash(a,null);
 		this.serializeHandConstraints();
 		this.localData = s.serializeArrayName(this.localData,"localData");
