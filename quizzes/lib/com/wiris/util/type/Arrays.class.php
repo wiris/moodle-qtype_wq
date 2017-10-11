@@ -167,7 +167,7 @@ class com_wiris_util_type_Arrays {
 		$i = $lower - 1;
 		$j = $lower;
 		while($j < $higher) {
-			if($comparator->compare($pivot, $elements[$j]) === 1) {
+			if($comparator->compare($pivot, $elements[$j]) > 0) {
 				$i++;
 				if($i !== $j) {
 					$swapper = $elements[$i];
@@ -178,7 +178,7 @@ class com_wiris_util_type_Arrays {
 			}
 			$j++;
 		}
-		if($comparator->compare($elements[$i + 1], $elements[$higher]) === 1) {
+		if($comparator->compare($elements[$i + 1], $elements[$higher]) > 0) {
 			$finalSwap = $elements[$i + 1];
 			$elements[$i + 1] = $elements[$higher];
 			$elements[$higher] = $finalSwap;
