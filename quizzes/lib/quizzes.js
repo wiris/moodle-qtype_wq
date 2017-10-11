@@ -19329,6 +19329,7 @@ com.wiris.util.xml.WCharacterBase.ROOT_NO_TAIL = 61728;
 com.wiris.util.xml.WCharacterBase.ROOT_NO_TAIL_VERTICAL = 61759;
 com.wiris.util.xml.WCharacterBase.ROOT_LEFT_TAIL = 61760;
 com.wiris.util.xml.WCharacterBase.ROOT_VERTICAL_LINE = 61761;
+com.wiris.util.xml.WCharacterBase.LINE_FEED = 10;
 com.wiris.util.xml.WCharacterBase.ROUND_BRACKET_LEFT = 40;
 com.wiris.util.xml.WCharacterBase.ROUND_BRACKET_RIGHT = 41;
 com.wiris.util.xml.WCharacterBase.COMMA = 44;
