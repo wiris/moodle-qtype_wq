@@ -6638,7 +6638,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 			this.tabs.addTab(this.t("preview"),content,this.t("testtabhelp"));
 		}
 		var useCalc = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED).toLowerCase();
-		if(useCalc == "true") {
+		if(this.htmlguiconf.tabVariables && useCalc == "true") {
 			var calcUrl = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CALC_URL) + "/wiriscalc";
 			com.wiris.quizzes.JsDomUtils.addScript(d,win,calcUrl);
 		}
@@ -19214,8 +19214,8 @@ com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS = "quizzes.lockprovi
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_LOCKPROVIDER_CLASS = "";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRIS_URL = "http://www.wiris.net/demo/wiris";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRISLAUNCHER_URL = "http://stateful.wiris.net/demo/wiris";
-com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_URL = "https://calcme.com";
-com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED = "false";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_URL = "http://hudson.wiris.info:8080/calc";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED = "true";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_EDITOR_URL = "http://www.wiris.net/demo/editor";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_URL = "http://www.wiris.net/demo/hand";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_URL = "http://www.wiris.net/demo/quizzes";
