@@ -372,24 +372,29 @@ div.wiristabs ul.wirisactionslist li a:hover {
     background-color: #fff;
 }
 
-div.wiristabs div.wirisjnlp {
-	position: absolute;
-	top: 0;
-	bottom: 0;
+div.wirisjnlp div.wiriscalclauncher {
+	margin-top: 15px;
+    margin-bottom: 15px;
+    margin-right: 20px;
+    margin-left: 20px;
 }
 
-div.wirisjnlp {
+div.wiriscaswrapper {
     border: solid 1px #999;
     border-radius: 8px;
-    padding: 20px 15px;
+	padding: 20px 15px
 }
-div.wiristabs div.wirisjnlp {
+div.wiristabs div.wirisjnlp div.wiriscalclauncher {
 	overflow: auto;
 }
 
 div.wirisjnlptext {
 	margin-bottom: 10px;
 	font-size: 10pt;	
+}
+
+div.wiriscalclaunchertext {
+	font-size: 10pt;
 }
 div.wirisjnlpform {
 	margin-bottom: 10px;
@@ -855,6 +860,11 @@ div.wirisembeddedstudio div.wiristabs {
 	display: inline-block;
 }
 
+a.wirisrevealcalclauncher {
+	text-decoration: underline;
+	cursor: pointer;
+	color: -webkit-link;
+}
 
 /***
 Some CSS specially for moodle 2 standard theme.

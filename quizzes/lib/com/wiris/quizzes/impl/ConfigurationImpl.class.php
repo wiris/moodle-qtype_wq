@@ -171,7 +171,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_WIRIS_URL = "http://www.wiris.net/demo/wiris";
 	static $DEF_WIRISLAUNCHER_URL = "http://stateful.wiris.net/demo/wiris";
 	static $DEF_CALC_URL = "http://hudson.wiris.info:8080/calc";
-	static $DEF_CALC_ENABLED = "true";
+	static $DEF_CALC_ENABLED = "false";
 	static $DEF_EDITOR_URL = "http://www.wiris.net/demo/editor";
 	static $DEF_HAND_URL = "http://www.wiris.net/demo/hand";
 	static $DEF_SERVICE_URL = "http://www.wiris.net/demo/quizzes";

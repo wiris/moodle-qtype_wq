@@ -1936,14 +1936,16 @@ com.wiris.quizzes.JsImageButton.prototype = $extend(com.wiris.quizzes.JsButton.p
 	,enabled: null
 	,__class__: com.wiris.quizzes.JsImageButton
 });
-com.wiris.quizzes.JsCasInput = $hxClasses["com.wiris.quizzes.JsCasInput"] = function(d,v,library,delayload,languageLabel,buttonText,helpText) {
+com.wiris.quizzes.JsCasInput = $hxClasses["com.wiris.quizzes.JsCasInput"] = function(d,v,library,delayload,languageLabel,buttonText,helpText,useCalc) {
 	var _g = this;
 	com.wiris.quizzes.JsInput.call(this,d,v);
 	if(library == null) library = false;
 	if(delayload == null) delayload = false;
+	if(useCalc == null) useCalc = false;
 	if(languageLabel == null) languageLabel = this.t("calculatorlanguage");
 	this.buttonText = buttonText;
 	this.helpText = helpText;
+	this.useCalc = useCalc;
 	this.library = library;
 	this.listenChanges = false;
 	this.caslang = this.getSessionLang();
@@ -2062,9 +2064,15 @@ com.wiris.quizzes.JsCasInput.prototype = $extend(com.wiris.quizzes.JsInput.proto
 	}
 	,init: function() {
 		if(this.applet == null && this.casJnlpLauncher == null) this.buildCasApplet(this.getOwnerDocument());
+		if(this.useCalc) {
+			this.calcLauncher = new com.wiris.quizzes.JsCalcLauncher(this.getOwnerDocument(),this.value,null,null,"Once the algorithm is edited with WIRIS CALC, it can't go back to the classic Java WIRIS CAS.",true);
+			this.appletWrapper.appendChild(this.calcLauncher.element);
+		}
 	}
 	,helpText: null
 	,buttonText: null
+	,useCalc: null
+	,calcLauncher: null
 	,casJnlpLauncher: null
 	,listenChanges: null
 	,library: null
@@ -2190,7 +2198,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1575, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1584, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2324,6 +2332,47 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 	,lang: null
 	,serviceURL: null
 	,__class__: com.wiris.quizzes.JsCasJnlpLauncher
+});
+com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"] = function(d,v,text,buttonText,warningText,hide) {
+	com.wiris.quizzes.JsInput.call(this,d,v);
+	if(text == null) text = "Use the new WIRIS CALC app to edit the question algorithm. WIRIS CALC is 100% JavaScript and it doesn't need Java.";
+	if(buttonText == null) buttonText = "Edit algorithm with WIRIS CALC";
+	if(hide == null) hide = false;
+	this.element = d.createElement("div");
+	com.wiris.quizzes.JsDomUtils.addClass(this.element,"wiriscalclauncher");
+	var launchDiv = d.createElement("div");
+	var textDiv = d.createElement("div");
+	com.wiris.quizzes.JsDomUtils.addClass(textDiv,"wiriscalclaunchertext");
+	var p1 = d.createElement("p");
+	p1.innerHTML = text;
+	textDiv.appendChild(p1);
+	if(warningText != null && warningText.length > 0) {
+		var p2 = d.createElement("p");
+		p2.innerHTML = "<span style=\"font-weight:bold\">Warning:</span> " + warningText;
+		textDiv.appendChild(p2);
+	}
+	launchDiv.appendChild(textDiv);
+	var buttonLaunch = new com.wiris.quizzes.JsButton(d,buttonText);
+	buttonLaunch.setOnClick($bind(this,this.launch));
+	launchDiv.appendChild(buttonLaunch.element);
+	if(hide) {
+		com.wiris.quizzes.JsDomUtils.addClass(launchDiv,"wirishidden");
+		var revealEl = d.createElement("a");
+		com.wiris.quizzes.JsDomUtils.addClass(revealEl,"wirisrevealcalclauncher");
+		revealEl.innerHTML = "Try WIRIS CALC";
+		com.wiris.quizzes.JsDomUtils.addEvent(revealEl,"click",function(e) {
+			com.wiris.quizzes.JsDomUtils.removeClass(launchDiv,"wirishidden");
+		});
+		this.element.appendChild(revealEl);
+	}
+	this.element.appendChild(launchDiv);
+};
+com.wiris.quizzes.JsCalcLauncher.__name__ = ["com","wiris","quizzes","JsCalcLauncher"];
+com.wiris.quizzes.JsCalcLauncher.__super__ = com.wiris.quizzes.JsInput;
+com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
+	launch: function(e) {
+	}
+	,__class__: com.wiris.quizzes.JsCalcLauncher
 });
 com.wiris.quizzes.JsLabel = $hxClasses["com.wiris.quizzes.JsLabel"] = function(d,text,input,className) {
 	com.wiris.quizzes.JsComponent.call(this,d);
@@ -5612,7 +5661,8 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 				controller[0].updateInterface = (function(controller,elem) {
 					return function(value) {
 						if(com.wiris.quizzes.JsDomUtils.hasClass(elem[0],"wirisjscomponent")) {
-							var input = new com.wiris.quizzes.JsCasInput(elem[0].ownerDocument,value,true,true,_g1.t("algorithmlanguage"),_g1.t("launchwiriscas"),_g1.t("clicktoeditalgorithm"));
+							var useCalc = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED).toLowerCase() == "true";
+							var input = new com.wiris.quizzes.JsCasInput(elem[0].ownerDocument,value,true,true,_g1.t("algorithmlanguage"),_g1.t("launchwiriscas"),_g1.t("clicktoeditalgorithm"),useCalc);
 							elem[0].parentNode.replaceChild(input.element,elem[0]);
 							controller[0].jsInput = input;
 							n = elements.length;
@@ -9891,6 +9941,20 @@ com.wiris.quizzes.impl.HTMLTools.casSessionLang = function(value) {
 	if(start == -1 || start > end) return null;
 	start = value.indexOf("\"",start) + 1;
 	return HxOverrides.substr(value,start,2);
+}
+com.wiris.quizzes.impl.HTMLTools.isCalc = function(session) {
+	var i = session.indexOf("<wiriscalc");
+	if(i > -1) return true;
+	var start = session.indexOf("<session");
+	var end = session.indexOf(">",start);
+	start = session.indexOf("version",start);
+	if(start > end) return false;
+	start = session.indexOf("\"",start);
+	end = session.indexOf("\"",start + 1);
+	var version = HxOverrides.substr(session,start + 1,end - start - 1);
+	version = HxOverrides.substr(version,0,version.indexOf("."));
+	var num = Std.parseInt(version);
+	return num >= 3;
 }
 com.wiris.quizzes.impl.HTMLTools.prototype = {
 	isMathMLString: function(math) {
@@ -19215,7 +19279,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.DEF_LOCKPROVIDER_CLASS = "";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRIS_URL = "http://www.wiris.net/demo/wiris";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRISLAUNCHER_URL = "http://stateful.wiris.net/demo/wiris";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_URL = "http://hudson.wiris.info:8080/calc";
-com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED = "true";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED = "false";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_EDITOR_URL = "http://www.wiris.net/demo/editor";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_URL = "http://www.wiris.net/demo/hand";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_URL = "http://www.wiris.net/demo/quizzes";
