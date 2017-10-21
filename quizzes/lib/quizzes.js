@@ -15487,6 +15487,12 @@ com.wiris.util.type.Arrays.partition = function(elements,lower,higher,comparator
 	}
 	return i + 1;
 }
+com.wiris.util.type.Arrays.firstElement = function(elements) {
+	return elements[0];
+}
+com.wiris.util.type.Arrays.lastElement = function(elements) {
+	return elements[elements.length - 1];
+}
 com.wiris.util.type.Arrays.prototype = {
 	__class__: com.wiris.util.type.Arrays
 }
