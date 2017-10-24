@@ -384,7 +384,7 @@ div.wiriscaswrapper {
     border-radius: 8px;
 	padding: 20px 15px
 }
-div.wiristabs div.wirisjnlp div.wiriscalclauncher {
+div.wiristabs div.wiriscaswrapper {
 	overflow: auto;
 }
 
@@ -864,6 +864,24 @@ a.wirisrevealcalclauncher {
 	text-decoration: underline;
 	cursor: pointer;
 	color: -webkit-link;
+}
+
+div.wiriscalcquizzescontainer {
+	position: absolute;
+    bottom: 0;
+    top: 50px;
+    width: 100%;
+	background: url('loading.gif') no-repeat center center;
+}
+
+div.wiriscalcquizzestitle {
+	background-color: #e0e0e0;
+	top: 0;
+	height: 50px;
+	position: absolute;
+	width: 100%;
+	font-weight: bold;
+	font-size: 15;
 }
 
 /***

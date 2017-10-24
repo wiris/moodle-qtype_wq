@@ -1739,6 +1739,21 @@ class com_wiris_quizzes_impl_HTMLTools {
 		$num = Std::parseInt($version);
 		return $num >= 3;
 	}
+	static function calcSessionLang($value) {
+		$lang = com_wiris_quizzes_impl_HTMLTools::casSessionLang($value);
+		if($lang === null) {
+			$start = _hx_index_of($value, "<properties", null);
+			$end = _hx_index_of($value, "</properties>", $start);
+			$start = _hx_index_of($value, "<property name=\"lang\"", $start);
+			if($end >= $start) {
+				return null;
+			}
+			$start = _hx_index_of($value, ">", $start) + 1;
+			$end = _hx_index_of($value, "</property>", $start);
+			$lang = _hx_substr($value, $start, $end - $start);
+		}
+		return $lang;
+	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLTools'; }
 }
 function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer, &$answers, &$compound, &$h, &$i, &$i1, &$keyword, &$s) {

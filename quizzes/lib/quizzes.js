@@ -1939,6 +1939,7 @@ com.wiris.quizzes.JsImageButton.prototype = $extend(com.wiris.quizzes.JsButton.p
 com.wiris.quizzes.JsCasInput = $hxClasses["com.wiris.quizzes.JsCasInput"] = function(d,v,library,delayload,languageLabel,buttonText,helpText,useCalc) {
 	var _g = this;
 	com.wiris.quizzes.JsInput.call(this,d,v);
+	this.useCas = true;
 	if(library == null) library = false;
 	if(delayload == null) delayload = false;
 	if(useCalc == null) useCalc = false;
@@ -1946,6 +1947,7 @@ com.wiris.quizzes.JsCasInput = $hxClasses["com.wiris.quizzes.JsCasInput"] = func
 	this.buttonText = buttonText;
 	this.helpText = helpText;
 	this.useCalc = useCalc;
+	if(this.useCalc && this.isSessionCalc()) this.useCas = false;
 	this.library = library;
 	this.listenChanges = false;
 	this.caslang = this.getSessionLang();
@@ -1969,7 +1971,7 @@ com.wiris.quizzes.JsCasInput = $hxClasses["com.wiris.quizzes.JsCasInput"] = func
 	langChooserWrapper.addChild(this.langChooser);
 	this.element.appendChild(langChooserWrapper.element);
 	this.setValue(v);
-	if(!delayload) this.buildCasApplet(d);
+	if(this.useCas && !delayload) this.buildCasApplet(d);
 	com.wiris.quizzes.JsDomUtils.addEvent(this.getOwnerWindow(),"unload",function(e) {
 		if(_g.casJnlpLauncher != null) _g.casJnlpLauncher.stop();
 		_g.listenChanges = false;
@@ -1978,7 +1980,11 @@ com.wiris.quizzes.JsCasInput = $hxClasses["com.wiris.quizzes.JsCasInput"] = func
 com.wiris.quizzes.JsCasInput.__name__ = ["com","wiris","quizzes","JsCasInput"];
 com.wiris.quizzes.JsCasInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsCasInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
-	pollChanges: function() {
+	isSessionCalc: function() {
+		if(this.value == null) return false;
+		return com.wiris.quizzes.impl.HTMLTools.isCalc(this.value);
+	}
+	,pollChanges: function() {
 		var newValue = this.input.value;
 		if(newValue != this.value) {
 			this.value = newValue;
@@ -2008,7 +2014,9 @@ com.wiris.quizzes.JsCasInput.prototype = $extend(com.wiris.quizzes.JsInput.proto
 	}
 	,getSessionLang: function() {
 		var caslang = null;
-		if(this.value != null) caslang = com.wiris.quizzes.impl.HTMLTools.casSessionLang(this.value);
+		if(this.value != null) {
+			if(this.useCalc && this.isSessionCalc()) caslang = com.wiris.quizzes.impl.HTMLTools.calcSessionLang(this.value); else caslang = com.wiris.quizzes.impl.HTMLTools.casSessionLang(this.value);
+		}
 		if(caslang == null) {
 			var caslangs = this.getCasLangs();
 			var i;
@@ -2040,37 +2048,61 @@ com.wiris.quizzes.JsCasInput.prototype = $extend(com.wiris.quizzes.JsInput.proto
 		var newlang = this.langChooser.getValue();
 		if(newlang != this.caslang) {
 			this.caslang = newlang;
-			this.getValue();
-			if(!this.isEmpty()) {
-				var builder = com.wiris.quizzes.api.QuizzesBuilder.getInstance();
-				var question = builder.newQuestion();
-				question.wirisCasSession = this.getValue();
-				var req = builder.newTranslationRequest(question,this.caslang);
-				try {
-					var service = builder.getQuizzesService();
-					question.update(service.execute(req));
-					this.setValue(question.wirisCasSession);
-				} catch( e1 ) {
-					js.Lib.alert(e1);
-				}
-			} else this.setValue("");
-			this.applet = null;
-			if(this.casJnlpLauncher != null) {
-				this.casJnlpLauncher.setLanguage(this.caslang);
-				this.casJnlpLauncher.setValue(this.getValue());
-				this.casJnlpLauncher.updateSessionImage();
-			} else this.buildCasApplet(this.getOwnerDocument());
+			if(this.useCas) {
+				this.getValue();
+				if(!this.isEmpty()) {
+					var builder = com.wiris.quizzes.api.QuizzesBuilder.getInstance();
+					var question = builder.newQuestion();
+					question.wirisCasSession = this.getValue();
+					var req = builder.newTranslationRequest(question,this.caslang);
+					try {
+						var service = builder.getQuizzesService();
+						question.update(service.execute(req));
+						this.setValue(question.wirisCasSession);
+					} catch( e1 ) {
+						js.Lib.alert(e1);
+					}
+				} else this.setValue("");
+				this.applet = null;
+				if(this.casJnlpLauncher != null) {
+					this.casJnlpLauncher.setLanguage(this.caslang);
+					this.casJnlpLauncher.setValue(this.getValue());
+					this.casJnlpLauncher.updateSessionImage();
+				} else this.buildCasApplet(this.getOwnerDocument());
+			}
+		}
+	}
+	,disableCas: function() {
+		if(this.useCas && this.useCalc && this.isSessionCalc()) {
+			if(this.casJnlpLauncher != null) this.casJnlpLauncher.stop();
+			this.listenChanges = false;
+			var casLauncherElem = this.casJnlpLauncher.getElement();
+			com.wiris.quizzes.JsDomUtils.addClass(casLauncherElem,"wirishidden");
+			this.calcLauncher.hideRevealAndWarning();
 		}
 	}
 	,init: function() {
-		if(this.applet == null && this.casJnlpLauncher == null) this.buildCasApplet(this.getOwnerDocument());
-		if(this.useCalc) {
-			this.calcLauncher = new com.wiris.quizzes.JsCalcLauncher(this.getOwnerDocument(),this.value,null,null,"Once the algorithm is edited with WIRIS CALC, it can't go back to the classic Java WIRIS CAS.",true);
+		var _g = this;
+		if(this.useCas && this.applet == null && this.casJnlpLauncher == null) this.buildCasApplet(this.getOwnerDocument());
+		if(this.useCalc && this.calcLauncher == null) {
+			var warningMessage = null;
+			if(this.useCas) {
+				var warningMessage1 = "Once the algorithm is edited with WIRIS CALC, it can't go back to the classic Java WIRIS CAS.";
+			}
+			this.calcLauncher = new com.wiris.quizzes.JsCalcLauncher(this.getOwnerDocument(),this.value,null,null,warningMessage,this.useCas,this.caslang);
 			this.appletWrapper.appendChild(this.calcLauncher.element);
+			this.calcLauncher.setOnLaunch(function() {
+				_g.calcLauncher.setValue(_g.getValue());
+			});
+			this.calcLauncher.addOnCloseHandler(function() {
+				_g.setValue(_g.calcLauncher.getValue());
+				_g.disableCas();
+			});
 		}
 	}
 	,helpText: null
 	,buttonText: null
+	,useCas: null
 	,useCalc: null
 	,calcLauncher: null
 	,casJnlpLauncher: null
@@ -2198,7 +2230,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1584, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1632, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2333,11 +2365,12 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 	,serviceURL: null
 	,__class__: com.wiris.quizzes.JsCasJnlpLauncher
 });
-com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"] = function(d,v,text,buttonText,warningText,hide) {
+com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"] = function(d,v,text,buttonText,warningText,hide,lang) {
 	com.wiris.quizzes.JsInput.call(this,d,v);
 	if(text == null) text = "Use the new WIRIS CALC app to edit the question algorithm. WIRIS CALC is 100% JavaScript and it doesn't need Java.";
 	if(buttonText == null) buttonText = "Edit algorithm with WIRIS CALC";
 	if(hide == null) hide = false;
+	this.lang = lang;
 	this.element = d.createElement("div");
 	com.wiris.quizzes.JsDomUtils.addClass(this.element,"wiriscalclauncher");
 	var launchDiv = d.createElement("div");
@@ -2347,9 +2380,9 @@ com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"
 	p1.innerHTML = text;
 	textDiv.appendChild(p1);
 	if(warningText != null && warningText.length > 0) {
-		var p2 = d.createElement("p");
-		p2.innerHTML = "<span style=\"font-weight:bold\">Warning:</span> " + warningText;
-		textDiv.appendChild(p2);
+		this.warningContainer = d.createElement("p");
+		this.warningContainer.innerHTML = "<span style=\"font-weight:bold\">Warning:</span> " + warningText;
+		textDiv.appendChild(this.warningContainer);
 	}
 	launchDiv.appendChild(textDiv);
 	var buttonLaunch = new com.wiris.quizzes.JsButton(d,buttonText);
@@ -2357,21 +2390,105 @@ com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"
 	launchDiv.appendChild(buttonLaunch.element);
 	if(hide) {
 		com.wiris.quizzes.JsDomUtils.addClass(launchDiv,"wirishidden");
-		var revealEl = d.createElement("a");
-		com.wiris.quizzes.JsDomUtils.addClass(revealEl,"wirisrevealcalclauncher");
-		revealEl.innerHTML = "Try WIRIS CALC";
-		com.wiris.quizzes.JsDomUtils.addEvent(revealEl,"click",function(e) {
+		this.revealElement = d.createElement("a");
+		com.wiris.quizzes.JsDomUtils.addClass(this.revealElement,"wirisrevealcalclauncher");
+		this.revealElement.innerHTML = "Try WIRIS CALC";
+		com.wiris.quizzes.JsDomUtils.addEvent(this.revealElement,"click",function(e) {
 			com.wiris.quizzes.JsDomUtils.removeClass(launchDiv,"wirishidden");
 		});
-		this.element.appendChild(revealEl);
+		this.element.appendChild(this.revealElement);
 	}
 	this.element.appendChild(launchDiv);
 };
 com.wiris.quizzes.JsCalcLauncher.__name__ = ["com","wiris","quizzes","JsCalcLauncher"];
 com.wiris.quizzes.JsCalcLauncher.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
-	launch: function(e) {
+	addOnCloseHandler: function(handler) {
+		var _g = this;
+		if(this.onClose == null) this.onClose = handler; else this.onClose = (function() {
+			var originOnClose = _g.onClose;
+			if(originOnClose == null) return handler;
+			return function() {
+				handler();
+				originOnClose();
+			};
+		})();
 	}
+	,setOnLaunch: function(handler) {
+		this.onLaunch = handler;
+	}
+	,getSessionLang: function() {
+		if(this.value == null) return "en";
+		if(com.wiris.quizzes.impl.HTMLTools.isCalc(this.value)) return com.wiris.quizzes.impl.HTMLTools.calcSessionLang(this.value); else return com.wiris.quizzes.impl.HTMLTools.casSessionLang(this.value);
+	}
+	,setLanguage: function(lang) {
+		this.lang = lang;
+	}
+	,closeCalc: function(e) {
+		var doc = this.getOwnerDocument();
+		doc.body.removeChild(this.calcContainer.element);
+		var container = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wiriscontainer",null,doc)[0];
+		com.wiris.quizzes.JsDomUtils.removeClass(container,"wirishidden");
+		this.calcContainer.destroy();
+		if(this.warningContainer != null) com.wiris.quizzes.JsDomUtils.addClass(this.warningContainer,"wirishidden");
+		this.onClose();
+	}
+	,launch: function(e) {
+		var _g = this;
+		if(this.onLaunch != null) this.onLaunch();
+		this.createContainer();
+		var win = this.getOwnerWindow();
+		if(this.calcDiv != null && this.isCalcScriptLoaded()) {
+			if(this.lang == null) this.lang = this.getSessionLang();
+			var l = this.lang;
+			var calc = null;
+			calc = new win.com.wiris.js.JsCalc({'lang': l});
+			if(calc != null) {
+				calc.insertInto(this.calcDiv);
+				calc.onIsReady(function() {
+					calc.setContent(_g.value);
+					calc.action("commandIfNeeded");
+				});
+			}
+			this.addOnCloseHandler(function() {
+				calc.setNeedsSave(false);
+				_g.setValue(calc.getContent());
+			});
+		}
+	}
+	,isCalcScriptLoaded: function() {
+		var win = this.getOwnerWindow();
+		return win.com != null && win.com.wiris != null && win.com.wiris.js != null && win.com.wiris.js.JsCalc != null;
+	}
+	,hideRevealAndWarning: function() {
+		if(this.revealElement != null) com.wiris.quizzes.JsDomUtils.addClass(this.revealElement,"wirishidden");
+		if(this.warningContainer != null) com.wiris.quizzes.JsDomUtils.addClass(this.warningContainer,"wirishidden");
+	}
+	,createContainer: function() {
+		var doc = this.getOwnerDocument();
+		this.calcContainer = new com.wiris.quizzes.JsContainer(doc);
+		this.calcDiv = doc.createElement("div");
+		var title = doc.createElement("div");
+		com.wiris.quizzes.JsDomUtils.addClass(title,"wiriscalcquizzestitle");
+		com.wiris.quizzes.JsDomUtils.addClass(this.calcDiv,"wiriscalcquizzescontainer");
+		var back = new com.wiris.quizzes.JsButton(doc,"Back");
+		back.setOnClick($bind(this,this.closeCalc));
+		title.appendChild(back.element);
+		title.appendChild(doc.createTextNode("Define random variables and functions"));
+		this.calcContainer.element.appendChild(title);
+		this.calcContainer.element.appendChild(this.calcDiv);
+		var container = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wiriscontainer",null,doc)[0];
+		var myContainer = new com.wiris.quizzes.JsContainer(doc);
+		com.wiris.quizzes.JsDomUtils.addClass(container,"wirishidden");
+		doc.body.appendChild(this.calcContainer.element);
+	}
+	,onLaunch: null
+	,onClose: null
+	,lang: null
+	,revealElement: null
+	,warningContainer: null
+	,calcContainer: null
+	,calcDiv: null
 	,__class__: com.wiris.quizzes.JsCalcLauncher
 });
 com.wiris.quizzes.JsLabel = $hxClasses["com.wiris.quizzes.JsLabel"] = function(d,text,input,className) {
@@ -9956,6 +10073,19 @@ com.wiris.quizzes.impl.HTMLTools.isCalc = function(session) {
 	var num = Std.parseInt(version);
 	return num >= 3;
 }
+com.wiris.quizzes.impl.HTMLTools.calcSessionLang = function(value) {
+	var lang = com.wiris.quizzes.impl.HTMLTools.casSessionLang(value);
+	if(lang == null) {
+		var start = value.indexOf("<properties");
+		var end = value.indexOf("</properties>",start);
+		start = value.indexOf("<property name=\"lang\"",start);
+		if(end >= start) return null;
+		start = value.indexOf(">",start) + 1;
+		end = value.indexOf("</property>",start);
+		lang = HxOverrides.substr(value,start,end - start);
+	}
+	return lang;
+}
 com.wiris.quizzes.impl.HTMLTools.prototype = {
 	isMathMLString: function(math) {
 		math = StringTools.trim(math);
@@ -11597,6 +11727,7 @@ com.wiris.quizzes.impl.QuizzesServiceImpl.prototype = {
 		var http;
 		var httpl = new com.wiris.quizzes.impl.HttpToQuizzesListener(listener,mqr,this,async);
 		var config = com.wiris.quizzes.impl.QuizzesBuilderImpl.getInstance().getConfiguration();
+		var isJS = com.wiris.settings.PlatformSettings.IS_JAVASCRIPT;
 		var clientSide = com.wiris.settings.PlatformSettings.IS_JAVASCRIPT || com.wiris.settings.PlatformSettings.IS_FLASH;
 		var allowCors = clientSide && "true" == config.get(com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED);
 		if(clientSide && !allowCors) {
@@ -11610,7 +11741,7 @@ com.wiris.quizzes.impl.QuizzesServiceImpl.prototype = {
 			var url = this.getServiceUrl();
 			if(clientSide) http = new com.wiris.quizzes.impl.HttpImpl(url,httpl); else http = new com.wiris.quizzes.impl.MaxConnectionsHttpImpl(url,httpl);
 			http.setHeader("Content-Type","text/xml; charset=UTF-8");
-			http.setHeader("Referer",config.get(com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL));
+			if(!isJS) http.setHeader("Referer",config.get(com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL));
 			http.setPostData(postData);
 		}
 		http.setAsync(async);
