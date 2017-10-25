@@ -393,7 +393,7 @@ div.wirisjnlptext {
 	font-size: 10pt;	
 }
 
-div.wiriscalclaunchertext {
+.wiriscalclaunchertext {
 	font-size: 10pt;
 }
 div.wirisjnlpform {
@@ -869,7 +869,7 @@ a.wirisrevealcalclauncher {
 div.wiriscalcquizzescontainer {
 	position: absolute;
     bottom: 0;
-    top: 50px;
+    top: 30px;
     width: 100%;
 	background: url('loading.gif') no-repeat center center;
 }
@@ -877,11 +877,10 @@ div.wiriscalcquizzescontainer {
 div.wiriscalcquizzestitle {
 	background-color: #e0e0e0;
 	top: 0;
-	height: 50px;
+	height: 30px;
 	position: absolute;
 	width: 100%;
-	font-weight: bold;
-	font-size: 15;
+	font-size: 22px;
 }
 
 /***
