@@ -37,6 +37,7 @@ class com_wiris_quizzes_impl_QuizzesServiceImpl implements com_wiris_quizzes_api
 		$http = null;
 		$httpl = new com_wiris_quizzes_impl_HttpToQuizzesListener($listener, $mqr, $this, $async);
 		$config = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration();
+		$isJS = com_wiris_settings_PlatformSettings::$IS_JAVASCRIPT;
 		$clientSide = com_wiris_settings_PlatformSettings::$IS_JAVASCRIPT || com_wiris_settings_PlatformSettings::$IS_FLASH;
 		$allowCors = $clientSide && "true" === $config->get(com_wiris_quizzes_api_ConfigurationKeys::$CROSSORIGINCALLS_ENABLED);
 		if($clientSide && !$allowCors) {
@@ -54,7 +55,9 @@ class com_wiris_quizzes_impl_QuizzesServiceImpl implements com_wiris_quizzes_api
 				$http = new com_wiris_quizzes_impl_MaxConnectionsHttpImpl($url, $httpl);
 			}
 			$http->setHeader("Content-Type", "text/xml; charset=UTF-8");
-			$http->setHeader("Referer", $config->get(com_wiris_quizzes_api_ConfigurationKeys::$REFERER_URL));
+			if(!$isJS) {
+				$http->setHeader("Referer", $config->get(com_wiris_quizzes_api_ConfigurationKeys::$REFERER_URL));
+			}
 			$http->setPostData($postData);
 		}
 		$http->setAsync($async);

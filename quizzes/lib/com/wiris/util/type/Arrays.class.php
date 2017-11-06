@@ -185,5 +185,11 @@ class com_wiris_util_type_Arrays {
 		}
 		return $i + 1;
 	}
+	static function firstElement($elements) {
+		return $elements[0];
+	}
+	static function lastElement($elements) {
+		return $elements[$elements->length - 1];
+	}
 	function __toString() { return 'com.wiris.util.type.Arrays'; }
 }

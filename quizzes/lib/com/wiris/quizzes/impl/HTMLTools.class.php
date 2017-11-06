@@ -1721,6 +1721,39 @@ class com_wiris_quizzes_impl_HTMLTools {
 		$start = _hx_index_of($value, "\"", $start) + 1;
 		return _hx_substr($value, $start, 2);
 	}
+	static function isCalc($session) {
+		$i = _hx_index_of($session, "<wiriscalc", null);
+		if($i > -1) {
+			return true;
+		}
+		$start = _hx_index_of($session, "<session", null);
+		$end = _hx_index_of($session, ">", $start);
+		$start = _hx_index_of($session, "version", $start);
+		if($start > $end) {
+			return false;
+		}
+		$start = _hx_index_of($session, "\"", $start);
+		$end = _hx_index_of($session, "\"", $start + 1);
+		$version = _hx_substr($session, $start + 1, $end - $start - 1);
+		$version = _hx_substr($version, 0, _hx_index_of($version, ".", null));
+		$num = Std::parseInt($version);
+		return $num >= 3;
+	}
+	static function calcSessionLang($value) {
+		$lang = com_wiris_quizzes_impl_HTMLTools::casSessionLang($value);
+		if($lang === null) {
+			$start = _hx_index_of($value, "<properties", null);
+			$end = _hx_index_of($value, "</properties>", $start);
+			$start = _hx_index_of($value, "<property name=\"lang\"", $start);
+			if($end >= $start) {
+				return null;
+			}
+			$start = _hx_index_of($value, ">", $start) + 1;
+			$end = _hx_index_of($value, "</property>", $start);
+			$lang = _hx_substr($value, $start, $end - $start);
+		}
+		return $lang;
+	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLTools'; }
 }
 function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer, &$answers, &$compound, &$h, &$i, &$i1, &$keyword, &$s) {
