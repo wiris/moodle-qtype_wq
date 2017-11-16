@@ -4454,6 +4454,7 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 		s.register(new com.wiris.quizzes.impl.TranslationNameChange());
 		s.register(new com.wiris.quizzes.impl.UserData());
 		s.register(new com.wiris.quizzes.impl.Variable());
+		s.register(new com.wiris.quizzes.impl.Parameter());
 		return s;
 	}
 	,removeHandAnnotations: function(mathml) {
@@ -19370,6 +19371,7 @@ com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_TEXT = "textField";
 com.wiris.quizzes.api.QuizzesConstants.META_PROPERTY_REFERER = "referer";
 com.wiris.quizzes.api.QuizzesConstants.META_PROPERTY_QUESTION = "question";
 com.wiris.quizzes.api.QuizzesConstants.META_PROPERTY_USER = "userref";
+com.wiris.quizzes.api.QuizzesConstants.PARAMETER_USER_ID = "user_id";
 com.wiris.quizzes.api.ui.QuizzesUIConstants.TEXT_FIELD = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_TEXT;
 com.wiris.quizzes.api.ui.QuizzesUIConstants.INLINE_EDITOR = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_INLINE_EDITOR;
 com.wiris.quizzes.api.ui.QuizzesUIConstants.POPUP_EDITOR = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_POPUP_EDITOR;

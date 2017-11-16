@@ -124,6 +124,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$s->register(new com_wiris_quizzes_impl_TranslationNameChange());
 		$s->register(new com_wiris_quizzes_impl_UserData());
 		$s->register(new com_wiris_quizzes_impl_Variable());
+		$s->register(new com_wiris_quizzes_impl_Parameter());
 		return $s;
 	}
 	public function removeHandAnnotations($mathml) {

@@ -22,5 +22,6 @@ class com_wiris_quizzes_api_QuizzesConstants {
 	static $META_PROPERTY_REFERER = "referer";
 	static $META_PROPERTY_QUESTION = "question";
 	static $META_PROPERTY_USER = "userref";
+	static $PARAMETER_USER_ID = "user_id";
 	function __toString() { return 'com.wiris.quizzes.api.QuizzesConstants'; }
 }
