@@ -202,6 +202,21 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			throw new HException("Invalid type parameter.");
 		}
 	}
+	public function changeAssertionParamName($a, $oldname, $newname) {
+		if($a->parameters !== null) {
+			$j = null;
+			{
+				$_g1 = 0; $_g = $a->parameters->length;
+				while($_g1 < $_g) {
+					$j1 = $_g1++;
+					if(_hx_array_get($a->parameters, $j1)->name === $oldname) {
+						_hx_array_get($a->parameters, $j1)->name = $newname;
+					}
+					unset($j1);
+				}
+			}
+		}
+	}
 	public function importDeprecated() {
 		if($this->assertions !== null) {
 			$i = null;
@@ -219,6 +234,16 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 						$a->name = com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC;
 						$a->setParam(com_wiris_quizzes_impl_Assertion::$PARAM_NO_BRACKETS_LIST, "true");
 					}
+					if($a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS) {
+						$a->name = com_wiris_quizzes_impl_Assertion::$CHECK_PRECISION;
+						$this->changeAssertionParamName($a, "digits", "max");
+						$a->setParam("relative", "false");
+					}
+					if($a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS) {
+						$a->name = com_wiris_quizzes_impl_Assertion::$CHECK_PRECISION;
+						$this->changeAssertionParamName($a, "digits", "max");
+						$a->setParam("relative", "true");
+					}
 					unset($i1,$a);
 				}
 			}
@@ -232,7 +257,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 				while($_g1 < $_g) {
 					$i1 = $_g1++;
 					$a = $this->assertions[$i1];
-					if($a->name === com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SET || $a->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_LIST) {
+					if($a->name === com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SET || $a->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_LIST || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS) {
 						return true;
 					}
 					unset($i1,$a);

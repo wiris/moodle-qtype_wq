@@ -320,6 +320,10 @@ div.wiristabs .wirisadditionalinput{
     margin-left:0.5em;   
 }
 
+div.wiristabs .wirisintinputbox {
+	width: 30px;
+}
+
 input[type=button].wirisbutton {
     min-width: 70px;
 }
