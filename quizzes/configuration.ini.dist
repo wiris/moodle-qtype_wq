@@ -99,7 +99,7 @@
 ;
 ; Enable WIRIS calc for algorithm edition
 
-;quizzes.calc.enabled = "true"
+;quizzes.calc.enabled = "false"
 
 ;
 ; Log correct answers for WIRIS hand training.

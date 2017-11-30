@@ -5756,11 +5756,8 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 	,updateTolerancePrecisionWarnings: function(name,question) {
 		if(name == "wiriscassession" || name == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE || name == com.wiris.quizzes.api.QuizzesConstants.OPTION_PRECISION) {
 			if(this.htmlguiconf.tabVariables && this.htmlguiconf.tabCorrectAnswer && this.htmlguiconf.optOpenAnswer) {
-				var precision = question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_PRECISION);
-				var tolerance = question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE);
-				tolerance = HxOverrides.substr(tolerance,5,tolerance.length - 6);
-				var pint = Std.parseInt(precision);
-				var tint = Std.parseInt(tolerance);
+				var pint = Std.parseInt(question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_PRECISION));
+				var tint = this.getCurrentTolerance();
 				var show = question.wirisCasSession != null;
 				var warn = pint == null || tint == null || pint <= tint;
 				this.setWarning("warningtoleranceprecision",com.wiris.quizzes.JsMessageBox.MESSAGE_WARNING,warn && show);
@@ -5777,7 +5774,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 			if(this.htmlguiconf.tabVariables && this.htmlguiconf.tabCorrectAnswer && this.htmlguiconf.optOpenAnswer) {
 				var format = question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_FLOAT_FORMAT);
 				format = format.substring(format.length - 1);
-				var relative = question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE) == "true";
+				var relative = this.getCurrentRelativeTolerance();
 				var show = question.wirisCasSession != null;
 				this.setWarning("warningreltolfixedprec",com.wiris.quizzes.JsMessageBox.MESSAGE_WARNING,relative && format == "f" && show);
 				this.setWarning("warningabstolfloatprec",com.wiris.quizzes.JsMessageBox.MESSAGE_WARNING,!relative && format != "f" && show);
@@ -5795,7 +5792,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 					var amaxi = Std.parseInt(amax);
 					var warn = amin != "" && amini == null || amax != "" && amaxi == null || amax == "" && amin == "" || amini != null && amaxi != null && amini > amaxi;
 					this.setWarning("warningcheckprecisionformat",com.wiris.quizzes.JsMessageBox.MESSAGE_ERROR,warn);
-					var trel = question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE) == "true";
+					var trel = this.getCurrentRelativeTolerance();
 					this.setWarning("warningcheckprecisionvsrelativetolerance",com.wiris.quizzes.JsMessageBox.MESSAGE_WARNING,trel && !arel);
 					this.setWarning("warningcheckprecisionvsabsolutetolerance",com.wiris.quizzes.JsMessageBox.MESSAGE_WARNING,!trel && arel);
 					if(this.htmlguiconf.tabVariables) {
@@ -5814,6 +5811,31 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 				}
 			}
 		}
+	}
+	,getCurrentRelativeTolerance: function() {
+		var rel = this.getCurrentToleranceImpl(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE);
+		return rel.toLowerCase() == "true";
+	}
+	,getCurrentTolerance: function() {
+		var tol = this.getCurrentToleranceImpl(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE);
+		tol = HxOverrides.substr(tol,5,tol.length - 6);
+		return Std.parseInt(tol);
+	}
+	,getCurrentToleranceImpl: function(paramName) {
+		var q = (js.Boot.__cast(this.question , com.wiris.quizzes.impl.QuestionInternal)).getImpl();
+		var tolAssertions = [com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS,com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION];
+		var tol = null;
+		var _g = 0, _g1 = q.assertions;
+		while(_g < _g1.length) {
+			var a = _g1[_g];
+			++_g;
+			if(a.getCorrectAnswer() == "" + this.index && a.getAnswer() == "" + this.userAnswer && com.wiris.util.type.Arrays.contains(tolAssertions,a.name)) {
+				tol = a.getParam(paramName);
+				break;
+			}
+		}
+		if(tol == null || tol == com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,paramName)) tol = q.getOption(paramName);
+		return tol;
 	}
 	,addBehaviors: function(element,question,instance) {
 		var _g1 = this;
@@ -6051,41 +6073,64 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 				var userAnswer = [isSyntactic?0:Std.parseInt(this.getIndex(elem[0].id,4))];
 				controller[0].setQuestionValue = (function(userAnswer,correctAnswer,paramName,names,elem) {
 					return function(value) {
-						var _g11 = 0;
-						while(_g11 < names[0].length) {
-							var assertionName = names[0][_g11];
-							++_g11;
-							var _g3 = 0, _g2 = question.assertions.length;
-							while(_g3 < _g2) {
-								var index = _g3++;
-								if(question.assertions[index].name == assertionName && question.assertions[index].getAnswer() == "" + userAnswer[0] && question.assertions[index].getCorrectAnswer() == "" + correctAnswer[0]) {
-									var actualName = paramName[0];
-									if(assertionName == "equivalent_function" && paramName[0] == "name") {
-										if(StringTools.startsWith(value,"#")) {
-											value = HxOverrides.substr(value,1,null);
-											elem[0].value = value;
-										}
-									} else if(paramName[0] == "list") {
-										if(assertionName == "syntax_quantity" || value != "true") question.assertions[index].setParam("nobracketslist",value);
-										value = value == "true"?"(,[":"(,[,{";
-										actualName = "groupoperators";
-									} else if(paramName[0] == "forcebrackets") {
-										value = value == "true"?"false":"true";
-										actualName = "nobracketslist";
-									} else if(paramName[0] == "comparesets") {
-										value = value == "true"?"false":"true";
-										question.assertions[index].setParam("ordermatters",value);
-										actualName = "repetitionmatters";
+						if(paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE) value = "10^(-" + value + ")";
+						if(paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE || paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE) {
+							var defValue = com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(names[0][0],paramName[0]);
+							if(question.getOption(paramName[0]) == value) {
+								question.setOption(paramName[0],value);
+								value = defValue;
+							} else {
+								var otherToleranceAssertions = false;
+								var _g2 = 0, _g11 = question.assertions.length;
+								while(_g2 < _g11) {
+									var index = _g2++;
+									if(com.wiris.util.type.Arrays.contains(names[0],question.assertions[index].name) && question.assertions[index].getParam(paramName[0]) == defValue && (question.assertions[index].getAnswer() != "" + userAnswer[0] || question.assertions[index].getCorrectAnswer() != "" + correctAnswer[0])) {
+										otherToleranceAssertions = true;
+										break;
 									}
-									question.assertions[index].setParam(actualName,value);
 								}
+								if(!otherToleranceAssertions) {
+									question.setOption(paramName[0],value);
+									var _g2 = 0, _g11 = question.assertions.length;
+									while(_g2 < _g11) {
+										var index = _g2++;
+										if(com.wiris.util.type.Arrays.contains(names[0],question.assertions[index].name) && question.assertions[index].getParam(paramName[0]) == value) question.assertions[index].setParam(paramName[0],defValue);
+									}
+									value = defValue;
+								}
+							}
+						}
+						var _g2 = 0, _g11 = question.assertions.length;
+						while(_g2 < _g11) {
+							var index = _g2++;
+							if(question.assertions[index].getAnswer() == "" + userAnswer[0] && question.assertions[index].getCorrectAnswer() == "" + correctAnswer[0] && com.wiris.util.type.Arrays.contains(names[0],question.assertions[index].name)) {
+								var assertionName = question.assertions[index].name;
+								var actualName = paramName[0];
+								if(assertionName == "equivalent_function" && paramName[0] == "name") {
+									if(StringTools.startsWith(value,"#")) {
+										value = HxOverrides.substr(value,1,null);
+										elem[0].value = value;
+									}
+								} else if(paramName[0] == "list") {
+									if(assertionName == "syntax_quantity" || value != "true") question.assertions[index].setParam("nobracketslist",value);
+									value = value == "true"?"(,[":"(,[,{";
+									actualName = "groupoperators";
+								} else if(paramName[0] == "forcebrackets") {
+									value = value == "true"?"false":"true";
+									actualName = "nobracketslist";
+								} else if(paramName[0] == "comparesets") {
+									value = value == "true"?"false":"true";
+									question.assertions[index].setParam("ordermatters",value);
+									actualName = "repetitionmatters";
+								}
+								question.assertions[index].setParam(actualName,value);
 							}
 						}
 					};
 				})(userAnswer,correctAnswer,paramName,names,elem);
 				controller[0].getQuestionValue = (function(userAnswer,correctAnswer,paramName,names) {
 					return function() {
-						var value;
+						var value = "";
 						var _g11 = 0;
 						while(_g11 < names[0].length) {
 							var assertionName = names[0][_g11];
@@ -6096,10 +6141,13 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 									value = "" + Std.string(!_g1.inList("{",question.assertions[index].getParam("groupoperators")));
 									if(assertionName == "syntax_quantity" && value == "true") value = question.assertions[index].getParam("nobracketslist");
 								} else if(paramName[0] == "forcebrackets") value = question.assertions[index].getParam("nobracketslist") == "true"?"false":"true"; else if(paramName[0] == "comparesets") value = question.assertions[index].getParam("ordermatters") == "true"?"false":"true"; else value = question.assertions[index].getParam(paramName[0]);
-								return value;
-							} else if(names[0].length == 1) return com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(assertionName,paramName[0]);
+							} else if(names[0].length == 1) value = com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(assertionName,paramName[0]);
 						}
-						return "";
+						if(paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE || paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE) {
+							if(value == com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(names[0][0],paramName[0])) value = question.getOption(paramName[0]);
+							if(paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE) value = HxOverrides.substr(value,5,value.length - 6);
+						}
+						return value;
 					};
 				})(userAnswer,correctAnswer,paramName,names);
 				controller[0].updateInterface = (function(userAnswer,paramName,names,elem) {
@@ -6133,6 +6181,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 							}
 						}
 						if(names[0].length == 1 && names[0][0] == com.wiris.quizzes.impl.Assertion.CHECK_PRECISION) _g1.updateTolerancePrecisionWarnings(com.wiris.quizzes.impl.Assertion.CHECK_PRECISION,question);
+						if(paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE || paramName[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE) _g1.updateTolerancePrecisionWarnings(paramName[0],question);
 						if(_g1.ready) {
 							var _g2 = 0;
 							while(_g2 < names[0].length) {
@@ -6446,7 +6495,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 				var formelem = elem[0];
 				controller[0].setQuestionValue = (function(name,elem) {
 					return function(value) {
-						if(name[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE) value = "10^(-" + value + ")"; else if(name[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_FLOAT_FORMAT) {
+						if(name[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_FLOAT_FORMAT) {
 							var prev = _g1.splitFloatFormat(question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_FLOAT_FORMAT));
 							var index = _g1.getIndex(elem[0].id,2);
 							if(index == "0") prev[1] = value; else if(index == "1") prev[2] = value;
@@ -6462,7 +6511,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 				controller[0].getQuestionValue = (function(name,elem) {
 					return function() {
 						var value = question.getOption(name[0]);
-						if(name[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE) value = HxOverrides.substr(value,5,value.length - 6); else if(name[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_DIGIT_GROUP_SEPARATOR) {
+						if(name[0] == com.wiris.quizzes.api.QuizzesConstants.OPTION_DIGIT_GROUP_SEPARATOR) {
 							var format = question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_FLOAT_FORMAT);
 							var s = _g1.splitFloatFormat(format);
 							value = s[0];
@@ -7320,9 +7369,10 @@ com.wiris.quizzes.impl.Assertion.initParams = function() {
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DECIMALS,["digits"]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DIGITS,["digits"]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_PRECISION,["min","max","relative"]);
-	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION,["name"]);
-	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,["ordermatters","repetitionmatters"]);
-	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,["ordermatters","repetitionmatters"]);
+	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION,["name",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
+	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,["ordermatters","repetitionmatters",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
+	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,["ordermatters","repetitionmatters",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
+	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS,[com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
 	var paramvalues;
 	com.wiris.quizzes.impl.Assertion.paramdefault = new Hash();
 	var constantsExpression = com.wiris.system.Utf8.uchr(960) + ", e, i, j";
@@ -7360,11 +7410,24 @@ com.wiris.quizzes.impl.Assertion.initParams = function() {
 	paramvalues = new Hash();
 	paramvalues.set("ordermatters","true");
 	paramvalues.set("repetitionmatters","true");
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,"");
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE,"");
 	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,paramvalues);
 	paramvalues = new Hash();
 	paramvalues.set("ordermatters","true");
 	paramvalues.set("repetitionmatters","true");
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,"");
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE,"");
 	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,paramvalues);
+	paramvalues = new Hash();
+	paramvalues.set("name","");
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,"");
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE,"");
+	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION,paramvalues);
+	paramvalues = new Hash();
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,"");
+	paramvalues.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE,"");
+	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS,paramvalues);
 	paramvalues = new Hash();
 	paramvalues.set("value","");
 	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.CHECK_DIVISIBLE,paramvalues);
@@ -7385,9 +7448,6 @@ com.wiris.quizzes.impl.Assertion.initParams = function() {
 	paramvalues.set("max","");
 	paramvalues.set("relative","true");
 	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.CHECK_PRECISION,paramvalues);
-	paramvalues = new Hash();
-	paramvalues.set("name","");
-	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION,paramvalues);
 }
 com.wiris.quizzes.impl.Assertion.getParameterNames = function(name) {
 	if(com.wiris.quizzes.impl.Assertion.paramnames == null) com.wiris.quizzes.impl.Assertion.initParams();
@@ -8505,11 +8565,12 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openFieldset("wiriscomparisonfieldset" + unique + answers,this.t.t("comparisonwithstudentanswer"),"wirismainfieldset wiriscomparisonfieldset");
 		h.help("wiriscomparisonhelp" + unique,"http://www.wiris.com/quizzes/docs/moodle/manual/validation#comparison",this.t.t("manual"));
 		h.openDivClass("wiristolerance" + unique,"wiristolerance");
-		var idtol = "wirisoption" + unique + "[" + com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE + "]";
+		var idtolPrefix = "wirisassertionparam" + unique + "[" + com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION + "]";
+		var idtol = idtolPrefix + "[" + com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE + "]" + answers;
 		h.label(this.t.t("tolerancedigits") + ":",idtol,"wirisleftlabel2");
 		h.text(" ");
 		h.input("text",idtol,"",null,null,null);
-		var idRelTol = "wirisoption" + unique + "[" + com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE + "]";
+		var idRelTol = idtolPrefix + "[" + com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE + "]" + answers;
 		h.input("checkbox",idRelTol,"",null,null,null);
 		h.label(this.t.t("relative"),idRelTol,null);
 		h.close();
