@@ -2585,12 +2585,18 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 		return this.editor;
 	}
 	,setHandListener: function() {
-		if(this.editor != null && this.editor.isReady()) {
-			if(this.editor.getHand && this.editor.getHand() != null) this.editor.getHand().addHandListener(new com.wiris.quizzes.QuizzesHandListener(null,this.startHandler));
-		} else this.delay($bind(this,this.setHandListener),200);
+		var win = this.getOwnerWindow();
+		if(win != null && !win.closed) {
+			if(this.editor != null && this.editor.isReady()) {
+				if(this.editor.getHand && this.editor.getHand() != null) this.editor.getHand().addHandListener(new com.wiris.quizzes.QuizzesHandListener(null,this.startHandler));
+			} else this.delay($bind(this,this.setHandListener),200);
+		}
 	}
 	,setEditorListener: function() {
-		if(this.editor != null) this.editor.getEditorModel().addEditorListener(new com.wiris.quizzes.QuizzesEditorListener(this.changeHandler,this.editor)); else this.delay($bind(this,this.setEditorListener),200);
+		var win = this.getOwnerWindow();
+		if(win != null && !win.closed) {
+			if(this.editor != null) this.editor.getEditorModel().addEditorListener(new com.wiris.quizzes.QuizzesEditorListener(this.changeHandler,this.editor)); else this.delay($bind(this,this.setEditorListener),200);
+		}
 	}
 	,addOnChangeHandler: function(handler) {
 		var _g = this;
