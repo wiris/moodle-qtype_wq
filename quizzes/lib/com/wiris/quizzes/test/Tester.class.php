@@ -1122,7 +1122,6 @@ class com_wiris_quizzes_test_Tester {
 		$this->testSubQuestion3();
 		$this->testSubQuestion4();
 		$this->testParameters();
-		$this->testUserId();
 		$this->testHandwritingConstraints();
 		$this->testMultiAnswer();
 		$this->testBugs();
