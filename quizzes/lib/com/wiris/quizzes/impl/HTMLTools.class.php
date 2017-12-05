@@ -1762,7 +1762,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 			$start = _hx_index_of($calcSession, "<wiriscalc", null);
 			$end = _hx_index_of($calcSession, "</wiriscalc>", $start);
 			$start = _hx_index_of($calcSession, "<constructions", $start);
-			if($start < $end) {
+			if($start > -1 && $start < $end) {
 				$end = _hx_index_of($calcSession, "</constructions>", $start);
 				$sb = new StringBuf();
 				$sb->add(_hx_substr($calcSession, 0, $start));

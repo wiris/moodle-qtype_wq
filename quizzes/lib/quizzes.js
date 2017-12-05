@@ -1094,10 +1094,8 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 		},100);
 	}
 	,plot: function(construction,container) {
-		if(this.isOffline()) {
-			if(!this.graphJSLoaded()) this.loadGraphJS();
-			this.plotJS(construction,container);
-		}
+		if(!this.graphJSLoaded()) this.loadGraphJS();
+		this.plotJS(construction,container);
 	}
 	,loadViewer: function() {
 		if(this.isOffline()) {
@@ -1112,7 +1110,7 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 	}
 	,loadGraphJS: function() {
 		var win = js.Lib.window;
-		if(win.com_wiris_quizzes_isGraphScript == null && this.isOffline()) {
+		if(win.com_wiris_quizzes_isGraphScript == null) {
 			win.com_wiris_quizzes_isGraphScript = true;
 			var d = js.Lib.document;
 			var script = d.createElement("script");
@@ -1165,14 +1163,22 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 	}
 	,filter: function(root) {
 		var maths = root.getElementsByTagName("math");
-		var n = maths.length;
-		var _g = 0;
-		while(_g < n) {
-			var i = _g++;
-			var elem = maths[i];
+		var n = maths.length - 1;
+		while(n >= 0) {
+			var elem = maths[n];
 			var mathml = elem.outerHTML;
 			var render = this.render(mathml);
 			elem.parentNode.replaceChild(render,elem);
+			n--;
+		}
+		var plotters = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wirisconstruction",null,root);
+		var m = plotters.length;
+		var _g = 0;
+		while(_g < m) {
+			var i = _g++;
+			var imgTag = plotters[i];
+			var construction = imgTag.getAttribute("data-wirisconstruction");
+			this.plot(construction,imgTag);
 		}
 	}
 	,render: function(mathml) {
@@ -10260,7 +10266,7 @@ com.wiris.quizzes.impl.HTMLTools.stripConstructionsFromCalcSession = function(ca
 		var start = calcSession.indexOf("<wiriscalc");
 		var end = calcSession.indexOf("</wiriscalc>",start);
 		start = calcSession.indexOf("<constructions",start);
-		if(start < end) {
+		if(start > -1 && start < end) {
 			end = calcSession.indexOf("</constructions>",start);
 			var sb = new StringBuf();
 			sb.b += Std.string(HxOverrides.substr(calcSession,0,start));
@@ -19641,7 +19647,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_OFFLINE = "false";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_CROSSORIGINCALLS_ENABLED = "false";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_STATIC = "false";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_URL = "quizzes/resources";
-com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL = "";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL = "http://www.wiris.net/demo/graph";
 com.wiris.quizzes.impl.ConfigurationImpl.config = null;
 com.wiris.quizzes.impl.CorrectAnswer.tagName = "correctAnswer";
 com.wiris.quizzes.impl.FileLockProvider.TIMEOUT = 5000;
