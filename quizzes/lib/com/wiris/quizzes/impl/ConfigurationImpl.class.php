@@ -189,7 +189,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_CROSSORIGINCALLS_ENABLED = "false";
 	static $DEF_RESOURCES_STATIC = "false";
 	static $DEF_RESOURCES_URL = "quizzes/resources";
-	static $DEF_GRAPH_URL = "http://www.wiris.net/demo/graph";
+	static $DEF_GRAPH_URL = "";
 	static $config = null;
 	static function getInstance() {
 		if(com_wiris_quizzes_impl_ConfigurationImpl::$config === null) {
