@@ -687,6 +687,7 @@ input.wirisembeddedstudioinput,
 img.wirisembeddedstudioinput {
 	padding: 3px 29px 3px 3px;
 	margin: 0;
+	width: auto;
 }
 span.wirisembeddedstudioinput {
 	height: 18px;
@@ -807,7 +808,7 @@ table.wiristable {
 table.wiristable tr:nth-child(2n+1) {
 	background-color: rgba(0,0,0,0.03);
 }
-table.wiristable td, th {
+table.wiristable td, table.wiristable th {
     border: solid 1px #ccc;
 	border-color: rgba(0,0,0,0.15);
     padding: 5px;
