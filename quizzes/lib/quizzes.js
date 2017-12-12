@@ -10228,7 +10228,6 @@ com.wiris.quizzes.impl.HTMLTools.casSessionLang = function(value) {
 	return HxOverrides.substr(value,start,2);
 }
 com.wiris.quizzes.impl.HTMLTools.isCalc = function(session) {
-	if(session == null) return false;
 	var i = session.indexOf("<wiriscalc");
 	if(i > -1) return true;
 	var start = session.indexOf("<session");
@@ -10254,21 +10253,6 @@ com.wiris.quizzes.impl.HTMLTools.calcSessionLang = function(value) {
 		lang = HxOverrides.substr(value,start,end - start);
 	}
 	return lang;
-}
-com.wiris.quizzes.impl.HTMLTools.stripConstructionsFromCalcSession = function(calcSession) {
-	if(com.wiris.quizzes.impl.HTMLTools.isCalc(calcSession)) {
-		var start = calcSession.indexOf("<wiriscalc");
-		var end = calcSession.indexOf("</wiriscalc>",start);
-		start = calcSession.indexOf("<constructions",start);
-		if(start < end) {
-			end = calcSession.indexOf("</constructions>",start);
-			var sb = new StringBuf();
-			sb.b += Std.string(HxOverrides.substr(calcSession,0,start));
-			sb.b += Std.string(HxOverrides.substr(calcSession,end + "</constructions>".length,null));
-			calcSession = sb.b;
-		}
-	}
-	return calcSession;
 }
 com.wiris.quizzes.impl.HTMLTools.prototype = {
 	isMathMLString: function(math) {
@@ -12366,7 +12350,6 @@ com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.Q
 	,setAlgorithm: function(session) {
 		if(com.wiris.quizzes.impl.HTMLTools.emptyCasSession(session)) session = null;
 		if(session != this.wirisCasSession || session != null && !(session == this.wirisCasSession)) {
-			session = com.wiris.quizzes.impl.HTMLTools.stripConstructionsFromCalcSession(session);
 			this.id = null;
 			this.wirisCasSession = session;
 		}
