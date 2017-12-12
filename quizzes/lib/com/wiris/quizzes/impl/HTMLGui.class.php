@@ -312,11 +312,12 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$h->openFieldset("wiriscomparisonfieldset" . _hx_string_rec($unique, "") . $answers, $this->t->t("comparisonwithstudentanswer"), "wirismainfieldset wiriscomparisonfieldset");
 		$h->help("wiriscomparisonhelp" . _hx_string_rec($unique, ""), "http://www.wiris.com/quizzes/docs/moodle/manual/validation#comparison", $this->t->t("manual"));
 		$h->openDivClass("wiristolerance" . _hx_string_rec($unique, ""), "wiristolerance");
-		$idtol = "wirisoption" . _hx_string_rec($unique, "") . "[" . com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE . "]";
+		$idtolPrefix = "wirisassertionparam" . _hx_string_rec($unique, "") . "[" . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_LITERAL . "," . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC . "," . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_EQUATIONS . "," . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION . "]";
+		$idtol = $idtolPrefix . "[" . com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE . "]" . $answers;
 		$h->label($this->t->t("tolerancedigits") . ":", $idtol, "wirisleftlabel2");
 		$h->text(" ");
 		$h->input("text", $idtol, "", null, null, null);
-		$idRelTol = "wirisoption" . _hx_string_rec($unique, "") . "[" . com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE . "]";
+		$idRelTol = $idtolPrefix . "[" . com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE . "]" . $answers;
 		$h->input("checkbox", $idRelTol, "", null, null, null);
 		$h->label($this->t->t("relative"), $idRelTol, null);
 		$h->close();

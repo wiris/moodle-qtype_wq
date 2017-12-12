@@ -315,9 +315,10 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS, new _hx_array(array("digits")));
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS, new _hx_array(array("digits")));
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_PRECISION, new _hx_array(array("min", "max", "relative")));
-		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, new _hx_array(array("name")));
-		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC, new _hx_array(array("ordermatters", "repetitionmatters")));
-		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_LITERAL, new _hx_array(array("ordermatters", "repetitionmatters")));
+		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, new _hx_array(array("name", com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)));
+		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC, new _hx_array(array("ordermatters", "repetitionmatters", com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)));
+		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_LITERAL, new _hx_array(array("ordermatters", "repetitionmatters", com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)));
+		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_EQUATIONS, new _hx_array(array(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)));
 		$paramvalues = null;
 		com_wiris_quizzes_impl_Assertion::$paramdefault = new Hash();
 		$constantsExpression = com_wiris_quizzes_impl_Assertion_0($paramvalues) . ", e, i, j";
@@ -355,11 +356,24 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 		$paramvalues = new Hash();
 		$paramvalues->set("ordermatters", "true");
 		$paramvalues->set("repetitionmatters", "true");
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, "");
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE, "");
 		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC, $paramvalues);
 		$paramvalues = new Hash();
 		$paramvalues->set("ordermatters", "true");
 		$paramvalues->set("repetitionmatters", "true");
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, "");
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE, "");
 		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_LITERAL, $paramvalues);
+		$paramvalues = new Hash();
+		$paramvalues->set("name", "");
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, "");
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE, "");
+		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, $paramvalues);
+		$paramvalues = new Hash();
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, "");
+		$paramvalues->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE, "");
+		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_EQUATIONS, $paramvalues);
 		$paramvalues = new Hash();
 		$paramvalues->set("value", "");
 		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$CHECK_DIVISIBLE, $paramvalues);
@@ -380,9 +394,6 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 		$paramvalues->set("max", "");
 		$paramvalues->set("relative", "true");
 		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$CHECK_PRECISION, $paramvalues);
-		$paramvalues = new Hash();
-		$paramvalues->set("name", "");
-		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, $paramvalues);
 	}
 	static function getParameterNames($name) {
 		if(com_wiris_quizzes_impl_Assertion::$paramnames === null) {
