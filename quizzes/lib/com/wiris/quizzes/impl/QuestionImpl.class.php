@@ -191,6 +191,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			$session = null;
 		}
 		if($session !== $this->wirisCasSession || $session !== null && !($session === $this->wirisCasSession)) {
+			$session = com_wiris_quizzes_impl_HTMLTools::stripConstructionsFromCalcSession($session);
 			$this->id = null;
 			$this->wirisCasSession = $session;
 		}

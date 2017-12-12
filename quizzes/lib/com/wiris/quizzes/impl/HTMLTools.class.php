@@ -707,7 +707,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 	}
 	public function addConstructionImageTag($value) {
 		$h = new com_wiris_quizzes_impl_HTML();
-		$src = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_URL) . "/plotter_loading.png";
+		$src = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getResourceUrl("plotter_loading.png");
 		$h->openclose("img", new _hx_array(array(new _hx_array(array("src", $src)), new _hx_array(array("alt", "Plotter")), new _hx_array(array("title", "Plotter")), new _hx_array(array("class", "wirisconstruction")), new _hx_array(array("data-wirisconstruction", $value)))));
 		return $h->getString();
 	}
@@ -1722,6 +1722,9 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return _hx_substr($value, $start, 2);
 	}
 	static function isCalc($session) {
+		if($session === null) {
+			return false;
+		}
 		$i = _hx_index_of($session, "<wiriscalc", null);
 		if($i > -1) {
 			return true;
@@ -1753,6 +1756,21 @@ class com_wiris_quizzes_impl_HTMLTools {
 			$lang = _hx_substr($value, $start, $end - $start);
 		}
 		return $lang;
+	}
+	static function stripConstructionsFromCalcSession($calcSession) {
+		if(com_wiris_quizzes_impl_HTMLTools::isCalc($calcSession)) {
+			$start = _hx_index_of($calcSession, "<wiriscalc", null);
+			$end = _hx_index_of($calcSession, "</wiriscalc>", $start);
+			$start = _hx_index_of($calcSession, "<constructions", $start);
+			if($start > -1 && $start < $end) {
+				$end = _hx_index_of($calcSession, "</constructions>", $start);
+				$sb = new StringBuf();
+				$sb->add(_hx_substr($calcSession, 0, $start));
+				$sb->add(_hx_substr($calcSession, $end + strlen("</constructions>"), null));
+				$calcSession = $sb->b;
+			}
+		}
+		return $calcSession;
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLTools'; }
 }
