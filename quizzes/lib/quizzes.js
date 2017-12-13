@@ -1084,12 +1084,9 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 	}
 	,plotJS: function(construction,container) {
 		var _g = this;
-		if(this.graphJSLoaded()) {
+		if(this.graphJSLoaded() && container.parentNode != null) {
 			if(this.graphViewer == null) this.graphViewer = window.com.wiris.js.JsGraphViewer.newInstance(null);
-			var d = js.Lib.document;
-			var div = d.createElement("div");
-			container.parentNode.replaceChild(div,container);
-			this.graphViewer.geometryFile2Canvas(construction,div);
+			this.graphViewer.geometryFile2Canvas(construction,container);
 		} else haxe.Timer.delay(function() {
 			_g.plotJS(construction,container);
 		},100);
