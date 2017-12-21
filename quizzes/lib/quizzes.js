@@ -2080,10 +2080,14 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 	}
 	,disableCas: function() {
 		if(this.useCas && this.useCalc && this.isSessionCalc()) {
-			if(this.casJnlpLauncher != null) this.casJnlpLauncher.stop();
+			if(this.casJnlpLauncher != null) {
+				this.casJnlpLauncher.stop();
+				var casLauncherElem = this.casJnlpLauncher.getElement();
+				com.wiris.quizzes.JsDomUtils.addClass(casLauncherElem,"wirishidden");
+				this.casJnlpLauncher.setSessionImageVisible(false);
+				this.casJnlpLauncher.setNote("");
+			}
 			this.listenChanges = false;
-			var casLauncherElem = this.casJnlpLauncher.getElement();
-			com.wiris.quizzes.JsDomUtils.addClass(casLauncherElem,"wirishidden");
 			this.calcLauncher.hideRevealAndWarning();
 		}
 	}
@@ -2100,7 +2104,14 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 			});
 			this.calcLauncher.addOnCloseHandler(function() {
 				_g.setValue(_g.calcLauncher.getValue());
-				_g.disableCas();
+				if(_g.isEmpty()) {
+					if(_g.casJnlpLauncher == null) _g.buildCasApplet(_g.getOwnerDocument()); else {
+						var casLauncherElem = _g.casJnlpLauncher.getElement();
+						com.wiris.quizzes.JsDomUtils.removeClass(casLauncherElem,"wirishidden");
+						_g.casJnlpLauncher.setValue(_g.getValue());
+					}
+					_g.calcLauncher.hideInterface();
+				} else _g.disableCas();
 			});
 		}
 	}
@@ -2234,7 +2245,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1527, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1545, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2380,7 +2391,7 @@ com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"
 	this.beta = true;
 	this.element = d.createElement("div");
 	com.wiris.quizzes.JsDomUtils.addClass(this.element,"wiriscalclauncher");
-	var launchDiv = d.createElement("div");
+	this.launchDiv = d.createElement("div");
 	var textDiv = d.createElement("div");
 	var p1 = d.createElement("p");
 	p1.innerHTML = text;
@@ -2392,27 +2403,18 @@ com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"
 		com.wiris.quizzes.JsDomUtils.addClass(this.warningContainer,"wiriscalclaunchertext");
 		textDiv.appendChild(this.warningContainer);
 	}
-	launchDiv.appendChild(textDiv);
+	this.launchDiv.appendChild(textDiv);
 	var buttonLaunch = new com.wiris.quizzes.JsButton(d,buttonText);
 	buttonLaunch.setOnClick($bind(this,this.manageLaunch));
-	launchDiv.appendChild(buttonLaunch.element);
+	this.launchDiv.appendChild(buttonLaunch.element);
 	if(this.beta) {
 		var betaP = d.createElement("p");
 		com.wiris.quizzes.JsDomUtils.addClass(betaP,"wiriscalcquizzesbeta");
 		betaP.innerHTML = "Beta";
-		launchDiv.appendChild(betaP);
+		this.launchDiv.appendChild(betaP);
 	}
-	if(hide) {
-		com.wiris.quizzes.JsDomUtils.addClass(launchDiv,"wirishidden");
-		this.revealElement = d.createElement("a");
-		com.wiris.quizzes.JsDomUtils.addClass(this.revealElement,"wirisrevealcalclauncher");
-		this.revealElement.innerHTML = this.t("trycalc");
-		com.wiris.quizzes.JsDomUtils.addEvent(this.revealElement,"click",function(e) {
-			com.wiris.quizzes.JsDomUtils.removeClass(launchDiv,"wirishidden");
-		});
-		this.element.appendChild(this.revealElement);
-	}
-	this.element.appendChild(launchDiv);
+	if(hide) this.hideInterface();
+	this.element.appendChild(this.launchDiv);
 	this.addOnCloseHandler(function() {
 		_g.calc.setNeedsSave(false);
 		_g.setValue(_g.calc.getContent());
@@ -2424,13 +2426,15 @@ com.wiris.quizzes.JsCalcLauncher.__name__ = ["com","wiris","quizzes","JsCalcLaun
 com.wiris.quizzes.JsCalcLauncher.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
 	showTip: function() {
-		if(this.tipElement == null && this.value != null && com.wiris.quizzes.impl.HTMLTools.isCalc(this.value) && !com.wiris.quizzes.impl.HTMLTools.emptyCasSession(this.value)) {
-			var d = this.getOwnerDocument();
-			this.tipElement = d.createElement("p");
-			com.wiris.quizzes.JsDomUtils.addClass(this.tipElement,"wiriscalclaunchertext");
-			this.tipElement.innerHTML = "<span style=\"font-weight:bold\">" + this.t("wiriscalctip") + ":</span> " + this.t("wiriscalctipmessage");
-			this.element.appendChild(this.tipElement);
-		}
+		if(this.value != null && com.wiris.quizzes.impl.HTMLTools.isCalc(this.value) && !com.wiris.quizzes.impl.HTMLTools.emptyCasSession(this.value)) {
+			if(this.tipElement == null) {
+				var d = this.getOwnerDocument();
+				this.tipElement = d.createElement("p");
+				com.wiris.quizzes.JsDomUtils.addClass(this.tipElement,"wiriscalclaunchertext");
+				this.tipElement.innerHTML = "<span style=\"font-weight:bold\">" + this.t("wiriscalctip") + ":</span> " + this.t("wiriscalctipmessage");
+				this.element.appendChild(this.tipElement);
+			} else com.wiris.quizzes.JsDomUtils.removeClass(this.tipElement,"wirishidden");
+		} else if(this.tipElement != null && (this.value == null || com.wiris.quizzes.impl.HTMLTools.emptyCasSession(this.value) || !com.wiris.quizzes.impl.HTMLTools.isCalc(this.value))) com.wiris.quizzes.JsDomUtils.addClass(this.tipElement,"wirishidden");
 	}
 	,addOnCloseHandler: function(handler) {
 		var _g = this;
@@ -2514,6 +2518,21 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 		com.wiris.quizzes.JsDomUtils.addClass(container,"wirishidden");
 		doc.body.appendChild(this.calcContainer.element);
 	}
+	,hideInterface: function() {
+		var _g = this;
+		com.wiris.quizzes.JsDomUtils.addClass(this.launchDiv,"wirishidden");
+		if(this.revealElement == null) {
+			this.revealElement = this.getOwnerDocument().createElement("a");
+			com.wiris.quizzes.JsDomUtils.addClass(this.revealElement,"wirisrevealcalclauncher");
+			this.revealElement.innerHTML = this.t("trycalc");
+			com.wiris.quizzes.JsDomUtils.addEvent(this.revealElement,"click",function(e) {
+				com.wiris.quizzes.JsDomUtils.removeClass(_g.launchDiv,"wirishidden");
+				com.wiris.quizzes.JsDomUtils.addClass(_g.revealElement,"wirishidden");
+			});
+			this.element.appendChild(this.revealElement);
+		} else com.wiris.quizzes.JsDomUtils.removeClass(this.revealElement,"wirishidden");
+	}
+	,launchDiv: null
 	,tipElement: null
 	,calc: null
 	,beta: null
