@@ -2079,6 +2079,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 					this.casJnlpLauncher.updateSessionImage();
 				} else this.buildCasApplet(this.getOwnerDocument());
 			}
+			if(this.useCalc && this.calcLauncher != null) this.calcLauncher.setLanguage(this.caslang);
 		}
 	}
 	,disableCas: function() {
@@ -2092,6 +2093,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 			}
 			this.listenChanges = false;
 			if(!this.isEmpty() && this.calcLauncher != null) this.calcLauncher.hideRevealAndWarning();
+			com.wiris.quizzes.JsDomUtils.addClass(this.langChooser.getElement().parentNode,"wirishidden");
 		}
 	}
 	,init: function() {
@@ -2119,6 +2121,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 						_g.casJnlpLauncher.setNote("");
 					}
 					_g.calcLauncher.hideInterface();
+					com.wiris.quizzes.JsDomUtils.removeClass(_g.langChooser.getElement().parentNode,"wirishidden");
 				} else _g.disableCas();
 			});
 		}
@@ -2253,7 +2256,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1555, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1561, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
