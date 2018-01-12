@@ -532,6 +532,22 @@ table.wirisoutputcontrolslist td.wirisleftlabellist {
 div.wiristabs input.wirissmalltextfield {
   width: 60px;
 }
+div.wiristabs input[type=text] {
+	height: 20px;
+    padding-left: 4px;
+}
+div.wiristabs select {
+	height: 24px;
+}
+div.wiristabs input[type=text],
+div.wiristabs select {
+    border: 1px solid #aaa;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+div.wiristabs li {
+  min-height: 24px;
+}
 div.wiristabs span.wirisfloatingexample{
 	margin-left: 20px;
 	color: #666;

@@ -63,8 +63,8 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		if($u === 0) {
 			return $p;
 		}
-		$n = Math::floor($c / $u);
-		$d = Math::floor(_hx_mod($c, $u));
+		$n = intval($c / $u);
+		$d = intval(_hx_mod($c, $u));
 		$i = null;
 		$cc = 0;
 		$cu = 0;
