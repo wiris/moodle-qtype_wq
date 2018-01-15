@@ -4397,7 +4397,16 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.getInstance = function() {
 }
 com.wiris.quizzes.impl.QuizzesBuilderImpl.__super__ = com.wiris.quizzes.api.QuizzesBuilder;
 com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.api.QuizzesBuilder.prototype,{
-	getLockProvider: function() {
+	getAccessProvider: function() {
+		if(this.accessProvider == null) {
+			var classpath = this.getConfiguration().get(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASSPATH);
+			if(!(classpath == "")) com.wiris.quizzes.impl.ClasspathLoader.load(classpath);
+			var className = this.getConfiguration().get(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASS);
+			if(!(className == "")) this.accessProvider = js.Boot.__cast(Type.createInstance(Type.resolveClass(className),new Array()) , com.wiris.util.sys.AccessProvider);
+		}
+		return this.accessProvider;
+	}
+	,getLockProvider: function() {
 		if(this.locker == null) {
 			var className = this.getConfiguration().get(com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS);
 			if(!(className == "")) this.locker = js.Boot.__cast(Type.createInstance(Type.resolveClass(className),new Array()) , com.wiris.util.sys.LockProvider); else this.locker = new com.wiris.quizzes.impl.FileLockProvider(this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CACHE_DIR));
@@ -4423,7 +4432,8 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 	}
 	,getResourceUrl: function(name) {
 		var c = this.getConfiguration();
-		if("true" == c.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC)) return c.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL) + "/" + name; else return c.get(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL) + "?service=resource&name=" + name;
+		var version = c.get(com.wiris.quizzes.api.ConfigurationKeys.VERSION);
+		if("true" == c.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC)) return c.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL) + "/" + name + "?v=" + version; else return c.get(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL) + "?service=resource&name=" + name + "&v=" + version;
 	}
 	,getPairings: function(c,u) {
 		var p = new Array();
@@ -4984,6 +4994,7 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 		if(this.uibuilder == null) this.uibuilder = new com.wiris.quizzes.impl.QuizzesUIBuilderImpl();
 		return this.uibuilder;
 	}
+	,accessProvider: null
 	,locker: null
 	,imagesCache: null
 	,variablesCache: null
@@ -7943,6 +7954,8 @@ com.wiris.quizzes.impl.ConfigurationImpl = $hxClasses["com.wiris.quizzes.impl.Co
 	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.IMAGESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_IMAGESCACHE_CLASS);
 	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.VARIABLESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_VARIABLESCACHE_CLASS);
 	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_LOCKPROVIDER_CLASS);
+	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASS);
+	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASSPATH,com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASSPATH);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_HOST,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_HOST);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PORT,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_PORT);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_USER,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_USER);
@@ -7957,6 +7970,7 @@ com.wiris.quizzes.impl.ConfigurationImpl = $hxClasses["com.wiris.quizzes.impl.Co
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC,com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_STATIC);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_URL);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL);
+	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.VERSION,com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION);
 	if(!com.wiris.settings.PlatformSettings.IS_JAVASCRIPT) {
 		try {
 			var s = com.wiris.system.Storage.newStorage(com.wiris.quizzes.impl.ConfigurationImpl.DEF_DIST_CONFIG_FILE);
@@ -7972,7 +7986,7 @@ com.wiris.quizzes.impl.ConfigurationImpl = $hxClasses["com.wiris.quizzes.impl.Co
 		var className = this.get(com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_CLASS);
 		if(!(className == "")) try {
 			var config = js.Boot.__cast(Type.createInstance(Type.resolveClass(className),new Array()) , com.wiris.quizzes.api.Configuration);
-			var keys = [com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL,com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.api.ConfigurationKeys.CALC_URL,com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL,com.wiris.quizzes.api.ConfigurationKeys.HAND_URL,com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL,com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL,com.wiris.quizzes.api.ConfigurationKeys.CACHE_DIR,com.wiris.quizzes.api.ConfigurationKeys.MAXCONNECTIONS,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_HOST,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PORT,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_USER,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PASS,com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL,com.wiris.quizzes.api.ConfigurationKeys.HAND_ENABLED,com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED,com.wiris.quizzes.api.ConfigurationKeys.HAND_LOGTRACES,com.wiris.quizzes.api.ConfigurationKeys.SERVICE_OFFLINE,com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED,com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC,com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL,com.wiris.quizzes.impl.ConfigurationImpl.IMAGESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.VARIABLESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS];
+			var keys = [com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL,com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.api.ConfigurationKeys.CALC_URL,com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL,com.wiris.quizzes.api.ConfigurationKeys.HAND_URL,com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL,com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL,com.wiris.quizzes.api.ConfigurationKeys.CACHE_DIR,com.wiris.quizzes.api.ConfigurationKeys.MAXCONNECTIONS,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_HOST,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PORT,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_USER,com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PASS,com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL,com.wiris.quizzes.api.ConfigurationKeys.HAND_ENABLED,com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED,com.wiris.quizzes.api.ConfigurationKeys.HAND_LOGTRACES,com.wiris.quizzes.api.ConfigurationKeys.SERVICE_OFFLINE,com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED,com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC,com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL,com.wiris.quizzes.impl.ConfigurationImpl.IMAGESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.VARIABLESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASS];
 			var i;
 			var _g1 = 0, _g = keys.length;
 			while(_g1 < _g) {
@@ -7989,6 +8003,11 @@ com.wiris.quizzes.impl.ConfigurationImpl = $hxClasses["com.wiris.quizzes.impl.Co
 			this.setAll(ini.getProperties());
 		} catch( e ) {
 			throw "Could not read configuration file \"" + file + "\".";
+		}
+		var vs = com.wiris.system.Storage.newResourceStorage(com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION_FILE);
+		if(vs.exists()) {
+			var version = vs.read();
+			this.set(com.wiris.quizzes.api.ConfigurationKeys.VERSION,version);
 		}
 	}
 };
@@ -8027,6 +8046,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.prototype = {
 		sb.b += Std.string(prefix + "DEF_RESOURCES_URL" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL)) + "\";\n");
 		sb.b += Std.string(prefix + "DEF_HAND_LOGTRACES" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.HAND_LOGTRACES)) + "\";\n");
 		sb.b += Std.string(prefix + "DEF_GRAPH_URL" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL)) + "\";\n");
+		sb.b += Std.string(prefix + "DEF_VERSION" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.VERSION)) + "\";\n");
 		return sb.b;
 	}
 	,set: function(key,value) {
@@ -15613,6 +15633,12 @@ com.wiris.util.json.JSonIntegerFormat.prototype = {
 	,n: null
 	,__class__: com.wiris.util.json.JSonIntegerFormat
 }
+com.wiris.util.sys.AccessProvider = $hxClasses["com.wiris.util.sys.AccessProvider"] = function() { }
+com.wiris.util.sys.AccessProvider.__name__ = ["com","wiris","util","sys","AccessProvider"];
+com.wiris.util.sys.AccessProvider.prototype = {
+	requireAccess: null
+	,__class__: com.wiris.util.sys.AccessProvider
+}
 com.wiris.util.sys.Cache = $hxClasses["com.wiris.util.sys.Cache"] = function() { }
 com.wiris.util.sys.Cache.__name__ = ["com","wiris","util","sys","Cache"];
 com.wiris.util.sys.Cache.prototype = {
@@ -19642,6 +19668,7 @@ com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED = "quizzes.cros
 com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC = "quizzes.resources.static";
 com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL = "quizzes.resources.url";
 com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL = "quizzes.graph.url";
+com.wiris.quizzes.api.ConfigurationKeys.VERSION = "quizzes.version";
 com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE = "relative_tolerance";
 com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE = "tolerance";
 com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS = "tolerance_digits";
@@ -19728,6 +19755,7 @@ com.wiris.quizzes.impl.AssertionParam.tagName = "param";
 com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_FILE = "quizzes.configuration.file";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_FILE = "configuration.ini";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_DIST_CONFIG_FILE = "integration.ini";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION_FILE = "version.txt";
 com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_CLASS = "quizzes.configuration.class";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_CLASS = "";
 com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_CLASSPATH = "quizzes.configuration.classpath";
@@ -19738,6 +19766,10 @@ com.wiris.quizzes.impl.ConfigurationImpl.VARIABLESCACHE_CLASS = "quizzes.variabl
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_VARIABLESCACHE_CLASS = "";
 com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS = "quizzes.lockprovider.class";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_LOCKPROVIDER_CLASS = "";
+com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASS = "quizzes.accessprovider.class";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASS = "";
+com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASSPATH = "quizzes.accessprovider.classpath";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASSPATH = "";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRIS_URL = "http://www.wiris.net/demo/wiris";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRISLAUNCHER_URL = "http://stateful.wiris.net/demo/wiris";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_URL = "https://calcme.com";
@@ -19760,6 +19792,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.DEF_CROSSORIGINCALLS_ENABLED = "false";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_STATIC = "false";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_URL = "quizzes/resources";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL = "http://www.wiris.net/demo/graph";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION = "";
 com.wiris.quizzes.impl.ConfigurationImpl.config = null;
 com.wiris.quizzes.impl.CorrectAnswer.tagName = "correctAnswer";
 com.wiris.quizzes.impl.FileLockProvider.TIMEOUT = 5000;

@@ -5,6 +5,19 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
 	}}
+	public function getAccessProvider() {
+		if($this->accessProvider === null) {
+			$classpath = $this->getConfiguration()->get(com_wiris_quizzes_impl_ConfigurationImpl::$ACCESSPROVIDER_CLASSPATH);
+			if(!($classpath === "")) {
+				com_wiris_quizzes_impl_ClasspathLoader::load($classpath);
+			}
+			$className = $this->getConfiguration()->get(com_wiris_quizzes_impl_ConfigurationImpl::$ACCESSPROVIDER_CLASS);
+			if(!($className === "")) {
+				$this->accessProvider = Type::createInstance(Type::resolveClass($className), new _hx_array(array()));
+			}
+		}
+		return $this->accessProvider;
+	}
 	public function getLockProvider() {
 		if($this->locker === null) {
 			$className = $this->getConfiguration()->get(com_wiris_quizzes_impl_ConfigurationImpl::$LOCKPROVIDER_CLASS);
@@ -43,10 +56,11 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 	}
 	public function getResourceUrl($name) {
 		$c = $this->getConfiguration();
+		$version = $c->get(com_wiris_quizzes_api_ConfigurationKeys::$VERSION);
 		if("true" === $c->get(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_STATIC)) {
-			return $c->get(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_URL) . "/" . $name;
+			return $c->get(com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_URL) . "/" . $name . "?v=" . $version;
 		} else {
-			return $c->get(com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL) . "?service=resource&name=" . $name;
+			return $c->get(com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL) . "?service=resource&name=" . $name . "&v=" . $version;
 		}
 	}
 	public function getPairings($c, $u) {
@@ -796,6 +810,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		}
 		return $this->uibuilder;
 	}
+	public $accessProvider;
 	public $locker;
 	public $imagesCache;
 	public $variablesCache;
