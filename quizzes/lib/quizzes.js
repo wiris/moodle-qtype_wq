@@ -15636,7 +15636,8 @@ com.wiris.util.json.JSonIntegerFormat.prototype = {
 com.wiris.util.sys.AccessProvider = $hxClasses["com.wiris.util.sys.AccessProvider"] = function() { }
 com.wiris.util.sys.AccessProvider.__name__ = ["com","wiris","util","sys","AccessProvider"];
 com.wiris.util.sys.AccessProvider.prototype = {
-	requireAccess: null
+	isEnabled: null
+	,requireAccess: null
 	,__class__: com.wiris.util.sys.AccessProvider
 }
 com.wiris.util.sys.Cache = $hxClasses["com.wiris.util.sys.Cache"] = function() { }

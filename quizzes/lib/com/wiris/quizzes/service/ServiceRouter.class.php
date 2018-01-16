@@ -39,9 +39,11 @@ class com_wiris_quizzes_service_ServiceRouter {
 	public function service($request, $res) {
 		$accessProvider = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance()->getAccessProvider();
 		if($accessProvider !== null) {
-			if(!$accessProvider->requireAccess()) {
-				$res->sendError(403, "Forbidden");
-				return;
+			if($accessProvider->isEnabled()) {
+				if(!$accessProvider->requireAccess()) {
+					$res->sendError(403, "Forbidden");
+					return;
+				}
 			}
 		}
 		if($request->getParameter("service") === null) {
