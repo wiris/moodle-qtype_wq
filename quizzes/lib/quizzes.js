@@ -1056,7 +1056,9 @@ if(!com.wiris.quizzes.api.ui) com.wiris.quizzes.api.ui = {}
 com.wiris.quizzes.api.ui.MathViewer = $hxClasses["com.wiris.quizzes.api.ui.MathViewer"] = function() { }
 com.wiris.quizzes.api.ui.MathViewer.__name__ = ["com","wiris","quizzes","api","ui","MathViewer"];
 com.wiris.quizzes.api.ui.MathViewer.prototype = {
-	filter: null
+	filterConstructions: null
+	,filterMathML: null
+	,filter: null
 	,plot: null
 	,render: null
 	,__class__: com.wiris.quizzes.api.ui.MathViewer
@@ -1161,7 +1163,18 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 			_g.renderJS(mathml,container);
 		},100);
 	}
-	,filter: function(root) {
+	,filterConstructions: function(root) {
+		var plotters = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wirisconstruction",null,root);
+		var n = plotters.length - 1;
+		while(n >= 0) {
+			var imgTag = plotters[n];
+			var construction = imgTag.getAttribute("data-wirisconstruction");
+			var canvas = this.plot(construction);
+			imgTag.parentNode.replaceChild(canvas,imgTag);
+			n--;
+		}
+	}
+	,filterMathML: function(root) {
 		var maths = root.getElementsByTagName("math");
 		var n = maths.length - 1;
 		while(n >= 0) {
@@ -1171,15 +1184,10 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 			elem.parentNode.replaceChild(render,elem);
 			n--;
 		}
-		var plotters = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wirisconstruction",null,root);
-		var m = plotters.length - 1;
-		while(m >= 0) {
-			var imgTag = plotters[m];
-			var construction = imgTag.getAttribute("data-wirisconstruction");
-			var canvas = this.plot(construction);
-			imgTag.parentNode.replaceChild(canvas,imgTag);
-			m--;
-		}
+	}
+	,filter: function(root) {
+		this.filterMathML(root);
+		this.filterConstructions(root);
 	}
 	,render: function(mathml) {
 		var container;
@@ -1945,7 +1953,7 @@ com.wiris.quizzes.JsImageButton.prototype = $extend(com.wiris.quizzes.JsButton.p
 com.wiris.quizzes.JsAlgorithmInput = $hxClasses["com.wiris.quizzes.JsAlgorithmInput"] = function(d,v,library,delayload,languageLabel,buttonText,helpText,useCalc) {
 	var _g = this;
 	com.wiris.quizzes.JsInput.call(this,d,v);
-	this.useCas = true;
+	this.isCas = true;
 	if(library == null) library = false;
 	if(delayload == null) delayload = false;
 	if(useCalc == null) useCalc = false;
@@ -1953,7 +1961,7 @@ com.wiris.quizzes.JsAlgorithmInput = $hxClasses["com.wiris.quizzes.JsAlgorithmIn
 	this.buttonText = buttonText;
 	this.helpText = helpText;
 	this.useCalc = useCalc;
-	if(this.useCalc && this.isSessionCalc()) this.useCas = false;
+	if(this.useCalc && this.isSessionCalc()) this.isCas = false;
 	this.library = library;
 	this.listenChanges = false;
 	this.caslang = this.getSessionLang();
@@ -1979,7 +1987,7 @@ com.wiris.quizzes.JsAlgorithmInput = $hxClasses["com.wiris.quizzes.JsAlgorithmIn
 	this.setValue(v);
 	if(!delayload) {
 		this.buildCasApplet(d);
-		if(!this.useCas) this.disableCas();
+		if(!this.isCas) this.disableCas();
 	}
 	com.wiris.quizzes.JsDomUtils.addEvent(this.getOwnerWindow(),"unload",function(e) {
 		if(_g.casJnlpLauncher != null) _g.casJnlpLauncher.stop();
@@ -2013,6 +2021,23 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 		com.wiris.quizzes.JsInput.prototype.setValue.call(this,v);
 		if(this.isEmpty()) this.value = this.getEmptyWirisCasSession();
 		this.input.value = this.value;
+		if(this.isCas && !this.isEmpty() && this.isSessionCalc()) {
+			this.isCas = false;
+			this.disableCas();
+			this.calcLauncher.showInterface();
+		}
+		if(!this.isCas && (this.isEmpty() || !this.isSessionCalc())) {
+			this.isCas = true;
+			if(this.casJnlpLauncher == null) this.buildCasApplet(this.getOwnerDocument()); else {
+				var casLauncherElem = this.casJnlpLauncher.getElement();
+				com.wiris.quizzes.JsDomUtils.removeClass(casLauncherElem,"wirishidden");
+				this.casJnlpLauncher.setValue(this.getValue());
+				this.casJnlpLauncher.setSessionImageVisible(false);
+				this.casJnlpLauncher.setNote("");
+			}
+			this.calcLauncher.hideInterface();
+			com.wiris.quizzes.JsDomUtils.removeClass(this.langChooser.getElement().parentNode,"wirishidden");
+		}
 	}
 	,getValue: function() {
 		this.value = this.input.value;
@@ -2057,7 +2082,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 		var newlang = this.langChooser.getValue();
 		if(newlang != this.caslang) {
 			this.caslang = newlang;
-			if(this.useCas) {
+			if(this.isCas) {
 				this.getValue();
 				if(!this.isEmpty()) {
 					var builder = com.wiris.quizzes.api.QuizzesBuilder.getInstance();
@@ -2079,6 +2104,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 					this.casJnlpLauncher.updateSessionImage();
 				} else this.buildCasApplet(this.getOwnerDocument());
 			}
+			if(this.useCalc && this.calcLauncher != null) this.calcLauncher.setLanguage(this.caslang);
 		}
 	}
 	,disableCas: function() {
@@ -2091,41 +2117,32 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 				this.casJnlpLauncher.setNote("");
 			}
 			this.listenChanges = false;
-			if(!this.isEmpty() && this.calcLauncher != null) this.calcLauncher.hideRevealAndWarning();
+			if(!this.isEmpty() && this.calcLauncher != null) this.calcLauncher.hideWarning();
+			com.wiris.quizzes.JsDomUtils.addClass(this.langChooser.getElement().parentNode,"wirishidden");
 		}
 	}
 	,init: function() {
 		var _g = this;
 		if(this.applet == null && this.casJnlpLauncher == null) {
 			this.buildCasApplet(this.getOwnerDocument());
-			if(!this.useCas) this.disableCas();
+			if(!this.isCas) this.disableCas();
 		}
 		if(this.useCalc && this.calcLauncher == null) {
 			var warningMessage = null;
-			if(this.useCas) warningMessage = this.t("wiriscalcwarningmessage");
-			this.calcLauncher = new com.wiris.quizzes.JsCalcLauncher(this.getOwnerDocument(),this.value,null,null,warningMessage,this.useCas,this.caslang);
+			if(this.isCas) warningMessage = this.t("wiriscalcwarningmessage");
+			this.calcLauncher = new com.wiris.quizzes.JsCalcLauncher(this.getOwnerDocument(),this.value,null,null,warningMessage,this.isCas,this.caslang);
 			this.appletWrapper.appendChild(this.calcLauncher.element);
 			this.calcLauncher.setOnLaunch(function() {
 				_g.calcLauncher.setValue(_g.getValue());
 			});
 			this.calcLauncher.addOnCloseHandler(function() {
 				_g.setValue(_g.calcLauncher.getValue());
-				if(_g.isEmpty()) {
-					if(_g.casJnlpLauncher == null) _g.buildCasApplet(_g.getOwnerDocument()); else {
-						var casLauncherElem = _g.casJnlpLauncher.getElement();
-						com.wiris.quizzes.JsDomUtils.removeClass(casLauncherElem,"wirishidden");
-						_g.casJnlpLauncher.setValue(_g.getValue());
-						_g.casJnlpLauncher.setSessionImageVisible(false);
-						_g.casJnlpLauncher.setNote("");
-					}
-					_g.calcLauncher.hideInterface();
-				} else _g.disableCas();
 			});
 		}
 	}
 	,helpText: null
 	,buttonText: null
-	,useCas: null
+	,isCas: null
 	,useCalc: null
 	,calcLauncher: null
 	,casJnlpLauncher: null
@@ -2253,7 +2270,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1555, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1564, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2467,10 +2484,9 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 	}
 	,closeCalc: function(e) {
 		var doc = this.getOwnerDocument();
-		doc.body.removeChild(this.calcContainer.element);
+		com.wiris.quizzes.JsDomUtils.addClass(this.calcContainer.element,"wirishidden");
 		var container = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wiriscontainer",null,doc)[0];
 		com.wiris.quizzes.JsDomUtils.removeClass(container,"wirishidden");
-		this.calcContainer.destroy();
 		this.onClose();
 	}
 	,launch: function(e) {
@@ -2478,17 +2494,15 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 		this.createContainer();
 		var win = this.getOwnerWindow();
 		if(this.calcDiv != null && this.isCalcScriptLoaded()) {
-			if(this.lang == null) this.lang = this.getSessionLang();
-			var l = this.lang;
-			this.calc = null;
-			this.calc = new win.com.wiris.js.JsCalc({'lang': l});
-			if(this.calc != null) {
-				this.calc.insertInto(this.calcDiv);
-				this.calc.onIsReady(function() {
-					_g.calc.setContent(_g.value);
-					_g.calc.action("commandIfNeeded");
-				});
+			if(this.calc == null) {
+				this.calc = new win.com.wiris.js.JsCalc();
 			}
+			this.calc.insertInto(this.calcDiv);
+			this.calc.onIsReady(function() {
+				_g.calc.setContent(_g.value);
+				_g.calc.action("commandIfNeeded");
+				com.wiris.quizzes.JsDomUtils.removeCSS(_g.getOwnerDocument(),"calc","template.css");
+			});
 		}
 	}
 	,manageLaunch: function(e) {
@@ -2502,29 +2516,35 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 		var win = this.getOwnerWindow();
 		return win.com != null && win.com.wiris != null && win.com.wiris.js != null && win.com.wiris.js.JsCalc != null;
 	}
-	,hideRevealAndWarning: function() {
+	,hideWarning: function() {
 		if(this.revealElement != null) com.wiris.quizzes.JsDomUtils.addClass(this.revealElement,"wirishidden");
 		if(this.warningContainer != null) com.wiris.quizzes.JsDomUtils.addClass(this.warningContainer,"wirishidden");
 		this.displayWarning = false;
 	}
 	,createContainer: function() {
 		var doc = this.getOwnerDocument();
-		this.calcContainer = new com.wiris.quizzes.JsContainer(doc);
-		this.calcDiv = doc.createElement("div");
-		var title = doc.createElement("div");
-		com.wiris.quizzes.JsDomUtils.addClass(title,"wiriscalcquizzestitle");
-		com.wiris.quizzes.JsDomUtils.addClass(this.calcDiv,"wiriscalcquizzescontainer");
-		var back = new com.wiris.quizzes.JsImageButton(doc,this.t("gobacktostudio"),com.wiris.quizzes.api.QuizzesBuilder.getInstance().getResourceUrl("goback.png"));
-		back.setOnClick($bind(this,this.closeCalc));
-		com.wiris.quizzes.JsDomUtils.addClass(back.element,"wirisbacktostudiobutton");
-		title.appendChild(back.element);
-		title.appendChild(doc.createTextNode(this.t("definevariablesandfunctions")));
-		this.calcContainer.element.appendChild(title);
-		this.calcContainer.element.appendChild(this.calcDiv);
+		if(this.calcContainer == null) {
+			this.calcContainer = new com.wiris.quizzes.JsContainer(doc);
+			this.calcDiv = doc.createElement("div");
+			var title = doc.createElement("div");
+			com.wiris.quizzes.JsDomUtils.addClass(title,"wiriscalcquizzestitle");
+			com.wiris.quizzes.JsDomUtils.addClass(this.calcDiv,"wiriscalcquizzescontainer");
+			var back = new com.wiris.quizzes.JsImageButton(doc,this.t("gobacktostudio"),com.wiris.quizzes.api.QuizzesBuilder.getInstance().getResourceUrl("goback.png"));
+			back.setOnClick($bind(this,this.closeCalc));
+			com.wiris.quizzes.JsDomUtils.addClass(back.element,"wirisbacktostudiobutton");
+			title.appendChild(back.element);
+			title.appendChild(doc.createTextNode(this.t("definevariablesandfunctions")));
+			this.calcContainer.element.appendChild(title);
+			this.calcContainer.element.appendChild(this.calcDiv);
+		} else com.wiris.quizzes.JsDomUtils.removeClass(this.calcContainer.element,"wirishidden");
 		var container = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wiriscontainer",null,doc)[0];
 		var myContainer = new com.wiris.quizzes.JsContainer(doc);
 		com.wiris.quizzes.JsDomUtils.addClass(container,"wirishidden");
 		doc.body.appendChild(this.calcContainer.element);
+	}
+	,showInterface: function() {
+		com.wiris.quizzes.JsDomUtils.removeClass(this.launchDiv,"wirishidden");
+		this.showTip();
 	}
 	,hideInterface: function() {
 		var _g = this;
@@ -2533,11 +2553,10 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 			this.revealElement = this.getOwnerDocument().createElement("a");
 			com.wiris.quizzes.JsDomUtils.addClass(this.revealElement,"wirisrevealcalclauncher");
 			this.revealElement.innerHTML = this.t("trycalc");
-			com.wiris.quizzes.JsDomUtils.addEvent(this.revealElement,"click",function(e) {
-				com.wiris.quizzes.JsDomUtils.removeClass(_g.launchDiv,"wirishidden");
-				com.wiris.quizzes.JsDomUtils.addClass(_g.revealElement,"wirishidden");
-			});
 			this.element.appendChild(this.revealElement);
+			com.wiris.quizzes.JsDomUtils.addEvent(this.revealElement,"click",function(e) {
+				if(com.wiris.quizzes.JsDomUtils.hasClass(_g.launchDiv,"wirishidden")) com.wiris.quizzes.JsDomUtils.removeClass(_g.launchDiv,"wirishidden"); else _g.hideInterface();
+			});
 		} else com.wiris.quizzes.JsDomUtils.removeClass(this.revealElement,"wirishidden");
 		this.displayWarning = true;
 	}
@@ -4143,6 +4162,26 @@ com.wiris.quizzes.JsDomUtils.addScript = function(d,win,url) {
 		d.getElementsByTagName("head")[0].appendChild(script);
 	}
 }
+com.wiris.quizzes.JsDomUtils.removeCSS = function(d,source,name) {
+	var head = d.getElementsByTagName("head")[0];
+	var links = head.getElementsByTagName("link");
+	var i = 0;
+	var n = links.length;
+	var target = null;
+	while(target == null && i < n) {
+		var link = links[i];
+		var type = link.getAttribute("type");
+		if(type == "text/css") {
+			var href = link.getAttribute("href");
+			var k = href.indexOf(source);
+			if(k >= 0) {
+				if(href.indexOf(name,k + 1) >= 0) target = link;
+			}
+		}
+		i++;
+	}
+	if(target != null) head.removeChild(target);
+}
 com.wiris.quizzes.JsInputController = $hxClasses["com.wiris.quizzes.JsInputController"] = function(element,question,questionElement,instance,instanceElement) {
 	this.element = element;
 	this.question = question;
@@ -5335,7 +5374,7 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 	,run: function() {
 		this.loadCSS();
 		this.replaceFields(this.defaultQuestion,this.defaultInstance,null);
-		this.uibuilder.getMathViewer().filter(js.Lib.document);
+		this.uibuilder.getMathViewer().filterConstructions(js.Lib.document);
 	}
 	,uibuilder: null
 	,builder: null
