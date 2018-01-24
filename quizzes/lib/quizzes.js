@@ -2117,7 +2117,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 				this.casJnlpLauncher.setNote("");
 			}
 			this.listenChanges = false;
-			if(!this.isEmpty() && this.calcLauncher != null) this.calcLauncher.hideWarning();
+			if(!this.isEmpty() && this.calcLauncher != null) this.calcLauncher.hideRevealAndWarning();
 			com.wiris.quizzes.JsDomUtils.addClass(this.langChooser.getElement().parentNode,"wirishidden");
 		}
 	}
@@ -2516,7 +2516,7 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 		var win = this.getOwnerWindow();
 		return win.com != null && win.com.wiris != null && win.com.wiris.js != null && win.com.wiris.js.JsCalc != null;
 	}
-	,hideWarning: function() {
+	,hideRevealAndWarning: function() {
 		if(this.revealElement != null) com.wiris.quizzes.JsDomUtils.addClass(this.revealElement,"wirishidden");
 		if(this.warningContainer != null) com.wiris.quizzes.JsDomUtils.addClass(this.warningContainer,"wirishidden");
 		this.displayWarning = false;
