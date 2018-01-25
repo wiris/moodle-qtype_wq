@@ -4167,20 +4167,18 @@ com.wiris.quizzes.JsDomUtils.removeCSS = function(d,source,name) {
 	var links = head.getElementsByTagName("link");
 	var i = 0;
 	var n = links.length;
-	var target = null;
-	while(target == null && i < n) {
+	while(i < n) {
 		var link = links[i];
 		var type = link.getAttribute("type");
 		if(type == "text/css") {
 			var href = link.getAttribute("href");
 			var k = href.indexOf(source);
 			if(k >= 0) {
-				if(href.indexOf(name,k + 1) >= 0) target = link;
+				if(href.indexOf(name,k + 1) >= 0) head.removeChild(link);
 			}
 		}
 		i++;
 	}
-	if(target != null) head.removeChild(target);
 }
 com.wiris.quizzes.JsInputController = $hxClasses["com.wiris.quizzes.JsInputController"] = function(element,question,questionElement,instance,instanceElement) {
 	this.element = element;
