@@ -1,6 +1,6 @@
 <?php
 
-class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_QuestionInternal implements com_wiris_quizzes_api_MultipleQuestion, com_wiris_quizzes_api_Question{
+class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_QuestionInternal implements com_wiris_quizzes_api_MultipleQuestion{
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
@@ -300,13 +300,17 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 				while($_g1 < $_g) {
 					$i1 = $_g1++;
 					$a = $this->assertions[$i1];
-					if($a->name === com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SET || $a->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_LIST || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS) {
-						return true;
+					if($a->name === com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SET || $a->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_LIST) {
+						return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_NEEDS_CHECK;
+					} else {
+						if($a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS) {
+							return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_COMPATIBLE;
+						}
 					}
 					if($a->isEquivalence()) {
 						$tol = $a->getParam(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE);
 						if($tol !== null && $this->isDeprecatedTolerance($tol)) {
-							return true;
+							return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_COMPATIBLE;
 						}
 						unset($tol);
 					}
@@ -315,9 +319,9 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			}
 		}
 		if($this->isDeprecatedTolerance($this->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE))) {
-			return true;
+			return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_COMPATIBLE;
 		}
-		return false;
+		return com_wiris_quizzes_impl_QuestionImpl::$NO_DEPRECATED;
 	}
 	public function getImpl() {
 		return $this;
@@ -819,6 +823,9 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 	}
 	static $defaultOptions = null;
 	static $TAGNAME = "question";
+	static $NO_DEPRECATED = 0;
+	static $DEPRECATED_COMPATIBLE = 1;
+	static $DEPRECATED_NEEDS_CHECK = 2;
 	static function getDefaultOptions() {
 		$dopt = new Hash();
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_EXPONENTIAL_E, "e");

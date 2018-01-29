@@ -7058,8 +7058,10 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 		this.controllersMap = new Hash();
 		var qimpl = (js.Boot.__cast(q , com.wiris.quizzes.impl.QuestionInternal)).getImpl();
 		var win = this.getOwnerWindow();
-		if(qimpl.isDeprecated()) {
-			var confirm = win.confirm(this.t("confirmimportdeprecated"));
+		var dep = qimpl.isDeprecated();
+		if(dep != com.wiris.quizzes.impl.QuestionImpl.NO_DEPRECATED) {
+			var confirm = false;
+			if(dep == com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_COMPATIBLE) confirm = true; else if(dep == com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_NEEDS_CHECK) confirm = win.confirm(this.t("confirmimportdeprecated"));
 			if(confirm) qimpl.importDeprecated(); else {
 				win.close();
 				return;
@@ -7164,7 +7166,9 @@ com.wiris.quizzes.api.AssertionCheck.prototype = {
 com.wiris.quizzes.api.Configuration = $hxClasses["com.wiris.quizzes.api.Configuration"] = function() { }
 com.wiris.quizzes.api.Configuration.__name__ = ["com","wiris","quizzes","api","Configuration"];
 com.wiris.quizzes.api.Configuration.prototype = {
-	get: null
+	loadFile: null
+	,set: null
+	,get: null
 	,__class__: com.wiris.quizzes.api.Configuration
 }
 com.wiris.quizzes.api.ConfigurationKeys = $hxClasses["com.wiris.quizzes.api.ConfigurationKeys"] = function() { }
@@ -12050,7 +12054,6 @@ com.wiris.quizzes.impl.QuizzesServiceImpl.prototype = {
 		var http;
 		var httpl = new com.wiris.quizzes.impl.HttpToQuizzesListener(listener,mqr,this,async);
 		var config = com.wiris.quizzes.impl.QuizzesBuilderImpl.getInstance().getConfiguration();
-		var isJS = com.wiris.settings.PlatformSettings.IS_JAVASCRIPT;
 		var clientSide = com.wiris.settings.PlatformSettings.IS_JAVASCRIPT || com.wiris.settings.PlatformSettings.IS_FLASH;
 		var allowCors = clientSide && "true" == config.get(com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED);
 		if(clientSide && !allowCors) {
@@ -12062,9 +12065,12 @@ com.wiris.quizzes.impl.QuizzesServiceImpl.prototype = {
 			http.setHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
 		} else {
 			var url = this.getServiceUrl();
-			if(clientSide) http = new com.wiris.quizzes.impl.HttpImpl(url,httpl); else http = new com.wiris.quizzes.impl.MaxConnectionsHttpImpl(url,httpl);
+			if(clientSide) http = new com.wiris.quizzes.impl.HttpImpl(url,httpl); else {
+				http = new com.wiris.quizzes.impl.MaxConnectionsHttpImpl(url,httpl);
+				var referrer = config.get(com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL);
+				if(referrer == null || StringTools.trim(referrer) == "") com.wiris.system.Logger.log(900,"'quizzes.referer.url' configuration item is not set so requests to the " + "service can not be identified. Unidentified requests may be blocked by the server " + "and will certainly be blocked in future releases." + "\n" + "Setup the referrer editing your configuration.ini file or setting it programatically " + "through the Configuration interface." + "\n"); else http.setHeader("Referer",referrer);
+			}
 			http.setHeader("Content-Type","text/xml; charset=UTF-8");
-			if(!isJS) http.setHeader("Referer",config.get(com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL));
 			http.setPostData(postData);
 		}
 		http.setAsync(async);
@@ -12290,10 +12296,28 @@ com.wiris.quizzes.impl.QuestionInternal = $hxClasses["com.wiris.quizzes.impl.Que
 	com.wiris.util.xml.SerializableImpl.call(this);
 };
 com.wiris.quizzes.impl.QuestionInternal.__name__ = ["com","wiris","quizzes","impl","QuestionInternal"];
-com.wiris.quizzes.impl.QuestionInternal.__interfaces__ = [com.wiris.quizzes.api.Question];
+com.wiris.quizzes.impl.QuestionInternal.__interfaces__ = [com.wiris.quizzes.api.MultipleQuestion];
 com.wiris.quizzes.impl.QuestionInternal.__super__ = com.wiris.util.xml.SerializableImpl;
 com.wiris.quizzes.impl.QuestionInternal.prototype = $extend(com.wiris.util.xml.SerializableImpl.prototype,{
-	getProperty: function(name) {
+	addAssertionOfSubquestion: function(sub,name,correctAnswer,studentAnswer,parameters) {
+	}
+	,setPropertyOfSubquestion: function(sub,name,value) {
+	}
+	,getPropertyOfSubquestion: function(sub,name) {
+		return null;
+	}
+	,setCorrectAnswerOfSubquestion: function(sub,index,correctAnswer) {
+	}
+	,getCorrectAnswerOfSubquestion: function(sub,index) {
+		return null;
+	}
+	,getCorrectAnswersLengthOfSubquestion: function(sub) {
+		return 0;
+	}
+	,getNumberOfSubquestions: function() {
+		return 0;
+	}
+	,getProperty: function(name) {
 		return null;
 	}
 	,setProperty: function(name,value) {
@@ -12335,7 +12359,7 @@ com.wiris.quizzes.impl.QuestionImpl = $hxClasses["com.wiris.quizzes.impl.Questio
 	if(com.wiris.quizzes.impl.QuestionImpl.defaultOptions == null) com.wiris.quizzes.impl.QuestionImpl.defaultOptions = com.wiris.quizzes.impl.QuestionImpl.getDefaultOptions();
 };
 com.wiris.quizzes.impl.QuestionImpl.__name__ = ["com","wiris","quizzes","impl","QuestionImpl"];
-com.wiris.quizzes.impl.QuestionImpl.__interfaces__ = [com.wiris.quizzes.api.MultipleQuestion,com.wiris.quizzes.api.Question];
+com.wiris.quizzes.impl.QuestionImpl.__interfaces__ = [com.wiris.quizzes.api.MultipleQuestion];
 com.wiris.quizzes.impl.QuestionImpl.getDefaultOptions = function() {
 	var dopt = new Hash();
 	dopt.set(com.wiris.quizzes.api.QuizzesConstants.OPTION_EXPONENTIAL_E,"e");
@@ -12589,15 +12613,15 @@ com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.Q
 			while(_g1 < _g) {
 				var i1 = _g1++;
 				var a = this.assertions[i1];
-				if(a.name == com.wiris.quizzes.impl.Assertion.EQUIVALENT_SET || a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_LIST || a.name == com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DIGITS || a.name == com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DECIMALS) return true;
+				if(a.name == com.wiris.quizzes.impl.Assertion.EQUIVALENT_SET || a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_LIST) return com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_NEEDS_CHECK; else if(a.name == com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DIGITS || a.name == com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DECIMALS) return com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_COMPATIBLE;
 				if(a.isEquivalence()) {
 					var tol = a.getParam(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE);
-					if(tol != null && this.isDeprecatedTolerance(tol)) return true;
+					if(tol != null && this.isDeprecatedTolerance(tol)) return com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_COMPATIBLE;
 				}
 			}
 		}
-		if(this.isDeprecatedTolerance(this.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE))) return true;
-		return false;
+		if(this.isDeprecatedTolerance(this.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE))) return com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_COMPATIBLE;
+		return com.wiris.quizzes.impl.QuestionImpl.NO_DEPRECATED;
 	}
 	,getImpl: function() {
 		return this;
@@ -13888,10 +13912,31 @@ com.wiris.quizzes.impl.QuestionLazy = $hxClasses["com.wiris.quizzes.impl.Questio
 	}
 };
 com.wiris.quizzes.impl.QuestionLazy.__name__ = ["com","wiris","quizzes","impl","QuestionLazy"];
-com.wiris.quizzes.impl.QuestionLazy.__interfaces__ = [com.wiris.quizzes.api.Question];
+com.wiris.quizzes.impl.QuestionLazy.__interfaces__ = [com.wiris.quizzes.api.MultipleQuestion];
 com.wiris.quizzes.impl.QuestionLazy.__super__ = com.wiris.quizzes.impl.QuestionInternal;
 com.wiris.quizzes.impl.QuestionLazy.prototype = $extend(com.wiris.quizzes.impl.QuestionInternal.prototype,{
-	getImpl: function() {
+	addAssertionOfSubquestion: function(sub,name,correctAnswer,studentAnswer,parameters) {
+		this.getImpl().addAssertionOfSubquestion(sub,name,correctAnswer,studentAnswer,parameters);
+	}
+	,setPropertyOfSubquestion: function(sub,name,value) {
+		this.getImpl().setPropertyOfSubquestion(sub,name,value);
+	}
+	,getPropertyOfSubquestion: function(sub,name) {
+		return this.getImpl().getPropertyOfSubquestion(sub,name);
+	}
+	,setCorrectAnswerOfSubquestion: function(sub,index,correctAnswer) {
+		this.getImpl().setCorrectAnswerOfSubquestion(sub,index,correctAnswer);
+	}
+	,getCorrectAnswerOfSubquestion: function(sub,index) {
+		return this.getImpl().getCorrectAnswerOfSubquestion(sub,index);
+	}
+	,getCorrectAnswersLengthOfSubquestion: function(sub) {
+		return this.getImpl().getCorrectAnswersLengthOfSubquestion(sub);
+	}
+	,getNumberOfSubquestions: function() {
+		return this.getImpl().getNumberOfSubquestions();
+	}
+	,getImpl: function() {
 		if(this.question == null) {
 			var s = com.wiris.quizzes.impl.QuizzesBuilderImpl.getInstance().getSerializer();
 			var elem = s.read("<question>" + this.xml + "</question>");
@@ -14825,6 +14870,14 @@ com.wiris.system.LocalStorageCache.prototype = {
 	,MAX_BYTES: null
 	,available: null
 	,__class__: com.wiris.system.LocalStorageCache
+}
+com.wiris.system.Logger = $hxClasses["com.wiris.system.Logger"] = function() { }
+com.wiris.system.Logger.__name__ = ["com","wiris","system","Logger"];
+com.wiris.system.Logger.log = function(level,message) {
+	var prefix;
+	if(level >= 1000) prefix = "SEVERE"; else if(level >= 900) prefix = "WARNING"; else prefix = "INFO";
+	message = "[" + prefix + "] " + message;
+	haxe.Log.trace(message,{ fileName : "Logger.hx", lineNumber : 25, className : "com.wiris.system.Logger", methodName : "log"});
 }
 com.wiris.system.Storage = $hxClasses["com.wiris.system.Storage"] = function(location) {
 	location = StringTools.replace(location,"/",com.wiris.system.Storage.getDirectorySeparator());
@@ -19832,6 +19885,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_URL = "quizzes/resources"
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL = "http://www.wiris.net/demo/graph";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION = "";
 com.wiris.quizzes.impl.ConfigurationImpl.config = null;
+com.wiris.quizzes.impl.ConfigurationImpl.thisLock = { };
 com.wiris.quizzes.impl.CorrectAnswer.tagName = "correctAnswer";
 com.wiris.quizzes.impl.FileLockProvider.TIMEOUT = 5000;
 com.wiris.quizzes.impl.FileLockProvider.WAIT = 100;
@@ -19905,6 +19959,9 @@ com.wiris.quizzes.impl.ProcessStoreQuestion.TAGNAME = "storeQuestion";
 com.wiris.quizzes.impl.Property.tagName = "property";
 com.wiris.quizzes.impl.QuestionImpl.defaultOptions = null;
 com.wiris.quizzes.impl.QuestionImpl.TAGNAME = "question";
+com.wiris.quizzes.impl.QuestionImpl.NO_DEPRECATED = 0;
+com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_COMPATIBLE = 1;
+com.wiris.quizzes.impl.QuestionImpl.DEPRECATED_NEEDS_CHECK = 2;
 com.wiris.quizzes.impl.QuestionInstanceImpl.tagName = "questionInstance";
 com.wiris.quizzes.impl.QuestionInstanceImpl.DEF_ALGORITHM_LANGUAGE = "en";
 com.wiris.quizzes.impl.QuestionInstanceImpl.KEY_ALGORITHM_LANGUAGE = "sessionLang";
@@ -19932,6 +19989,9 @@ com.wiris.settings.PlatformSettings.UTF8_CONVERSION = false;
 com.wiris.settings.PlatformSettings.IS_JAVASCRIPT = true;
 com.wiris.settings.PlatformSettings.IS_FLASH = false;
 com.wiris.system.LocalStorageCache.ITEMS_KEY = "_items";
+com.wiris.system.Logger.SEVERE = 1000;
+com.wiris.system.Logger.WARNING = 900;
+com.wiris.system.Logger.INFO = 800;
 com.wiris.util.css.CSSUtils.PT_TO_PX = 1.34;
 com.wiris.util.json.JSonIntegerFormat.HEXADECIMAL = 0;
 com.wiris.util.xml.MathMLUtils.contentTagsString = "ci@cn@apply@integers@reals@rationals@naturalnumbers@complexes@primes@exponentiale@imaginaryi@notanumber@true@false@emptyset@pi@eulergamma@infinity";

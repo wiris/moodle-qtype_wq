@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['wq'] = 'Matematica e scienza - WIRIS';;
-$string['pluginname'] = 'Matematica e scienza - WIRIS';;
+$string['wq'] = 'Matematica e scienza - WIRIS';
+$string['pluginname'] = 'Matematica e scienza - WIRIS';
+$string['access_provider_enabled'] = 'Access control';
+$string['access_provider_enabled_help'] = 'If enabled ony authenticated users can access WIRIS services.';
 $string['pluginnamesummary'] = '';
 $string['wq_help'] = 'Generic WIRIS quizzes Help';
 $string['editingwq'] = 'Editing a generic WIRIS question';

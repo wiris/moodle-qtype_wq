@@ -71,6 +71,12 @@ $settings->add(new admin_setting_configtext('qtype_wq/quizzeswirisurl',
                                                             'http://www.wiris.net/demo/wiris',
                                                             PARAM_URL));
 
+// Access provider option. If enabled only loged users can access to WIRIS Quizzes services
+$settings->add(new admin_setting_configcheckbox('qtype_wq/access_provider_enabled',
+                                                            get_string('access_provider_enabled', 'qtype_wq'),
+                                                            get_string('access_provider_enabled_help', 'qtype_wq'),
+                                                            '0'));
+
 if ($CFG->version >= 2012120300 && $CFG->version < 2013051400) {
     $settingslink = 'filtersettingfilterwiris';
 } else {

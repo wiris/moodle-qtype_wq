@@ -110,4 +110,13 @@ class MoodleConfiguration implements com_wiris_quizzes_api_Configuration{
         return null;
     }
 
+    // @codingStandardsIgnoreStart
+    public function loadFile($file) {
+    }
+
+    public function set($key, $value) {
+    }
+    // @codingStandardsIgnoreEnd
+
+
 }

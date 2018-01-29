@@ -206,6 +206,8 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_GRAPH_URL = "http://www.wiris.net/demo/graph";
 	static $DEF_VERSION = "";
 	static $config = null;
+	static function thisLock() { $»args = func_get_args(); return call_user_func_array(self::$thisLock, $»args); }
+	static $thisLock;
 	static function getInstance() {
 		if(com_wiris_quizzes_impl_ConfigurationImpl::$config === null) {
 			com_wiris_quizzes_impl_ConfigurationImpl::$config = new com_wiris_quizzes_impl_ConfigurationImpl();
@@ -214,3 +216,4 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.ConfigurationImpl'; }
 }
+com_wiris_quizzes_impl_ConfigurationImpl::$thisLock = _hx_anonymous(array());
