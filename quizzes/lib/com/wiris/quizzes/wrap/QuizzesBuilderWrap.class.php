@@ -23,7 +23,7 @@ class com_wiris_quizzes_wrap_QuizzesBuilderWrap extends com_wiris_quizzes_api_Qu
 		$config = $this->builder->getConfiguration();
 		$referrer = $config->get(com_wiris_quizzes_api_ConfigurationKeys::$REFERER_URL);
 		if($referrer === null || trim($referrer) === "") {
-			if(http_response_code()!==false) {
+			if(array_key_exists("REQUEST_METHOD", $_SERVER)) {
 				$isHttps = !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"]!="off";
 				$host = $_SERVER["SERVER_NAME"];
 				$port = $_SERVER["SERVER_PORT"];

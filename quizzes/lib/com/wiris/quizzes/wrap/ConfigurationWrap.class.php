@@ -20,20 +20,6 @@ class com_wiris_quizzes_wrap_ConfigurationWrap implements com_wiris_quizzes_api_
 			}
 		}
 	}
-	public function loadFile($file) {
-		try {
-			$this->wrapper->start();
-			$this->config->loadFile($file);
-			$this->wrapper->stop();
-		}catch(Exception $»e) {
-			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
-			$e = $_ex_;
-			{
-				$this->wrapper->stop();
-				throw new HException($e);
-			}
-		}
-	}
 	public function get($key) {
 		try {
 			$this->wrapper->start();

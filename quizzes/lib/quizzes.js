@@ -7166,8 +7166,7 @@ com.wiris.quizzes.api.AssertionCheck.prototype = {
 com.wiris.quizzes.api.Configuration = $hxClasses["com.wiris.quizzes.api.Configuration"] = function() { }
 com.wiris.quizzes.api.Configuration.__name__ = ["com","wiris","quizzes","api","Configuration"];
 com.wiris.quizzes.api.Configuration.prototype = {
-	loadFile: null
-	,set: null
+	set: null
 	,get: null
 	,__class__: com.wiris.quizzes.api.Configuration
 }
@@ -11441,8 +11440,8 @@ com.wiris.quizzes.impl.HandwritingConstraints.symbol_default_excluded = null;
 com.wiris.quizzes.impl.HandwritingConstraints.readHandwritingConstraints = function(json) {
 	var hc = new com.wiris.quizzes.impl.HandwritingConstraints();
 	var obj = js.Boot.__cast(com.wiris.util.json.JSon.decode(json) , Hash);
-	hc.symbols = obj.exists("symbols")?js.Boot.__cast(obj.get("symbols") , Array):new Array();
-	hc.structure = obj.exists("structure")?js.Boot.__cast(obj.get("structure") , Array):new Array();
+	hc.symbols = obj.exists("symbols")?obj.get("symbols"):new Array();
+	hc.structure = obj.exists("structure")?obj.get("structure"):new Array();
 	return hc;
 }
 com.wiris.quizzes.impl.HandwritingConstraints.newHandwritingConstraints = function() {
@@ -11934,7 +11933,7 @@ com.wiris.quizzes.impl.MaxConnectionsHttpImpl.prototype = $extend(com.wiris.quiz
 		var data = p.getVariable(com.wiris.quizzes.impl.MaxConnectionsHttpImpl.DATA_KEY_MAX_CONNECTIONS);
 		var connections = null;
 		if(data != null) try {
-			connections = js.Boot.__cast(haxe.Unserializer.run(data) , Array);
+			connections = haxe.Unserializer.run(data);
 		} catch( t ) {
 			connections = null;
 		}
@@ -11969,7 +11968,7 @@ com.wiris.quizzes.impl.MaxConnectionsHttpImpl.prototype = $extend(com.wiris.quiz
 		var p = new com.wiris.quizzes.impl.SharedVariables();
 		p.lockVariable(com.wiris.quizzes.impl.MaxConnectionsHttpImpl.DATA_KEY_MAX_CONNECTIONS);
 		var data = p.getVariable(com.wiris.quizzes.impl.MaxConnectionsHttpImpl.DATA_KEY_MAX_CONNECTIONS);
-		var connections = js.Boot.__cast(haxe.Unserializer.run(data) , Array);
+		var connections = haxe.Unserializer.run(data);
 		if(connections[this.slot] == this.current) {
 			var n = 0;
 			connections[this.slot] = n;
@@ -15425,7 +15424,7 @@ com.wiris.util.json.JSon.getDepth = function(o) {
 		}
 		return m + 2;
 	} else if(com.wiris.system.TypeTools.isArray(o)) {
-		var a = js.Boot.__cast(o , Array);
+		var a = o;
 		var i;
 		var m = 0;
 		var _g1 = 0, _g = a.length;
@@ -15449,7 +15448,7 @@ com.wiris.util.json.JSon.getBoolean = function(b) {
 	return js.Boot.__cast(b , Bool);
 }
 com.wiris.util.json.JSon.getArray = function(a) {
-	return js.Boot.__cast(a , Array);
+	return a;
 }
 com.wiris.util.json.JSon.getHash = function(a) {
 	return js.Boot.__cast(a , Hash);
@@ -15473,8 +15472,8 @@ com.wiris.util.json.JSon.compare = function(a,b,eps) {
 	} else if(com.wiris.system.TypeTools.isArray(a)) {
 		var isBArray = com.wiris.system.TypeTools.isArray(b);
 		if(!isBArray) return false;
-		var aa = js.Boot.__cast(a , Array);
-		var ab = js.Boot.__cast(b , Array);
+		var aa = a;
+		var ab = b;
 		if(aa.length != ab.length) return false;
 		var i;
 		var _g1 = 0, _g = aa.length;
@@ -15652,6 +15651,15 @@ com.wiris.util.json.JSon.prototype = $extend(com.wiris.util.json.StringParser.pr
 		sb.b += Std.string(s);
 		sb.b += Std.string("\"");
 	}
+	,encodeArrayInt: function(sb,v) {
+		var v2 = new Array();
+		var i = 0;
+		while(i < v.length) {
+			v2.push(v[i]);
+			++i;
+		}
+		this.encodeArray(sb,v2);
+	}
 	,encodeArray: function(sb,v) {
 		var newLines = this.addNewLines && com.wiris.util.json.JSon.getDepth(v) > 2;
 		this.depth++;
@@ -15696,7 +15704,7 @@ com.wiris.util.json.JSon.prototype = $extend(com.wiris.util.json.StringParser.pr
 		this.depth--;
 	}
 	,encodeImpl: function(sb,o) {
-		if(com.wiris.system.TypeTools.isHash(o)) this.encodeHash(sb,js.Boot.__cast(o , Hash)); else if(com.wiris.system.TypeTools.isArray(o)) this.encodeArray(sb,js.Boot.__cast(o , Array)); else if(js.Boot.__instanceof(o,String)) this.encodeString(sb,js.Boot.__cast(o , String)); else if(js.Boot.__instanceof(o,Int)) this.encodeInteger(sb,js.Boot.__cast(o , Int)); else if(js.Boot.__instanceof(o,haxe.Int64)) this.encodeLong(sb,js.Boot.__cast(o , haxe.Int64)); else if(js.Boot.__instanceof(o,com.wiris.util.json.JSonIntegerFormat)) this.encodeIntegerFormat(sb,js.Boot.__cast(o , com.wiris.util.json.JSonIntegerFormat)); else if(js.Boot.__instanceof(o,Bool)) this.encodeBoolean(sb,js.Boot.__cast(o , Bool)); else if(js.Boot.__instanceof(o,Float)) this.encodeFloat(sb,js.Boot.__cast(o , Float)); else throw "Impossible to convert to json object of type " + Std.string(Type.getClass(o));
+		if(com.wiris.system.TypeTools.isHash(o)) this.encodeHash(sb,js.Boot.__cast(o , Hash)); else if(com.wiris.system.TypeTools.isArray(o)) this.encodeArray(sb,o); else if(js.Boot.__instanceof(o,Array)) this.encodeArrayInt(sb,o); else if(js.Boot.__instanceof(o,String)) this.encodeString(sb,js.Boot.__cast(o , String)); else if(js.Boot.__instanceof(o,Int)) this.encodeInteger(sb,js.Boot.__cast(o , Int)); else if(js.Boot.__instanceof(o,haxe.Int64)) this.encodeLong(sb,js.Boot.__cast(o , haxe.Int64)); else if(js.Boot.__instanceof(o,com.wiris.util.json.JSonIntegerFormat)) this.encodeIntegerFormat(sb,js.Boot.__cast(o , com.wiris.util.json.JSonIntegerFormat)); else if(js.Boot.__instanceof(o,Bool)) this.encodeBoolean(sb,js.Boot.__cast(o , Bool)); else if(js.Boot.__instanceof(o,Float)) this.encodeFloat(sb,js.Boot.__cast(o , Float)); else throw "Impossible to convert to json object of type " + Std.string(Type.getClass(o));
 	}
 	,encodeObject: function(o) {
 		var sb = new StringBuf();
