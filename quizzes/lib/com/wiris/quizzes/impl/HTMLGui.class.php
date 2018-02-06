@@ -313,13 +313,14 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$h->help("wiriscomparisonhelp" . _hx_string_rec($unique, ""), "http://www.wiris.com/quizzes/docs/moodle/manual/validation#comparison", $this->t->t("manual"));
 		$h->openDivClass("wiristolerance" . _hx_string_rec($unique, ""), "wiristolerance");
 		$idtolPrefix = "wirisassertionparam" . _hx_string_rec($unique, "") . "[" . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_LITERAL . "," . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC . "," . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_EQUATIONS . "," . com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION . "]";
-		$idtol = $idtolPrefix . "[" . com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE . "]" . $answers;
-		$h->label($this->t->t("tolerancedigits") . ":", $idtol, "wirisleftlabel2");
+		$idTolValue = $idtolPrefix . "[tolerance_value]" . $answers;
+		$h->label($this->t->t("tolerance") . ":", $idTolValue, "wirisleftlabel2");
 		$h->text(" ");
-		$h->input("text", $idtol, "", null, null, null);
-		$idRelTol = $idtolPrefix . "[" . com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE . "]" . $answers;
-		$h->input("checkbox", $idRelTol, "", null, null, null);
-		$h->label($this->t->t("relative"), $idRelTol, null);
+		$h->input("text", $idTolValue, "", null, null, "wirissmalltextfield");
+		$h->text(" ");
+		$idTolType = $idtolPrefix . "[tolerance_type]" . $answers;
+		$toleranceTypes = new _hx_array(array(new _hx_array(array("relative_tolerance", $this->t->t("percenterror"))), new _hx_array(array("absolute_tolerance", $this->t->t("absoluteerror"))), new _hx_array(array("significant_figures", $this->t->t("significantfigures"))), new _hx_array(array("decimal_places", $this->t->t("decimalplaces")))));
+		$h->select($idTolType, "", $toleranceTypes);
 		$h->close();
 		$h->openUl("wiriscomparison" . _hx_string_rec($unique, "") . $answers, "wirisul");
 		$i = null;
@@ -427,7 +428,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 							while($_g3 < $_g2) {
 								$j1 = $_g3++;
 								$h->text(" ");
-								$h->input("text", "wirisassertionparam" . _hx_string_rec($unique, "") . "[" . $aname . "][" . $parameters[$j1] . "]" . $answers, null, null, null, null);
+								$h->input("text", "wirisassertionparam" . _hx_string_rec($unique, "") . "[" . $aname . "][" . $parameters[$j1] . "]" . $answers, null, null, null, "wirissmalltextfield");
 								unset($j1);
 							}
 							unset($_g3,$_g2);
@@ -613,7 +614,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 										if($count > 0) {
 											$sb->add("; ");
 										}
-										$sb->add($this->shortenText($ap->content, Math::floor(Math::round($chars / 3.0))));
+										$sb->add($this->shortenText($ap->content, intval(Math::round($chars / 3.0))));
 										$count++;
 									}
 								}

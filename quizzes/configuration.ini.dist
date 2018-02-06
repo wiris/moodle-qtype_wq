@@ -109,4 +109,4 @@
 ;
 ; WIRIS graph URL.
 ;
-;quizzes.graph.url = ""
+;quizzes.graph.url = "http://www.wiris.net/demo/graph"

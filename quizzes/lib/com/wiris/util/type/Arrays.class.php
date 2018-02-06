@@ -102,7 +102,7 @@ class com_wiris_util_type_Arrays {
 		$imin = 0;
 		$imax = $a->length;
 		while($imin < $imax) {
-			$imid = Math::floor(($imax + $imin) / 2);
+			$imid = intval(($imax + $imin) / 2);
 			$cmp = Reflect::compare($a[$imid], $e);
 			if($cmp === 0) {
 				if($set) {
@@ -126,7 +126,7 @@ class com_wiris_util_type_Arrays {
 		$imin = 0;
 		$imax = $array->length;
 		while($imin < $imax) {
-			$imid = Math::floor(($imin + $imax) / 2);
+			$imid = intval(($imin + $imax) / 2);
 			$cmp = Reflect::compare($array[$imid], $key);
 			if($cmp === 0) {
 				return $imid;

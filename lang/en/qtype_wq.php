@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['wq'] = 'Math & Science by WIRIS';;
-$string['pluginname'] = 'Math & Science by WIRIS';;
+$string['wq'] = 'Math & Science by WIRIS';
+$string['pluginname'] = 'Math & Science by WIRIS';
+$string['access_provider_enabled'] = 'Access control';
+$string['access_provider_enabled_help'] = 'If enabled ony authenticated users can access WIRIS services.';
 $string['pluginnamesummary'] = '';
 $string['wq_help'] = 'Generic WIRIS quizzes Help';
 $string['editingwq'] = 'Editing a generic WIRIS question';
@@ -75,3 +77,15 @@ $string['wqsummary'] = 'This adds a generic WIRIS question. Only for test purpos
 $string['wirisquestionincorrect'] = 'Sorry! The system can not generate one of the questions of the quiz. <br />Maybe there is a temporary connection problem right now. <br />Maybe the question algorithm has a bug, and fails sometimes. <br />Maybe it will fail always. <br />Don\'t panic... <br />You can retry the quiz, without penalty, just clicking Continue. <br />You can also tell the Teachers that there is an issue with the question titled: \'{$a->questionname}\'';
 $string['wirisquizzeserror'] = 'Sorry! There was an error in WIRIS quizzes.';
 $string['failedtoloadwirisquizzesfromxml'] = 'Failed to load WIRIS quizzes XML definition for question id';
+$string['connectionsettings'] = 'Connection settings';
+$string['connectionsettings_text'] = '';
+$string['quizzesserviceurl'] = 'WIRIS QUIZZES service URL';
+$string['quizzesserviceurl_help'] = 'URL to connect to WIRIS quizzes service.';
+$string['quizzeseditorurl'] = 'WIRIS EDITOR service URL';
+$string['quizzeseditorurl_help'] = 'URL where to load the WIRIS EDITOR.';
+$string['quizzeshandurl'] = 'WIRSI HAND service URL';
+$string['quizzeshandurl_help'] = 'URL where to load the WIRIS HAND.';
+$string['quizzeswirislauncherurl'] = 'WIRIS CAS JNLP URL';
+$string['quizzeswirislauncherurl_help'] = 'URL where to get the JNLP file for WIRIS CAS app.';
+$string['quizzeswirisurl'] = 'WIRIS CAS applet service URL';
+$string['quizzeswirisurl_help'] = 'URL where to load the WIRIS CAS applet.';

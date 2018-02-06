@@ -1,6 +1,6 @@
 <?php
 
-class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_QuestionInternal implements com_wiris_quizzes_api_MultipleQuestion, com_wiris_quizzes_api_Question{
+class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_QuestionInternal implements com_wiris_quizzes_api_MultipleQuestion{
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
@@ -217,6 +217,37 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			}
 		}
 	}
+	public function importTolerance($tolerance) {
+		if($this->isDeprecatedTolerance($tolerance)) {
+			$pattern10 = new EReg("^10\\^\\(-(.*)\\)\$", "");
+			if($pattern10->match($tolerance)) {
+				$exponent = trim($pattern10->matched(1));
+				if(StringTools::startsWith($exponent, "(") && StringTools::endsWith($exponent, ")")) {
+					$exponent = trim(_hx_substr($exponent, 1, strlen($exponent) - 2));
+				}
+				if(com_wiris_system_TypeTools::isFloating($exponent)) {
+					$expd = -Std::parseFloat($exponent);
+					$tolerance = _hx_string_rec(Math::pow(10.0, $expd), "") . "";
+				} else {
+					$patternlog = new EReg("-?log\\((.*)\\)", "");
+					if($patternlog->match($exponent)) {
+						$arg = $patternlog->matched(1);
+						if(StringTools::startsWith($exponent, "-")) {
+							$tolerance = $arg;
+						} else {
+							if(com_wiris_system_TypeTools::isFloating($arg)) {
+								$tolerance = _hx_string_rec(1.0 / Std::parseFloat($arg), "") . "";
+							}
+						}
+					}
+				}
+			}
+		}
+		return $tolerance;
+	}
+	public function isDeprecatedTolerance($tol) {
+		return _hx_index_of($tol, "10^", null) !== -1;
+	}
 	public function importDeprecated() {
 		if($this->assertions !== null) {
 			$i = null;
@@ -244,9 +275,20 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 						$this->changeAssertionParamName($a, "digits", "max");
 						$a->setParam("relative", "true");
 					}
+					if($a->isEquivalence()) {
+						$tol = $a->getParam(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE);
+						if($tol !== null && $this->isDeprecatedTolerance($tol)) {
+							$a->setParam(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, $this->importTolerance($tol));
+						}
+						unset($tol);
+					}
 					unset($i1,$a);
 				}
 			}
+		}
+		$tolerance = $this->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE);
+		if($this->isDeprecatedTolerance($tolerance)) {
+			$this->setOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, $this->importTolerance($tolerance));
 		}
 	}
 	public function isDeprecated() {
@@ -257,14 +299,28 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 				while($_g1 < $_g) {
 					$i1 = $_g1++;
 					$a = $this->assertions[$i1];
-					if($a->name === com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SET || $a->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_LIST || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS) {
-						return true;
+					if($a->name === com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SET || $a->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_LIST) {
+						return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_NEEDS_CHECK;
+					} else {
+						if($a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS || $a->name === com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS) {
+							return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_COMPATIBLE;
+						}
+					}
+					if($a->isEquivalence()) {
+						$tol = $a->getParam(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE);
+						if($tol !== null && $this->isDeprecatedTolerance($tol)) {
+							return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_COMPATIBLE;
+						}
+						unset($tol);
 					}
 					unset($i1,$a);
 				}
 			}
 		}
-		return false;
+		if($this->isDeprecatedTolerance($this->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE))) {
+			return com_wiris_quizzes_impl_QuestionImpl::$DEPRECATED_COMPATIBLE;
+		}
+		return com_wiris_quizzes_impl_QuestionImpl::$NO_DEPRECATED;
 	}
 	public function getImpl() {
 		return $this;
@@ -766,6 +822,9 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 	}
 	static $defaultOptions = null;
 	static $TAGNAME = "question";
+	static $NO_DEPRECATED = 0;
+	static $DEPRECATED_COMPATIBLE = 1;
+	static $DEPRECATED_NEEDS_CHECK = 2;
 	static function getDefaultOptions() {
 		$dopt = new Hash();
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_EXPONENTIAL_E, "e");
@@ -775,7 +834,8 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_PRECISION, "4");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE, "true");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TIMES_OPERATOR, com_wiris_quizzes_impl_QuestionImpl_5($dopt));
-		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, "10^(-3)");
+		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, "0.001");
+		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS, "false");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_FLOAT_FORMAT, "mg");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_DECIMAL_SEPARATOR, ".");
 		$dopt->set(com_wiris_quizzes_api_QuizzesConstants::$OPTION_DIGIT_GROUP_SEPARATOR, ",");

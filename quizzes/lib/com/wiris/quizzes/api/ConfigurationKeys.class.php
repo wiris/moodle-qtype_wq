@@ -25,5 +25,6 @@ class com_wiris_quizzes_api_ConfigurationKeys {
 	static $RESOURCES_STATIC = "quizzes.resources.static";
 	static $RESOURCES_URL = "quizzes.resources.url";
 	static $GRAPH_URL = "quizzes.graph.url";
+	static $VERSION = "quizzes.version";
 	function __toString() { return 'com.wiris.quizzes.api.ConfigurationKeys'; }
 }
