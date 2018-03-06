@@ -657,7 +657,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$h->openDiv("wirisoutputcontrols" . _hx_string_rec($unique, ""));
 		$h->openDivClass(null, "wirisfieldsetwrapper");
 		$h->openFieldset("wirisoutputcontrolsfieldset" . _hx_string_rec($unique, ""), $this->t->t("outputoptions"), "wirismainfieldset");
-		$h->help("wirisoutputcontrolshelp" . _hx_string_rec($unique, ""), "http://www.wiris.com/quizzes/docs/moodle/manual/variables", $this->t->t("manual"));
+		$h->help("wirisoutputcontrolshelp" . _hx_string_rec($unique, ""), "http://www.wiris.com/quizzes/docs/moodle/manual/variables#output_options", $this->t->t("manual"));
 		$h->openTable("wirisoutputcontrolslist" . _hx_string_rec($unique, ""), "wirisoutputcontrolslist");
 		$id = null;
 		$h->openTr(null);
