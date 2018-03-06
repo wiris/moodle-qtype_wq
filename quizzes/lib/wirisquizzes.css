@@ -901,13 +901,13 @@ a.wirisrevealcalclauncher {
 div.wiristabs fieldset.wirisfieldset legend a.wirisexpanded.wirisrevealcalclauncher {
 	padding-left: 0px;
 	padding-right: 14px;
-	background: url("fieldset-expanded.png?v=3.61.0") no-repeat right 50%;
+	background: url("?service=resource&name=fieldset-expanded.png&v=3.62.0") no-repeat right 50%;
 }
 
 div.wiristabs fieldset.wirisfieldset legend a.wiriscollapsed.wirisrevealcalclauncher {
 	padding-left: 0px;
 	padding-right: 14px;
-	background: url("fieldset-collapsed.png?v=3.61.0") no-repeat right 50%;
+	background: url("?service=resource&name=fieldset-collapsed.png&v=3.62.0") no-repeat right 50%;
 }
 
 div.wiriscalcquizzescontainer {
