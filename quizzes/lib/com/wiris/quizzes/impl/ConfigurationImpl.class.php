@@ -214,6 +214,10 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 		}
 		return com_wiris_quizzes_impl_ConfigurationImpl::$config;
 	}
+	static function getUrlKeys() {
+		$urls = new _hx_array(array(com_wiris_quizzes_api_ConfigurationKeys::$WIRIS_URL, com_wiris_quizzes_api_ConfigurationKeys::$EDITOR_URL, com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL, com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL, com_wiris_quizzes_api_ConfigurationKeys::$HAND_URL, com_wiris_quizzes_api_ConfigurationKeys::$RESOURCES_URL, com_wiris_quizzes_api_ConfigurationKeys::$WIRISLAUNCHER_URL, com_wiris_quizzes_api_ConfigurationKeys::$CALC_URL));
+		return $urls;
+	}
 	function __toString() { return 'com.wiris.quizzes.impl.ConfigurationImpl'; }
 }
 com_wiris_quizzes_impl_ConfigurationImpl::$thisLock = _hx_anonymous(array());
