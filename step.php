@@ -190,7 +190,7 @@ class qtype_wirisstep {
         if (is_null($c)) {
             return false;
         }
-        return $c >= self::MAX_ATTEMPS_SHORTANSWER_Wiris;
+        return $c >= self::MAX_ATTEMPS_SHORTANSWER_WIRIS;
     }
 
     /**

@@ -16198,6 +16198,12 @@ com.wiris.util.type.Comparator.prototype = {
 }
 com.wiris.util.type.IntegerTools = $hxClasses["com.wiris.util.type.IntegerTools"] = function() { }
 com.wiris.util.type.IntegerTools.__name__ = ["com","wiris","util","type","IntegerTools"];
+com.wiris.util.type.IntegerTools.sign = function(value) {
+	return value >= 0?1:-1;
+}
+com.wiris.util.type.IntegerTools.signBool = function(value) {
+	return value?1:-1;
+}
 com.wiris.util.type.IntegerTools.max = function(x,y) {
 	return x > y?x:y;
 }
