@@ -915,7 +915,7 @@ div.wiriscalcquizzescontainer {
     bottom: 0;
     top: 48px;
     width: 100%;
-	background: url('loading.gif') no-repeat center center;
+	background: url("?service=resource&name=loading.gif&v=3.62.0") no-repeat center center;
 	z-index: 100;
 }
 

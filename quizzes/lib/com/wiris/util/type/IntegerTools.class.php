@@ -2,6 +2,12 @@
 
 class com_wiris_util_type_IntegerTools {
 	public function __construct(){}
+	static function sign($value) {
+		return (($value >= 0) ? 1 : -1);
+	}
+	static function signBool($value) {
+		return (($value) ? 1 : -1);
+	}
 	static function max($x, $y) {
 		return (($x > $y) ? $x : $y);
 	}
