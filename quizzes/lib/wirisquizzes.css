@@ -972,3 +972,14 @@ wrapper in Firefox.
         top: 14px;
     }
 }
+
+div.wirisauxiliarcalcme {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+div.wirisalgorithmwrapper fieldset.wiriscaswrapper {
+    border: solid 1px #999;
+    border-radius: 8px;
+}
