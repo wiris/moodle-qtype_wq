@@ -1772,53 +1772,6 @@ class com_wiris_quizzes_impl_HTMLTools {
 		}
 		return $calcSession;
 	}
-	static function setCalcSessionTitle($calcSession, $title) {
-		if(com_wiris_quizzes_impl_HTMLTools::isCalc($calcSession)) {
-			$start = _hx_index_of($calcSession, "<wiriscalc", null);
-			$end = _hx_index_of($calcSession, "</wiriscalc>", $start + 1);
-			$start = _hx_index_of($calcSession, "<title", $start + 1);
-			if($start > -1 && $start < $end) {
-				$end = _hx_index_of($calcSession, "</title>", $start + 1);
-				$start = _hx_index_of($calcSession, "<math", $start + 1);
-				if($start > -1 && $start < $end) {
-					$start = _hx_index_of($calcSession, "<mtext", $start + 1);
-					$end = _hx_index_of($calcSession, "</mtext>", $start + 1);
-					if($start > -1 && $start < $end) {
-						$start = _hx_index_of($calcSession, ">", $start + 1) + 1;
-						if($start > -1 && $start < $end) {
-							$s1 = _hx_substr($calcSession, 0, $start);
-							$s2 = _hx_substr($calcSession, $end, null);
-							return $s1 . $title . $s2;
-						}
-					}
-				}
-			}
-		}
-		return $calcSession;
-	}
-	static function getCalcSessionTitle($calcSession) {
-		if(com_wiris_quizzes_impl_HTMLTools::isCalc($calcSession)) {
-			$start = _hx_index_of($calcSession, "<wiriscalc", null);
-			$end = _hx_index_of($calcSession, "</wiriscalc>", $start + 1);
-			$start = _hx_index_of($calcSession, "<title", $start + 1);
-			if($start > -1 && $start < $end) {
-				$end = _hx_index_of($calcSession, "</title>", $start + 1);
-				$start = _hx_index_of($calcSession, "<math", $start + 1);
-				if($start > -1 && $start < $end) {
-					$start = _hx_index_of($calcSession, "<mtext", $start + 1);
-					$end = _hx_index_of($calcSession, "</mtext>", $start + 1);
-					if($start > -1 && $start < $end) {
-						$start = _hx_index_of($calcSession, ">", $start + 1) + 1;
-						if($start > -1 && $start < $end) {
-							$title = _hx_substr($calcSession, $start, $end - $start);
-							return $title;
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLTools'; }
 }
 function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer, &$answers, &$compound, &$h, &$i, &$i1, &$keyword, &$s) {
