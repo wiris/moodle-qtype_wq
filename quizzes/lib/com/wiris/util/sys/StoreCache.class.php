@@ -4,8 +4,7 @@ class com_wiris_util_sys_StoreCache implements com_wiris_util_sys_Cache{
 	public function __construct($cachedir) {
 		if(!php_Boot::$skip_constructor) {
 		$this->cachedir = com_wiris_system_Storage::newStorage($cachedir);
-		$cacheExists = $this->cachedir->exists();
-		if(!$cacheExists) {
+		if(!$this->cachedir->exists()) {
 			$this->cachedir->mkdirs();
 		}
 		if(!$this->cachedir->exists()) {
@@ -51,7 +50,7 @@ class com_wiris_util_sys_StoreCache implements com_wiris_util_sys_Cache{
 				$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 				$t = $_ex_;
 				{
-					haxe_Log::trace("Unable to read cache file \"" . $s->toString() . "\".", _hx_anonymous(array("fileName" => "StoreCache.hx", "lineNumber" => 44, "className" => "com.wiris.util.sys.StoreCache", "methodName" => "get")));
+					haxe_Log::trace("Unable to read cache file \"" . $s->toString() . "\".", _hx_anonymous(array("fileName" => "StoreCache.hx", "lineNumber" => 43, "className" => "com.wiris.util.sys.StoreCache", "methodName" => "get")));
 					return null;
 				}
 			}

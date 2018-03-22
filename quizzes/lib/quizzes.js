@@ -15988,8 +15988,7 @@ com.wiris.util.sys.IniFile.prototype = {
 }
 com.wiris.util.sys.StoreCache = $hxClasses["com.wiris.util.sys.StoreCache"] = function(cachedir) {
 	this.cachedir = com.wiris.system.Storage.newStorage(cachedir);
-	var cacheExists = this.cachedir.exists();
-	if(!cacheExists) this.cachedir.mkdirs();
+	if(!this.cachedir.exists()) this.cachedir.mkdirs();
 	if(!this.cachedir.exists()) throw "Variable folder \"" + this.cachedir.toString() + "\" does not exist and can't be automatically created. Please create it with write permissions.";
 };
 com.wiris.util.sys.StoreCache.__name__ = ["com","wiris","util","sys","StoreCache"];
@@ -16024,7 +16023,7 @@ com.wiris.util.sys.StoreCache.prototype = {
 		if(s.exists()) try {
 			return haxe.io.Bytes.ofData(s.readBinary());
 		} catch( t ) {
-			haxe.Log.trace("Unable to read cache file \"" + s.toString() + "\".",{ fileName : "StoreCache.hx", lineNumber : 44, className : "com.wiris.util.sys.StoreCache", methodName : "get"});
+			haxe.Log.trace("Unable to read cache file \"" + s.toString() + "\".",{ fileName : "StoreCache.hx", lineNumber : 43, className : "com.wiris.util.sys.StoreCache", methodName : "get"});
 			return null;
 		} else return null;
 	}
@@ -16216,6 +16215,9 @@ com.wiris.util.type.IntegerTools.min = function(x,y) {
 }
 com.wiris.util.type.IntegerTools.clamp = function(x,a,b) {
 	return com.wiris.util.type.IntegerTools.min(com.wiris.util.type.IntegerTools.max(a,x),b);
+}
+com.wiris.util.type.IntegerTools.inRange = function(x,start,end) {
+	return x >= start && x < end;
 }
 com.wiris.util.type.IntegerTools.isInt = function(x) {
 	return new EReg("[\\+\\-]?\\d+","").match(x);
