@@ -5,6 +5,25 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 		if(!php_Boot::$skip_constructor) {
 		$this->h = new com_wiris_quizzes_impl_HTMLTools();
 	}}
+	public function unitTestParameter() {
+		$inputs = new _hx_array(array("<session lang=\"en\" version=\"2.0\"><library closed=\"false\"><mtext style=\"color:#ffc800\" xml:lang=\"en\">variables</mtext><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>parameter</mi><mo>&nbsp;</mo><mi>answer</mi><mo>&nbsp;</mo><mo>=</mo><mo>&nbsp;</mo><mn>123</mn></math></input></command></group></library></session>", "<wiriscalc version=\"3.1\"><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Untitled calc</mtext></math></title><properties><property name=\"lang\">en</property></properties><session version=\"3.0\" lang=\"en\"><task><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Sheet 1</mtext></math></title><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>parameter</mi><mo>&#xA0;</mo><mi>answer</mi><mo>=</mo><mn>123</mn></math></input></command></group></task></session></wiriscalc>", "<wiriscalc version=\"3.1\"><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Calc sem título</mtext></math></title><properties><property name=\"lang\">pt</property></properties><session version=\"3.0\" lang=\"pt\"><task><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Hoja 1</mtext></math></title><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>parâmetro</mi><mo>&#xA0;</mo><mi>resposta</mi><mo>=</mo><mn>123</mn></math></input></command><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"/></input></command></group></task></session></wiriscalc>", "<wiriscalc version=\"3.1\"><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Calc sem título</mtext></math></title><properties><property name=\"lang\">pt</property></properties><session version=\"3.0\" lang=\"pt\"><task><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Hoja 1</mtext></math></title><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>parametro</mi><mo>&#xA0;</mo><mi>resposta</mi><mo>=</mo><mn>123</mn></math></input></command><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"/></input></command></group></task></session></wiriscalc>"));
+		$parameters = new _hx_array(array("parameter", "parameter", "parâmetro", "parâmetro"));
+		$answers = new _hx_array(array("answer", "answer", "resposta", "resposta"));
+		$i = null;
+		{
+			$_g1 = 0; $_g = $inputs->length;
+			while($_g1 < $_g) {
+				$i1 = $_g1++;
+				if(!com_wiris_quizzes_impl_HTMLTools::hasCasSessionParameter($inputs[$i1], $parameters[$i1], $answers[$i1])) {
+					throw new HException("Failed test");
+				}
+				if(com_wiris_quizzes_impl_HTMLTools::hasCasSessionParameter($inputs[$i1], $parameters[$i1], _hx_substr($answers[$i1], 0, 3))) {
+					throw new HException("Failed test");
+				}
+				unset($i1);
+			}
+		}
+	}
 	public function unitTestStripRootTag() {
 		$inputs = new _hx_array(array("<math><mi>x</mi></math>", "<math><math/></math>", "<math></math><math/>", "<math><mi>e</mi><mo>+</mo><math><mi>i</mi></math></math>", "<math><math></math><math/><math></math></math><math></math>"));
 		$outputs = new _hx_array(array("<mi>x</mi>", "<math/>", "<math></math><math/>", "<mi>e</mi><mo>+</mo><math><mi>i</mi></math>", "<math><math></math><math/><math></math></math><math></math>"));
@@ -296,6 +315,7 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 		$this->unitTestTables();
 		$this->unitTestParseCompoundAnswers();
 		$this->unitTestUtf8();
+		$this->unitTestParameter();
 	}
 	public $h;
 	public function __call($m, $a) {
