@@ -2620,7 +2620,7 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 			var sessionLang = com.wiris.quizzes.impl.HTMLTools.casSessionLang(this.value);
 			var i = 0;
 			var translate = true;
-			while(i < sessionLang.length && translate) {
+			while(i < calcLangs.length && translate) {
 				if(sessionLang == calcLangs[i]) translate = false;
 				i++;
 			}
@@ -2628,7 +2628,7 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 			if(translate) confirmText += "\n\n" + this.t("wiriscalcwarninglang");
 			var win = this.getOwnerWindow();
 			if(win.confirm(confirmText)) {
-				if(translate) this.calcWrapper.setValue(com.wiris.quizzes.JsCasJnlpLauncher.translateSession(this.value,"en"));
+				if(translate) this.calcWrapper.setValue(com.wiris.quizzes.JsCasJnlpLauncher.translateSession(this.value,"en")); else this.calcWrapper.setValue(this.value);
 				this.calcWrapper.launch(e,null,this.onClose);
 			}
 		} else this.calcWrapper.launch(e,null,this.onClose);
@@ -2692,7 +2692,6 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 					_g.needsSetTitle = false;
 				}
 				_g.setCalcModelListener();
-				com.wiris.quizzes.JsDomUtils.removeCSS(_g.getOwnerDocument(),"calc","template.css");
 			});
 		} else this.delay($bind(this,this.launchImpl),200);
 	}
@@ -2707,6 +2706,7 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 		com.wiris.quizzes.JsDomUtils.removeClass(container,"wirishidden");
 		this.calc.setNeedsSave(false);
 		this.setValue(this.calc.getContent());
+		com.wiris.quizzes.JsDomUtils.removeCSS(this.getOwnerDocument(),"calc","template.css");
 	}
 	,createContainer: function(parent,onClose) {
 		var _g = this;
@@ -6305,7 +6305,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 						var name = question.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER_NAME);
 						var defname = question.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER_NAME);
 						if(defname == name) name = com.wiris.quizzes.impl.Translator.getInstance(input.getCasLang()).t(name);
-						question.setOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER,input.hasParameter(name)?"false":"true");
+						question.setOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER,input.hasParameter(name)?"true":"false");
 					};
 				})(controller);
 				controller[0].getQuestionValue = (function() {
