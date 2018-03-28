@@ -1278,11 +1278,7 @@ com.wiris.quizzes.JsComponent.prototype = {
 		return this.ownerDocument;
 	}
 	,getOwnerWindow: function() {
-		if(this.ownerWindow == null) {
-			var doc = this.getOwnerDocument();
-			this.ownerWindow = null;
-			if('defaultView' in doc) this.ownerWindow = doc.defaultView; else if('parentWindow' in doc) this.ownerWindow = doc.parentWindow;
-		}
+		if(this.ownerWindow == null) this.ownerWindow = com.wiris.quizzes.JsDomUtils.getDocumentWindow(this.ownerDocument);
 		return this.ownerWindow;
 	}
 	,getLang: function() {
@@ -2362,7 +2358,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1601, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1595, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2692,6 +2688,7 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 					_g.needsSetTitle = false;
 				}
 				_g.setCalcModelListener();
+				com.wiris.quizzes.JsDomUtils.removeDuplicatedCSS(_g.getOwnerDocument(),"calc","template.css");
 			});
 		} else this.delay($bind(this,this.launchImpl),200);
 	}
@@ -2706,7 +2703,6 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 		com.wiris.quizzes.JsDomUtils.removeClass(container,"wirishidden");
 		this.calc.setNeedsSave(false);
 		this.setValue(this.calc.getContent());
-		com.wiris.quizzes.JsDomUtils.removeCSS(this.getOwnerDocument(),"calc","template.css");
 	}
 	,createContainer: function(parent,onClose) {
 		var _g = this;
@@ -4314,7 +4310,7 @@ com.wiris.quizzes.JsDomUtils.getChildByClassName = function(element,className) {
 	}
 	return null;
 }
-com.wiris.quizzes.JsDomUtils.loadFile = function(elem,url,func,params) {
+com.wiris.quizzes.JsDomUtils.loadFilePost = function(elem,url,func,params) {
 	var d = elem.ownerDocument;
 	var iframe = d.createElement("iframe");
 	var submitted = false;
@@ -4345,7 +4341,31 @@ com.wiris.quizzes.JsDomUtils.loadFile = function(elem,url,func,params) {
 	});
 	fileInput.click();
 }
+com.wiris.quizzes.JsDomUtils.loadFile = function(elem,url,func,params) {
+	try {
+		var browser = new com.wiris.system.JsBrowser();
+		if(browser.isIE() || browser.isEdge()) {
+			var temp = js.Lib.document.createElement("div");
+			temp.style.display = "none";
+			js.Lib.document.body.appendChild(temp);
+			com.wiris.system.JsDOMUtils.loadTextFile(temp,function(content) {
+				js.Lib.document.body.removeChild(temp);
+				com.wiris.quizzes.JsDomUtils.getDocumentWindow(elem.ownerDocument).focus();
+				func(content);
+			});
+		} else com.wiris.system.JsDOMUtils.loadTextFile(elem,func);
+	} catch( e ) {
+		if(url != null) com.wiris.quizzes.JsDomUtils.loadFilePost(elem,url,func,params); else throw e;
+	}
+}
 com.wiris.quizzes.JsDomUtils.saveFile = function(elem,url,filename,contents,params) {
+	try {
+		com.wiris.system.JsDOMUtils.saveTextFile(elem,filename,"application/xml",contents);
+	} catch( e ) {
+		if(url != null) com.wiris.quizzes.JsDomUtils.saveFilePost(elem,url,filename,contents,params); else throw e;
+	}
+}
+com.wiris.quizzes.JsDomUtils.saveFilePost = function(elem,url,filename,contents,params) {
 	var d = elem.ownerDocument;
 	var iframe = d.createElement("iframe");
 	var submitted = false;
@@ -4404,11 +4424,12 @@ com.wiris.quizzes.JsDomUtils.addScript = function(d,win,url) {
 		d.getElementsByTagName("head")[0].appendChild(script);
 	}
 }
-com.wiris.quizzes.JsDomUtils.removeCSS = function(d,source,name) {
+com.wiris.quizzes.JsDomUtils.removeDuplicatedCSS = function(d,source,name) {
 	var head = d.getElementsByTagName("head")[0];
 	var links = head.getElementsByTagName("link");
 	var i = 0;
 	var n = links.length;
+	var found = false;
 	while(i < n) {
 		var link = links[i];
 		var type = link.getAttribute("type");
@@ -4416,15 +4437,23 @@ com.wiris.quizzes.JsDomUtils.removeCSS = function(d,source,name) {
 			var href = link.getAttribute("href");
 			var k = href.indexOf(source);
 			if(k >= 0) {
-				if(href.indexOf(name,k + 1) >= 0) {
+				if(found && href.indexOf(name,k + 1) >= 0) {
 					head.removeChild(link);
 					i--;
 					n--;
 				}
+			} else if(!found && href.indexOf(name) > -1) {
+				found = true;
+				i = 0;
 			}
 		}
 		i++;
 	}
+}
+com.wiris.quizzes.JsDomUtils.getDocumentWindow = function(doc) {
+	var ownerWindow = null;
+	if('defaultView' in doc) ownerWindow = doc.defaultView; else if('parentWindow' in doc) ownerWindow = doc.parentWindow;
+	return ownerWindow;
 }
 com.wiris.quizzes.JsInputController = $hxClasses["com.wiris.quizzes.JsInputController"] = function(element,question,questionElement,instance,instanceElement) {
 	this.element = element;
@@ -7099,9 +7128,13 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 		}
 	}
 	,exportQuestion: function() {
-		var proxyurl = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL);
-		var params = new Hash();
-		params.set("service","echo");
+		var proxyurl = null;
+		var params = null;
+		if(com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC) != "true") {
+			proxyurl = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL);
+			params = new Hash();
+			params.set("service","echo");
+		}
 		com.wiris.quizzes.JsDomUtils.saveFile(this.element,proxyurl,"wirisquestion.xml",this.getQuestion().serialize(),params);
 	}
 	,importQuestionCallback: function(data) {
@@ -7113,9 +7146,13 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 		this.getOwnerWindow().focus();
 	}
 	,importQuestion: function() {
-		var proxyurl = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL);
-		var params = new Hash();
-		params.set("service","echo");
+		var proxyurl = null;
+		var params = null;
+		if(com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC) != "true") {
+			proxyurl = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL);
+			params = new Hash();
+			params.set("service","echo");
+		}
 		com.wiris.quizzes.JsDomUtils.loadFile(this.element,proxyurl,$bind(this,this.importQuestionCallback),params);
 	}
 	,setCompareSetsEnabled: function(doc,unique,correctAnswer,userAnswer) {
@@ -15131,6 +15168,468 @@ com.wiris.system.JsBrowser.prototype = {
 	,dataBrowser: null
 	,__class__: com.wiris.system.JsBrowser
 }
+com.wiris.system.JsDOMUtils = $hxClasses["com.wiris.system.JsDOMUtils"] = function() { }
+com.wiris.system.JsDOMUtils.__name__ = ["com","wiris","system","JsDOMUtils"];
+com.wiris.system.JsDOMUtils.ieTouchEvents = null;
+com.wiris.system.JsDOMUtils.init = function() {
+	if(com.wiris.system.JsDOMUtils.initialized) return;
+	com.wiris.system.JsDOMUtils.ieTouchEvents = new Hash();
+	com.wiris.system.JsDOMUtils.ieTouchEvents.set("touchstart","MSPointerDown");
+	com.wiris.system.JsDOMUtils.ieTouchEvents.set("touchmove","MSPointerMove");
+	com.wiris.system.JsDOMUtils.ieTouchEvents.set("touchend","MSPointerUp");
+	com.wiris.system.JsDOMUtils.initialized = true;
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"MSPointerDown",function(e) {
+		com.wiris.system.JsDOMUtils.internetExplorerPointers.set("" + e.pointerId,e);
+	});
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"MSPointerUp",function(e) {
+		com.wiris.system.JsDOMUtils.internetExplorerPointers = new Hash();
+	});
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"scroll",function(e) {
+		com.wiris.system.JsDOMUtils.internetExplorerPointers = new Hash();
+	});
+	var touched = false;
+	var triggerEvents = function(listeners) {
+		var i = HxOverrides.iter(listeners);
+		while(i.hasNext()) {
+			var callbackFunction = i.next();
+			callbackFunction();
+		}
+	};
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"touchstart",function(e) {
+		if(!com.wiris.system.JsDOMUtils.browser.touchable) {
+			com.wiris.system.JsDOMUtils.browser.touchable = true;
+			triggerEvents(com.wiris.system.JsDOMUtils.touchDeviceListeners);
+		}
+		touched = true;
+	});
+	var onTouchEnd = function(e) {
+		if(!com.wiris.system.JsDOMUtils.browser.touchable) {
+			com.wiris.system.JsDOMUtils.browser.touchable = true;
+			triggerEvents(com.wiris.system.JsDOMUtils.touchDeviceListeners);
+		}
+		touched = true;
+		setTimeout(function() {
+			touched = false;
+		},500);
+	};
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"touchend",onTouchEnd);
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"touchleave",onTouchEnd);
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"touchcancel",onTouchEnd);
+	com.wiris.system.JsDOMUtils.addEventListener(js.Lib.document,"mousemove",function(e) {
+		if(!touched) {
+			if(com.wiris.system.JsDOMUtils.browser.touchable) {
+				com.wiris.system.JsDOMUtils.browser.touchable = false;
+				triggerEvents(com.wiris.system.JsDOMUtils.mouseDeviceListeners);
+			}
+		}
+	});
+}
+com.wiris.system.JsDOMUtils.addEventListener = function(element,eventName,handler) {
+	return com.wiris.system.JsDOMUtils.addEventListenerImpl(element,eventName,handler,false);
+}
+com.wiris.system.JsDOMUtils.addEventListenerImpl = function(element,eventName,handler,useCapture) {
+	if(navigator.msPointerEnabled && com.wiris.system.JsDOMUtils.ieTouchEvents.exists(eventName)) {
+		eventName = com.wiris.system.JsDOMUtils.ieTouchEvents.get(eventName);
+		return com.wiris.system.JsDOMUtils.addEventListenerImpl(element,eventName,function(e) {
+			if(e.pointerType == "touch") {
+				if(eventName == "MSPointerUp") com.wiris.system.JsDOMUtils.internetExplorerPointers.remove("" + e.pointerId); else com.wiris.system.JsDOMUtils.internetExplorerPointers.set("" + e.pointerId,e);
+				e.touches = new Array();
+				var i = com.wiris.system.JsDOMUtils.internetExplorerPointers.iterator();
+				while(i.hasNext()) e.touches.push(i.next());
+				handler(e);
+			}
+		},useCapture);
+	}
+	if(eventName == "touchhold" && com.wiris.system.JsDOMUtils.browser.isTouchable()) {
+		var timeout = null;
+		var startX = -1;
+		var startY = -1;
+		var descriptor = com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"touchstart",function(e) {
+			touching = true;
+			startX = e.touches[0].clientX;
+			startY = e.touches[0].clientY;
+			timeout = setTimeout(function() {
+				timeout = null;
+				handler(e);
+			},500);
+		},useCapture);
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"touchmove",function(e) {
+			if(timeout != null) {
+				if(Math.abs(e.touches[0].clientX - startX) > com.wiris.system.JsDOMUtils.TOUCHHOLD_MOVE_MARGIN || Math.abs(e.touches[0].clientY - startY) > com.wiris.system.JsDOMUtils.TOUCHHOLD_MOVE_MARGIN) {
+					clearTimeout(timeout);
+					timeout = null;
+				} else com.wiris.system.JsDOMUtils.cancelEvent(e);
+			}
+		},useCapture));
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"touchend",function(e) {
+			if(timeout != null) {
+				clearTimeout(timeout);
+				timeout = null;
+			}
+		},useCapture));
+		return descriptor;
+	}
+	var descriptor = { };
+	descriptor.element = element;
+	descriptor.eventName = eventName;
+	descriptor.handler = handler;
+	descriptor.useCapture = useCapture;
+	descriptor.subDescriptors = new Array();
+	if(eventName == "dblclick") {
+		var event = null;
+		var touching = false;
+		var firstClickTimestamp = null;
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"touchstart",function(e) {
+			touching = true;
+			event = e;
+		},useCapture));
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"touchmove",function(e) {
+			touching = false;
+		},useCapture));
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"touchend",function(e) {
+			if(touching) {
+				touching = false;
+				var currentTimestamp = new Date().getTime();
+				if(firstClickTimestamp == null || currentTimestamp > firstClickTimestamp + 500) firstClickTimestamp = currentTimestamp; else {
+					event._wrs_dealAsTouch = true;
+					handler(e);
+				}
+			}
+		},useCapture));
+	}
+	if(eventName == "fullscreenchange") {
+		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"webkitfullscreenchange",handler,useCapture);
+		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"mozfullscreenchange",handler,useCapture);
+		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"MSFullscreenChange",handler,useCapture);
+		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"wrs_fullscreenchange",handler,useCapture);
+	}
+	if(element.attachEvent) element.attachEvent("on" + eventName,function() {
+		handler(window.event);
+	}); else element.addEventListener(eventName,handler,useCapture);
+	return descriptor;
+}
+com.wiris.system.JsDOMUtils.removeEventListener = function(descriptor) {
+	if(com.wiris.system.JsDOMUtils.browser.isIE() && descriptor.element.detachEvent) descriptor.element.detachEvent("on" + Std.string(descriptor.eventName),descriptor.handler); else descriptor.element.removeEventListener(descriptor.eventName,descriptor.handler,descriptor.useCapture);
+	var i = $iterator(descriptor.subDescriptors)();
+	while(i.hasNext()) com.wiris.system.JsDOMUtils.removeEventListener(i.next());
+}
+com.wiris.system.JsDOMUtils.cancelEvent = function(e) {
+	if(e.preventDefault) e.preventDefault(); else e.returnValue = false;
+}
+com.wiris.system.JsDOMUtils.fireEvent = function(element,eventName) {
+	var event;
+	if(document.createEvent) {
+		event = document.createEvent("HTMLEvents");
+		event.initEvent(eventName,true,true);
+		event.eventName = eventName;
+		element.dispatchEvent(event);
+	} else {
+		event = document.createEventObject();
+		event.eventType = eventName;
+		event.eventName = eventName;
+		element.fireEvent("on" + eventName,event);
+	}
+}
+com.wiris.system.JsDOMUtils.getComputedStyle = function(element) {
+	if(element.currentStyle) return element.currentStyle;
+	return document.defaultView.getComputedStyle(element,null);
+}
+com.wiris.system.JsDOMUtils.getComputedStyleProperty = function(element,name) {
+	var value;
+	if(document.defaultView && document.defaultView.getComputedStyle) {
+		var computedStyle = document.defaultView.getComputedStyle(element,null);
+		value = computedStyle == null?null:computedStyle.getPropertyValue(name);
+	} else if(com.wiris.system.JsDOMUtils.browser.isIE() && element.currentStyle) {
+		var camelName = com.wiris.system.JsDOMUtils.camelize(name);
+		value = element.currentStyle[camelName];
+		if(value != null && value.length > 0 && camelName != "zoom") {
+			var firstChar = HxOverrides.cca(value,0);
+			if(firstChar >= 48 && firstChar <= 57 && !StringTools.endsWith(value,"px")) {
+				var originalLeft = element.style.left;
+				var originalRuntimeLeft = element.runtimeStyle?element.runtimeStyle.left:null;
+				if(originalRuntimeLeft != null) element.runtimeStyle.left = element.currentStyle.left;
+				element.style.left = camelName == "fontSize"?"1em":value;
+				value = element.style.pixelLeft + "px";
+				element.style.left = originalLeft;
+				if(originalRuntimeLeft != null) element.runtimeStyle.left = originalRuntimeLeft;
+			}
+		}
+	} else value = element.style[com.wiris.system.JsDOMUtils.camelize(name)];
+	return value;
+}
+com.wiris.system.JsDOMUtils.camelize = function(str) {
+	var start = 0;
+	var pos;
+	var sb = new StringBuf();
+	while((pos = str.indexOf("-",start)) != -1) {
+		sb.b += Std.string(HxOverrides.substr(str,start,pos - start));
+		sb.b += Std.string(str.charAt(pos + 1).toUpperCase());
+		start = pos + 2;
+	}
+	sb.b += Std.string(HxOverrides.substr(str,start,null));
+	return sb.b;
+}
+com.wiris.system.JsDOMUtils.getElementsByClassName = function(parent,className,recursive) {
+	var returnValue = new Array();
+	var _g1 = 0, _g = parent.childNodes.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(com.wiris.system.JsDOMUtils.hasClass(parent.childNodes[i],className)) returnValue.push(parent.childNodes[i]);
+		if(recursive) returnValue = returnValue.concat(com.wiris.system.JsDOMUtils.getElementsByClassName(parent.childNodes[i],className,true));
+	}
+	return returnValue;
+}
+com.wiris.system.JsDOMUtils.getEventTarget = function(event) {
+	if(event.srcElement) return event.srcElement;
+	return event.target;
+}
+com.wiris.system.JsDOMUtils.getLeft = function(element) {
+	return element.getBoundingClientRect().left;
+}
+com.wiris.system.JsDOMUtils.getRelativeLeft = function(element,parent) {
+	if(parent == null) return com.wiris.system.JsDOMUtils.getLeft(element);
+	return com.wiris.system.JsDOMUtils.getLeft(element) - com.wiris.system.JsDOMUtils.getLeft(parent);
+}
+com.wiris.system.JsDOMUtils.getTop = function(element) {
+	return element.getBoundingClientRect().top;
+}
+com.wiris.system.JsDOMUtils.getRelativeTop = function(element,parent) {
+	if(parent == null) return com.wiris.system.JsDOMUtils.getTop(element);
+	return com.wiris.system.JsDOMUtils.getTop(element) - com.wiris.system.JsDOMUtils.getTop(parent);
+}
+com.wiris.system.JsDOMUtils.getWindowScroll = function() {
+	var scroll = new Array();
+	if(js.Lib.window.pageYOffset == undefined) {
+		scroll[0] = js.Lib.document.documentElement.scrollLeft;
+		scroll[1] = js.Lib.document.documentElement.scrollTop;
+	} else {
+		scroll[0] = js.Lib.window.pageXOffset;
+		scroll[1] = js.Lib.window.pageYOffset;
+	}
+	return scroll;
+}
+com.wiris.system.JsDOMUtils.isDescendant = function(parent,possibleDescendant) {
+	if(possibleDescendant.parentNode == null) return false;
+	if(possibleDescendant.parentNode == parent) return true;
+	return com.wiris.system.JsDOMUtils.isDescendant(parent,possibleDescendant.parentNode);
+}
+com.wiris.system.JsDOMUtils.parseDimension = function(x) {
+	return x < 0 || x == null?0:x;
+}
+com.wiris.system.JsDOMUtils.removeChildren = function(element) {
+	while(element.firstChild != null) element.removeChild(element.firstChild);
+}
+com.wiris.system.JsDOMUtils.hasClass = function(element,className) {
+	if(element == null || element.className == null || !(element.className.split)) return false;
+	var classes = element.className.split(" ");
+	var i = HxOverrides.iter(classes);
+	while(i.hasNext()) if(i.next() == className) return true;
+	return false;
+}
+com.wiris.system.JsDOMUtils.addClass = function(element,className) {
+	if(element == null) return;
+	if(element.className == "") element.className = className; else if(!com.wiris.system.JsDOMUtils.hasClass(element,className)) element.className += " " + className;
+}
+com.wiris.system.JsDOMUtils.removeClass = function(element,className) {
+	if(element == null || element.className == null || !(element.className.split)) return;
+	var classes = element.className.split(" ");
+	HxOverrides.remove(classes,className);
+	element.className = classes.join(" ");
+}
+com.wiris.system.JsDOMUtils.toggleClass = function(element,className) {
+	if(com.wiris.system.JsDOMUtils.hasClass(element,className)) com.wiris.system.JsDOMUtils.removeClass(element,className); else com.wiris.system.JsDOMUtils.addClass(element,className);
+}
+com.wiris.system.JsDOMUtils.activateClass = function(element,className) {
+	if(!com.wiris.system.JsDOMUtils.hasClass(element,className)) com.wiris.system.JsDOMUtils.addClass(element,className);
+}
+com.wiris.system.JsDOMUtils.setCaretPosition = function(element,position,end) {
+	if(element.setSelectionRange) element.setSelectionRange(position,end); else if(element.createTextRange) {
+		var range = element.createTextRange();
+		range.collapse(true);
+		range.moveStart("character",position);
+		range.moveEnd("character",end);
+		range.select();
+	}
+}
+com.wiris.system.JsDOMUtils.getSelectionBounds = function(element) {
+	var bounds = new Array();
+	if(element.selectionStart != null) {
+		bounds[0] = element.selectionStart;
+		bounds[1] = element.selectionEnd;
+		return bounds;
+	}
+	var range = document.selection.createRange();
+	if(range && range.parentElement() == element) {
+		var length = element.value.length;
+		var normalizedValue = element.value.split("\r\n").join("\n");
+		var textInputRange = element.createTextRange();
+		textInputRange.moveToBookmark(range.getBookmark());
+		var endRange = element.createTextRange();
+		endRange.collapse(false);
+		if(textInputRange.compareEndPoints("StartToEnd",endRange) > -1) bounds[0] = bounds[1] = length; else {
+			bounds[0] = -textInputRange.moveStart("character",-length);
+			bounds[0] += normalizedValue.slice(0,bounds[0]).split("\n").length - 1;
+			if(textInputRange.compareEndPoints("EndToEnd",endRange) > -1) bounds[1] = length; else {
+				bounds[1] = -textInputRange.moveEnd("character",-length);
+				bounds[1] += normalizedValue.slice(0,bounds[1]).split("\n").length - 1;
+			}
+		}
+		return bounds;
+	}
+	return null;
+}
+com.wiris.system.JsDOMUtils.getMousePosition = function(target,e) {
+	if(e._wrs_dealAsTouch) return com.wiris.system.JsDOMUtils.getTouchPosition(target,e.touches[0]);
+	var elementScroll = new Array();
+	elementScroll[0] = target.scrollLeft;
+	elementScroll[1] = target.scrollTop;
+	return com.wiris.system.JsDOMUtils.getMousePositionImpl(target,e,elementScroll,0);
+}
+com.wiris.system.JsDOMUtils.getMousePositionImpl = function(target,e,elementScroll,border) {
+	var position = new Array();
+	position[0] = e.clientX - com.wiris.system.JsDOMUtils.getLeft(target) - border + elementScroll[0];
+	position[1] = e.clientY - com.wiris.system.JsDOMUtils.getTop(target) - border + elementScroll[1];
+	return position;
+}
+com.wiris.system.JsDOMUtils.inFixedParent = function(element) {
+	while(element != null) {
+		if(com.wiris.system.JsDOMUtils.getComputedStyleProperty(element,"position") == "fixed") return true;
+		element = element.offsetParent;
+	}
+	return false;
+}
+com.wiris.system.JsDOMUtils.getTouchPosition = function(target,touch) {
+	var elementScroll = new Array();
+	elementScroll[0] = target.scrollLeft;
+	elementScroll[1] = target.scrollTop;
+	return com.wiris.system.JsDOMUtils.getTouchPositionImpl(target,touch,elementScroll,0);
+}
+com.wiris.system.JsDOMUtils.getTouchPositionImpl = function(target,touch,elementScroll,border) {
+	var position = new Array();
+	position[0] = touch.clientX - com.wiris.system.JsDOMUtils.getLeft(target) - border + elementScroll[0];
+	position[1] = touch.clientY - com.wiris.system.JsDOMUtils.getTop(target) - border + elementScroll[1];
+	return position;
+}
+com.wiris.system.JsDOMUtils.getStandardButton = function(e) {
+	if(com.wiris.system.JsDOMUtils.browser.isTouchable()) return 0;
+	var button = e.button;
+	if(com.wiris.system.JsDOMUtils.browser.isIE()) {
+		if(button == 1) button = 0; else if(button == 4) button = 1;
+	}
+	return button;
+}
+com.wiris.system.JsDOMUtils.vibrate = function(milliseconds) {
+	if(navigator.vibrate) navigator.vibrate(milliseconds);
+}
+com.wiris.system.JsDOMUtils.onTouchDeviceDetected = function(callbackFunction) {
+	com.wiris.system.JsDOMUtils.init();
+	com.wiris.system.JsDOMUtils.touchDeviceListeners.push(callbackFunction);
+}
+com.wiris.system.JsDOMUtils.onMouseDeviceDetected = function(callbackFunction) {
+	com.wiris.system.JsDOMUtils.init();
+	com.wiris.system.JsDOMUtils.mouseDeviceListeners.push(callbackFunction);
+}
+com.wiris.system.JsDOMUtils.findScriptElement = function(reg) {
+	var scripts = js.Lib.document.getElementsByTagName("script");
+	var n = scripts.length;
+	var i = 0;
+	while(i < n) {
+		var src = scripts[i].getAttribute("src");
+		if(reg.match(src)) return scripts[i];
+		++i;
+	}
+	return null;
+}
+com.wiris.system.JsDOMUtils.rewriteDefaultPaths = function(contextPath) {
+	if(window.com.wiris.js.defaultServicePath != null && StringTools.startsWith(window.com.wiris.js.defaultServicePath,"http://")) {
+		var protocol = js.Lib.window.location.protocol;
+		var defaultServicePathWithoutProtocol = window.com.wiris.js.defaultServicePath.substr("http:".length);
+		var reg = new EReg("(http:|https:)" + defaultServicePathWithoutProtocol + "/" + contextPath,"");
+		if(com.wiris.system.JsDOMUtils.findScriptElement(reg) != null) protocol = reg.matched(1);
+		if(protocol == "https:") {
+			window.com.wiris.js.defaultServicePath = "https:" + defaultServicePathWithoutProtocol;
+			if(window.com.wiris.js.defaultBasePath != null) window.com.wiris.js.defaultBasePath = "https:" + window.com.wiris.js.defaultBasePath.substr("http:".length);
+		}
+	}
+}
+com.wiris.system.JsDOMUtils.createCSSRules = function(selector,rules) {
+	var style = js.Lib.document.createElement("style");
+	style.type = "text/css";
+	js.Lib.document.getElementsByTagName("head")[0].appendChild(style);
+	if(style.sheet != null && style.sheet.insertRule != null) style.sheet.insertRule(selector + "{" + rules + "}",0); else if(style.styleSheet != null) style.styleSheet.addRule(selector,rules); else if(style.sheet != null) style.sheet.addRule(selector,rules);
+}
+com.wiris.system.JsDOMUtils.enterFullscreen = function(element) {
+	document.wrs_fullscreen = true;
+	document.wrs_fullscreenElement = element;
+	com.wiris.system.JsDOMUtils.addClass(element,"wrs_fullscreen");
+	com.wiris.system.JsDOMUtils.fireEvent(document,"wrs_fullscreenchange");
+}
+com.wiris.system.JsDOMUtils.exitFullscreen = function() {
+	if(document.wrs_fullscreenElement != null) com.wiris.system.JsDOMUtils.removeClass(document.wrs_fullscreenElement,"wrs_fullscreen");
+	document.wrs_fullscreenElement = null;
+	document.wrs_fullscreen = false;
+	com.wiris.system.JsDOMUtils.fireEvent(document,"wrs_fullscreenchange");
+}
+com.wiris.system.JsDOMUtils.isFullscreen = function(element) {
+	if(element == null) return document.wrs_fullscreen || document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement;
+	return document.wrs_fullscreenElement == element || document.fullscreenElement == element || document.mozFullScreenElement == element || document.webkitFullscreenElement || document.msFullscreenElement == element;
+}
+com.wiris.system.JsDOMUtils.execCommand = function(command) {
+	return document.execCommand(command);
+}
+com.wiris.system.JsDOMUtils.findServicePath = function(scriptName) {
+	var scriptTags = js.Lib.document.getElementsByTagName("script");
+	var servicePath = null;
+	var _g1 = 0, _g = scriptTags.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var src = scriptTags[i].src;
+		var j = src.lastIndexOf("/" + scriptName);
+		if(j >= 0) servicePath = HxOverrides.substr(src,0,j); else if(src == scriptName) servicePath = "";
+	}
+	if(servicePath != null && StringTools.startsWith(servicePath,"http://") && js.Lib.window.location.protocol == "https:") servicePath = "https://" + HxOverrides.substr(servicePath,"http://".length,null);
+	return servicePath;
+}
+com.wiris.system.JsDOMUtils.loadTextFile = function(elem,func) {
+	var w = js.Lib.window;
+	if(w.File && w.FileReader && w.FileList && w.Blob) {
+		var d = elem.ownerDocument;
+		var fileInput = d.createElement("input");
+		fileInput.setAttribute("name","data");
+		fileInput.setAttribute("type","file");
+		elem.appendChild(fileInput);
+		com.wiris.system.JsDOMUtils.init();
+		com.wiris.system.JsDOMUtils.addEventListener(fileInput,"change",function(e) {
+			if(fileInput.files.length) {
+				var file = fileInput.files[0];
+				var reader = new FileReader();
+				reader.onload = function(le) {
+					func(le.target.result);
+				};
+				reader.readAsText(file);
+			}
+			elem.removeChild(fileInput);
+		});
+		fileInput.click();
+	} else throw "Browser incompatible with JavaScript File API.";
+}
+com.wiris.system.JsDOMUtils.saveTextFile = function(elem,filename,filetype,contents) {
+	var d = elem.ownerDocument;
+	var w = js.Lib.window;
+	if(w.Blob) {
+		var blob = new Blob([contents], {'type': filetype});
+		var a = d.createElement("a");
+		if('download' in a && w.URL) {
+			a.href = w.URL.createObjectURL(blob);
+			a.download = filename;
+			elem.appendChild(a);
+			a.click();
+			elem.removeChild(a);
+			return;
+		}
+	}
+	throw "Browser incompatible with HTML object download anchors.";
+}
 com.wiris.system.LocalStorageCache = $hxClasses["com.wiris.system.LocalStorageCache"] = function(code) {
 	this.MAX_BYTES = 2097152;
 	this.code = code;
@@ -20049,6 +20548,7 @@ js.Lib.eval = function(code) {
 js.Lib.setErrorHandler = function(f) {
 	js.Lib.onerror = f;
 }
+function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; };
 var $_;
 function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
 if(Array.prototype.indexOf) HxOverrides.remove = function(a,o) {
@@ -20273,7 +20773,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASSPATH = "";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRIS_URL = "http://www.wiris.net/demo/wiris";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRISLAUNCHER_URL = "http://stateful.wiris.net/demo/wiris";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_URL = "https://calcme.com";
-com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED = "false";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED = "true";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_EDITOR_URL = "http://www.wiris.net/demo/editor";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_URL = "http://www.wiris.net/demo/hand";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_URL = "http://www.wiris.net/demo/quizzes";
@@ -20397,6 +20897,12 @@ com.wiris.settings.PlatformSettings.PARSE_XML_ENTITIES = true;
 com.wiris.settings.PlatformSettings.UTF8_CONVERSION = false;
 com.wiris.settings.PlatformSettings.IS_JAVASCRIPT = true;
 com.wiris.settings.PlatformSettings.IS_FLASH = false;
+com.wiris.system.JsDOMUtils.TOUCHHOLD_MOVE_MARGIN = 10;
+com.wiris.system.JsDOMUtils.browser = new com.wiris.system.JsBrowser();
+com.wiris.system.JsDOMUtils.initialized = false;
+com.wiris.system.JsDOMUtils.touchDeviceListeners = new Array();
+com.wiris.system.JsDOMUtils.mouseDeviceListeners = new Array();
+com.wiris.system.JsDOMUtils.internetExplorerPointers = new Hash();
 com.wiris.system.LocalStorageCache.ITEMS_KEY = "_items";
 com.wiris.system.Logger.SEVERE = 1000;
 com.wiris.system.Logger.WARNING = 900;
