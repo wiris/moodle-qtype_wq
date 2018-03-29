@@ -9956,7 +9956,14 @@ com.wiris.quizzes.impl.HTMLTableTools.prototype = {
 		}
 	}
 	,isCellExpandableImpl: function(cell,variables,is2d) {
-		if(cell.indexOf("<math") != -1) return false; else if(cell.indexOf("<input") != -1) return false;
+		if(cell.indexOf("<input") != -1) return false;
+		var h = new com.wiris.quizzes.impl.HTMLTools();
+		var start;
+		var end = 0;
+		while((start = cell.indexOf("<math",end)) != -1) {
+			end = cell.indexOf("</math>",start) + 7;
+			if(!h.isTokensMathML(HxOverrides.substr(cell,start,end - start))) return false;
+		}
 		var content = StringTools.trim(com.wiris.quizzes.impl.HTMLTableTools.stripTags(cell));
 		if(StringTools.startsWith(content,"#")) {
 			content = HxOverrides.substr(content,1,null);
@@ -10010,7 +10017,7 @@ com.wiris.quizzes.impl.HTMLTableTools.prototype = {
 				var _g3 = 0, _g2 = grid[i1].length;
 				while(_g3 < _g2) {
 					var j1 = _g3++;
-					var model = grid[i1][j1];
+					var model = this.getModel(grid[i1][j1]);
 					var placeholder = StringTools.trim(com.wiris.quizzes.impl.HTMLTableTools.stripTags(model));
 					var pos = model.indexOf(placeholder);
 					opentds[j1] = HxOverrides.substr(model,0,pos);
@@ -10079,6 +10086,16 @@ com.wiris.quizzes.impl.HTMLTableTools.prototype = {
 		}
 		return sb.b;
 	}
+	,getModel: function(cell) {
+		if(cell.indexOf("<math") == -1) return cell;
+		var placeholder = StringTools.trim(com.wiris.quizzes.impl.HTMLTableTools.stripTags(cell));
+		var pos = cell.indexOf(placeholder);
+		var prefix = HxOverrides.substr(cell,0,pos);
+		var suffix = HxOverrides.substr(cell,pos + placeholder.length,null);
+		if((pos = prefix.indexOf("<math")) != -1) prefix = HxOverrides.substr(prefix,0,pos);
+		if((pos = suffix.indexOf("</math>")) != -1) suffix = HxOverrides.substr(suffix,pos + 7,null);
+		return prefix + placeholder + suffix;
+	}
 	,expandHorizontal: function(rows,grid,variables) {
 		var j = 0;
 		var end = false;
@@ -10097,7 +10114,7 @@ com.wiris.quizzes.impl.HTMLTableTools.prototype = {
 				var _g1 = 0, _g = grid.length;
 				while(_g1 < _g) {
 					var i1 = _g1++;
-					var model = grid[i1][j];
+					var model = this.getModel(grid[i1][j]);
 					var parsed = this.parseTabularVariable(HxOverrides.substr(StringTools.trim(com.wiris.quizzes.impl.HTMLTableTools.stripTags(model)),1,null),variables);
 					var tds = this.joinTds(model,parsed);
 					grid[i1][j] = tds;
@@ -10169,9 +10186,9 @@ com.wiris.quizzes.impl.HTMLTableTools.prototype = {
 					var _g5 = 0, _g4 = grid[i1].length;
 					while(_g5 < _g4) {
 						var j1 = _g5++;
-						var cell = grid[i1][j1];
+						var model = this.getModel(grid[i1][j1]);
 						var x = vars[i1][j1];
-						var tds = this.joinTds(cell,x[k1]);
+						var tds = this.joinTds(model,x[k1]);
 						sb.b += Std.string(tds);
 					}
 					sb.b += Std.string(bounds[1]);
