@@ -16814,6 +16814,12 @@ com.wiris.util.type.Arrays.newIntArray = function(length,initValue) {
 	}
 	return data;
 }
+com.wiris.util.type.Arrays.isNotEmpty = function(array) {
+	return array != null && array.length > 0;
+}
+com.wiris.util.type.Arrays.getOrDefault = function(array,index,defaultValue) {
+	if(array != null && index >= 0 && index < array.length) return array[index]; else return defaultValue;
+}
 com.wiris.util.type.Arrays.indexOfElement = function(array,element) {
 	var i = 0;
 	var n = array.length;
