@@ -99,7 +99,7 @@
 ;
 ; Enable CalcMe for algorithm edition
 
-;quizzes.calc.enabled = "false"
+;quizzes.calc.enabled = "true"
 
 ;
 ; Log correct answers for Handwriting training.
