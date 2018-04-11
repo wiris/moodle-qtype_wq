@@ -21008,6 +21008,7 @@ com.wiris.util.xml.WCharacterBase.LONG_LEFT_RIGHT_DOUBLE_ARROW = 10234;
 com.wiris.util.xml.WCharacterBase.INTEGRAL = 8747;
 com.wiris.util.xml.WCharacterBase.TOP_HALF_INTEGRAL = 8992;
 com.wiris.util.xml.WCharacterBase.BOTTOM_HALF_INTEGRAL = 8993;
+com.wiris.util.xml.WCharacterBase.INTEGRAL_EXTENSION = 9134;
 com.wiris.util.xml.WCharacterBase.VERTICAL_LINE_EXTENSION = 9168;
 com.wiris.util.xml.WCharacterBase.TILDE_OPERATOR = 8764;
 com.wiris.util.xml.WCharacterBase.LEFT_CEILING = 8968;
