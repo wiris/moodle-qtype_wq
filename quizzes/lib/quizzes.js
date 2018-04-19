@@ -15425,6 +15425,17 @@ com.wiris.system.JsDOMUtils.getWindowScroll = function() {
 	}
 	return scroll;
 }
+com.wiris.system.JsDOMUtils.isLeftBidiAware = function(keyCode,rtl) {
+	return keyCode == 37 && !rtl || keyCode == 39 && rtl;
+}
+com.wiris.system.JsDOMUtils.getFirstDisplayedChild = function(parent) {
+	var child = parent != null?parent.firstChild:parent;
+	while(child != null) {
+		if(com.wiris.system.JsDOMUtils.getComputedStyleProperty(child,"display") != "none") return child;
+		child = child.nextSibling;
+	}
+	return null;
+}
 com.wiris.system.JsDOMUtils.isDescendant = function(parent,possibleDescendant) {
 	if(possibleDescendant.parentNode == null) return false;
 	if(possibleDescendant.parentNode == parent) return true;
