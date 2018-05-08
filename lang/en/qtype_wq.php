@@ -89,3 +89,7 @@ $string['quizzeswirislauncherurl'] = 'Wiris CAS JNLP URL';
 $string['quizzeswirislauncherurl_help'] = 'URL where to get the JNLP file for Wiris CAS app.';
 $string['quizzeswirisurl'] = 'Wiris CAS applet service URL';
 $string['quizzeswirisurl_help'] = 'URL where to load the Wiris CAS applet.';
+
+$string['privacy:metadata:qtype_wq'] = 'Information about user\'s correct answer for a given Wiris Quizzes question type';
+$string['privacy:metadata:qtype_wq:question'] = 'Wiris Quizzes question type id';
+$string['privacy:metadata:qtype_wq:xml'] = 'Wiris Quizzes Question XML';
