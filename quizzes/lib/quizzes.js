@@ -1337,7 +1337,8 @@ com.wiris.quizzes.api.ui.QuizzesField = $hxClasses["com.wiris.quizzes.api.ui.Qui
 com.wiris.quizzes.api.ui.QuizzesField.__name__ = ["com","wiris","quizzes","api","ui","QuizzesField"];
 com.wiris.quizzes.api.ui.QuizzesField.__interfaces__ = [com.wiris.quizzes.api.ui.QuizzesComponent];
 com.wiris.quizzes.api.ui.QuizzesField.prototype = {
-	addQuizzesFieldListener: null
+	setReadOnly: null
+	,addQuizzesFieldListener: null
 	,setValue: null
 	,getValue: null
 	,__class__: com.wiris.quizzes.api.ui.QuizzesField
@@ -1345,6 +1346,7 @@ com.wiris.quizzes.api.ui.QuizzesField.prototype = {
 com.wiris.quizzes.JsInput = $hxClasses["com.wiris.quizzes.JsInput"] = function(d,v) {
 	com.wiris.quizzes.JsComponent.call(this,d);
 	this.value = v;
+	this.readOnly = false;
 };
 com.wiris.quizzes.JsInput.__name__ = ["com","wiris","quizzes","JsInput"];
 com.wiris.quizzes.JsInput.__interfaces__ = [com.wiris.quizzes.api.ui.QuizzesField];
@@ -1371,6 +1373,13 @@ com.wiris.quizzes.JsInput.prototype = $extend(com.wiris.quizzes.JsComponent.prot
 	,isEmpty: function() {
 		return this.value == null || this.value == "";
 	}
+	,isReadOnly: function() {
+		return this.readOnly;
+	}
+	,setReadOnly: function(readOnly) {
+		this.readOnly = readOnly;
+	}
+	,readOnly: null
 	,changeHandler: null
 	,value: null
 	,__class__: com.wiris.quizzes.JsInput
@@ -1398,6 +1407,10 @@ com.wiris.quizzes.JsTextInput.prototype = $extend(com.wiris.quizzes.JsInput.prot
 	}
 	,setValue: function(v) {
 		this.element.value = v;
+	}
+	,setReadOnly: function(readOnly) {
+		com.wiris.quizzes.JsInput.prototype.setReadOnly.call(this,readOnly);
+		this.element.readOnly = readOnly;
 	}
 	,__class__: com.wiris.quizzes.JsTextInput
 });
@@ -1590,6 +1603,10 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		com.wiris.quizzes.JsPopupInput.prototype.addOnChangeHandler.call(this,handler);
 		this.setInputChangeHandler();
 	}
+	,setReadOnly: function(readOnly) {
+		com.wiris.quizzes.JsPopupInput.prototype.setReadOnly.call(this,readOnly);
+		if(this.textComponent != null) this.textComponent.setReadOnly(readOnly);
+	}
 	,setHandConstraints: function(constraints) {
 		this.handConstraints = constraints;
 	}
@@ -1694,13 +1711,13 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		return rightX <= this.getIconSize() + 5;
 	}
 	,keypressHandler: function(e) {
-		if(e.keyCode == 13) this.launchPopup(e);
+		if(!this.isReadOnly() && e.keyCode == 13) this.launchPopup(e);
 	}
 	,mouseMoveHandler: function(e) {
 		com.wiris.quizzes.JsDomUtils.getEventTarget(e).style.cursor = this.isButtonClick(e)?"pointer":"auto";
 	}
 	,clickHandler: function(e) {
-		if(this.isButtonClick(e)) this.launchPopup(e); else if(com.wiris.quizzes.JsDomUtils.getEventTarget(e).nodeName.toLowerCase() == "input") com.wiris.quizzes.JsDomUtils.getEventTarget(e).focus();
+		if(!this.isReadOnly() && this.isButtonClick(e)) this.launchPopup(e); else if(com.wiris.quizzes.JsDomUtils.getEventTarget(e).nodeName.toLowerCase() == "input") com.wiris.quizzes.JsDomUtils.getEventTarget(e).focus();
 	}
 	,configureElement: function() {
 		this.addClass("wirisembeddedmathinput");
@@ -1719,6 +1736,7 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 			this.setupImageField(this.element);
 		} else {
 			this.textComponent = new com.wiris.quizzes.JsTextInput(d,this.value);
+			this.textComponent.setReadOnly(this.readOnly);
 			this.imageComponent = null;
 			this.element = this.textComponent.getElement();
 			this.element.setAttribute("autocomplete","off");
@@ -1760,6 +1778,14 @@ com.wiris.quizzes.JsCompoundMathInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsCompoundMathInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
 	getInputs: function() {
 		return this.inputs;
+	}
+	,setReadOnly: function(readOnly) {
+		com.wiris.quizzes.JsInput.prototype.setReadOnly.call(this,readOnly);
+		var _g1 = 0, _g = this.inputs.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.inputs[i].setReadOnly(readOnly);
+		}
 	}
 	,addOnChangeHandler: function(handler) {
 		var _g2 = this;
@@ -1837,6 +1863,7 @@ com.wiris.quizzes.JsCompoundMathInput.prototype = $extend(com.wiris.quizzes.JsIn
 			input = new com.wiris.quizzes.JsTextInput(d,v);
 			input.addClass("wirisembeddedtextinput");
 		}
+		input.setReadOnly(this.readOnly);
 		return input;
 	}
 	,rebuildComponent: function(d) {
@@ -2358,7 +2385,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1595, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1619, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2792,6 +2819,7 @@ com.wiris.quizzes.JsEditorInput = $hxClasses["com.wiris.quizzes.JsEditorInput"] 
 		this.params.hand = hand.toLowerCase() == "true"?"true":"false";
 	}
 	if(this.params.basePath == null && this.isOffline()) this.params.basePath = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL);
+	if(this.params.readOnly != null) this.setReadOnly(this.params.readOnly + "" == "true");
 	this.element = d.createElement("div");
 	com.wiris.quizzes.JsDomUtils.addClass(this.element,"wiriseditorwrapper");
 	if(!this.isEditorScriptLoaded()) this.addEditorScript(d);
@@ -2815,7 +2843,18 @@ com.wiris.quizzes.JsEditorInput.getReservedWords = function(grammarurl,callbackF
 }
 com.wiris.quizzes.JsEditorInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
-	setHandConstraints: function(constraints) {
+	setReadOnlyWorkaround: function() {
+		if(this.editor != null && this.editor.isReady()) {
+			var params = new Hash();
+			params.set("readOnly",Std.string(this.readOnly) + "");
+			this.setParams(params);
+		} else this.delay($bind(this,this.setReadOnlyWorkaround),100);
+	}
+	,setReadOnly: function(readOnly) {
+		com.wiris.quizzes.JsInput.prototype.setReadOnly.call(this,readOnly);
+		this.setReadOnlyWorkaround();
+	}
+	,setHandConstraints: function(constraints) {
 		this.params.constraints = constraints;
 		if(this.editor != null) this.editor.setParams(this.params);
 	}
@@ -2971,6 +3010,7 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 		if(this.input == null) {
 			if(this.editorParams == null) this.editorParams = { };
 			if(this.editorParams.toolbar == null) this.editorParams.toolbar = "quizzes";
+			this.editorParams.readOnly = Std.string(this.readOnly) + "";
 			editor = new com.wiris.quizzes.JsEditorInput(this.getOwnerDocument(),this.value,this.editorParams);
 			this.input = editor;
 			if(this.handConstraints != null) this.setHandConstraints(this.handConstraints);
@@ -2994,6 +3034,7 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 	,setEditorInitialParams: function(editorParams) {
 		this.editorParams = editorParams;
 		if(this.editorParams.checkSyntax != null) this.checkSyntax = this.editorParams.checkSyntax == "true";
+		if(this.editorParams.readOnly != null) this.readOnly = this.editorParams.readOnly == "true";
 		if(this.input != null) {
 			if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_IMAGEMATH) {
 				var popupEditor = this.input;
@@ -3083,6 +3124,7 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 		default:
 			throw "Illegal student answer input type " + this.type + ".";
 		}
+		this.input.setReadOnly(this.readOnly);
 		if(this.changeHandler != null) this.input.addOnChangeHandler(this.changeHandler);
 		if(this.changeStartHandler != null && this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_EDITOR) {
 			var editor = this.input;
@@ -3112,6 +3154,10 @@ com.wiris.quizzes.JsStudentAnswerInput.prototype = $extend(com.wiris.quizzes.JsI
 		if(this.type == com.wiris.quizzes.JsStudentAnswerInput.TYPE_TEXTFIELD && com.wiris.quizzes.impl.MathContent.getMathType(v) == com.wiris.quizzes.impl.MathContent.TYPE_MATHML) v = new com.wiris.quizzes.impl.HTMLTools().mathMLToText(v);
 		com.wiris.quizzes.JsInput.prototype.setValue.call(this,v);
 		if(this.input != null) this.input.setValue(this.value);
+	}
+	,setReadOnly: function(readOnly) {
+		com.wiris.quizzes.JsInput.prototype.setReadOnly.call(this,readOnly);
+		if(this.input != null) this.input.setReadOnly(readOnly);
 	}
 	,getValue: function() {
 		if(this.input != null) this.value = this.input.getValue();
@@ -5503,11 +5549,13 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 		var cfg = new com.wiris.quizzes.impl.HTMLGuiConfig(options);
 		instance.setStudentAnswer(index,element.value);
 		var embedded = com.wiris.quizzes.JsDomUtils.hasClassString(options,"wirisembedded");
+		var readOnly = com.wiris.quizzes.JsDomUtils.hasClassString(options,"wirisreadonly");
 		if(embedded) {
 			var qq = question.getImpl();
 			if(qq.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_INPUT_FIELD) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_INPUT_FIELD_INLINE_EDITOR) qq.setLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_INPUT_FIELD,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_INPUT_FIELD_PLAIN_TEXT);
 		}
 		var component = this.uibuilder.newAnswerField(question,instance,index);
+		if(readOnly) component.setReadOnly(readOnly);
 		component.addQuizzesFieldListener(new com.wiris.quizzes.FieldSynchronizer(element,instanceElement,instance,submitElements));
 		var answerElement = component.getElement();
 		if(embedded) com.wiris.quizzes.JsDomUtils.addClass(answerElement,"wirisinlineblock");
@@ -8483,7 +8531,10 @@ com.wiris.quizzes.impl.EmbeddedAnswersEditorImpl = $hxClasses["com.wiris.quizzes
 com.wiris.quizzes.impl.EmbeddedAnswersEditorImpl.__name__ = ["com","wiris","quizzes","impl","EmbeddedAnswersEditorImpl"];
 com.wiris.quizzes.impl.EmbeddedAnswersEditorImpl.__interfaces__ = [com.wiris.quizzes.api.ui.EmbeddedAnswersEditor];
 com.wiris.quizzes.impl.EmbeddedAnswersEditorImpl.prototype = {
-	setStyle: function(key,value) {
+	setReadOnly: function(readOnly) {
+		com.wiris.quizzes.impl.QuizzesUIBuilderImpl.throwNotImplementedInServerTechnology();
+	}
+	,setStyle: function(key,value) {
 		com.wiris.quizzes.impl.QuizzesUIBuilderImpl.throwNotImplementedInServerTechnology();
 	}
 	,showAnswerFieldPlainText: function(visible) {
