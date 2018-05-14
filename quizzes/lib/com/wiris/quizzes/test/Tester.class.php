@@ -38,7 +38,7 @@ class com_wiris_quizzes_test_Tester {
 		if($qi2->getCompoundAnswerGrade(0, 0, 1, $q) !== 0.0) {
 			throw new HException(new com_wiris_system_Exception("Failed compatibility test!", null));
 		}
-		haxe_Log::trace("Test compatibility OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1233, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCompatibility")));
+		haxe_Log::trace("Test compatibility OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1235, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCompatibility")));
 	}
 	public function testSubQuestion4() {
 		$question = "<question><subquestions><subquestion><correctAnswers><correctAnswer>12</correctAnswer></correctAnswers><assertions><assertion name=\"check_factorized\"/></assertions></subquestion><subquestion index=\"1\"><correctAnswers><correctAnswer type=\"mathml\"><![CDATA[<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mn>5</mn><mspace linebreak=\"newline\"/><mi>b</mi><mo>=</mo><mn>42</mn></math>]]></correctAnswer></correctAnswers><localData><data name=\"inputCompound\">true</data></localData></subquestion></subquestions></question>";
@@ -68,7 +68,7 @@ class com_wiris_quizzes_test_Tester {
 		if(_hx_index_of($s, "0_c0", null) < 0 || _hx_index_of($s, "0_c1", null) < 0) {
 			throw new HException(new com_wiris_system_Exception("Failed test subquestion 4! Compound indices not found", null));
 		}
-		haxe_Log::trace("Test subquestion4 OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1212, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testSubQuestion4")));
+		haxe_Log::trace("Test subquestion4 OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1214, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testSubQuestion4")));
 	}
 	public function responseSubQuestion3($s, $q, $qi) {
 		$qii = $qi;
@@ -172,7 +172,9 @@ class com_wiris_quizzes_test_Tester {
 	}
 	public function responseFeedback3($r, $q, $qi) {
 		$qi->update($r);
-		if(!($qi->expandVariables("#answer1") === "<math><mn>2</mn></math>" && $qi->expandVariables("#answer2") === "<math><mn>3</mn></math>")) {
+		$a1 = $qi->expandVariables("#answer1");
+		$a2 = $qi->expandVariables("#answer2");
+		if(!($a1 === "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mn>2</mn></math>" && $a2 === "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mn>3</mn></math>")) {
 			throw new HException(new com_wiris_system_Exception("Failed test feedback3!", null));
 		}
 	}

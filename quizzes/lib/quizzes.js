@@ -2085,7 +2085,7 @@ com.wiris.quizzes.JsAlgorithmInput = $hxClasses["com.wiris.quizzes.JsAlgorithmIn
 		var helpSpan = d.createElement("span");
 		com.wiris.quizzes.JsDomUtils.addClass(helpSpan,"wirishelp");
 		var helpA = d.createElement("a");
-		helpA.setAttribute("href","http://www.wiris.com/quizzes/docs/moodle/manual/variables");
+		helpA.setAttribute("href","https://docs.wiris.com/quizzes/studio#variables");
 		helpA.setAttribute("title","Manual");
 		helpA.setAttribute("target","_blank");
 		com.wiris.quizzes.JsDomUtils.addClass(helpA,"wirishelp");
@@ -2844,11 +2844,14 @@ com.wiris.quizzes.JsEditorInput.getReservedWords = function(grammarurl,callbackF
 com.wiris.quizzes.JsEditorInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
 	setReadOnlyWorkaround: function() {
-		if(this.editor != null && this.editor.isReady()) {
-			var params = new Hash();
-			params.set("readOnly",Std.string(this.readOnly) + "");
-			this.setParams(params);
-		} else this.delay($bind(this,this.setReadOnlyWorkaround),100);
+		var win = this.getOwnerWindow();
+		if(win != null && !win.closed) {
+			if(this.editor != null && this.editor.isReady()) {
+				var params = new Hash();
+				params.set("readOnly",Std.string(this.readOnly) + "");
+				this.setParams(params);
+			} else this.delay($bind(this,this.setReadOnlyWorkaround),100);
+		}
 	}
 	,setReadOnly: function(readOnly) {
 		com.wiris.quizzes.JsInput.prototype.setReadOnly.call(this,readOnly);
@@ -8897,8 +8900,7 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 	,printLocalData: function(h,q,unique,conf) {
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirislocaldatafieldset" + unique,this.t.t("inputmethod"),"wirismainfieldset");
-		var anchor = conf.optAuxiliarCas && !conf.optOpenAnswer?"#auxiliar-cas":"";
-		h.help("wirisinputmethodhelp" + unique,"http://www.wiris.com/quizzes/docs/moodle/manual/correct-answer" + anchor,this.t.t("manual"));
+		h.help("wirisinputmethodhelp" + unique,"https://docs.wiris.com/quizzes/studio#correct_answer",this.t.t("manual"));
 		var id;
 		var inputmethod = conf.optAnswerFieldInlineEditor || conf.optAnswerFieldPopupEditor || conf.optAnswerFieldPlainText;
 		if(inputmethod) {
@@ -9104,7 +9106,7 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openDiv("wirisassertioncontrols" + unique);
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wiriscomparisonfieldset" + unique + answers,this.t.t("comparisonwithstudentanswer"),"wirismainfieldset wiriscomparisonfieldset");
-		h.help("wiriscomparisonhelp" + unique,"http://www.wiris.com/quizzes/docs/moodle/manual/validation#comparison",this.t.t("manual"));
+		h.help("wiriscomparisonhelp" + unique,"https://docs.wiris.com/quizzes/studio#comparison_with_student_answer",this.t.t("manual"));
 		h.openDivClass("wiristolerance" + unique,"wiristolerance");
 		var idtolPrefix = "wirisassertionparam" + unique + "[" + com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION + "]";
 		var idTolValue = idtolPrefix + "[tolerance_value]" + answers;
@@ -9159,7 +9161,7 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.close();
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirisadditionalchecksfieldset" + unique + answers,this.t.t("additionalproperties"),"wirismainfieldset wirisadditionalchecksfieldset");
-		h.help("wirisadditionalcheckshelp" + unique,"http://www.wiris.com/quizzes/docs/moodle/manual/validation#properties",this.t.t("manual"));
+		h.help("wirisadditionalcheckshelp" + unique,"https://docs.wiris.com/quizzes/studio#additional_properties",this.t.t("manual"));
 		h.openDivClass("wirisstructurediv" + unique + answers,"wirissecondaryfieldset");
 		h.openDivClass("wirisstructuredivlegend" + unique + answers,"wirissecondaryfieldsetlegend");
 		h.text(this.t.t("structure") + ":");
@@ -9279,7 +9281,7 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		if(showSyntax || showComparison || showProperties || showAlgorithm || showOptions || showInputMethod) {
 			h.openDivClass(null,"wirisfieldsetwrapper");
 			h.openFieldset("validationandvariables" + unique,this.t.t("validationandvariables"),"wirisfieldsetvalidationandvariables");
-			h.help("wirisvalidationandvariableshelp" + unique,"http://www.wiris.com/quizzes/docs/moodle/manual/short-answer#vav",this.t.t("manual"));
+			h.help("wirisvalidationandvariableshelp" + unique,"https://docs.wiris.com/quizzes/question-types#short_answer",this.t.t("manual"));
 			h.openDl("wirisassertionsummarydl" + unique,"wirisassertionsummarydl");
 			if(showInputMethod) {
 				h.dt(this.t.t("inputmethod"));
@@ -9391,7 +9393,7 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openDiv("wirisoutputcontrols" + unique);
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirisoutputcontrolsfieldset" + unique,this.t.t("outputoptions"),"wirismainfieldset");
-		h.help("wirisoutputcontrolshelp" + unique,"http://www.wiris.com/quizzes/docs/moodle/manual/variables#output_options",this.t.t("manual"));
+		h.help("wirisoutputcontrolshelp" + unique,"https://docs.wiris.com/quizzes/studio#output_options",this.t.t("manual"));
 		h.openTable("wirisoutputcontrolslist" + unique,"wirisoutputcontrolslist");
 		var id;
 		h.openTr(null);
@@ -9475,7 +9477,7 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openDiv("wirisinputcontrols" + unique);
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirisinputcontrolsfieldset" + unique,this.t.t("allowedinput"),"wirismainfieldset");
-		h.help("wirisinputcontrolshelp" + unique,"http://www.wiris.com/quizzes/docs/moodle/manual/validation#allowed-input",this.t.t("manual"));
+		h.help("wirisinputcontrolshelp" + unique,"https://docs.wiris.com/quizzes/studio#allowed_input",this.t.t("manual"));
 		h.openDivClass("wirissyntaxassertions" + unique,"wirissyntaxassertions");
 		h.openUl("wirisinputcontrolslist" + unique,"wirisinputcontrolslist");
 		var i;
@@ -10611,7 +10613,12 @@ com.wiris.quizzes.impl.HTMLTools.addMathTag = function(mathml) {
 	return mathml;
 }
 com.wiris.quizzes.impl.HTMLTools.stripRootTag = function(xml,tag) {
+	var s = com.wiris.quizzes.impl.HTMLTools.splitRootTag(xml,tag);
+	return s[1];
+}
+com.wiris.quizzes.impl.HTMLTools.splitRootTag = function(xml,tag) {
 	xml = StringTools.trim(xml);
+	var r = ["",null,""];
 	if(StringTools.startsWith(xml,"<" + tag)) {
 		var depth = 1;
 		var lastOpen = xml.lastIndexOf("<");
@@ -10634,10 +10641,16 @@ com.wiris.quizzes.impl.HTMLTools.stripRootTag = function(xml,tag) {
 		}
 		if(j2 == lastOpen) {
 			var ini = xml.indexOf(">") + 1;
-			xml = HxOverrides.substr(xml,ini,lastOpen - ini);
-		} else if(j3 + 1 == lastClose) xml = "";
-	}
-	return xml;
+			r[0] = HxOverrides.substr(xml,0,ini);
+			r[1] = HxOverrides.substr(xml,ini,lastOpen - ini);
+			r[2] = HxOverrides.substr(xml,lastOpen,null);
+		} else if(j3 + 1 == lastClose) {
+			r[0] = HxOverrides.substr(xml,0,xml.length - 2) + ">";
+			r[1] = "";
+			r[2] = "</" + tag + ">";
+		} else r[1] = xml;
+	} else r[1] = xml;
+	return r;
 }
 com.wiris.quizzes.impl.HTMLTools.ensureRootTag = function(xml,tag) {
 	xml = StringTools.trim(xml);
@@ -10670,8 +10683,8 @@ com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswerMathML = function(correctAns
 	var newline = "<mspace linebreak=\"newline\"/>";
 	var equal = "<mo>=</mo>";
 	var mml = com.wiris.quizzes.impl.HTMLTools.convertEditor2Newlines(correctAnswer.content);
-	mml = com.wiris.quizzes.impl.HTMLTools.stripRootTag(mml,"math");
-	mml = com.wiris.quizzes.impl.HTMLTools.stripRootTag(mml,"mrow");
+	var s = com.wiris.quizzes.impl.HTMLTools.splitRootTag(mml,"math");
+	mml = com.wiris.quizzes.impl.HTMLTools.stripRootTag(s[1],"mrow");
 	var lines = new Array();
 	var end = 0;
 	var start = 0;
@@ -10688,14 +10701,14 @@ com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswerMathML = function(correctAns
 		var equalIndex = line.indexOf(equal);
 		if(equalIndex != -1) {
 			equalIndex += equal.length;
-			var label = com.wiris.quizzes.impl.HTMLTools.ensureRootTag(HxOverrides.substr(line,0,equalIndex),"math");
+			var label = s[0] + HxOverrides.substr(line,0,equalIndex) + s[2];
 			var value = HxOverrides.substr(line,equalIndex,null);
 			var a = value.indexOf("<annotation encoding=\"text/plain\">");
 			if(a != -1) {
 				a = value.indexOf(">",a) + 1;
 				var b = value.indexOf("</annotation>",a);
 				value = HxOverrides.substr(value,a,b - a);
-			} else value = com.wiris.quizzes.impl.HTMLTools.ensureRootTag(value,"math");
+			} else value = s[0] + value + s[2];
 			var answer = [label,value];
 			answers.push(answer);
 		}
@@ -10708,19 +10721,42 @@ com.wiris.quizzes.impl.HTMLTools.joinCompoundAnswer = function(answers) {
 	if(answers.length > 0) {
 		var mml = com.wiris.quizzes.impl.MathContent.getMathType(answers[0][0]) == com.wiris.quizzes.impl.MathContent.TYPE_MATHML;
 		m.type = mml?com.wiris.quizzes.impl.MathContent.TYPE_MATHML:com.wiris.quizzes.impl.MathContent.TYPE_TEXT;
+		var root = "<math>";
 		var i;
 		var _g1 = 0, _g = answers.length;
 		while(_g1 < _g) {
 			var i1 = _g1++;
 			if(i1 != 0) sb.b += Std.string(mml?"<mspace linebreak=\"newline\"/>":"\n");
 			var ans = answers[i1];
-			sb.b += Std.string(com.wiris.quizzes.impl.HTMLTools.stripRootTag(ans[0],"math"));
-			sb.b += Std.string(com.wiris.quizzes.impl.HTMLTools.stripRootTag(ans[1],"math"));
+			var s = com.wiris.quizzes.impl.HTMLTools.splitRootTag(ans[0],"math");
+			sb.b += Std.string(s[1]);
+			root = com.wiris.quizzes.impl.HTMLTools.combineTagAtts(root,s[0]);
+			s = com.wiris.quizzes.impl.HTMLTools.splitRootTag(ans[1],"math");
+			sb.b += Std.string(s[1]);
+			root = com.wiris.quizzes.impl.HTMLTools.combineTagAtts(root,s[0]);
 		}
 		m.content = sb.b;
-		if(mml) m.content = com.wiris.quizzes.impl.HTMLTools.ensureRootTag(m.content,"math");
+		if(mml) m.content = root + m.content + "</math>";
 	} else m.set("");
 	return m;
+}
+com.wiris.quizzes.impl.HTMLTools.combineTagAtts = function(t1,t2) {
+	var p1 = t1.indexOf(" ");
+	var p2 = t2.indexOf(" ");
+	if(p1 == -1) return t2;
+	if(p2 == -1) return t1;
+	t1 = HxOverrides.substr(t1,0,t1.length - 1);
+	t2 = HxOverrides.substr(t2,0,t2.length - 1);
+	t2 = HxOverrides.substr(t2,p2 + 1,null);
+	var atts = t2.split(" ");
+	var i = 0;
+	var _g1 = 0, _g = atts.length;
+	while(_g1 < _g) {
+		var i1 = _g1++;
+		if(t1.indexOf(atts[i1]) == -1) t1 = t1 + " " + atts[i1];
+	}
+	t1 = t1 + ">";
+	return t1;
 }
 com.wiris.quizzes.impl.HTMLTools.tagName = function(xml,n) {
 	var endtag = xml.indexOf(">",n);
