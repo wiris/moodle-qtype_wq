@@ -2217,6 +2217,18 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 			this.calcLauncher.addOnCloseHandler(function() {
 				_g.setValue(_g.calcLauncher.getValue());
 			});
+			this.calcLauncher.addOnExpandHandler(function() {
+				if(_g.element.hasChildNodes()) {
+					var wrapper = null;
+					var i = 0;
+					var n = _g.element.childNodes.length;
+					while(wrapper == null && i < n) {
+						if(_g.element.childNodes[i].nodeName.toLowerCase() == "fieldset") wrapper = _g.element.childNodes[i];
+						i++;
+					}
+					if(wrapper != null) wrapper.scrollTop = wrapper.scrollHeight;
+				}
+			});
 			if(!this.isCas) this.calcLauncher.showInterface();
 		}
 	}
@@ -2385,7 +2397,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1619, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1636, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2553,6 +2565,7 @@ com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"
 			com.wiris.quizzes.JsDomUtils.removeClass(elem,collapsed?"wiriscollapsed":"wirisexpanded");
 			com.wiris.quizzes.JsDomUtils.addClass(elem,collapsed?"wirisexpanded":"wiriscollapsed");
 		}
+		if(collapsed && _g.onExpand != null) _g.delay(_g.onExpand,80);
 	});
 	this.hideInterface = function() {
 		if(com.wiris.quizzes.JsDomUtils.hasClass(legend,"wirishidden")) com.wiris.quizzes.JsDomUtils.removeClass(legend,"wirishidden");
@@ -2614,6 +2627,17 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 			} else com.wiris.quizzes.JsDomUtils.removeClass(this.tipElement,"wirishidden");
 		} else if(this.tipElement != null && (this.value == null || com.wiris.quizzes.impl.HTMLTools.emptyCasSession(this.value) || !com.wiris.quizzes.impl.HTMLTools.isCalc(this.value))) com.wiris.quizzes.JsDomUtils.addClass(this.tipElement,"wirishidden");
 	}
+	,addOnExpandHandler: function(handler) {
+		var _g = this;
+		if(this.onExpand == null) this.onExpand = handler; else this.onExpand = (function() {
+			var originOnExpand = _g.onExpand;
+			if(originOnExpand == null) return handler;
+			return function() {
+				originOnExpand();
+				handler();
+			};
+		})();
+	}
 	,addOnCloseHandler: function(handler) {
 		var _g = this;
 		if(this.onClose == null) this.onClose = handler; else this.onClose = (function() {
@@ -2663,6 +2687,7 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 	,tipElement: null
 	,beta: null
 	,displayWarning: null
+	,onExpand: null
 	,onLaunch: null
 	,onClose: null
 	,warningContainer: null
@@ -17056,6 +17081,32 @@ com.wiris.util.type.Arrays.firstElement = function(elements) {
 }
 com.wiris.util.type.Arrays.lastElement = function(elements) {
 	return elements[elements.length - 1];
+}
+com.wiris.util.type.Arrays.intersectSorted = function(a,b) {
+	if(a == null) return b == null?null:com.wiris.util.type.Arrays.copyArray(b); else if(b == null) return com.wiris.util.type.Arrays.copyArray(a); else {
+		var v = new Array();
+		var i = 0;
+		var j = 0;
+		while(i < a.length && j < b.length) {
+			var cmp = Reflect.compare(a[i],b[j]);
+			if(cmp == 0) {
+				v.push(a[i]);
+				i++;
+				j++;
+			} else if(cmp < 0) i++; else j++;
+		}
+		return v;
+	}
+}
+com.wiris.util.type.Arrays.difference = function(a,b) {
+	var v = new Array();
+	if(a == null) return v; else if(b == null) return com.wiris.util.type.Arrays.copyArray(a);
+	var it = HxOverrides.iter(a);
+	while(it.hasNext()) {
+		var e = it.next();
+		if(com.wiris.util.type.Arrays.indexOfElement(b,e) < 0) v.push(e);
+	}
+	return v;
 }
 com.wiris.util.type.Arrays.prototype = {
 	__class__: com.wiris.util.type.Arrays
