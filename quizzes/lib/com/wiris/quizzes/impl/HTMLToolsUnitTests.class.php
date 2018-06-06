@@ -71,9 +71,27 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 			com_wiris_quizzes_impl_HTMLToolsUnitTests::error();
 		}
 	}
+	public function unitTestJoinCompoundAnswer() {
+		$inputs = new _hx_array(array(new _hx_array(array(new _hx_array(array("<math><mi>a</mi><mo>=</mo>", "<math><mn>1</mn></math>")), new _hx_array(array("<math><mi>b</mi><mo>=</mo>", "<math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:wrs=\"http://www.wiris.com/xml/mathml-extension\"><mn>0</mn><mo>.</mo><mover wrs:positionable=\"false\"><mrow wrs:positionable=\"true\"><mn>3</mn></mrow><mo>&#x23DC;</mo></mover></math>"))))));
+		$outputs = new _hx_array(array("<math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:wrs=\"http://www.wiris.com/xml/mathml-extension\"><math><mi>a</mi><mo>=</mo><mn>1</mn><mspace linebreak=\"newline\"/><math><mi>b</mi><mo>=</mo><mn>0</mn><mo>.</mo><mover wrs:positionable=\"false\"><mrow wrs:positionable=\"true\"><mn>3</mn></mrow><mo>&#x23DC;</mo></mover></math>"));
+		$i = null;
+		{
+			$_g1 = 0; $_g = $outputs->length;
+			while($_g1 < $_g) {
+				$i1 = $_g1++;
+				$ans = $inputs[$i1];
+				$answers = $ans->copy();
+				$a = com_wiris_quizzes_impl_HTMLTools::joinCompoundAnswer($answers);
+				if(!($a->content === $outputs[$i1])) {
+					throw new HException("Failed join compound answer: " . _hx_string_rec($i1, "") . "\x0AExpected: " . $outputs[$i1] . "\x0ABut got: " . $a->content);
+				}
+				unset($i1,$answers,$ans,$a);
+			}
+		}
+	}
 	public function unitTestParseCompoundAnswers() {
-		$inputs = new _hx_array(array("<math><mi>x</mi><mo>=</mo><semantics><mn>1</mn><annotation encoding=\"application/json\">[...]</annotation></semantics><mspace linebreak=\"newline\"/><mi>y</mi><mo>=</mo><semantics><mrow><mn>1</mn><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/json\">[...]</annotation></semantics></math>", "<math><mi>x</mi><mo>=</mo><semantics><mn>1</mn><annotation encoding=\"text/plain\">1</annotation></semantics><mspace linebreak=\"newline\"/><mi>y</mi><mo>=</mo><semantics><mn>2</mn></mrow><annotation encoding=\"text/plain\">2</annotation></semantics></math>"));
-		$outputs = new _hx_array(array(new _hx_array(array(new _hx_array(array("<math><mi>x</mi><mo>=</mo></math>", "<math><semantics><mn>1</mn><annotation encoding=\"application/json\">[...]</annotation></semantics></math>")), new _hx_array(array("<math><mi>y</mi><mo>=</mo></math>", "<math><semantics><mrow><mn>1</mn><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/json\">[...]</annotation></semantics></math>")))), new _hx_array(array(new _hx_array(array("<math><mi>x</mi><mo>=</mo></math>", "1")), new _hx_array(array("<math><mi>y</mi><mo>=</mo></math>", "2"))))));
+		$inputs = new _hx_array(array("<math><mi>x</mi><mo>=</mo><semantics><mn>1</mn><annotation encoding=\"application/json\">[...]</annotation></semantics><mspace linebreak=\"newline\"/><mi>y</mi><mo>=</mo><semantics><mrow><mn>1</mn><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/json\">[...]</annotation></semantics></math>", "<math><mi>x</mi><mo>=</mo><semantics><mn>1</mn><annotation encoding=\"text/plain\">1</annotation></semantics><mspace linebreak=\"newline\"/><mi>y</mi><mo>=</mo><semantics><mn>2</mn></mrow><annotation encoding=\"text/plain\">2</annotation></semantics></math>", "<math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:wrs=\"http://www.wiris.com/xml/mathml-extension\"><mi>a</mi><mo>=</mo><mn>0</mn><mo>.</mo><mover wrs:positionable=\"false\"><mrow wrs:positionable=\"true\"><mn>3</mn></mrow><mo>&#x23DC;</mo></mover></math>"));
+		$outputs = new _hx_array(array(new _hx_array(array(new _hx_array(array("<math><mi>x</mi><mo>=</mo></math>", "<math><semantics><mn>1</mn><annotation encoding=\"application/json\">[...]</annotation></semantics></math>")), new _hx_array(array("<math><mi>y</mi><mo>=</mo></math>", "<math><semantics><mrow><mn>1</mn><mo>+</mo><mn>1</mn></mrow><annotation encoding=\"application/json\">[...]</annotation></semantics></math>")))), new _hx_array(array(new _hx_array(array("<math><mi>x</mi><mo>=</mo></math>", "1")), new _hx_array(array("<math><mi>y</mi><mo>=</mo></math>", "2")))), new _hx_array(array(new _hx_array(array("<math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:wrs=\"http://www.wiris.com/xml/mathml-extension\"><mi>a</mi><mo>=</mo></math>", "<math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:wrs=\"http://www.wiris.com/xml/mathml-extension\"><mn>0</mn><mo>.</mo><mover wrs:positionable=\"false\"><mrow wrs:positionable=\"true\"><mn>3</mn></mrow><mo>&#x23DC;</mo></mover></math>"))))));
 		$i = null;
 		{
 			$_g1 = 0; $_g = $inputs->length;
@@ -304,6 +322,7 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 		}
 	}
 	public function run() {
+		$this->unitTestJoinCompoundAnswer();
 		$this->unitTestStripRootTag();
 		$this->unitTestParseCompoundAnswers();
 		$this->unitTestUpdateReservedWords();
