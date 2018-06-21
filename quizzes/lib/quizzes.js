@@ -2217,18 +2217,6 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 			this.calcLauncher.addOnCloseHandler(function() {
 				_g.setValue(_g.calcLauncher.getValue());
 			});
-			this.calcLauncher.addOnExpandHandler(function() {
-				if(_g.element.hasChildNodes()) {
-					var wrapper = null;
-					var i = 0;
-					var n = _g.element.childNodes.length;
-					while(wrapper == null && i < n) {
-						if(_g.element.childNodes[i].nodeName.toLowerCase() == "fieldset") wrapper = _g.element.childNodes[i];
-						i++;
-					}
-					if(wrapper != null) wrapper.scrollTop = wrapper.scrollHeight;
-				}
-			});
 			if(!this.isCas) this.calcLauncher.showInterface();
 		}
 	}
@@ -2397,7 +2385,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1636, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1619, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2547,6 +2535,10 @@ com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"
 	this.launchDiv = d.createElement("div");
 	com.wiris.quizzes.JsDomUtils.addClass(this.launchDiv,"wirisfieldsetwrapper");
 	if(hide) com.wiris.quizzes.JsDomUtils.addClass(this.launchDiv,"wiriscollapsed");
+	this.onExpand = function() {
+		var parent = _g.element.parentNode;
+		if(parent != null) parent.scrollTop = parent.scrollHeight;
+	};
 	var launchA = d.createElement("a");
 	com.wiris.quizzes.JsDomUtils.addClass(launchA,"wirisrevealcalclauncher wiriscollapsiblea");
 	if(hide) com.wiris.quizzes.JsDomUtils.addClass(launchA,"wiriscollapsed");
@@ -2565,7 +2557,7 @@ com.wiris.quizzes.JsCalcLauncher = $hxClasses["com.wiris.quizzes.JsCalcLauncher"
 			com.wiris.quizzes.JsDomUtils.removeClass(elem,collapsed?"wiriscollapsed":"wirisexpanded");
 			com.wiris.quizzes.JsDomUtils.addClass(elem,collapsed?"wirisexpanded":"wiriscollapsed");
 		}
-		if(collapsed && _g.onExpand != null) _g.delay(_g.onExpand,80);
+		if(collapsed && _g.onExpand != null) _g.delay(_g.onExpand,90);
 	});
 	this.hideInterface = function() {
 		if(com.wiris.quizzes.JsDomUtils.hasClass(legend,"wirishidden")) com.wiris.quizzes.JsDomUtils.removeClass(legend,"wirishidden");
@@ -2626,17 +2618,6 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 				this.element.appendChild(this.tipElement);
 			} else com.wiris.quizzes.JsDomUtils.removeClass(this.tipElement,"wirishidden");
 		} else if(this.tipElement != null && (this.value == null || com.wiris.quizzes.impl.HTMLTools.emptyCasSession(this.value) || !com.wiris.quizzes.impl.HTMLTools.isCalc(this.value))) com.wiris.quizzes.JsDomUtils.addClass(this.tipElement,"wirishidden");
-	}
-	,addOnExpandHandler: function(handler) {
-		var _g = this;
-		if(this.onExpand == null) this.onExpand = handler; else this.onExpand = (function() {
-			var originOnExpand = _g.onExpand;
-			if(originOnExpand == null) return handler;
-			return function() {
-				originOnExpand();
-				handler();
-			};
-		})();
 	}
 	,addOnCloseHandler: function(handler) {
 		var _g = this;
@@ -2750,9 +2731,16 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 	}
 	,closeCalc: function(e) {
 		var doc = this.getOwnerDocument();
-		com.wiris.quizzes.JsDomUtils.addClass(this.calcContainer.element,"wirishidden");
-		var container = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wiriscontainer",null,doc)[0];
-		com.wiris.quizzes.JsDomUtils.removeClass(container,"wirishidden");
+		var siblings = doc.body.childNodes;
+		var i;
+		var n = siblings.length;
+		var _g = 0;
+		while(_g < n) {
+			var i1 = _g++;
+			com.wiris.quizzes.JsDomUtils.removeClass(siblings[i1],"wiriscalchidden");
+		}
+		com.wiris.quizzes.JsDomUtils.removeClass(doc.body,"wiriscalchidden");
+		com.wiris.quizzes.JsDomUtils.addClass(this.calcContainer.element,"wiriscalchidden");
 		this.calc.setNeedsSave(false);
 		this.setValue(this.calc.getContent());
 	}
@@ -2778,13 +2766,21 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			}
 			this.calcContainer.element.appendChild(this.calcDiv);
 			this.element = this.calcContainer.getElement();
-		} else com.wiris.quizzes.JsDomUtils.removeClass(this.calcContainer.element,"wirishidden");
+		}
 		if(parent == null) {
-			var container = com.wiris.quizzes.JsDomUtils.getElementsByClassName("wiriscontainer",null,doc)[0];
+			var siblings = doc.body.childNodes;
+			var i;
+			var n = siblings.length;
+			var _g1 = 0;
+			while(_g1 < n) {
+				var i1 = _g1++;
+				com.wiris.quizzes.JsDomUtils.addClass(siblings[i1],"wiriscalchidden");
+			}
+			com.wiris.quizzes.JsDomUtils.addClass(doc.body,"wiriscalchidden");
 			var myContainer = new com.wiris.quizzes.JsContainer(doc);
-			com.wiris.quizzes.JsDomUtils.addClass(container,"wirishidden");
 			doc.body.appendChild(this.calcContainer.element);
 		} else parent.appendChild(this.calcContainer.element);
+		com.wiris.quizzes.JsDomUtils.removeClass(this.calcContainer.element,"wiriscalchidden");
 	}
 	,isCalcScriptLoaded: function() {
 		var win = this.getOwnerWindow();
@@ -2868,7 +2864,12 @@ com.wiris.quizzes.JsEditorInput.getReservedWords = function(grammarurl,callbackF
 }
 com.wiris.quizzes.JsEditorInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
-	setReadOnlyWorkaround: function() {
+	setValueFromEditor: function(value) {
+		if(this.reservedWords != null) value = new com.wiris.quizzes.impl.HTMLTools().updateReservedWords(value,this.reservedWords);
+		if(com.wiris.quizzes.impl.MathContent.isEmpty(value)) value = "";
+		this.value = value;
+	}
+	,setReadOnlyWorkaround: function() {
 		var win = this.getOwnerWindow();
 		if(win != null && !win.closed) {
 			if(this.editor != null && this.editor.isReady()) {
@@ -2913,8 +2914,7 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 	,addOnChangeHandler: function(handler) {
 		var _g = this;
 		com.wiris.quizzes.JsInput.prototype.addOnChangeHandler.call(this,function(value) {
-			if(_g.reservedWords != null) value = new com.wiris.quizzes.impl.HTMLTools().updateReservedWords(value,_g.reservedWords);
-			_g.value = value;
+			_g.setValueFromEditor(value);
 			handler(value);
 		});
 		this.setEditorListener();
@@ -2962,9 +2962,12 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 		return this.value;
 	}
 	,setValue: function(s) {
-		if(com.wiris.quizzes.impl.MathContent.getMathType(s) != com.wiris.quizzes.impl.MathContent.TYPE_MATHML) s = new com.wiris.quizzes.impl.HTMLTools().textToMathML(s);
+		if(s != "" && com.wiris.quizzes.impl.MathContent.getMathType(s) != com.wiris.quizzes.impl.MathContent.TYPE_MATHML) s = new com.wiris.quizzes.impl.HTMLTools().textToMathML(s);
 		com.wiris.quizzes.JsInput.prototype.setValue.call(this,s);
-		if(this.editor != null) this.editor.setMathML(this.value);
+		if(this.editor != null) {
+			s = this.value != ""?this.value:"<math/>";
+			this.editor.setMathML(s);
+		}
 	}
 	,isEditorScriptLoaded: function() {
 		var win = this.getOwnerWindow();
@@ -2983,7 +2986,7 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			this.setValue(this.value);
 			if(this.changeHandler == null) {
 				this.changeHandler = function(value) {
-					_g.value = value;
+					_g.setValueFromEditor(value);
 				};
 				this.setEditorListener();
 				this.setHandListener();
@@ -9292,14 +9295,13 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		}
 		var options = "";
 		var tolerance = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE);
-		if(!(tolerance == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE))) {
-			options = this.t.t("tolerancedigits") + ": " + HxOverrides.substr(tolerance,5,tolerance.length - 6);
-			showOptions = true;
-		}
 		var relative = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE);
-		if(!(relative == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE))) {
-			if(options.length > 0) options += ", ";
-			options += this.t.t("absolutetolerance");
+		var digits = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS);
+		if(!(digits == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS))) {
+			if(relative == "true") options = digits + " " + this.t.t("significantfigures"); else options = digits + " " + this.t.t("decimalplaces");
+			showOptions = true;
+		} else if(!(relative == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE)) || !(tolerance == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE))) {
+			if(relative == "true") options = com.wiris.system.TypeTools.floatToString(Std.parseFloat(tolerance) * 100) + this.t.t("percenterror"); else options = tolerance + " " + this.t.t("absoluteerror");
 			showOptions = true;
 		}
 		showAlgorithm = q.wirisCasSession != null && q.wirisCasSession.length > 0;
@@ -18095,6 +18097,19 @@ com.wiris.util.xml.WXmlUtils.isXmlEntity = function(ent) {
 		return c == 34 || c == 38 || c == 39 || c == 60 || c == 62;
 	} else return ent == "amp" || ent == "lt" || ent == "gt" || ent == "quot" || ent == "apos";
 }
+com.wiris.util.xml.WXmlUtils.getNamespace = function(element,prefix) {
+	if(element != null && element.nodeType == Xml.Document) element = element.firstElement();
+	var prefixAttr = prefix == null?"xmlns":"xmlns:" + prefix;
+	return com.wiris.util.xml.WXmlUtils.getNamespaceSearch(element,prefixAttr);
+}
+com.wiris.util.xml.WXmlUtils.getNamespaceSearch = function(element,attribute) {
+	while(element != null && element.nodeType == Xml.Element) {
+		var attributeValue = element.get(attribute);
+		if(attributeValue != null) return attributeValue;
+		element = element.getParent();
+	}
+	return null;
+}
 com.wiris.util.xml.WXmlUtils.normalizeWhitespace = function(s) {
 	return s != null?com.wiris.util.xml.WXmlUtils.WHITESPACE_COLLAPSE_REGEX.replace(StringTools.trim(s)," "):null;
 }
@@ -20855,12 +20870,26 @@ com.wiris.quizzes.api.QuizzesConstants.OPTION_DECIMAL_SEPARATOR = "decimal_separ
 com.wiris.quizzes.api.QuizzesConstants.OPTION_DIGIT_GROUP_SEPARATOR = "digit_group_separator";
 com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER = "answer_parameter";
 com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER_NAME = "answer_parameter_name";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_ANSWER_FIELD_TYPE = "inputField";
 com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_INLINE_EDITOR = "inlineEditor";
 com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_POPUP_EDITOR = "popupEditor";
 com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_TEXT = "textField";
 com.wiris.quizzes.api.QuizzesConstants.META_PROPERTY_REFERER = "referer";
 com.wiris.quizzes.api.QuizzesConstants.META_PROPERTY_QUESTION = "question";
 com.wiris.quizzes.api.QuizzesConstants.META_PROPERTY_USER = "userref";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_COMPOUND_ANSWER = "inputCompound";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_TRUE = "true";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_FALSE = "false";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_COMPOUND_ANSWER_GRADE = "gradeCompound";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_GRADE_AND = "and";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_GRADE_DISTRIBUTE = "distribute";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_COMPOUND_ANSWER_GRADE_DISTRIBUTION = "gradeCompoundDistribution";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_SHOW_CAS = "cas";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_SHOW_CAS_FALSE = "false";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_SHOW_CAS_ADD = "add";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_SHOW_CAS_REPLACE = "replace";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_CAS_INITIAL_SESSION = "casSession";
+com.wiris.quizzes.api.QuizzesConstants.PROPERTY_CAS_SESSION = "casSession";
 com.wiris.quizzes.api.QuizzesConstants.PARAMETER_USER_ID = "user_id";
 com.wiris.quizzes.api.ui.QuizzesUIConstants.TEXT_FIELD = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_TEXT;
 com.wiris.quizzes.api.ui.QuizzesUIConstants.INLINE_EDITOR = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_INLINE_EDITOR;
@@ -21004,26 +21033,26 @@ com.wiris.quizzes.impl.HandwritingConstraints.PIECEWISE = "PiecewiseFunction";
 com.wiris.quizzes.impl.HandwritingConstraints.MATRICES = "Matrix";
 com.wiris.quizzes.impl.HandwritingConstraints.MULTILINE = "Multiline";
 com.wiris.quizzes.impl.LocalData.TAGNAME = "data";
-com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER = "inputCompound";
-com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_INPUT_FIELD = "inputField";
-com.wiris.quizzes.impl.LocalData.KEY_SHOW_CAS = "cas";
-com.wiris.quizzes.impl.LocalData.KEY_CAS_INITIAL_SESSION = "casSession";
-com.wiris.quizzes.impl.LocalData.KEY_CAS_SESSION = "casSession";
-com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE = "gradeCompound";
-com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTION = "gradeCompoundDistribution";
+com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_COMPOUND_ANSWER;
+com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_INPUT_FIELD = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_ANSWER_FIELD_TYPE;
+com.wiris.quizzes.impl.LocalData.KEY_SHOW_CAS = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_SHOW_CAS;
+com.wiris.quizzes.impl.LocalData.KEY_CAS_INITIAL_SESSION = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_CAS_INITIAL_SESSION;
+com.wiris.quizzes.impl.LocalData.KEY_CAS_SESSION = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_CAS_SESSION;
+com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_COMPOUND_ANSWER_GRADE;
+com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTION = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_COMPOUND_ANSWER_GRADE_DISTRIBUTION;
 com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS = "handwritingConstraints";
 com.wiris.quizzes.impl.LocalData.KEY_ITEM_SEPARATOR = "itemSeparator";
-com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE = "true";
-com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE = "false";
+com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_TRUE;
+com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_FALSE;
 com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_INPUT_FIELD_INLINE_EDITOR = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_INLINE_EDITOR;
 com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_INPUT_FIELD_POPUP_EDITOR = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_POPUP_EDITOR;
 com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_INPUT_FIELD_PLAIN_TEXT = com.wiris.quizzes.api.QuizzesConstants.ANSWER_FIELD_TYPE_TEXT;
 com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_INPUT_FIELD_INLINE_HAND = "inlineHand";
-com.wiris.quizzes.impl.LocalData.VALUE_SHOW_CAS_FALSE = "false";
-com.wiris.quizzes.impl.LocalData.VALUE_SHOW_CAS_ADD = "add";
-com.wiris.quizzes.impl.LocalData.VALUE_SHOW_CAS_REPLACE_INPUT = "replace";
-com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_AND = "and";
-com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE = "distribute";
+com.wiris.quizzes.impl.LocalData.VALUE_SHOW_CAS_FALSE = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_SHOW_CAS_FALSE;
+com.wiris.quizzes.impl.LocalData.VALUE_SHOW_CAS_ADD = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_SHOW_CAS_ADD;
+com.wiris.quizzes.impl.LocalData.VALUE_SHOW_CAS_REPLACE_INPUT = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_SHOW_CAS_REPLACE;
+com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_AND = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_GRADE_AND;
+com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE = com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_GRADE_DISTRIBUTE;
 com.wiris.quizzes.impl.LocalData.keys = [com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER,com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_INPUT_FIELD,com.wiris.quizzes.impl.LocalData.KEY_SHOW_CAS,com.wiris.quizzes.impl.LocalData.KEY_CAS_INITIAL_SESSION,com.wiris.quizzes.impl.LocalData.KEY_CAS_SESSION,com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE,com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTION];
 com.wiris.quizzes.impl.MaxConnectionsHttpImpl.CONNECTION_TIMEOUT = 60;
 com.wiris.quizzes.impl.MaxConnectionsHttpImpl.DATA_KEY_MAX_CONNECTIONS = "wiris_maxconnections";

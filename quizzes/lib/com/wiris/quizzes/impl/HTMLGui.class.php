@@ -497,17 +497,24 @@ class com_wiris_quizzes_impl_HTMLGui {
 		}
 		$options = "";
 		$tolerance = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE);
-		if(!($tolerance === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE))) {
-			$options = $this->t->t("tolerancedigits") . ": " . _hx_substr($tolerance, 5, strlen($tolerance) - 6);
-			$showOptions = true;
-		}
 		$relative = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE);
-		if(!($relative === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE))) {
-			if(strlen($options) > 0) {
-				$options .= ", ";
+		$digits = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS);
+		if(!($digits === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS))) {
+			if($relative === "true") {
+				$options = $digits . " " . $this->t->t("significantfigures");
+			} else {
+				$options = $digits . " " . $this->t->t("decimalplaces");
 			}
-			$options .= $this->t->t("absolutetolerance");
 			$showOptions = true;
+		} else {
+			if(!($relative === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)) || !($tolerance === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE))) {
+				if($relative === "true") {
+					$options = com_wiris_system_TypeTools::floatToString(Std::parseFloat($tolerance) * 100) . $this->t->t("percenterror");
+				} else {
+					$options = $tolerance . " " . $this->t->t("absoluteerror");
+				}
+				$showOptions = true;
+			}
 		}
 		$showAlgorithm = $q->wirisCasSession !== null && strlen($q->wirisCasSession) > 0;
 		if($showSyntax || $showComparison || $showProperties || $showAlgorithm || $showOptions || $showInputMethod) {

@@ -639,6 +639,24 @@ class com_wiris_util_xml_WXmlUtils {
 			return $ent === "amp" || $ent === "lt" || $ent === "gt" || $ent === "quot" || $ent === "apos";
 		}
 	}
+	static function getNamespace($element, $prefix) {
+		if($element !== null && $element->nodeType == Xml::$Document) {
+			$element = $element->firstElement();
+		}
+		$prefixAttr = com_wiris_util_xml_WXmlUtils_6($element, $prefix);
+		return com_wiris_util_xml_WXmlUtils::getNamespaceSearch($element, $prefixAttr);
+	}
+	static function getNamespaceSearch($element, $attribute) {
+		while($element !== null && $element->nodeType == Xml::$Element) {
+			$attributeValue = $element->get($attribute);
+			if($attributeValue !== null) {
+				return $attributeValue;
+			}
+			$element = $element->_parent;
+			unset($attributeValue);
+		}
+		return null;
+	}
 	static function normalizeWhitespace($s) {
 		return (($s !== null) ? com_wiris_util_xml_WXmlUtils::$WHITESPACE_COLLAPSE_REGEX->replace(trim($s), " ") : null);
 	}
@@ -685,5 +703,12 @@ function com_wiris_util_xml_WXmlUtils_5(&$c, &$hex, &$i, &$j, &$n, &$s, &$sb) {
 		$s1 = new haxe_Utf8(null);
 		$s1->addChar($c);
 		return $s1->toString();
+	}
+}
+function com_wiris_util_xml_WXmlUtils_6(&$element, &$prefix) {
+	if($prefix === null) {
+		return "xmlns";
+	} else {
+		return "xmlns:" . $prefix;
 	}
 }
