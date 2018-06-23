@@ -1544,17 +1544,29 @@ com.wiris.quizzes.JsInitialCalcInput = $hxClasses["com.wiris.quizzes.JsInitialCa
 	this.element.appendChild(this.input);
 	this.setValue(session);
 	var title;
-	if(this.value == this.emptyCalcMeSession()) title = this.t("titleauxiliarcalcme"); else title = com.wiris.quizzes.impl.HTMLTools.getCalcSessionTitle(this.value);
+	if(this.value == com.wiris.quizzes.impl.HTMLTools.getEmptyCalcMeSession()) title = this.t("titleauxiliarcalcme"); else title = com.wiris.quizzes.impl.HTMLTools.getCalcSessionTitle(this.value);
 	this.calcWrapper = new com.wiris.quizzes.JsCalcWrapper(d,this.getValue(),this.t("titleinitialcalcme"),title);
 };
 com.wiris.quizzes.JsInitialCalcInput.__name__ = ["com","wiris","quizzes","JsInitialCalcInput"];
 com.wiris.quizzes.JsInitialCalcInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsInitialCalcInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
-	emptyCalcMeSession: function() {
-		return "<wiriscalc version=\"3.1\"><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Untitled calc</mtext></math></title><properties><property name=\"lang\">en</property><property name=\"precision\">4</property><property name=\"use_degrees\">false</property></properties><session version=\"3.0\" lang=\"en\"><task><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Full 1</mtext></math></title><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"/></input></command></group></task></session></wiriscalc>";
-	}
-	,launchCalc: function(e) {
+	launchCalc: function(e) {
 		var _g = this;
+		if(!com.wiris.quizzes.impl.HTMLTools.isCalc(this.getValue())) {
+			var translate = true;
+			var calcLangs = this.calcWrapper.getLangList();
+			var sessionLang = com.wiris.quizzes.impl.HTMLTools.casSessionLang(this.getValue());
+			var i = 0;
+			while(translate && i < calcLangs.length) {
+				if(sessionLang == calcLangs[i]) translate = false;
+				i++;
+			}
+			if(translate) {
+				this.calcWrapper.setValue(com.wiris.quizzes.JsCasJnlpLauncher.translateSession(this.value,"en"));
+				var win = this.getOwnerWindow();
+				win.alert("The session has been translated to english because CalcMe does not support \"" + sessionLang + "\".");
+			}
+		}
 		this.calcWrapper.launch(e,null,function() {
 			_g.setValue(_g.calcWrapper.getValue());
 		});
@@ -1569,7 +1581,7 @@ com.wiris.quizzes.JsInitialCalcInput.prototype = $extend(com.wiris.quizzes.JsInp
 	,setValue: function(v) {
 		com.wiris.quizzes.JsInput.prototype.setValue.call(this,v);
 		if(com.wiris.quizzes.impl.HTMLTools.emptyCasSession(v) && !com.wiris.quizzes.impl.HTMLTools.isCalc(v)) {
-			v = this.emptyCalcMeSession();
+			v = com.wiris.quizzes.impl.HTMLTools.getEmptyCalcMeSession();
 			v = com.wiris.quizzes.impl.HTMLTools.setCalcSessionTitle(v,this.t("titleauxiliarcalcme"));
 			this.value = v;
 		}
@@ -2385,7 +2397,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1619, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1636, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2648,7 +2660,7 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 			var sessionLang = com.wiris.quizzes.impl.HTMLTools.casSessionLang(this.value);
 			var i = 0;
 			var translate = true;
-			while(i < calcLangs.length && translate) {
+			while(translate && i < calcLangs.length) {
 				if(sessionLang == calcLangs[i]) translate = false;
 				i++;
 			}
@@ -2683,16 +2695,21 @@ com.wiris.quizzes.JsCalcWrapper = $hxClasses["com.wiris.quizzes.JsCalcWrapper"] 
 com.wiris.quizzes.JsCalcWrapper.__name__ = ["com","wiris","quizzes","JsCalcWrapper"];
 com.wiris.quizzes.JsCalcWrapper.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
-	getLangList: function() {
+	initCalc: function() {
 		if(this.calc == null) {
-			var win = this.getOwnerWindow();
-			if(this.calcTitleText == null) {
-				this.calc = new win.com.wiris.js.JsCalc({ 'defaultshowtitlebar': false });
-			} else {
-				this.calc = new win.com.wiris.js.JsCalc({ });
-			}
+			if(this.isCalcScriptLoaded()) {
+				var win = this.getOwnerWindow();
+				if(this.calcTitleText == null) {
+					this.calc = new win.com.wiris.js.JsCalc({ 'defaultshowtitlebar': false });
+				} else {
+					this.calc = new win.com.wiris.js.JsCalc({ });
+				}
+			} else this.delay($bind(this,this.initCalc),100);
 		}
-		return this.calc.calcBuilder.config.get("calc.algorithm.lang.list").split(",");
+	}
+	,getLangList: function() {
+		this.initCalc();
+		if(this.calc != null) return this.calc.calcBuilder.config.get("calc.algorithm.lang.list").split(","); else return null;
 	}
 	,setCalcModelListener: function() {
 		if(this.calcListener != null && this.calc != null) {
@@ -2702,14 +2719,7 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 	,launchImpl: function() {
 		var _g = this;
 		if(this.isCalcScriptLoaded()) {
-			if(this.calc == null) {
-				var win = this.getOwnerWindow();
-				if(this.calcTitleText == null) {
-					this.calc = new win.com.wiris.js.JsCalc({ 'defaultshowtitlebar': false });
-				} else {
-					this.calc = new win.com.wiris.js.JsCalc({ });
-				}
-			}
+			this.initCalc();
 			this.calc.insertInto(this.calcDiv);
 			this.calc.onIsReady(function() {
 				_g.calc.setContent(_g.getValue());
@@ -3802,15 +3812,15 @@ com.wiris.quizzes.JsAuxiliarCalcInput = $hxClasses["com.wiris.quizzes.JsAuxiliar
 		var session = ii.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_CAS_SESSION);
 		var sessionTitle = this.t("titleauxiliarcalcme");
 		if(com.wiris.quizzes.impl.HTMLTools.isCalc(session)) sessionTitle = com.wiris.quizzes.impl.HTMLTools.getCalcSessionTitle(session);
-		this.calc = new com.wiris.quizzes.JsCalcWrapper(d,session,null,sessionTitle);
+		if(com.wiris.quizzes.impl.HTMLTools.emptyCasSession(session)) session = com.wiris.quizzes.impl.HTMLTools.getEmptyCalcMeSession();
+		this.setValue(session);
+		this.calc = new com.wiris.quizzes.JsCalcWrapper(d,this.value,null,sessionTitle);
 		this.element = d.createElement("div");
 		com.wiris.quizzes.JsDomUtils.addClass(this.element,"wirisauxiliarcalcme");
 		this.calc.setCalcListener(function(calc) {
 			_g.updateQuestionInstance(calc.getXml());
 		});
-		this.calc.launch(null,this.element);
-		this.calc.setHeight(620);
-		this.element.appendChild(this.calc.getElement());
+		this.launchCalcMeImpl();
 	}
 };
 com.wiris.quizzes.JsAuxiliarCalcInput.__name__ = ["com","wiris","quizzes","JsAuxiliarCalcInput"];
@@ -3831,6 +3841,24 @@ com.wiris.quizzes.JsAuxiliarCalcInput.prototype = $extend(com.wiris.quizzes.JsIn
 	,updateQuestionInstance: function(value) {
 		var ii = this.instance;
 		ii.setLocalData(com.wiris.quizzes.impl.LocalData.KEY_CAS_SESSION,value);
+	}
+	,launchCalcMeImpl: function() {
+		var calcLangs = this.calc.getLangList();
+		if(calcLangs != null) {
+			if(!(com.wiris.quizzes.impl.HTMLTools.emptyCasSession(this.value) && com.wiris.quizzes.impl.HTMLTools.isCalc(this.value))) {
+				var translate = true;
+				var sessionLang = com.wiris.quizzes.impl.HTMLTools.casSessionLang(this.getValue());
+				var i = 0;
+				while(translate && i < calcLangs.length) {
+					if(sessionLang == calcLangs[i]) translate = false;
+					i++;
+				}
+				if(translate) this.calc.setValue(com.wiris.quizzes.JsCasJnlpLauncher.translateSession(this.value,"en"));
+			}
+			this.calc.launch(null,this.element);
+			this.calc.setHeight(620);
+			this.element.appendChild(this.calc.getElement());
+		} else this.delay($bind(this,this.launchCalcMeImpl),200);
 	}
 	,calc: null
 	,instance: null
@@ -10946,6 +10974,9 @@ com.wiris.quizzes.impl.HTMLTools.getCalcSessionTitle = function(calcSession) {
 		}
 	}
 	return null;
+}
+com.wiris.quizzes.impl.HTMLTools.getEmptyCalcMeSession = function() {
+	return "<wiriscalc version=\"3.1\"><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Untitled calc</mtext></math></title><properties><property name=\"lang\">en</property><property name=\"precision\">4</property><property name=\"use_degrees\">false</property></properties><session version=\"3.0\" lang=\"en\"><task><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>Sheet 1</mtext></math></title><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"/></input></command></group></task></session></wiriscalc>";
 }
 com.wiris.quizzes.impl.HTMLTools.prototype = {
 	isMathMLString: function(math) {
