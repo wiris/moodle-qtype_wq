@@ -2700,9 +2700,9 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			if(this.isCalcScriptLoaded()) {
 				var win = this.getOwnerWindow();
 				if(this.calcTitleText == null) {
-					this.calc = new win.com.wiris.js.JsCalc({ 'defaultshowtitlebar': false });
+					this.calc = new win.com.wiris.js.JsCalc({ 'defaultshowtitlebar': false , 'lang': this.getLang()});
 				} else {
-					this.calc = new win.com.wiris.js.JsCalc({ });
+					this.calc = new win.com.wiris.js.JsCalc({ 'lang': this.getLang()});
 				}
 			} else this.delay($bind(this,this.initCalc),100);
 		}
@@ -2722,7 +2722,7 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			this.initCalc();
 			this.calc.insertInto(this.calcDiv);
 			this.calc.onIsReady(function() {
-				_g.calc.setContent(_g.getValue());
+				if(!com.wiris.quizzes.impl.HTMLTools.emptyCasSession(_g.getValue())) _g.calc.setContent(_g.getValue());
 				_g.calc.action("commandIfNeeded");
 				if(_g.needsSetTitle) {
 					_g.setValue(com.wiris.quizzes.impl.HTMLTools.setCalcSessionTitle(_g.calc.getContent(),_g.calcTitleText));
@@ -2879,19 +2879,11 @@ com.wiris.quizzes.JsEditorInput.prototype = $extend(com.wiris.quizzes.JsInput.pr
 		if(com.wiris.quizzes.impl.MathContent.isEmpty(value)) value = "";
 		this.value = value;
 	}
-	,setReadOnlyWorkaround: function() {
-		var win = this.getOwnerWindow();
-		if(win != null && !win.closed) {
-			if(this.editor != null && this.editor.isReady()) {
-				var params = new Hash();
-				params.set("readOnly",Std.string(this.readOnly) + "");
-				this.setParams(params);
-			} else this.delay($bind(this,this.setReadOnlyWorkaround),100);
-		}
-	}
 	,setReadOnly: function(readOnly) {
 		com.wiris.quizzes.JsInput.prototype.setReadOnly.call(this,readOnly);
-		this.setReadOnlyWorkaround();
+		var params = new Hash();
+		params.set("readOnly",Std.string(this.readOnly) + "");
+		this.setParams(params);
 	}
 	,setHandConstraints: function(constraints) {
 		this.params.constraints = constraints;
@@ -9290,7 +9282,6 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		var showComparison = false;
 		var showProperties = false;
 		var showAlgorithm = false;
-		var showOptions = false;
 		if(com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_INPUT_FIELD_INLINE_HAND == q.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_INPUT_FIELD)) {
 			showInputMethod = true;
 			inputMethod = this.t.t("answerinputinlinehand");
@@ -9302,13 +9293,13 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 				var i1 = _g1++;
 				var a = q.assertions[i1];
 				if(a.isSyntactic()) {
-					var text = this.getAssertionString(a,80);
+					var text = this.getAssertionString(a,q,80);
 					if(!(text == this.t.t(com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION))) {
 						syntax = text;
 						showSyntax = true;
 					}
 				} else if(index == Std.parseInt(a.getCorrectAnswer())) {
-					var text = this.getAssertionString(a,80);
+					var text = this.getAssertionString(a,q,80);
 					if(StringTools.startsWith(a.name,"equivalent_")) {
 						if(!(text == this.t.t(com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC))) {
 							equivalent = text;
@@ -9321,19 +9312,8 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 				}
 			}
 		}
-		var options = "";
-		var tolerance = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE);
-		var relative = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE);
-		var digits = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS);
-		if(!(digits == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS))) {
-			if(relative == "true") options = digits + " " + this.t.t("significantfigures"); else options = digits + " " + this.t.t("decimalplaces");
-			showOptions = true;
-		} else if(!(relative == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE)) || !(tolerance == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE))) {
-			if(relative == "true") options = com.wiris.system.TypeTools.floatToString(Std.parseFloat(tolerance) * 100) + this.t.t("percenterror"); else options = tolerance + " " + this.t.t("absoluteerror");
-			showOptions = true;
-		}
 		showAlgorithm = q.wirisCasSession != null && q.wirisCasSession.length > 0;
-		if(showSyntax || showComparison || showProperties || showAlgorithm || showOptions || showInputMethod) {
+		if(showSyntax || showComparison || showProperties || showAlgorithm || showInputMethod) {
 			h.openDivClass(null,"wirisfieldsetwrapper");
 			h.openFieldset("validationandvariables" + unique,this.t.t("validationandvariables"),"wirisfieldsetvalidationandvariables");
 			h.help("wirisvalidationandvariableshelp" + unique,"https://docs.wiris.com/quizzes/question-types#short_answer",this.t.t("manual"));
@@ -9346,14 +9326,10 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 				h.dt(this.t.t("allowedinput"));
 				h.dd(syntax);
 			}
-			if(showComparison || showOptions) {
+			if(showComparison) {
 				h.dt(this.t.t("comparison"));
 				var cmp = "";
 				if(showComparison) cmp += equivalent;
-				if(showOptions) {
-					if(cmp.length > 0) cmp += ", ";
-					cmp += options;
-				}
 				h.dd(cmp);
 			}
 			if(showProperties) {
@@ -9379,6 +9355,18 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 			h.close();
 		}
 	}
+	,getToleranceText: function(q,tolerance,digits,relative) {
+		if(tolerance == null) tolerance = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE);
+		if(relative == null) relative = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE);
+		if(digits == null) digits = q.getOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS);
+		var options = "";
+		if(!(digits == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS))) {
+			if(relative == "true") options = digits + " " + this.t.t("significantfigures"); else options = digits + " " + this.t.t("decimalplaces");
+		} else if(!(relative == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE)) || !(tolerance == q.defaultOption(com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE))) {
+			if(relative == "true") options = com.wiris.system.TypeTools.floatToString(Std.parseFloat(tolerance) * 100) + this.t.t("percenterror"); else options = tolerance + " " + this.t.t("absoluteerror");
+		}
+		return options;
+	}
 	,shortenText: function(text,chars) {
 		if(text.length > chars) {
 			text = HxOverrides.substr(text,0,chars - 3);
@@ -9393,37 +9381,49 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		}
 		return text;
 	}
-	,getAssertionString: function(a,chars) {
+	,getAssertionString: function(a,q,chars) {
 		var text = this.t.t(a.name);
-		if(a.parameters != null && a.parameters.length > 0) {
-			var sb = new StringBuf();
+		var tolerance = null;
+		var toleranceDigits = null;
+		var relativeTolerance = null;
+		var sb = new StringBuf();
+		var count = 0;
+		if(a.parameters != null) {
 			var i;
-			var count = 0;
 			var _g1 = 0, _g = a.parameters.length;
 			while(_g1 < _g) {
 				var i1 = _g1++;
 				var ap = a.parameters[i1];
 				if(ap.name == com.wiris.quizzes.impl.Assertion.PARAM_ORDER_MATTERS && !(ap.content == "true")) {
-					if(count > 0) sb.b += Std.string("; ");
+					if(count > 0) sb.b += Std.string(", ");
 					sb.b += Std.string(this.t.t("comparesets"));
 					count++;
 				} else if(ap.name == com.wiris.quizzes.impl.Assertion.PARAM_REPETITION_MATTERS) {
-				} else if(ap.content == "true") {
-					if(count > 0) sb.b += Std.string("; ");
+				} else if(ap.name == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE) tolerance = ap.content; else if(ap.name == com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS) toleranceDigits = ap.content; else if(ap.name == com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE) relativeTolerance = ap.content; else if(ap.content == "true") {
+					if(count > 0) sb.b += Std.string(", ");
 					sb.b += Std.string(this.t.t(ap.name));
 					count++;
 				} else if(ap.content == "false") {
 				} else if(ap.content == com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(a.name,ap.name)) {
 				} else {
-					if(count > 0) sb.b += Std.string("; ");
+					if(count > 0) sb.b += Std.string(", ");
 					sb.b += Std.string(this.shortenText(ap.content,Math.round(chars / 3.0) | 0));
 					count++;
 				}
 			}
-			if(count > 0) {
-				var parameters = this.shortenText(sb.b,chars - text.length - 3);
-				text += " (" + parameters + ")";
+		}
+		var parameters = sb.b;
+		if(a.isEquivalence()) {
+			var toleranceText = this.getToleranceText(q,tolerance,toleranceDigits,relativeTolerance);
+			if(!(toleranceText == "")) {
+				if(count > 0) toleranceText += ", ";
+				parameters = toleranceText + parameters;
+				count++;
 			}
+		}
+		if(count > 0) {
+			parameters = this.shortenText(parameters,chars - text.length - 3);
+			text += " (" + parameters + ")";
 		}
 		return text;
 	}
