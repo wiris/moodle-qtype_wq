@@ -1201,12 +1201,17 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 			n--;
 		}
 	}
+	,getOuterHTMLIE11: function(elem) {
+		var a = elem.ownerDocument.createElement("div");
+		a.appendChild(elem.cloneNode(true));
+		return a.innerHTML;
+	}
 	,filterMathML: function(root) {
 		var maths = root.getElementsByTagName("math");
 		var n = maths.length - 1;
 		while(n >= 0) {
 			var elem = maths[n];
-			var mathml = elem.outerHTML;
+			var mathml = elem.outerHTML || this.getOuterHTMLIE11(elem);
 			var render = this.render(mathml);
 			elem.parentNode.replaceChild(render,elem);
 			n--;
@@ -6120,7 +6125,12 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 			this.feedback = new com.wiris.quizzes.JsAnswerFeedback(this.getOwnerDocument(),this.question,this.instance,this.index,this.userAnswer);
 			this.feedback.showCorrectAnswerFeedback(true);
 			this.feedback.showAssertionsFeedback(true);
-			feedbackElem = this.feedback.getElement();
+			try {
+				feedbackElem = this.feedback.getElement();
+			} catch( e ) {
+				this.feedback.showCorrectAnswerFeedback(false);
+				feedbackElem = this.feedback.getElement();
+			}
 			this.feedback.showFieldDecorationFeedback(true);
 			this.feedback.showCorrectAnswerFeedback(false);
 			this.feedback.showAssertionsFeedback(false);
@@ -6134,7 +6144,11 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 		var mathElem;
 		if(com.wiris.quizzes.impl.MathContent.getMathType(content) == com.wiris.quizzes.impl.MathContent.TYPE_MATHML) mathElem = this.renderMathML(content); else mathElem = this.getOwnerDocument().createTextNode(content);
 		var wrapperElem = this.getOwnerDocument().getElementById("wiriscorrectanswerlabel");
-		if(wrapperElem.firstChild != null) wrapperElem.replaceChild(mathElem,wrapperElem.firstChild); else wrapperElem.appendChild(mathElem);
+		try {
+			if(wrapperElem.firstChild != null) wrapperElem.replaceChild(mathElem,wrapperElem.firstChild); else wrapperElem.appendChild(mathElem);
+		} catch( e ) {
+			console.error("The correct answer could not be rendered in the current browser.");
+		}
 		var qi = this.instance;
 		qi.setHandwritingConstraints(this.question);
 		this.testAnswer.setHandConstraints(qi.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS));
