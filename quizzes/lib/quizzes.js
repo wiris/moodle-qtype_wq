@@ -17016,6 +17016,15 @@ com.wiris.util.type.Arrays.fromCSV = function(s) {
 	}
 	return words;
 }
+com.wiris.util.type.Arrays.toIntArray = function(array) {
+	var result = new Array();
+	var it = HxOverrides.iter(array);
+	while(it.hasNext()) {
+		var value = Std.parseInt(it.next());
+		result.push(value);
+	}
+	return result;
+}
 com.wiris.util.type.Arrays.contains = function(array,element) {
 	return com.wiris.util.type.Arrays.indexOfElement(array,element) >= 0;
 }
