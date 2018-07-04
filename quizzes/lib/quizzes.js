@@ -18046,6 +18046,32 @@ com.wiris.util.xml.WXmlUtils.copyChildren = function(from,to) {
 	var children = from.iterator();
 	while(children.hasNext()) to.addChild(com.wiris.util.xml.WXmlUtils.importXml(children.next(),to));
 }
+com.wiris.util.xml.WXmlUtils.getChildPosition = function(parent,node) {
+	var childIndex = 0;
+	var it = parent.iterator();
+	while(it.hasNext()) {
+		var child = it.next();
+		if(child == node) return childIndex;
+		++childIndex;
+	}
+	return -1;
+}
+com.wiris.util.xml.WXmlUtils.getChildElementCount = function(parent) {
+	if(parent.nodeType != Xml.Element && parent.nodeType != Xml.Document) return 0;
+	var it = parent.elements();
+	var count = 0;
+	while(it.hasNext()) {
+		it.next();
+		++count;
+	}
+	return count;
+}
+com.wiris.util.xml.WXmlUtils.replaceChild = function(parent,childToReplace,replacement) {
+	var childIndex = com.wiris.util.xml.WXmlUtils.getChildPosition(parent,childToReplace);
+	if(childIndex == -1) return;
+	parent.insertChild(replacement,childIndex);
+	parent.removeChild(childToReplace);
+}
 com.wiris.util.xml.WXmlUtils.importXml = function(elem,model) {
 	var n = null;
 	if(elem.nodeType == Xml.Element) {
@@ -18138,7 +18164,7 @@ com.wiris.util.xml.WXmlUtils.indentXml = function(xml,space) {
 			}
 			res.b += Std.string(aux);
 		} else if(cdata.match(aux)) res.b += Std.string(aux); else {
-			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 729, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
+			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 789, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
 			res.b += Std.string(aux);
 		}
 	}

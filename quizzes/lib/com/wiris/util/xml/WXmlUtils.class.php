@@ -455,6 +455,39 @@ class com_wiris_util_xml_WXmlUtils {
 			$to->addChild(com_wiris_util_xml_WXmlUtils::importXml($children->next(), $to));
 		}
 	}
+	static function getChildPosition($parent, $node) {
+		$childIndex = 0;
+		$it = $parent->iterator();
+		while($it->hasNext()) {
+			$child = $it->next();
+			if($child === $node) {
+				return $childIndex;
+			}
+			++$childIndex;
+			unset($child);
+		}
+		return -1;
+	}
+	static function getChildElementCount($parent) {
+		if($parent->nodeType != Xml::$Element && $parent->nodeType != Xml::$Document) {
+			return 0;
+		}
+		$it = $parent->elements();
+		$count = 0;
+		while($it->hasNext()) {
+			$it->next();
+			++$count;
+		}
+		return $count;
+	}
+	static function replaceChild($parent, $childToReplace, $replacement) {
+		$childIndex = com_wiris_util_xml_WXmlUtils::getChildPosition($parent, $childToReplace);
+		if($childIndex === -1) {
+			return;
+		}
+		$parent->insertChild($replacement, $childIndex);
+		$parent->removeChild($childToReplace);
+	}
 	static function importXml($elem, $model) {
 		$n = null;
 		if($elem->nodeType == Xml::$Element) {
@@ -616,7 +649,7 @@ class com_wiris_util_xml_WXmlUtils {
 						if($cdata->match($aux)) {
 							$res->add($aux);
 						} else {
-							haxe_Log::trace("WARNING! malformed XML at character " . _hx_string_rec($end, "") . ":" . $xml, _hx_anonymous(array("fileName" => "WXmlUtils.hx", "lineNumber" => 729, "className" => "com.wiris.util.xml.WXmlUtils", "methodName" => "indentXml")));
+							haxe_Log::trace("WARNING! malformed XML at character " . _hx_string_rec($end, "") . ":" . $xml, _hx_anonymous(array("fileName" => "WXmlUtils.hx", "lineNumber" => 789, "className" => "com.wiris.util.xml.WXmlUtils", "methodName" => "indentXml")));
 							$res->add($aux);
 						}
 					}
