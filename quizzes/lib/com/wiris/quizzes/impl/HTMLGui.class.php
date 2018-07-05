@@ -457,7 +457,6 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$showComparison = false;
 		$showProperties = false;
 		$showAlgorithm = false;
-		$showOptions = false;
 		if(com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_INLINE_HAND === $q->getLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_INPUT_FIELD)) {
 			$showInputMethod = true;
 			$inputMethod = $this->t->t("answerinputinlinehand");
@@ -470,7 +469,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 					$i1 = $_g1++;
 					$a = $q->assertions[$i1];
 					if($a->isSyntactic()) {
-						$text = $this->getAssertionString($a, 80);
+						$text = $this->getAssertionString($a, $q, 80);
 						if(!($text === $this->t->t(com_wiris_quizzes_impl_Assertion::$SYNTAX_EXPRESSION))) {
 							$syntax = $text;
 							$showSyntax = true;
@@ -478,7 +477,7 @@ class com_wiris_quizzes_impl_HTMLGui {
 						unset($text);
 					} else {
 						if($index === Std::parseInt($a->getCorrectAnswer())) {
-							$text = $this->getAssertionString($a, 80);
+							$text = $this->getAssertionString($a, $q, 80);
 							if(StringTools::startsWith($a->name, "equivalent_")) {
 								if(!($text === $this->t->t(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC))) {
 									$equivalent = $text;
@@ -495,22 +494,8 @@ class com_wiris_quizzes_impl_HTMLGui {
 				}
 			}
 		}
-		$options = "";
-		$tolerance = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE);
-		if(!($tolerance === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE))) {
-			$options = $this->t->t("tolerancedigits") . ": " . _hx_substr($tolerance, 5, strlen($tolerance) - 6);
-			$showOptions = true;
-		}
-		$relative = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE);
-		if(!($relative === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE))) {
-			if(strlen($options) > 0) {
-				$options .= ", ";
-			}
-			$options .= $this->t->t("absolutetolerance");
-			$showOptions = true;
-		}
 		$showAlgorithm = $q->wirisCasSession !== null && strlen($q->wirisCasSession) > 0;
-		if($showSyntax || $showComparison || $showProperties || $showAlgorithm || $showOptions || $showInputMethod) {
+		if($showSyntax || $showComparison || $showProperties || $showAlgorithm || $showInputMethod) {
 			$h->openDivClass(null, "wirisfieldsetwrapper");
 			$h->openFieldset("validationandvariables" . _hx_string_rec($unique, ""), $this->t->t("validationandvariables"), "wirisfieldsetvalidationandvariables");
 			$h->help("wirisvalidationandvariableshelp" . _hx_string_rec($unique, ""), "https://docs.wiris.com/quizzes/question-types#short_answer", $this->t->t("manual"));
@@ -523,17 +508,11 @@ class com_wiris_quizzes_impl_HTMLGui {
 				$h->dt($this->t->t("allowedinput"));
 				$h->dd($syntax);
 			}
-			if($showComparison || $showOptions) {
+			if($showComparison) {
 				$h->dt($this->t->t("comparison"));
 				$cmp = "";
 				if($showComparison) {
 					$cmp .= $equivalent;
-				}
-				if($showOptions) {
-					if(strlen($cmp) > 0) {
-						$cmp .= ", ";
-					}
-					$cmp .= $options;
 				}
 				$h->dd($cmp);
 			}
@@ -567,6 +546,34 @@ class com_wiris_quizzes_impl_HTMLGui {
 			$h->close();
 		}
 	}
+	public function getToleranceText($q, $tolerance, $digits, $relative) {
+		if($tolerance === null) {
+			$tolerance = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE);
+		}
+		if($relative === null) {
+			$relative = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE);
+		}
+		if($digits === null) {
+			$digits = $q->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS);
+		}
+		$options = "";
+		if(!($digits === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS))) {
+			if($relative === "true") {
+				$options = $digits . " " . $this->t->t("significantfigures");
+			} else {
+				$options = $digits . " " . $this->t->t("decimalplaces");
+			}
+		} else {
+			if(!($relative === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)) || !($tolerance === $q->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE))) {
+				if($relative === "true") {
+					$options = com_wiris_system_TypeTools::floatToString(Std::parseFloat($tolerance) * 100) . $this->t->t("percenterror");
+				} else {
+					$options = $tolerance . " " . $this->t->t("absoluteerror");
+				}
+			}
+		}
+		return $options;
+	}
 	public function shortenText($text, $chars) {
 		if(strlen($text) > $chars) {
 			$text = _hx_substr($text, 0, $chars - 3);
@@ -581,12 +588,15 @@ class com_wiris_quizzes_impl_HTMLGui {
 		}
 		return $text;
 	}
-	public function getAssertionString($a, $chars) {
+	public function getAssertionString($a, $q, $chars) {
 		$text = $this->t->t($a->name);
-		if($a->parameters !== null && $a->parameters->length > 0) {
-			$sb = new StringBuf();
+		$tolerance = null;
+		$toleranceDigits = null;
+		$relativeTolerance = null;
+		$sb = new StringBuf();
+		$count = 0;
+		if($a->parameters !== null) {
 			$i = null;
-			$count = 0;
 			{
 				$_g1 = 0; $_g = $a->parameters->length;
 				while($_g1 < $_g) {
@@ -594,29 +604,41 @@ class com_wiris_quizzes_impl_HTMLGui {
 					$ap = $a->parameters[$i1];
 					if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_ORDER_MATTERS && !($ap->content === "true")) {
 						if($count > 0) {
-							$sb->add("; ");
+							$sb->add(", ");
 						}
 						$sb->add($this->t->t("comparesets"));
 						$count++;
 					} else {
 						if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_REPETITION_MATTERS) {
 						} else {
-							if($ap->content === "true") {
-								if($count > 0) {
-									$sb->add("; ");
-								}
-								$sb->add($this->t->t($ap->name));
-								$count++;
+							if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE) {
+								$tolerance = $ap->content;
 							} else {
-								if($ap->content === "false") {
+								if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS) {
+									$toleranceDigits = $ap->content;
 								} else {
-									if($ap->content === com_wiris_quizzes_impl_Assertion::getParameterDefaultValue($a->name, $ap->name)) {
+									if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE) {
+										$relativeTolerance = $ap->content;
 									} else {
-										if($count > 0) {
-											$sb->add("; ");
+										if($ap->content === "true") {
+											if($count > 0) {
+												$sb->add(", ");
+											}
+											$sb->add($this->t->t($ap->name));
+											$count++;
+										} else {
+											if($ap->content === "false") {
+											} else {
+												if($ap->content === com_wiris_quizzes_impl_Assertion::getParameterDefaultValue($a->name, $ap->name)) {
+												} else {
+													if($count > 0) {
+														$sb->add(", ");
+													}
+													$sb->add($this->shortenText($ap->content, intval(Math::round($chars / 3.0))));
+													$count++;
+												}
+											}
 										}
-										$sb->add($this->shortenText($ap->content, intval(Math::round($chars / 3.0))));
-										$count++;
 									}
 								}
 							}
@@ -625,10 +647,21 @@ class com_wiris_quizzes_impl_HTMLGui {
 					unset($i1,$ap);
 				}
 			}
-			if($count > 0) {
-				$parameters = $this->shortenText($sb->b, $chars - strlen($text) - 3);
-				$text .= " (" . $parameters . ")";
+		}
+		$parameters = $sb->b;
+		if($a->isEquivalence()) {
+			$toleranceText = $this->getToleranceText($q, $tolerance, $toleranceDigits, $relativeTolerance);
+			if(!($toleranceText === "")) {
+				if($count > 0) {
+					$toleranceText .= ", ";
+				}
+				$parameters = $toleranceText . $parameters;
+				$count++;
 			}
+		}
+		if($count > 0) {
+			$parameters = $this->shortenText($parameters, $chars - strlen($text) - 3);
+			$text .= " (" . $parameters . ")";
 		}
 		return $text;
 	}

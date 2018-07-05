@@ -14,7 +14,7 @@ class com_wiris_quizzes_test_Tester {
 		if(!($q->getCorrectAnswer(0) === "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mn>1</mn><mspace linebreak=\"newline\"/><mi>b</mi><mo>=</mo><mn>2</mn></math>")) {
 			throw new HException(new com_wiris_system_Exception("Failed compatibility test!", null));
 		}
-		if(!($q->getProperty(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER) === com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE)) {
+		if(!($q->getProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER) === com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_TRUE)) {
 			throw new HException(new com_wiris_system_Exception("Failed compatibility test!", null));
 		}
 		if($qi->getCompoundAnswerGrade(0, 0, 0, $q) !== 1.0) {
@@ -29,7 +29,7 @@ class com_wiris_quizzes_test_Tester {
 		if(!($q2->getCorrectAnswer(0) === "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mn>1</mn><mspace linebreak=\"newline\"/><mi>b</mi><mo>=</mo><mn>2</mn></math>")) {
 			throw new HException(new com_wiris_system_Exception("Failed compatibility test!", null));
 		}
-		if(!($q2->getProperty(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER) === com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE)) {
+		if(!($q2->getProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER) === com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_TRUE)) {
 			throw new HException(new com_wiris_system_Exception("Failed compatibility test!", null));
 		}
 		if($qi2->getCompoundAnswerGrade(0, 0, 0, $q) !== 1.0) {
@@ -49,7 +49,7 @@ class com_wiris_quizzes_test_Tester {
 		if(!($q->getCorrectAnswerOfSubquestion(0, 0) === "12")) {
 			throw new HException(new com_wiris_system_Exception("Failed test subquestion 4! Answer of subquestion 0", null));
 		}
-		if(!($q->getPropertyOfSubquestion(1, com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER) === com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE)) {
+		if(!($q->getPropertyOfSubquestion(1, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER) === com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_TRUE)) {
 			throw new HException(new com_wiris_system_Exception("Failed test subquestion 4! Compound answer.", null));
 		}
 		if(!$qi->isSubAnswerCorrect(0, 0)) {
@@ -93,7 +93,7 @@ class com_wiris_quizzes_test_Tester {
 		$q->setCorrectAnswerOfSubquestion(0, 0, "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>1</mn></math>");
 		$q->addAssertionOfSubquestion(0, com_wiris_quizzes_impl_Assertion::$CHECK_FACTORIZED, 0, 0, null);
 		$q->setCorrectAnswerOfSubquestion(1, 0, "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>1</mn><mspace linebreak=\"newline\"/><mi>b</mi><mo>=</mo><mn>15</mn><mspace linebreak=\"newline\"/><mi>c</mi><mo>=</mo><mn>10</mn></math>");
-		$q->setPropertyOfSubquestion(1, com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER, com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE);
+		$q->setPropertyOfSubquestion(1, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_TRUE);
 		$qi = $builder->newMultipleQuestionInstance($q);
 		$qi->setStudentAnswerOfSubquestion(0, 0, "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mn>1</mn></math>");
 		$qi->setStudentAnswerOfSubquestion(1, 0, "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mn>0</mn><mo>.</mo><mn>1</mn><mspace linebreak=\"newline\"/><mi>b</mi><mo>=</mo><mn>15</mn><mspace linebreak=\"newline\"/><mi>c</mi><mo>=</mo><mn>11</mn></math>");
@@ -414,7 +414,7 @@ class com_wiris_quizzes_test_Tester {
 		$q = $b->newQuestion();
 		$q->setCorrectAnswer(0, $correctAnswer);
 		$q->setAlgorithm($algorithm);
-		$q->setProperty(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER, com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE);
+		$q->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_TRUE);
 		$qi = $b->newQuestionInstance($q);
 		$r = $b->newVariablesRequest($correctAnswer, $q, $qi);
 		$this->numCalls++;
@@ -1013,8 +1013,8 @@ class com_wiris_quizzes_test_Tester {
 		if($qqi->getCompoundAnswerGrade(0, 2, 2, $qq) !== 0.0) {
 			throw new HException(new com_wiris_system_Exception("Failed test!", null));
 		}
-		$qq->setLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER_GRADE, com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE);
-		$qq->setLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTION, "20% 30% 50%");
+		$qq->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER_GRADE, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_GRADE_DISTRIBUTE);
+		$qq->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER_GRADE_DISTRIBUTION, "20% 30% 50%");
 		if($qqi->getAnswerGrade(0, 0, $qq) !== 1.0) {
 			throw new HException(new com_wiris_system_Exception("Failed test!", null));
 		}
@@ -1027,7 +1027,7 @@ class com_wiris_quizzes_test_Tester {
 		if($qqi->getAnswerGrade(0, 3, $qq) !== 1.0) {
 			throw new HException(new com_wiris_system_Exception("Failed test!", null));
 		}
-		$qq->setLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER_GRADE, com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE);
+		$qq->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER_GRADE, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_GRADE_DISTRIBUTE);
 		$qq->removeLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTION);
 		if(Math::round($qqi->getAnswerGrade(0, 1, $qq) * 100) / 100.0 !== 0.67) {
 			throw new HException(new com_wiris_system_Exception("Failed test!", null));
@@ -1049,7 +1049,7 @@ class com_wiris_quizzes_test_Tester {
 		$builder = com_wiris_quizzes_impl_QuizzesBuilderImpl::getInstance();
 		$q = $builder->newQuestion();
 		$qq = _hx_deref(($q))->getImpl();
-		$qq->setProperty(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER, com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE);
+		$qq->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_TRUE);
 		$qi = $builder->newQuestionInstance(null);
 		$r = $builder->newEvalMultipleAnswersRequest(new _hx_array(array($correctAnswer)), new _hx_array(array($userCorrectAnswer, $userIncorectAnswer, $userIncorrectAnswer2, $userCorrectAnswer2)), $q, $qi);
 		$this->numCalls++;
@@ -1070,9 +1070,9 @@ class com_wiris_quizzes_test_Tester {
 		$q2->addAssertion(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, 0, 1, new _hx_array(array("test")));
 		$q2->addAssertion(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, 0, 2, new _hx_array(array("test")));
 		$q2->setCorrectAnswer(0, $correctAnswer);
-		$q2->setProperty(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER, com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE);
-		$q2->setProperty(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER_GRADE, com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE);
-		$q2->setProperty(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTION, "33% 33% 33%");
+		$q2->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_TRUE);
+		$q2->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER_GRADE, com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_COMPOUND_ANSWER_GRADE_DISTRIBUTE);
+		$q2->setProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER_GRADE_DISTRIBUTION, "33% 33% 33%");
 		$userIncorrectAnswer3 = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>x</mi><mo>=</mo><msqrt><mn>2</mn></msqrt><mspace linebreak=\"newline\"/><mi>y</mi><mo>=</mo><mi>x</mi><mspace linebreak=\"newline\"/><mi>z</mi><mo>=</mo><mn>10</mn></math>";
 		$i2 = $builder->newQuestionInstance($q2);
 		$i2->setStudentAnswer(0, $userCorrectAnswer);
