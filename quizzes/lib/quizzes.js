@@ -17207,6 +17207,13 @@ com.wiris.util.type.StringUtils.stripAccents = function(s) {
 com.wiris.util.type.StringUtils.compareIgnoringAccents = function(a,b) {
 	return com.wiris.util.type.StringUtils.stripAccents(a) == com.wiris.util.type.StringUtils.stripAccents(b);
 }
+com.wiris.util.type.StringUtils.slice = function(s,beginIndex,endIndex) {
+	var stringLength = s.length;
+	if(beginIndex < 0) beginIndex = com.wiris.util.type.IntegerTools.max(0,stringLength + beginIndex); else if(beginIndex > stringLength) beginIndex = stringLength;
+	if(endIndex < 0) endIndex = com.wiris.util.type.IntegerTools.max(0,s.length + endIndex); else if(endIndex > stringLength) endIndex = stringLength;
+	var span = com.wiris.util.type.IntegerTools.max(0,endIndex - beginIndex);
+	return HxOverrides.substr(s,beginIndex,span);
+}
 com.wiris.util.xml.MathMLUtils = $hxClasses["com.wiris.util.xml.MathMLUtils"] = function() {
 };
 com.wiris.util.xml.MathMLUtils.__name__ = ["com","wiris","util","xml","MathMLUtils"];
