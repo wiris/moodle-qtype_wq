@@ -1728,7 +1728,10 @@ com.wiris.quizzes.JsImageMathInput.prototype = $extend(com.wiris.quizzes.JsPopup
 		return rightX <= this.getIconSize() + 5;
 	}
 	,keypressHandler: function(e) {
-		if(!this.isReadOnly() && e.keyCode == 13) this.launchPopup(e);
+		if(!this.isReadOnly() && e.keyCode == 13) {
+			e.preventDefault();
+			this.launchPopup(e);
+		}
 	}
 	,mouseMoveHandler: function(e) {
 		com.wiris.quizzes.JsDomUtils.getEventTarget(e).style.cursor = this.isButtonClick(e)?"pointer":"auto";
@@ -2402,7 +2405,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1636, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1637, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
