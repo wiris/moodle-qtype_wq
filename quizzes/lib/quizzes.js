@@ -2701,6 +2701,7 @@ com.wiris.quizzes.JsCalcWrapper = $hxClasses["com.wiris.quizzes.JsCalcWrapper"] 
 	this.needsSetTitle = this.calcTitleText != null;
 };
 com.wiris.quizzes.JsCalcWrapper.__name__ = ["com","wiris","quizzes","JsCalcWrapper"];
+com.wiris.quizzes.JsCalcWrapper.containerArray = null;
 com.wiris.quizzes.JsCalcWrapper.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
 	initCalc: function() {
@@ -2758,7 +2759,12 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 			com.wiris.quizzes.JsDomUtils.removeClass(siblings[i1],"wiriscalchidden");
 		}
 		com.wiris.quizzes.JsDomUtils.removeClass(doc.body,"wiriscalchidden");
-		com.wiris.quizzes.JsDomUtils.addClass(this.calcContainer.element,"wiriscalchidden");
+		n = com.wiris.quizzes.JsCalcWrapper.containerArray.length;
+		var _g = 0;
+		while(_g < n) {
+			var i1 = _g++;
+			com.wiris.quizzes.JsDomUtils.addClass(com.wiris.quizzes.JsCalcWrapper.containerArray[i1].element,"wiriscalchidden");
+		}
 		this.calc.setNeedsSave(false);
 		this.setValue(this.calc.getContent());
 	}
@@ -2767,6 +2773,8 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 		var doc = this.getOwnerDocument();
 		if(this.calcContainer == null) {
 			this.calcContainer = new com.wiris.quizzes.JsContainer(doc);
+			if(com.wiris.quizzes.JsCalcWrapper.containerArray == null) com.wiris.quizzes.JsCalcWrapper.containerArray = new Array();
+			com.wiris.quizzes.JsCalcWrapper.containerArray.push(this.calcContainer);
 			this.calcDiv = doc.createElement("div");
 			if(this.titleText != null) {
 				var title = doc.createElement("div");
@@ -7961,7 +7969,7 @@ com.wiris.quizzes.impl.Assertion.initParams = function() {
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_UNIT_LITERAL,["unit"]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DECIMALS,["digits"]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_NO_MORE_DIGITS,["digits"]);
-	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_PRECISION,["min","max","relative"]);
+	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.CHECK_PRECISION,[com.wiris.quizzes.impl.Assertion.PARAM_MIN,com.wiris.quizzes.impl.Assertion.PARAM_MAX,com.wiris.quizzes.impl.Assertion.PARAM_RELATIVE]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION,["name",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,["ordermatters","repetitionmatters",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,["ordermatters","repetitionmatters",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
@@ -9429,6 +9437,16 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 					count++;
 				} else if(ap.content == "false") {
 				} else if(ap.content == com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(a.name,ap.name)) {
+				} else if(ap.name == com.wiris.quizzes.impl.Assertion.PARAM_MIN) {
+					sb.b += Std.string(" ");
+					sb.b += Std.string(this.t.t("fromprecision"));
+					sb.b += Std.string(" ");
+					sb.b += Std.string(ap.content);
+				} else if(ap.name == com.wiris.quizzes.impl.Assertion.PARAM_MAX) {
+					sb.b += Std.string(" ");
+					sb.b += Std.string(this.t.t("toprecision"));
+					sb.b += Std.string(" ");
+					sb.b += Std.string(ap.content);
 				} else {
 					if(count > 0) sb.b += Std.string(", ");
 					sb.b += Std.string(this.shortenText(ap.content,Math.round(chars / 3.0) | 0));
@@ -9445,7 +9463,10 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 				count++;
 			}
 		}
-		if(count > 0) {
+		if(a.name == com.wiris.quizzes.impl.Assertion.CHECK_PRECISION) {
+			text += parameters + " ";
+			text += a.getParam(com.wiris.quizzes.impl.Assertion.PARAM_RELATIVE) == "true"?this.t.t("significantfigures"):this.t.t("decimalplaces");
+		} else if(count > 0) {
 			parameters = this.shortenText(parameters,chars - text.length - 3);
 			text += " (" + parameters + ")";
 		}
@@ -21019,6 +21040,9 @@ com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION = "equivalent_function";
 com.wiris.quizzes.impl.Assertion.EQUIVALENT_ALL = "equivalent_all";
 com.wiris.quizzes.impl.Assertion.PARAM_ORDER_MATTERS = "ordermatters";
 com.wiris.quizzes.impl.Assertion.PARAM_REPETITION_MATTERS = "repetitionmatters";
+com.wiris.quizzes.impl.Assertion.PARAM_MIN = "min";
+com.wiris.quizzes.impl.Assertion.PARAM_MAX = "max";
+com.wiris.quizzes.impl.Assertion.PARAM_RELATIVE = "relative";
 com.wiris.quizzes.impl.Assertion.CHECK_INTEGER_FORM = "check_integer_form";
 com.wiris.quizzes.impl.Assertion.CHECK_FRACTION_FORM = "check_fraction_form";
 com.wiris.quizzes.impl.Assertion.CHECK_POLYNOMIAL_FORM = "check_polynomial_form";

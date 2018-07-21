@@ -276,6 +276,9 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 	static $EQUIVALENT_ALL = "equivalent_all";
 	static $PARAM_ORDER_MATTERS = "ordermatters";
 	static $PARAM_REPETITION_MATTERS = "repetitionmatters";
+	static $PARAM_MIN = "min";
+	static $PARAM_MAX = "max";
+	static $PARAM_RELATIVE = "relative";
 	static $CHECK_INTEGER_FORM = "check_integer_form";
 	static $CHECK_FRACTION_FORM = "check_fraction_form";
 	static $CHECK_POLYNOMIAL_FORM = "check_polynomial_form";
@@ -317,7 +320,7 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_UNIT_LITERAL, new _hx_array(array("unit")));
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DECIMALS, new _hx_array(array("digits")));
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_NO_MORE_DIGITS, new _hx_array(array("digits")));
-		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_PRECISION, new _hx_array(array("min", "max", "relative")));
+		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$CHECK_PRECISION, new _hx_array(array(com_wiris_quizzes_impl_Assertion::$PARAM_MIN, com_wiris_quizzes_impl_Assertion::$PARAM_MAX, com_wiris_quizzes_impl_Assertion::$PARAM_RELATIVE)));
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, new _hx_array(array("name", com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS, com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)));
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC, new _hx_array(array("ordermatters", "repetitionmatters", com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS, com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)));
 		com_wiris_quizzes_impl_Assertion::$paramnames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_LITERAL, new _hx_array(array("ordermatters", "repetitionmatters", com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE, com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS, com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE)));
