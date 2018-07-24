@@ -6428,7 +6428,7 @@ com.wiris.quizzes.JsStudio.prototype = $extend(com.wiris.quizzes.JsInput.prototy
 		var assertions = [com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS,com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION];
 		var toleranceType = this.getAssertionToleranceType(q,assertions,this.index,this.userAnswer);
 		var toleranceValue = this.getAssertionToleranceValue(q,assertions,this.index,this.userAnswer,true);
-		if(toleranceType == "significant_figures" || toleranceType == "decimal_places") return Std.parseInt(toleranceValue); else return Math.floor(Math.log(Std.parseFloat(toleranceValue)) / 2.30258509299) + 1;
+		if(toleranceType == "significant_figures" || toleranceType == "decimal_places") return Std.parseInt(toleranceValue); else return -Math.floor(Math.log(Std.parseFloat(toleranceValue)) / 2.302585093);
 	}
 	,addBehaviors: function(element,question,instance) {
 		var _g1 = this;
