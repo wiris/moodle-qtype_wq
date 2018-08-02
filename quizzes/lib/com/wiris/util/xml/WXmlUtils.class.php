@@ -482,10 +482,12 @@ class com_wiris_util_xml_WXmlUtils {
 	}
 	static function replaceChild($parent, $childToReplace, $replacement) {
 		$childIndex = com_wiris_util_xml_WXmlUtils::getChildPosition($parent, $childToReplace);
-		if($childIndex === -1) {
-			return;
+		if($childIndex !== -1) {
+			com_wiris_util_xml_WXmlUtils::replaceIndexSub($parent, $childIndex, $childToReplace, $replacement);
 		}
-		$parent->insertChild($replacement, $childIndex);
+	}
+	static function replaceIndexSub($parent, $index, $childToReplace, $replacement) {
+		$parent->insertChild($replacement, $index);
 		$parent->removeChild($childToReplace);
 	}
 	static function importXml($elem, $model) {
@@ -649,7 +651,7 @@ class com_wiris_util_xml_WXmlUtils {
 						if($cdata->match($aux)) {
 							$res->add($aux);
 						} else {
-							haxe_Log::trace("WARNING! malformed XML at character " . _hx_string_rec($end, "") . ":" . $xml, _hx_anonymous(array("fileName" => "WXmlUtils.hx", "lineNumber" => 789, "className" => "com.wiris.util.xml.WXmlUtils", "methodName" => "indentXml")));
+							haxe_Log::trace("WARNING! malformed XML at character " . _hx_string_rec($end, "") . ":" . $xml, _hx_anonymous(array("fileName" => "WXmlUtils.hx", "lineNumber" => 793, "className" => "com.wiris.util.xml.WXmlUtils", "methodName" => "indentXml")));
 							$res->add($aux);
 						}
 					}

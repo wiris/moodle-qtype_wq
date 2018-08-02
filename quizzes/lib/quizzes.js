@@ -8526,7 +8526,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.getInstance = function() {
 	return com.wiris.quizzes.impl.ConfigurationImpl.config;
 }
 com.wiris.quizzes.impl.ConfigurationImpl.getUrlKeys = function() {
-	var urls = [com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL,com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL,com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL,com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL,com.wiris.quizzes.api.ConfigurationKeys.HAND_URL,com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.api.ConfigurationKeys.CALC_URL];
+	var urls = [com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL,com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL,com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL,com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL,com.wiris.quizzes.api.ConfigurationKeys.HAND_URL,com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.api.ConfigurationKeys.CALC_URL,com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL];
 	return urls;
 }
 com.wiris.quizzes.impl.ConfigurationImpl.prototype = {
@@ -18106,8 +18106,10 @@ com.wiris.util.xml.WXmlUtils.getChildElementCount = function(parent) {
 }
 com.wiris.util.xml.WXmlUtils.replaceChild = function(parent,childToReplace,replacement) {
 	var childIndex = com.wiris.util.xml.WXmlUtils.getChildPosition(parent,childToReplace);
-	if(childIndex == -1) return;
-	parent.insertChild(replacement,childIndex);
+	if(childIndex != -1) com.wiris.util.xml.WXmlUtils.replaceIndexSub(parent,childIndex,childToReplace,replacement);
+}
+com.wiris.util.xml.WXmlUtils.replaceIndexSub = function(parent,index,childToReplace,replacement) {
+	parent.insertChild(replacement,index);
 	parent.removeChild(childToReplace);
 }
 com.wiris.util.xml.WXmlUtils.importXml = function(elem,model) {
@@ -18202,7 +18204,7 @@ com.wiris.util.xml.WXmlUtils.indentXml = function(xml,space) {
 			}
 			res.b += Std.string(aux);
 		} else if(cdata.match(aux)) res.b += Std.string(aux); else {
-			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 789, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
+			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 793, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
 			res.b += Std.string(aux);
 		}
 	}
