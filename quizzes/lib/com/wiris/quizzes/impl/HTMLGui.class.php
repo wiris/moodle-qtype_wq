@@ -631,11 +631,25 @@ class com_wiris_quizzes_impl_HTMLGui {
 											} else {
 												if($ap->content === com_wiris_quizzes_impl_Assertion::getParameterDefaultValue($a->name, $ap->name)) {
 												} else {
-													if($count > 0) {
-														$sb->add(", ");
+													if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_MIN) {
+														$sb->add(" ");
+														$sb->add($this->t->t("fromprecision"));
+														$sb->add(" ");
+														$sb->add($ap->content);
+													} else {
+														if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_MAX) {
+															$sb->add(" ");
+															$sb->add($this->t->t("toprecision"));
+															$sb->add(" ");
+															$sb->add($ap->content);
+														} else {
+															if($count > 0) {
+																$sb->add(", ");
+															}
+															$sb->add($this->shortenText($ap->content, intval(Math::round($chars / 3.0))));
+															$count++;
+														}
 													}
-													$sb->add($this->shortenText($ap->content, intval(Math::round($chars / 3.0))));
-													$count++;
 												}
 											}
 										}
@@ -659,9 +673,14 @@ class com_wiris_quizzes_impl_HTMLGui {
 				$count++;
 			}
 		}
-		if($count > 0) {
-			$parameters = $this->shortenText($parameters, $chars - strlen($text) - 3);
-			$text .= " (" . $parameters . ")";
+		if($a->name === com_wiris_quizzes_impl_Assertion::$CHECK_PRECISION) {
+			$text .= $parameters . " ";
+			$text .= (($a->getParam(com_wiris_quizzes_impl_Assertion::$PARAM_RELATIVE) === "true") ? $this->t->t("significantfigures") : $this->t->t("decimalplaces"));
+		} else {
+			if($count > 0) {
+				$parameters = $this->shortenText($parameters, $chars - strlen($text) - 3);
+				$text .= " (" . $parameters . ")";
+			}
 		}
 		return $text;
 	}

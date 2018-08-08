@@ -235,6 +235,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		}
 		if($qi !== null && $qi->userData !== null) {
 			$uu->randomSeed = $qi->userData->randomSeed;
+			$uu->parameters = $qi->userData->parameters;
 		} else {
 			$qqi = new com_wiris_quizzes_impl_QuestionInstanceImpl();
 			$uu->randomSeed = $qqi->userData->randomSeed;
