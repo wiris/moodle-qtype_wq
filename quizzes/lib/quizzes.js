@@ -15779,11 +15779,11 @@ com.wiris.system.JsDOMUtils.createCSSRules = function(selector,rules) {
 com.wiris.system.JsDOMUtils.enterFullscreen = function(element) {
 	document.wrs_fullscreen = true;
 	document.wrs_fullscreenElement = element;
-	com.wiris.system.JsDOMUtils.addClass(element,"wrs_fullscreen");
+	com.wiris.system.JsDOMUtils.addClass(element,"wrs_aux_fullscreen");
 	com.wiris.system.JsDOMUtils.fireEvent(document,"wrs_fullscreenchange");
 }
 com.wiris.system.JsDOMUtils.exitFullscreen = function() {
-	if(document.wrs_fullscreenElement != null) com.wiris.system.JsDOMUtils.removeClass(document.wrs_fullscreenElement,"wrs_fullscreen");
+	if(document.wrs_fullscreenElement != null) com.wiris.system.JsDOMUtils.removeClass(document.wrs_fullscreenElement,"wrs_aux_fullscreen");
 	document.wrs_fullscreenElement = null;
 	document.wrs_fullscreen = false;
 	com.wiris.system.JsDOMUtils.fireEvent(document,"wrs_fullscreenchange");
