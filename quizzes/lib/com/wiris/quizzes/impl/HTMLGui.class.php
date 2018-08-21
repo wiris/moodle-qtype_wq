@@ -6,6 +6,42 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$this->lang = (($lang !== null) ? $lang : "en");
 		$this->t = com_wiris_quizzes_impl_Translator::getInstance($this->lang);
 	}}
+	public function configureQuestion($q, $conf) {
+		if(!($conf->tabCorrectAnswer && $conf->optOpenAnswer)) {
+			$i = $q->getCorrectAnswersLength() - 1;
+			while($i >= 0) {
+				$q->removeCorrectAnswer($i);
+				$i--;
+			}
+		}
+		if(!$conf->optAuxiliarCas) {
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS);
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_CAS_INITIAL_SESSION);
+		}
+		if(!$conf->optAuxiliarCasReplaceEditor && com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_SHOW_CAS_REPLACE === $q->getProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS)) {
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS);
+		}
+		if(!$conf->optGradingFunction) {
+			$i = $q->getAssertionsLength() - 1;
+			while($i >= 0) {
+				$a = $q->getAssertion($i);
+				if(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION === $a->name) {
+					$q->removeAssertion($a->name, $a->getCorrectAnswer(), $a->getAnswer());
+				}
+				$i--;
+				unset($a);
+			}
+		}
+		if(!($conf->optOpenAnswer && $conf->optCompoundAnswer)) {
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER);
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER_GRADE);
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_COMPOUND_ANSWER_GRADE_DISTRIBUTION);
+		}
+		$type = $q->getProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_ANSWER_FIELD_TYPE);
+		if(!$conf->optAnswerFieldInlineEditor && com_wiris_quizzes_api_ui_QuizzesUIConstants::$INLINE_EDITOR === $type || !$conf->optAnswerFieldPopupEditor && com_wiris_quizzes_api_ui_QuizzesUIConstants::$POPUP_EDITOR === $type || !$conf->optAnswerFieldPlainText && com_wiris_quizzes_api_ui_QuizzesUIConstants::$TEXT_FIELD === $type || !$conf->optAnswerFieldInlineHand && com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_INLINE_HAND === $type) {
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_ANSWER_FIELD_TYPE);
+		}
+	}
 	public function filterEmbeddedAnswersHTML($html, $mode, $q, $qi) {
 		if($html === null || "" === $html) {
 			return "";

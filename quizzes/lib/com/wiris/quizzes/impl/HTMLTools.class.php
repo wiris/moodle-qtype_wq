@@ -749,18 +749,12 @@ class com_wiris_quizzes_impl_HTMLTools {
 			$start++;
 			$end = _hx_index_of($mathml, "<", $start);
 			$content = _hx_substr($mathml, $start, $end - $start);
-			$i = null;
-			{
-				$_g1 = 0; $_g = strlen($content);
-				while($_g1 < $_g) {
-					$i1 = $_g1++;
-					$c = _hx_char_code_at($content, $i1);
-					if(!($c === 35 || $c >= 48 && $c <= 57 || $c >= 65 && $c <= 90 || $c >= 97 && $c <= 122)) {
-						return false;
-					}
-					unset($i1);
+			$i = com_wiris_system_Utf8::getIterator($content);
+			while($i->hasNext()) {
+				$c = $i->next();
+				if(!(com_wiris_util_xml_WCharacterBase::isDigit($c) || com_wiris_util_xml_WCharacterBase::isLetter($c) || $c === 35)) {
+					return false;
 				}
-				unset($_g1,$_g);
 			}
 			unset($tagname,$sb,$i,$end,$content,$c);
 		}
@@ -1754,6 +1748,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $value === null || _hx_index_of($value, "<mo", null) === -1 && _hx_index_of($value, "<mi", null) === -1 && _hx_index_of($value, "<mn", null) === -1 && _hx_index_of($value, "<csymbol", null) === -1;
 	}
 	static function hasCasSessionParameter($session, $parameter, $name) {
+		$session = com_wiris_util_xml_WXmlUtils::resolveEntities($session);
 		$expr = com_wiris_quizzes_impl_HTMLTools::getParameterEReg($parameter, $name);
 		if($expr->match($session)) {
 			return true;
@@ -1767,7 +1762,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		}
 	}
 	static function getParameterEReg($parameter, $name) {
-		return new EReg(".*<input>\\s*<math[^>]*>\\s*<mi>" . $parameter . "</mi>\\s*<mo>\\s*(&nbsp;|&#xA0;|\\s)\\s*</mo><mi>" . $name . "</mi>.*", "gmi");
+		return new EReg(".*<input>\\s*<math[^>]*>\\s*<mi>" . $parameter . "</mi>\\s*<mo>\\s*(" . com_wiris_quizzes_impl_HTMLTools_15($name, $parameter) . "|\\s)\\s*</mo><mi>" . $name . "</mi>.*", "gmi");
 	}
 	static function casSessionLang($value) {
 		$start = _hx_index_of($value, "<session", null);
@@ -1895,7 +1890,7 @@ function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer,
 function com_wiris_quizzes_impl_HTMLTools_1(&$»this, &$close, &$e, &$i, &$it, &$n, &$open, &$sb, &$separators) {
 	{
 		$s = new haxe_Utf8(null);
-		$s->addChar(haxe_Utf8::charCodeAt($separators, com_wiris_quizzes_impl_HTMLTools_15($close, $e, $i, $it, $n, $open, $s, $sb, $separators)));
+		$s->addChar(haxe_Utf8::charCodeAt($separators, com_wiris_quizzes_impl_HTMLTools_16($close, $e, $i, $it, $n, $open, $s, $sb, $separators)));
 		return $s->toString();
 	}
 }
@@ -1982,7 +1977,14 @@ function com_wiris_quizzes_impl_HTMLTools_14(&$answers, &$m, &$mml, &$sb) {
 		return com_wiris_quizzes_impl_MathContent::$TYPE_TEXT;
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_15(&$close, &$e, &$i, &$it, &$n, &$open, &$s, &$sb, &$separators) {
+function com_wiris_quizzes_impl_HTMLTools_15(&$name, &$parameter) {
+	{
+		$s = new haxe_Utf8(null);
+		$s->addChar(160);
+		return $s->toString();
+	}
+}
+function com_wiris_quizzes_impl_HTMLTools_16(&$close, &$e, &$i, &$it, &$n, &$open, &$s, &$sb, &$separators) {
 	if($i < $n) {
 		return $i;
 	} else {
