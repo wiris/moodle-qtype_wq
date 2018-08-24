@@ -15534,12 +15534,11 @@ com.wiris.system.JsDOMUtils.addEventListenerImpl = function(element,eventName,ha
 				}
 			}
 		},useCapture));
-	}
-	if(eventName == "fullscreenchange") {
-		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"webkitfullscreenchange",handler,useCapture);
-		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"mozfullscreenchange",handler,useCapture);
-		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"MSFullscreenChange",handler,useCapture);
-		com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"wrs_fullscreenchange",handler,useCapture);
+	} else if(eventName == "fullscreenchange") {
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"webkitfullscreenchange",handler,useCapture));
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"mozfullscreenchange",handler,useCapture));
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"MSFullscreenChange",handler,useCapture));
+		descriptor.subDescriptors.push(com.wiris.system.JsDOMUtils.addEventListenerImpl(element,"wrs_fullscreenchange",handler,useCapture));
 	}
 	if(element.attachEvent) element.attachEvent("on" + eventName,function() {
 		handler(window.event);
@@ -15930,10 +15929,12 @@ com.wiris.system.JsDOMUtils.elementIsBefore = function(elementA,elementB) {
 	var pathA = com.wiris.system.JsDOMUtils.getElementPath(elementA);
 	var pathB = com.wiris.system.JsDOMUtils.getElementPath(elementB);
 	var i = 1;
-	while(true) {
+	var n = Math.min(pathA.length,pathB.length) | 0;
+	while(i < n) {
 		if(pathA[i] != pathB[i]) return com.wiris.system.JsDOMUtils.getElementChildIndex(pathA[i]) < com.wiris.system.JsDOMUtils.getElementChildIndex(pathB[i]);
 		++i;
 	}
+	return false;
 }
 com.wiris.system.JsDOMUtils.getElementPath = function(element) {
 	var path = new Array();
@@ -16227,6 +16228,17 @@ com.wiris.system.TypeTools.string2ByteData_iso8859_1 = function(str) {
 	}
 	var bytes = haxe.io.Bytes.ofData(data);
 	return bytes;
+}
+com.wiris.system.TypeTools.hashParamsToObjectParams = function(params) {
+	if(params == null) return null;
+	var paramObject = { };
+	var i = params.keys();
+	while(i.hasNext()) {
+		var key = i.next();
+		var value = params.get(key);
+		paramObject[key] = value;
+	}
+	return paramObject;
 }
 if(!com.wiris.system._Utf8) com.wiris.system._Utf8 = {}
 com.wiris.system._Utf8.StringIterator = $hxClasses["com.wiris.system._Utf8.StringIterator"] = function(s) {
