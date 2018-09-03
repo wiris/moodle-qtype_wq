@@ -10817,13 +10817,17 @@ com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswerMathML = function(correctAns
 	var s = com.wiris.quizzes.impl.HTMLTools.splitRootTag(mml,"math");
 	mml = com.wiris.quizzes.impl.HTMLTools.stripRootTag(s[1],"mrow");
 	var lines = new Array();
-	var end = 0;
 	var start = 0;
-	while((end = mml.indexOf(newline,start)) != -1) {
-		lines.push(HxOverrides.substr(mml,start,end - start));
+	var end = 0;
+	do {
+		end = mml.indexOf(newline,start);
+		var line = end > -1?HxOverrides.substr(mml,start,end - start):HxOverrides.substr(mml,start,null);
+		if(lines.length > 0 && line.indexOf("<mo>=</mo>") == -1) {
+			var lastElem = lines[lines.length - 1] + newline + line;
+			lines[lines.length - 1] = lastElem;
+		} else lines.push(line);
 		start = end + newline.length;
-	}
-	lines.push(HxOverrides.substr(mml,start,null));
+	} while(end != -1);
 	var i;
 	var _g1 = 0, _g = lines.length;
 	while(_g1 < _g) {

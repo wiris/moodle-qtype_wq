@@ -1585,13 +1585,21 @@ class com_wiris_quizzes_impl_HTMLTools {
 		$s = com_wiris_quizzes_impl_HTMLTools::splitRootTag($mml, "math");
 		$mml = com_wiris_quizzes_impl_HTMLTools::stripRootTag($s[1], "mrow");
 		$lines = new _hx_array(array());
-		$end = 0;
 		$start = 0;
-		while(($end = _hx_index_of($mml, $newline, $start)) !== -1) {
-			$lines->push(_hx_substr($mml, $start, $end - $start));
+		$end = 0;
+		do {
+			$end = _hx_index_of($mml, $newline, $start);
+			$line = (($end > -1) ? _hx_substr($mml, $start, $end - $start) : _hx_substr($mml, $start, null));
+			if($lines->length > 0 && _hx_index_of($line, "<mo>=</mo>", null) === -1) {
+				$lastElem = $lines[$lines->length - 1] . $newline . $line;
+				$lines[$lines->length - 1] = $lastElem;
+				unset($lastElem);
+			} else {
+				$lines->push($line);
+			}
 			$start = $end + strlen($newline);
-		}
-		$lines->push(_hx_substr($mml, $start, null));
+			unset($line);
+		} while($end !== -1);
 		$i = null;
 		{
 			$_g1 = 0; $_g = $lines->length;
