@@ -785,12 +785,13 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 					$_g1 = 1; $_g = $correctAnswers->length;
 					while($_g1 < $_g) {
 						$j1 = $_g1++;
-						$grade = $this->getAnswerGrade(Std::parseInt($correctAnswers[$j1]), $studentAnswer, $q);
+						$thisCorrectAnswer = Std::parseInt($correctAnswers[$j1]);
+						$grade = $this->getAnswerGrade($thisCorrectAnswer, $studentAnswer, $q);
 						if($grade > $maxgrade) {
 							$maxgrade = $grade;
-							$correctAnswer = $j1;
+							$correctAnswer = $thisCorrectAnswer;
 						}
-						unset($j1,$grade);
+						unset($thisCorrectAnswer,$j1,$grade);
 					}
 				}
 			}
