@@ -12549,9 +12549,10 @@ com.wiris.quizzes.impl.MathMLFilter.prototype = {
 		var sb = new StringBuf();
 		var start = 0;
 		var end = 0;
-		while((start = html.indexOf("<math",end)) != -1) {
+		while((start = html.indexOf("<math",end)) > -1) {
 			sb.b += Std.string(HxOverrides.substr(html,end,start - end));
 			end = html.indexOf("</math>",start) + 7;
+			if(end < start) end = html.indexOf("/>",start) + 2;
 			var mathml = HxOverrides.substr(html,start,end - start);
 			var img = this.mathml2img(mathml);
 			sb.b += Std.string(img);
