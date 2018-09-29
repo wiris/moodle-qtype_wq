@@ -987,6 +987,6 @@ body.wiriscalchidden {
     margin: 0px;
 }
 
-div.wiriscalchidden, header.wiriscalchidden {
+body .wiriscalchidden {
     display: none;
 }
