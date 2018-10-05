@@ -5471,6 +5471,8 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 	,getConfiguration: function() {
 		if(this.config == null) {
 			var c = com.wiris.quizzes.impl.ConfigurationImpl.getInstance();
+			var scriptPath = com.wiris.system.JsDOMUtils.findServicePath("quizzes.js");
+			c.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,scriptPath);
 			var https = this.isHttps();
 			var urlconfigs = com.wiris.quizzes.impl.ConfigurationImpl.getUrlKeys();
 			var _g = 0;
@@ -9453,11 +9455,9 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		var sb = new StringBuf();
 		var count = 0;
 		if(a.parameters != null) {
-			var i;
-			var _g1 = 0, _g = a.parameters.length;
-			while(_g1 < _g) {
-				var i1 = _g1++;
-				var ap = a.parameters[i1];
+			var i = 0;
+			while(i < a.parameters.length) {
+				var ap = a.parameters[i++];
 				if(ap.name == com.wiris.quizzes.impl.Assertion.PARAM_ORDER_MATTERS && !(ap.content == "true")) {
 					if(count > 0) sb.b += Std.string(", ");
 					sb.b += Std.string(this.t.t("comparesets"));
@@ -9470,10 +9470,16 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 				} else if(ap.content == "false") {
 				} else if(ap.content == com.wiris.quizzes.impl.Assertion.getParameterDefaultValue(a.name,ap.name)) {
 				} else if(ap.name == com.wiris.quizzes.impl.Assertion.PARAM_MIN) {
-					sb.b += Std.string(" ");
-					sb.b += Std.string(this.t.t("fromprecision"));
-					sb.b += Std.string(" ");
-					sb.b += Std.string(ap.content);
+					if(i < a.parameters.length && a.parameters[i].name == com.wiris.quizzes.impl.Assertion.PARAM_MAX && a.parameters[i].content == ap.content) {
+						sb.b += Std.string(" ");
+						sb.b += Std.string(ap.content);
+						i++;
+					} else {
+						sb.b += Std.string(" ");
+						sb.b += Std.string(this.t.t("fromprecision"));
+						sb.b += Std.string(" ");
+						sb.b += Std.string(ap.content);
+					}
 				} else if(ap.name == com.wiris.quizzes.impl.Assertion.PARAM_MAX) {
 					sb.b += Std.string(" ");
 					sb.b += Std.string(this.t.t("toprecision"));
@@ -17316,6 +17322,13 @@ com.wiris.util.type.Arrays.difference = function(a,b) {
 		if(com.wiris.util.type.Arrays.indexOfElement(b,e) < 0) v.push(e);
 	}
 	return v;
+}
+com.wiris.util.type.Arrays.arrayUnion = function(baseArray,unionArray) {
+	var it = HxOverrides.iter(unionArray);
+	while(it.hasNext()) {
+		var n = it.next();
+		if(!com.wiris.system.ArrayEx.contains(baseArray,n)) baseArray.push(n);
+	}
 }
 com.wiris.util.type.Arrays.prototype = {
 	__class__: com.wiris.util.type.Arrays

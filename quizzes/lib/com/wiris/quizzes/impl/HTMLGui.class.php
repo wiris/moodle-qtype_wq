@@ -632,59 +632,61 @@ class com_wiris_quizzes_impl_HTMLGui {
 		$sb = new StringBuf();
 		$count = 0;
 		if($a->parameters !== null) {
-			$i = null;
-			{
-				$_g1 = 0; $_g = $a->parameters->length;
-				while($_g1 < $_g) {
-					$i1 = $_g1++;
-					$ap = $a->parameters[$i1];
-					if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_ORDER_MATTERS && !($ap->content === "true")) {
-						if($count > 0) {
-							$sb->add(", ");
-						}
-						$sb->add($this->t->t("comparesets"));
-						$count++;
+			$i = 0;
+			while($i < $a->parameters->length) {
+				$ap = $a->parameters[$i++];
+				if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_ORDER_MATTERS && !($ap->content === "true")) {
+					if($count > 0) {
+						$sb->add(", ");
+					}
+					$sb->add($this->t->t("comparesets"));
+					$count++;
+				} else {
+					if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_REPETITION_MATTERS) {
 					} else {
-						if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_REPETITION_MATTERS) {
+						if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE) {
+							$tolerance = $ap->content;
 						} else {
-							if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE) {
-								$tolerance = $ap->content;
+							if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS) {
+								$toleranceDigits = $ap->content;
 							} else {
-								if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_TOLERANCE_DIGITS) {
-									$toleranceDigits = $ap->content;
+								if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE) {
+									$relativeTolerance = $ap->content;
 								} else {
-									if($ap->name === com_wiris_quizzes_api_QuizzesConstants::$OPTION_RELATIVE_TOLERANCE) {
-										$relativeTolerance = $ap->content;
+									if($ap->content === "true") {
+										if($count > 0) {
+											$sb->add(", ");
+										}
+										$sb->add($this->t->t($ap->name));
+										$count++;
 									} else {
-										if($ap->content === "true") {
-											if($count > 0) {
-												$sb->add(", ");
-											}
-											$sb->add($this->t->t($ap->name));
-											$count++;
+										if($ap->content === "false") {
 										} else {
-											if($ap->content === "false") {
+											if($ap->content === com_wiris_quizzes_impl_Assertion::getParameterDefaultValue($a->name, $ap->name)) {
 											} else {
-												if($ap->content === com_wiris_quizzes_impl_Assertion::getParameterDefaultValue($a->name, $ap->name)) {
-												} else {
-													if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_MIN) {
+												if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_MIN) {
+													if($i < $a->parameters->length && _hx_array_get($a->parameters, $i)->name === com_wiris_quizzes_impl_Assertion::$PARAM_MAX && _hx_array_get($a->parameters, $i)->content === $ap->content) {
+														$sb->add(" ");
+														$sb->add($ap->content);
+														$i++;
+													} else {
 														$sb->add(" ");
 														$sb->add($this->t->t("fromprecision"));
 														$sb->add(" ");
 														$sb->add($ap->content);
+													}
+												} else {
+													if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_MAX) {
+														$sb->add(" ");
+														$sb->add($this->t->t("toprecision"));
+														$sb->add(" ");
+														$sb->add($ap->content);
 													} else {
-														if($ap->name === com_wiris_quizzes_impl_Assertion::$PARAM_MAX) {
-															$sb->add(" ");
-															$sb->add($this->t->t("toprecision"));
-															$sb->add(" ");
-															$sb->add($ap->content);
-														} else {
-															if($count > 0) {
-																$sb->add(", ");
-															}
-															$sb->add($this->shortenText($ap->content, intval(Math::round($chars / 3.0))));
-															$count++;
+														if($count > 0) {
+															$sb->add(", ");
 														}
+														$sb->add($this->shortenText($ap->content, intval(Math::round($chars / 3.0))));
+														$count++;
 													}
 												}
 											}
@@ -694,8 +696,8 @@ class com_wiris_quizzes_impl_HTMLGui {
 							}
 						}
 					}
-					unset($i1,$ap);
 				}
+				unset($ap);
 			}
 		}
 		$parameters = $sb->b;
