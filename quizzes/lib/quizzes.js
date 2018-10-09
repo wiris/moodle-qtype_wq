@@ -5472,7 +5472,7 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 		if(this.config == null) {
 			var c = com.wiris.quizzes.impl.ConfigurationImpl.getInstance();
 			var scriptPath = com.wiris.system.JsDOMUtils.findServicePath("quizzes.js");
-			c.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,scriptPath);
+			if(scriptPath != null) c.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,scriptPath);
 			var https = this.isHttps();
 			var urlconfigs = com.wiris.quizzes.impl.ConfigurationImpl.getUrlKeys();
 			var _g = 0;
