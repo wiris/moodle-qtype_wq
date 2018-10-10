@@ -17330,6 +17330,18 @@ com.wiris.util.type.Arrays.arrayUnion = function(baseArray,unionArray) {
 		if(!com.wiris.system.ArrayEx.contains(baseArray,n)) baseArray.push(n);
 	}
 }
+com.wiris.util.type.Arrays.equalAsSets = function(a,b) {
+	if(a == null || b == null) return a == b;
+	if(a.length == b.length) {
+		var it = HxOverrides.iter(b);
+		while(it.hasNext()) {
+			var t = it.next();
+			if(!com.wiris.system.ArrayEx.contains(a,t)) return false;
+		}
+		return true;
+	}
+	return false;
+}
 com.wiris.util.type.Arrays.prototype = {
 	__class__: com.wiris.util.type.Arrays
 }
