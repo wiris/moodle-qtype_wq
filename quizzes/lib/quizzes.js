@@ -2236,6 +2236,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 			});
 			this.calcLauncher.addOnCloseHandler(function() {
 				_g.setValue(_g.calcLauncher.getValue());
+				_g.caslang = _g.getSessionLang();
 			});
 			if(!this.isCas) this.calcLauncher.showInterface();
 		}
@@ -2406,7 +2407,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1638, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1641, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -11123,7 +11124,7 @@ com.wiris.quizzes.impl.HTMLTools.prototype = {
 	}
 	,fullMathML2TextImpl: function(e) {
 		var sb = new StringBuf();
-		if(e.getNodeName() == "mo" || e.getNodeName() == "mn" || e.getNodeName() == "mi") sb.b += Std.string(com.wiris.util.xml.WXmlUtils.getNodeValue(e.firstChild())); else if(e.getNodeName() == "mfenced" || e.getNodeName() == "mtr" || e.getNodeName() == "mtable") {
+		if(e.getNodeName() == "mo" || e.getNodeName() == "mn" || e.getNodeName() == "mi" || e.getNodeName() == "mtext") sb.b += Std.string(com.wiris.util.xml.WXmlUtils.getNodeValue(e.firstChild())); else if(e.getNodeName() == "mfenced" || e.getNodeName() == "mtr" || e.getNodeName() == "mtable") {
 			var open = e.get("open");
 			if(open == null) open = "(";
 			var close = e.get("close");

@@ -82,7 +82,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 	}
 	public function fullMathML2TextImpl($e) {
 		$sb = new StringBuf();
-		if($e->getNodeName() === "mo" || $e->getNodeName() === "mn" || $e->getNodeName() === "mi") {
+		if($e->getNodeName() === "mo" || $e->getNodeName() === "mn" || $e->getNodeName() === "mi" || $e->getNodeName() === "mtext") {
 			$sb->add(com_wiris_util_xml_WXmlUtils::getNodeValue($e->firstChild()));
 		} else {
 			if($e->getNodeName() === "mfenced" || $e->getNodeName() === "mtr" || $e->getNodeName() === "mtable") {
