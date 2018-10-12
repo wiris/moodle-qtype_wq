@@ -5472,8 +5472,10 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 	,getConfiguration: function() {
 		if(this.config == null) {
 			var c = com.wiris.quizzes.impl.ConfigurationImpl.getInstance();
-			var scriptPath = com.wiris.system.JsDOMUtils.findServicePath("quizzes.js");
-			if(scriptPath != null) c.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,scriptPath);
+			if(c.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC) == "true") {
+				var scriptPath = com.wiris.system.JsDOMUtils.findServicePath("quizzes.js");
+				if(scriptPath != null) c.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,scriptPath);
+			}
 			var https = this.isHttps();
 			var urlconfigs = com.wiris.quizzes.impl.ConfigurationImpl.getUrlKeys();
 			var _g = 0;
@@ -5481,7 +5483,7 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 				var key = urlconfigs[_g];
 				++_g;
 				var url = c.get(key);
-				if(!this.isAbsolute(url)) url = this.canonicalURL(url);
+				if(url != null && !this.isAbsolute(url)) url = this.canonicalURL(url);
 				if(https) url = this.setHttps(url);
 				c.set(key,url);
 			}
@@ -8482,7 +8484,6 @@ com.wiris.quizzes.impl.ConfigurationImpl = $hxClasses["com.wiris.quizzes.impl.Co
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRISLAUNCHER_URL);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CROSSORIGINCALLS_ENABLED);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC,com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_STATIC);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_URL);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL);
 	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.VERSION,com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION);
 	if(!com.wiris.settings.PlatformSettings.IS_JAVASCRIPT) {
@@ -8561,7 +8562,6 @@ com.wiris.quizzes.impl.ConfigurationImpl.prototype = {
 		sb.b += Std.string(prefix + "DEF_WIRISLAUNCHER_URL" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL)) + "\";\n");
 		sb.b += Std.string(prefix + "DEF_CROSSORIGINCALLS_ENABLED" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED)) + "\";\n");
 		sb.b += Std.string(prefix + "DEF_RESOURCES_STATIC" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC)) + "\";\n");
-		sb.b += Std.string(prefix + "DEF_RESOURCES_URL" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL)) + "\";\n");
 		sb.b += Std.string(prefix + "DEF_HAND_LOGTRACES" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.HAND_LOGTRACES)) + "\";\n");
 		sb.b += Std.string(prefix + "DEF_GRAPH_URL" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL)) + "\";\n");
 		sb.b += Std.string(prefix + "DEF_VERSION" + " = \"" + this.jsEscape(this.get(com.wiris.quizzes.api.ConfigurationKeys.VERSION)) + "\";\n");
