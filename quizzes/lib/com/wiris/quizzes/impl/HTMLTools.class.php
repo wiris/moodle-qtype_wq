@@ -275,7 +275,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 						$j = 0;
 						$l = 0;
 						while($this->isReservedWordPrefix($word, $words)) {
-							if($this->inArray($word, $words)) {
+							if(com_wiris_system_ArrayEx::contains($words, $word)) {
 								$lastReservedWord = $word;
 								$l = $j;
 							}

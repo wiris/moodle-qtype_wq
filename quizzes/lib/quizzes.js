@@ -4825,7 +4825,15 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.getInstance = function() {
 }
 com.wiris.quizzes.impl.QuizzesBuilderImpl.__super__ = com.wiris.quizzes.api.QuizzesBuilder;
 com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.api.QuizzesBuilder.prototype,{
-	getAccessProvider: function() {
+	newFeaturedAssertionsRequest: function(question) {
+		if(question == null) throw "Question q cannot be null.";
+		var q = js.Boot.__cast(question , com.wiris.quizzes.impl.QuestionInternal);
+		var qr = new com.wiris.quizzes.impl.QuestionRequestImpl();
+		qr.question = this.removeSubquestions(q);
+		qr.addProcess(new com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions());
+		return qr;
+	}
+	,getAccessProvider: function() {
 		if(this.accessProvider == null) {
 			var classpath = this.getConfiguration().get(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASSPATH);
 			if(!(classpath == "")) com.wiris.quizzes.impl.ClasspathLoader.load(classpath);
@@ -11258,7 +11266,7 @@ com.wiris.quizzes.impl.HTMLTools.prototype = {
 						var j = 0;
 						var l = 0;
 						while(this.isReservedWordPrefix(word,words)) {
-							if(this.inArray(word,words)) {
+							if(com.wiris.system.ArrayEx.contains(words,word)) {
 								lastReservedWord = word;
 								l = j;
 							}
@@ -12874,6 +12882,21 @@ com.wiris.quizzes.impl.ProcessGetCheckAssertions.prototype = $extend(com.wiris.q
 		s.endTag();
 	}
 	,__class__: com.wiris.quizzes.impl.ProcessGetCheckAssertions
+});
+com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions = $hxClasses["com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions"] = function() {
+	com.wiris.quizzes.impl.Process.call(this);
+};
+com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions.__name__ = ["com","wiris","quizzes","impl","ProcessGetFeaturedSyntaxAssertions"];
+com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions.__super__ = com.wiris.quizzes.impl.Process;
+com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions.prototype = $extend(com.wiris.quizzes.impl.Process.prototype,{
+	newInstance: function() {
+		return new com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions();
+	}
+	,onSerialize: function(s) {
+		s.beginTag(com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions.TAGNAME);
+		s.endTag();
+	}
+	,__class__: com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions
 });
 com.wiris.quizzes.impl.ProcessGetTranslation = $hxClasses["com.wiris.quizzes.impl.ProcessGetTranslation"] = function() {
 	com.wiris.quizzes.impl.Process.call(this);
@@ -21334,6 +21357,7 @@ com.wiris.quizzes.impl.QuizzesServiceImpl.PROTOCOL_REST = 0;
 com.wiris.quizzes.impl.Option.options = [com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_PRECISION,com.wiris.quizzes.api.QuizzesConstants.OPTION_TIMES_OPERATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_IMAGINARY_UNIT,com.wiris.quizzes.api.QuizzesConstants.OPTION_EXPONENTIAL_E,com.wiris.quizzes.api.QuizzesConstants.OPTION_NUMBER_PI,com.wiris.quizzes.api.QuizzesConstants.OPTION_IMPLICIT_TIMES_OPERATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_FLOAT_FORMAT,com.wiris.quizzes.api.QuizzesConstants.OPTION_DECIMAL_SEPARATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_DIGIT_GROUP_SEPARATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER,com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER_NAME,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS];
 com.wiris.quizzes.impl.Parameter.tagName = "parameter";
 com.wiris.quizzes.impl.ProcessGetCheckAssertions.tagName = "getCheckAssertions";
+com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions.TAGNAME = "getFeaturedSyntaxAssertions";
 com.wiris.quizzes.impl.ProcessGetTranslation.tagName = "getTranslation";
 com.wiris.quizzes.impl.ProcessGetVariables.TAGNAME = "getVariables";
 com.wiris.quizzes.impl.ProcessStoreQuestion.TAGNAME = "storeQuestion";
