@@ -5,6 +5,16 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
 	}}
+	public function newFeaturedAssertionsRequest($question) {
+		if($question === null) {
+			throw new HException("Question q cannot be null.");
+		}
+		$q = $question;
+		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
+		$qr->question = $this->removeSubquestions($q);
+		$qr->addProcess(new com_wiris_quizzes_impl_ProcessGetFeaturedSyntaxAssertions());
+		return $qr;
+	}
 	public function getAccessProvider() {
 		if($this->accessProvider === null) {
 			$classpath = $this->getConfiguration()->get(com_wiris_quizzes_impl_ConfigurationImpl::$ACCESSPROVIDER_CLASSPATH);
