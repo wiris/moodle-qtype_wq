@@ -5491,9 +5491,11 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 				var key = urlconfigs[_g];
 				++_g;
 				var url = c.get(key);
-				if(url != null && !this.isAbsolute(url)) url = this.canonicalURL(url);
-				if(https) url = this.setHttps(url);
-				c.set(key,url);
+				if(url != null) {
+					if(!this.isAbsolute(url)) url = this.canonicalURL(url);
+					if(https) url = this.setHttps(url);
+					c.set(key,url);
+				}
 			}
 			this.config = c;
 		}
@@ -18375,7 +18377,7 @@ com.wiris.util.xml.WXmlUtils.indentXml = function(xml,space) {
 			}
 			res.b += Std.string(aux);
 		} else if(cdata.match(aux)) res.b += Std.string(aux); else {
-			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 793, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
+			haxe.Log.trace("WARNING! malformed XML at character " + end + ":" + xml,{ fileName : "WXmlUtils.hx", lineNumber : 794, className : "com.wiris.util.xml.WXmlUtils", methodName : "indentXml"});
 			res.b += Std.string(aux);
 		}
 	}
