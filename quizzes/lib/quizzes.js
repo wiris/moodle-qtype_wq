@@ -5491,9 +5491,11 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 				var key = urlconfigs[_g];
 				++_g;
 				var url = c.get(key);
-				if(url != null && !this.isAbsolute(url)) url = this.canonicalURL(url);
-				if(https) url = this.setHttps(url);
-				c.set(key,url);
+				if(url != null) {
+					if(!this.isAbsolute(url)) url = this.canonicalURL(url);
+					if(https) url = this.setHttps(url);
+					c.set(key,url);
+				}
 			}
 			this.config = c;
 		}
