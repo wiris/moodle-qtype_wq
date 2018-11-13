@@ -5473,18 +5473,14 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 	,isAbsolute: function(url) {
 		return StringTools.startsWith(url,"http://") || StringTools.startsWith(url,"https://");
 	}
-	,setHttps: function(url) {
-		if(StringTools.startsWith(url,"http://")) url = "https://" + HxOverrides.substr(url,7,null);
-		return url;
-	}
 	,getConfiguration: function() {
 		if(this.config == null) {
+			com.wiris.quizzes.impl.ConfigurationImpl.setIsHttps(this.isHttps());
 			var c = com.wiris.quizzes.impl.ConfigurationImpl.getInstance();
 			if(c.get(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC) == "true") {
 				var scriptPath = com.wiris.system.JsDOMUtils.findServicePath("quizzes.js");
 				if(scriptPath != null) c.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,scriptPath);
 			}
-			var https = this.isHttps();
 			var urlconfigs = com.wiris.quizzes.impl.ConfigurationImpl.getUrlKeys();
 			var _g = 0;
 			while(_g < urlconfigs.length) {
@@ -5493,7 +5489,6 @@ com.wiris.quizzes.JsQuizzesBuilder.prototype = $extend(com.wiris.quizzes.impl.Qu
 				var url = c.get(key);
 				if(url != null) {
 					if(!this.isAbsolute(url)) url = this.canonicalURL(url);
-					if(https) url = this.setHttps(url);
 					c.set(key,url);
 				}
 			}
@@ -8466,36 +8461,36 @@ com.wiris.quizzes.impl.ClasspathLoader.registerClass = function(path,file) {
 }
 com.wiris.quizzes.impl.ConfigurationImpl = $hxClasses["com.wiris.quizzes.impl.ConfigurationImpl"] = function() {
 	this.properties = new Hash();
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRIS_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.CALC_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_EDITOR_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HAND_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_PROXY_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.CACHE_DIR,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CACHE_DIR);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.MAXCONNECTIONS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_MAXCONNECTIONS);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_FILE,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_FILE);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_CLASS);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_CLASSPATH,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_CLASSPATH);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.IMAGESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_IMAGESCACHE_CLASS);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.VARIABLESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_VARIABLESCACHE_CLASS);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_LOCKPROVIDER_CLASS);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASS);
-	this.properties.set(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASSPATH,com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASSPATH);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_HOST,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_HOST);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PORT,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_PORT);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_USER,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_USER);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_PASS);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_REFERER_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HAND_ENABLED,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_ENABLED);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.SERVICE_OFFLINE,com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_OFFLINE);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.HAND_LOGTRACES,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_LOGTRACES);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRISLAUNCHER_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CROSSORIGINCALLS_ENABLED);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC,com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_STATIC);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL);
-	this.properties.set(com.wiris.quizzes.api.ConfigurationKeys.VERSION,com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRIS_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.CALC_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_EDITOR_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.HAND_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_PROXY_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.CACHE_DIR,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CACHE_DIR);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.MAXCONNECTIONS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_MAXCONNECTIONS);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_FILE,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_FILE);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_CLASS);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.CONFIG_CLASSPATH,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CONFIG_CLASSPATH);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.IMAGESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_IMAGESCACHE_CLASS);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.VARIABLESCACHE_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_VARIABLESCACHE_CLASS);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.LOCKPROVIDER_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_LOCKPROVIDER_CLASS);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASS);
+	this.set(com.wiris.quizzes.impl.ConfigurationImpl.ACCESSPROVIDER_CLASSPATH,com.wiris.quizzes.impl.ConfigurationImpl.DEF_ACCESSPROVIDER_CLASSPATH);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_HOST,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_HOST);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PORT,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_PORT);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_USER,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_USER);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.HTTPPROXY_PASS,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HTTPPROXY_PASS);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.REFERER_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_REFERER_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.HAND_ENABLED,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_ENABLED);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CALC_ENABLED);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.SERVICE_OFFLINE,com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_OFFLINE);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.HAND_LOGTRACES,com.wiris.quizzes.impl.ConfigurationImpl.DEF_HAND_LOGTRACES);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_WIRISLAUNCHER_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.CROSSORIGINCALLS_ENABLED,com.wiris.quizzes.impl.ConfigurationImpl.DEF_CROSSORIGINCALLS_ENABLED);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_STATIC,com.wiris.quizzes.impl.ConfigurationImpl.DEF_RESOURCES_STATIC);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL,com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL);
+	this.set(com.wiris.quizzes.api.ConfigurationKeys.VERSION,com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION);
 	if(!com.wiris.settings.PlatformSettings.IS_JAVASCRIPT) {
 		try {
 			var s = com.wiris.system.Storage.newStorage(com.wiris.quizzes.impl.ConfigurationImpl.DEF_DIST_CONFIG_FILE);
@@ -8517,7 +8512,7 @@ com.wiris.quizzes.impl.ConfigurationImpl = $hxClasses["com.wiris.quizzes.impl.Co
 			while(_g1 < _g) {
 				var i1 = _g1++;
 				var value = config.get(keys[i1]);
-				if(value != null) this.properties.set(keys[i1],value);
+				if(value != null) this.set(keys[i1],value);
 			}
 		} catch( e ) {
 			throw "Could not find the Configuration class \"" + className + "\".";
@@ -8546,8 +8541,16 @@ com.wiris.quizzes.impl.ConfigurationImpl.getUrlKeys = function() {
 	var urls = [com.wiris.quizzes.api.ConfigurationKeys.WIRIS_URL,com.wiris.quizzes.api.ConfigurationKeys.EDITOR_URL,com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL,com.wiris.quizzes.api.ConfigurationKeys.PROXY_URL,com.wiris.quizzes.api.ConfigurationKeys.HAND_URL,com.wiris.quizzes.api.ConfigurationKeys.RESOURCES_URL,com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL,com.wiris.quizzes.api.ConfigurationKeys.CALC_URL,com.wiris.quizzes.api.ConfigurationKeys.GRAPH_URL];
 	return urls;
 }
+com.wiris.quizzes.impl.ConfigurationImpl.setIsHttps = function(https) {
+	com.wiris.quizzes.impl.ConfigurationImpl.isHttps = https;
+}
 com.wiris.quizzes.impl.ConfigurationImpl.prototype = {
-	jsEscape: function(text) {
+	setHttps: function(url) {
+		var newUrl = url;
+		if(StringTools.startsWith(url,"http://")) newUrl = "https://" + HxOverrides.substr(url,7,null);
+		return newUrl;
+	}
+	,jsEscape: function(text) {
 		text = StringTools.replace(text,"\\","\\\\");
 		text = StringTools.replace(text,"\"","\\\"");
 		text = StringTools.replace(text,"\n","\\n");
@@ -8578,6 +8581,10 @@ com.wiris.quizzes.impl.ConfigurationImpl.prototype = {
 		return sb.b;
 	}
 	,set: function(key,value) {
+		if(com.wiris.quizzes.impl.ConfigurationImpl.isHttps) {
+			var urls = com.wiris.quizzes.impl.ConfigurationImpl.getUrlKeys();
+			if(com.wiris.util.type.Arrays.containsArray(urls,key)) value = this.setHttps(value);
+		}
 		this.properties.set(key,value);
 	}
 	,get: function(key) {
@@ -8587,7 +8594,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.prototype = {
 		var it = props.keys();
 		while(it.hasNext()) {
 			var key = it.next();
-			this.properties.set(key,props.get(key));
+			this.set(key,props.get(key));
 		}
 	}
 	,loadFile: function(file) {
@@ -21292,6 +21299,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL = "http://www.wiris.net/d
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION = "";
 com.wiris.quizzes.impl.ConfigurationImpl.config = null;
 com.wiris.quizzes.impl.ConfigurationImpl.thisLock = { };
+com.wiris.quizzes.impl.ConfigurationImpl.isHttps = false;
 com.wiris.quizzes.impl.CorrectAnswer.tagName = "correctAnswer";
 com.wiris.quizzes.impl.FileLockProvider.TIMEOUT = 5000;
 com.wiris.quizzes.impl.FileLockProvider.WAIT = 100;
