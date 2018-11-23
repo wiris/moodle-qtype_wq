@@ -16285,6 +16285,39 @@ com.wiris.system.TypeTools.hashParamsToObjectParams = function(params) {
 	}
 	return paramObject;
 }
+com.wiris.system.TypeTools.longBitsToDouble = function(notused,numberhigh,numberlow) {
+	var numberint64 = new haxe.Int64(numberhigh,numberlow);
+	var high7ff = 0 | 0;
+	var low7ff = 2047 | 0;
+	var int647ff = new haxe.Int64(high7ff,low7ff);
+	var highfff = 1048575 | 0;
+	var lowfff = -1 | 0;
+	var int64fff = new haxe.Int64(highfff,lowfff);
+	var high100 = 1048576 | 0;
+	var low100 = 0 | 0;
+	var int64100 = new haxe.Int64(high100,low100);
+	var shiftright63 = new haxe.Int64(numberint64.high >> 31,numberint64.high >> 31);
+	var s = (shiftright63.high | shiftright63.low) == 0?1:-1;
+	var shiftright52 = new haxe.Int64(numberint64.high >> 31,numberint64.high >> 20);
+	var and7ff = new haxe.Int64(shiftright52.high & int647ff.high,shiftright52.low & int647ff.low);
+	var eint64 = and7ff;
+	var andfff = new haxe.Int64(numberint64.high & int64fff.high,numberint64.low & int64fff.low);
+	var shift1 = new haxe.Int64(andfff.high << 1 | andfff.low >>> 31,andfff.low << 1);
+	var or100 = new haxe.Int64(andfff.high | int64100.high,andfff.low | int64100.low);
+	var mint64 = (eint64.high | eint64.low) == 0?shift1:or100;
+	var estring = eint64.toString();
+	var e = Std.parseFloat(estring);
+	var mstring = mint64.toString();
+	var m = Std.parseFloat(mstring);
+	var finalResult = s * Math.pow(2,e - 1075) * m;
+	return finalResult;
+}
+com.wiris.system.TypeTools.intBitsToFloat = function(bits) {
+	var s = bits >> 31 == 0?1:-1;
+	var e = bits >> 23 & 255;
+	var m = e == 0?(bits & 8388607) << 1:bits & 8388607 | 8388608;
+	return s * m * Math.pow(2,e - 150);
+}
 if(!com.wiris.system._Utf8) com.wiris.system._Utf8 = {}
 com.wiris.system._Utf8.StringIterator = $hxClasses["com.wiris.system._Utf8.StringIterator"] = function(s) {
 	this.source = s;
