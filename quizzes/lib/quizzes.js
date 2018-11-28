@@ -5329,9 +5329,8 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 					if(after.length == 0 || com.wiris.util.type.IntegerTools.isInt(after) && Std.parseInt(after) <= qi.getStudentAnswersLength()) {
 						variables[i1] = null;
 						n++;
-					} else if(qq.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE) {
-						var qqi = js.Boot.__cast(qi , com.wiris.quizzes.impl.QuestionInstanceImpl);
-						var parts = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(qqi.userData.answers[0]);
+					} else if(qq.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE && q.getCorrectAnswersLength() > 0) {
+						var parts = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(qq.correctAnswers[0]);
 						if(com.wiris.util.type.IntegerTools.isInt(after) && Std.parseInt(after) <= parts.length) {
 							variables[i1] = null;
 							n++;
@@ -5598,7 +5597,7 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 			component.showCorrectAnswerFeedback(cfg.showCorrectAnswerFeedback);
 			component.showAssertionsFeedback(cfg.showAssertionsFeedback);
 			component.showFieldDecorationFeedback(cfg.showFieldDecorationFeedback);
-			if(incorrectClass) component.setAnswerWeight(0.0); else if(partiallyCorrectClass) component.setAnswerWeight(0.5);
+			if(incorrectClass) component.setAnswerWeight(0.0); else if(partiallyCorrectClass) component.setAnswerWeight(0.5); else if(correctClass) component.setAnswerWeight(1);
 		}
 		return component;
 	}
@@ -10980,7 +10979,7 @@ com.wiris.quizzes.impl.HTMLTools.hasCasSessionParameter = function(session,param
 	}
 }
 com.wiris.quizzes.impl.HTMLTools.getParameterEReg = function(parameter,name) {
-	return new EReg(".*<input>\\s*<math[^>]*>\\s*<mi>" + parameter + "</mi>\\s*<mo>\\s*(" + com.wiris.system.Utf8.uchr(160) + "|\\s)\\s*</mo><mi>" + name + "</mi>.*","gmi");
+	return new EReg(".*<input>\\s*<math[^>]*>\\s*<mi>" + parameter + "</mi>\\s*<mo>\\s*(" + com.wiris.system.Utf8.uchr(160) + "|\\s)\\s*</mo><mi>" + name + "\\d*</mi>.*","gmi");
 }
 com.wiris.quizzes.impl.HTMLTools.casSessionLang = function(value) {
 	var start = value.indexOf("<session");

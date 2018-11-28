@@ -1770,7 +1770,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		}
 	}
 	static function getParameterEReg($parameter, $name) {
-		return new EReg(".*<input>\\s*<math[^>]*>\\s*<mi>" . $parameter . "</mi>\\s*<mo>\\s*(" . com_wiris_quizzes_impl_HTMLTools_15($name, $parameter) . "|\\s)\\s*</mo><mi>" . $name . "</mi>.*", "gmi");
+		return new EReg(".*<input>\\s*<math[^>]*>\\s*<mi>" . $parameter . "</mi>\\s*<mo>\\s*(" . com_wiris_quizzes_impl_HTMLTools_15($name, $parameter) . "|\\s)\\s*</mo><mi>" . $name . "\\d*</mi>.*", "gmi");
 	}
 	static function casSessionLang($value) {
 		$start = _hx_index_of($value, "<session", null);
