@@ -15806,12 +15806,9 @@ com.wiris.system.JsDOMUtils.getTouchPositionImpl = function(target,touch,element
 	return position;
 }
 com.wiris.system.JsDOMUtils.getStandardButton = function(e) {
-	if(com.wiris.system.JsDOMUtils.browser.isTouchable()) return 0;
-	var button = e.button;
-	if(com.wiris.system.JsDOMUtils.browser.isIE()) {
-		if(button == 1) button = 0; else if(button == 4) button = 1;
-	}
-	return button;
+	if(e.touches) return 1;
+	if("button" in e) return e.button + 1;
+	return 0;
 }
 com.wiris.system.JsDOMUtils.vibrate = function(milliseconds) {
 	if(navigator.vibrate) navigator.vibrate(milliseconds);
