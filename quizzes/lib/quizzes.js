@@ -4932,6 +4932,7 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 		s.register(new com.wiris.quizzes.impl.ResultGetTranslation());
 		s.register(new com.wiris.quizzes.impl.ResultGetVariables());
 		s.register(new com.wiris.quizzes.impl.ResultStoreQuestion());
+		s.register(new com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions());
 		s.register(new com.wiris.quizzes.impl.TranslationNameChange());
 		s.register(new com.wiris.quizzes.impl.UserData());
 		s.register(new com.wiris.quizzes.impl.Variable());
@@ -14880,6 +14881,24 @@ com.wiris.quizzes.impl.ResultGetCheckAssertions.prototype = $extend(com.wiris.qu
 	,checks: null
 	,__class__: com.wiris.quizzes.impl.ResultGetCheckAssertions
 });
+com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions = $hxClasses["com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions"] = function() {
+	com.wiris.quizzes.impl.Result.call(this);
+};
+com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions.__name__ = ["com","wiris","quizzes","impl","ResultGetFeaturedSyntaxAssertions"];
+com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions.__super__ = com.wiris.quizzes.impl.Result;
+com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions.prototype = $extend(com.wiris.quizzes.impl.Result.prototype,{
+	newInstance: function() {
+		return new com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions();
+	}
+	,onSerialize: function(s) {
+		s.beginTag(com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions.tagName);
+		this.onSerializeInner(s);
+		this.assertions = s.serializeArray(this.assertions,com.wiris.quizzes.impl.Assertion.tagName);
+		s.endTag();
+	}
+	,assertions: null
+	,__class__: com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions
+});
 com.wiris.quizzes.impl.ResultGetTranslation = $hxClasses["com.wiris.quizzes.impl.ResultGetTranslation"] = function() {
 	com.wiris.quizzes.impl.Result.call(this);
 };
@@ -21416,6 +21435,7 @@ com.wiris.quizzes.impl.ResultError.TYPE_MATHSYNTAX = "mathSyntax";
 com.wiris.quizzes.impl.ResultError.TYPE_PARAMVALUE = "paramValue";
 com.wiris.quizzes.impl.ResultErrorLocation.tagName = "location";
 com.wiris.quizzes.impl.ResultGetCheckAssertions.tagName = "getCheckAssertionsResult";
+com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions.tagName = "getFeaturedSyntaxAssertionsResult";
 com.wiris.quizzes.impl.ResultGetTranslation.tagName = "getTranslationResult";
 com.wiris.quizzes.impl.ResultGetVariables.tagName = "getVariablesResult";
 com.wiris.quizzes.impl.ResultStoreQuestion.tagName = "storeQuestionResult";
