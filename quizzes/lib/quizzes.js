@@ -7987,12 +7987,26 @@ com.wiris.quizzes.impl.Assertion.initParams = function() {
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,["ordermatters","repetitionmatters",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,["ordermatters","repetitionmatters",com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
 	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS,[com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS,com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE]);
+	com.wiris.quizzes.impl.Assertion.paramnames.set(com.wiris.quizzes.impl.Assertion.SYNTAX_MATH,["constants","functions","listoperators","groupoperators","itemseparators","decimalseparators","digitgroupseparators","nobracketslist","intervals","textlogicoperators","ratio","scientificnotation"]);
 	var paramvalues;
 	com.wiris.quizzes.impl.Assertion.paramdefault = new Hash();
 	var constantsExpression = com.wiris.system.Utf8.uchr(960) + ", e, i, j";
 	var functions = "exp, log, ln, sin, cos, tan, asin, acos, atan, arcsin, arccos, arctan, cosec, csc, sec, cotan, cot, acosec, acsc, asec, acotan, acot, sen, asen, arcsen, sinh, cosh, tanh, asinh, acosh, atanh, arcsinh, arccosh, arctanh, cosech, csch, sech, cotanh, coth, acosech, acsch, asech, acotanh, acoth, senh, asenh, arcsenh, min, max, sign";
 	var groupoperators = "(,[";
 	var listoperators = "{";
+	paramvalues = new Hash();
+	paramvalues.set("constants",constantsExpression);
+	paramvalues.set("functions",functions);
+	paramvalues.set("groupoperators",groupoperators);
+	paramvalues.set("listoperators",listoperators);
+	paramvalues.set("itemseparators",";, \\n, \\,");
+	paramvalues.set("decimalseparators",".");
+	paramvalues.set("digitgroupseparators","");
+	paramvalues.set("nobracketslist","false");
+	paramvalues.set("intervals","false");
+	paramvalues.set("ratio","false");
+	paramvalues.set("scientificnotation","false");
+	com.wiris.quizzes.impl.Assertion.paramdefault.set(com.wiris.quizzes.impl.Assertion.SYNTAX_MATH,paramvalues);
 	paramvalues = new Hash();
 	paramvalues.set("constants",constantsExpression);
 	paramvalues.set("functions",functions);
@@ -13065,7 +13079,7 @@ com.wiris.quizzes.impl.QuestionImpl.getDefaultOptions = function() {
 }
 com.wiris.quizzes.impl.QuestionImpl.syntacticAssertionToURL = function(a) {
 	var sb = new StringBuf();
-	if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION) sb.b += Std.string("Expression"); else if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_QUANTITY) sb.b += Std.string("Quantity"); else if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_STRING) sb.b += Std.string("String"); else if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_LIST) sb.b += Std.string("List");
+	if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_MATH) sb.b += Std.string("Math"); else if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION) sb.b += Std.string("Expression"); else if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_QUANTITY) sb.b += Std.string("Quantity"); else if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_STRING) sb.b += Std.string("String"); else if(a.name == com.wiris.quizzes.impl.Assertion.SYNTAX_LIST) sb.b += Std.string("List");
 	if(a.parameters != null && a.parameters.length > 0) {
 		sb.b += Std.string("?");
 		var i;
@@ -21260,6 +21274,7 @@ com.wiris.quizzes.impl.Answer.tagName = "answer";
 com.wiris.quizzes.impl.Assertion.tagName = "assertion";
 com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION = "syntax_expression";
 com.wiris.quizzes.impl.Assertion.SYNTAX_QUANTITY = "syntax_quantity";
+com.wiris.quizzes.impl.Assertion.SYNTAX_MATH = "syntax_math";
 com.wiris.quizzes.impl.Assertion.SYNTAX_STRING = "syntax_string";
 com.wiris.quizzes.impl.Assertion.SYNTAX_LIST = "syntax_list";
 com.wiris.quizzes.impl.Assertion.PARAM_NO_BRACKETS_LIST = "nobracketslist";
@@ -21293,7 +21308,7 @@ com.wiris.quizzes.impl.Assertion.CHECK_RATIONALIZED = "check_rationalized";
 com.wiris.quizzes.impl.Assertion.CHECK_MINIMAL_RADICANDS = "check_minimal_radicands";
 com.wiris.quizzes.impl.Assertion.CHECK_PRECISION = "check_precision";
 com.wiris.quizzes.impl.Assertion.EQUIVALENT_SET = "equivalent_set";
-com.wiris.quizzes.impl.Assertion.syntactic = [com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION,com.wiris.quizzes.impl.Assertion.SYNTAX_QUANTITY,com.wiris.quizzes.impl.Assertion.SYNTAX_STRING];
+com.wiris.quizzes.impl.Assertion.syntactic = [com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION,com.wiris.quizzes.impl.Assertion.SYNTAX_QUANTITY,com.wiris.quizzes.impl.Assertion.SYNTAX_STRING,com.wiris.quizzes.impl.Assertion.SYNTAX_MATH];
 com.wiris.quizzes.impl.Assertion.equivalent = [com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS,com.wiris.quizzes.impl.Assertion.EQUIVALENT_ALL,com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION];
 com.wiris.quizzes.impl.Assertion.structure = [com.wiris.quizzes.impl.Assertion.CHECK_INTEGER_FORM,com.wiris.quizzes.impl.Assertion.CHECK_FRACTION_FORM,com.wiris.quizzes.impl.Assertion.CHECK_POLYNOMIAL_FORM,com.wiris.quizzes.impl.Assertion.CHECK_RATIONAL_FUNCTION_FORM,com.wiris.quizzes.impl.Assertion.CHECK_ELEMENTAL_FUNCTION_FORM,com.wiris.quizzes.impl.Assertion.CHECK_SCIENTIFIC_NOTATION];
 com.wiris.quizzes.impl.Assertion.checks = [com.wiris.quizzes.impl.Assertion.CHECK_SIMPLIFIED,com.wiris.quizzes.impl.Assertion.CHECK_EXPANDED,com.wiris.quizzes.impl.Assertion.CHECK_FACTORIZED,com.wiris.quizzes.impl.Assertion.CHECK_RATIONALIZED,com.wiris.quizzes.impl.Assertion.CHECK_NO_COMMON_FACTOR,com.wiris.quizzes.impl.Assertion.CHECK_MINIMAL_RADICANDS,com.wiris.quizzes.impl.Assertion.CHECK_DIVISIBLE,com.wiris.quizzes.impl.Assertion.CHECK_COMMON_DENOMINATOR,com.wiris.quizzes.impl.Assertion.CHECK_UNIT,com.wiris.quizzes.impl.Assertion.CHECK_UNIT_LITERAL,com.wiris.quizzes.impl.Assertion.CHECK_PRECISION];
