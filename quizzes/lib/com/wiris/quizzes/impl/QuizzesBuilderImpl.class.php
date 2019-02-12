@@ -7,7 +7,17 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 	}}
 	public function newFeaturedAssertionsRequest($question) {
 		if($question === null) {
-			throw new HException("Question q cannot be null.");
+			throw new HException("Question cannot be null.");
+		}
+		$q = $question;
+		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
+		$qr->question = $this->removeSubquestions($q);
+		$qr->addProcess(new com_wiris_quizzes_impl_ProcessGetFeaturedAssertions());
+		return $qr;
+	}
+	public function newFeaturedSyntaxAssertionsRequest($question) {
+		if($question === null) {
+			throw new HException("Question cannot be null.");
 		}
 		$q = $question;
 		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
@@ -130,6 +140,8 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$s->register(new com_wiris_quizzes_impl_MultipleQuestionResponse());
 		$s->register(new com_wiris_quizzes_impl_Option());
 		$s->register(new com_wiris_quizzes_impl_ProcessGetCheckAssertions());
+		$s->register(new com_wiris_quizzes_impl_ProcessGetFeaturedAssertions());
+		$s->register(new com_wiris_quizzes_impl_ProcessGetFeaturedSyntaxAssertions());
 		$s->register(new com_wiris_quizzes_impl_ProcessGetTranslation());
 		$s->register(new com_wiris_quizzes_impl_ProcessGetVariables());
 		$s->register(new com_wiris_quizzes_impl_ProcessStoreQuestion());
@@ -146,6 +158,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$s->register(new com_wiris_quizzes_impl_ResultGetVariables());
 		$s->register(new com_wiris_quizzes_impl_ResultStoreQuestion());
 		$s->register(new com_wiris_quizzes_impl_ResultGetFeaturedSyntaxAssertions());
+		$s->register(new com_wiris_quizzes_impl_ResultGetFeaturedAssertions());
 		$s->register(new com_wiris_quizzes_impl_TranslationNameChange());
 		$s->register(new com_wiris_quizzes_impl_UserData());
 		$s->register(new com_wiris_quizzes_impl_Variable());

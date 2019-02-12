@@ -2105,7 +2105,8 @@ com.wiris.quizzes.JsAlgorithmInput = $hxClasses["com.wiris.quizzes.JsAlgorithmIn
 		var helpSpan = d.createElement("span");
 		com.wiris.quizzes.JsDomUtils.addClass(helpSpan,"wirishelp");
 		var helpA = d.createElement("a");
-		helpA.setAttribute("href","https://docs.wiris.com/quizzes/studio#variables");
+		var langString = this.t("lang");
+		helpA.setAttribute("href","https://docs.wiris.com/" + langString + "/quizzes/studio#variables");
 		helpA.setAttribute("title","Manual");
 		helpA.setAttribute("target","_blank");
 		com.wiris.quizzes.JsDomUtils.addClass(helpA,"wirishelp");
@@ -2407,7 +2408,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1641, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1643, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -3772,6 +3773,9 @@ com.wiris.quizzes.JsAnswerInput.prototype = $extend(com.wiris.quizzes.JsStudentA
 	,question: null
 	,__class__: com.wiris.quizzes.JsAnswerInput
 });
+com.wiris.quizzes.api.ui.AuxiliarCasField = $hxClasses["com.wiris.quizzes.api.ui.AuxiliarCasField"] = function() { }
+com.wiris.quizzes.api.ui.AuxiliarCasField.__name__ = ["com","wiris","quizzes","api","ui","AuxiliarCasField"];
+com.wiris.quizzes.api.ui.AuxiliarCasField.__interfaces__ = [com.wiris.quizzes.api.ui.QuizzesField];
 com.wiris.quizzes.JsAuxiliarCasInput = $hxClasses["com.wiris.quizzes.JsAuxiliarCasInput"] = function(d,v,q,qi,index,classes) {
 	com.wiris.quizzes.JsInput.call(this,d,v);
 	this.question = q;
@@ -3789,6 +3793,7 @@ com.wiris.quizzes.JsAuxiliarCasInput = $hxClasses["com.wiris.quizzes.JsAuxiliarC
 	}
 };
 com.wiris.quizzes.JsAuxiliarCasInput.__name__ = ["com","wiris","quizzes","JsAuxiliarCasInput"];
+com.wiris.quizzes.JsAuxiliarCasInput.__interfaces__ = [com.wiris.quizzes.api.ui.AuxiliarCasField];
 com.wiris.quizzes.JsAuxiliarCasInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsAuxiliarCasInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
 	addOnChangeHandler: function(handler) {
@@ -3835,6 +3840,7 @@ com.wiris.quizzes.JsAuxiliarCalcInput = $hxClasses["com.wiris.quizzes.JsAuxiliar
 	}
 };
 com.wiris.quizzes.JsAuxiliarCalcInput.__name__ = ["com","wiris","quizzes","JsAuxiliarCalcInput"];
+com.wiris.quizzes.JsAuxiliarCalcInput.__interfaces__ = [com.wiris.quizzes.api.ui.AuxiliarCasField];
 com.wiris.quizzes.JsAuxiliarCalcInput.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsAuxiliarCalcInput.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
 	addOnChangeHandler: function(handler) {
@@ -4762,7 +4768,13 @@ com.wiris.quizzes.api.QuizzesBuilder.getInstance = function() {
 	return com.wiris.quizzes.JsQuizzesBuilder.getInstance();
 }
 com.wiris.quizzes.api.QuizzesBuilder.prototype = {
-	getResourceUrl: function(name) {
+	newFeaturedAssertionsRequest: function(question) {
+		return null;
+	}
+	,newFeaturedSyntaxAssertionsRequest: function(question) {
+		return null;
+	}
+	,getResourceUrl: function(name) {
 		return null;
 	}
 	,getQuizzesUIBuilder: function() {
@@ -4826,7 +4838,15 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.getInstance = function() {
 com.wiris.quizzes.impl.QuizzesBuilderImpl.__super__ = com.wiris.quizzes.api.QuizzesBuilder;
 com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.api.QuizzesBuilder.prototype,{
 	newFeaturedAssertionsRequest: function(question) {
-		if(question == null) throw "Question q cannot be null.";
+		if(question == null) throw "Question cannot be null.";
+		var q = js.Boot.__cast(question , com.wiris.quizzes.impl.QuestionInternal);
+		var qr = new com.wiris.quizzes.impl.QuestionRequestImpl();
+		qr.question = this.removeSubquestions(q);
+		qr.addProcess(new com.wiris.quizzes.impl.ProcessGetFeaturedAssertions());
+		return qr;
+	}
+	,newFeaturedSyntaxAssertionsRequest: function(question) {
+		if(question == null) throw "Question cannot be null.";
 		var q = js.Boot.__cast(question , com.wiris.quizzes.impl.QuestionInternal);
 		var qr = new com.wiris.quizzes.impl.QuestionRequestImpl();
 		qr.question = this.removeSubquestions(q);
@@ -4917,6 +4937,8 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 		s.register(new com.wiris.quizzes.impl.MultipleQuestionResponse());
 		s.register(new com.wiris.quizzes.impl.Option());
 		s.register(new com.wiris.quizzes.impl.ProcessGetCheckAssertions());
+		s.register(new com.wiris.quizzes.impl.ProcessGetFeaturedAssertions());
+		s.register(new com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions());
 		s.register(new com.wiris.quizzes.impl.ProcessGetTranslation());
 		s.register(new com.wiris.quizzes.impl.ProcessGetVariables());
 		s.register(new com.wiris.quizzes.impl.ProcessStoreQuestion());
@@ -4933,6 +4955,7 @@ com.wiris.quizzes.impl.QuizzesBuilderImpl.prototype = $extend(com.wiris.quizzes.
 		s.register(new com.wiris.quizzes.impl.ResultGetVariables());
 		s.register(new com.wiris.quizzes.impl.ResultStoreQuestion());
 		s.register(new com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions());
+		s.register(new com.wiris.quizzes.impl.ResultGetFeaturedAssertions());
 		s.register(new com.wiris.quizzes.impl.TranslationNameChange());
 		s.register(new com.wiris.quizzes.impl.UserData());
 		s.register(new com.wiris.quizzes.impl.Variable());
@@ -5605,26 +5628,9 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 	,filterAuxiliarCasApplet: function(element,index,question,questionElement,instance,instanceElement,options) {
 		var qq = question.getImpl();
 		if(qq.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_SHOW_CAS) != com.wiris.quizzes.impl.LocalData.VALUE_SHOW_CAS_FALSE) {
-			var ii = instance;
-			var doc = element.ownerDocument;
-			var useCalc = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED);
-			if(useCalc.toLowerCase() == "true") {
-				var calcUrl = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CALC_URL) + "/wiriscalc";
-				com.wiris.quizzes.JsDomUtils.addScript(doc,js.Lib.window,calcUrl);
-				var component = new com.wiris.quizzes.JsAuxiliarCalcInput(doc,element.value,question,instance,index,options);
-				element.parentNode.insertBefore(component.element,element);
-				component.addOnChangeHandler(function(value) {
-					element.value = value;
-					instanceElement.value = instance.serialize();
-				});
-			} else {
-				var component = new com.wiris.quizzes.JsAuxiliarCasInput(doc,element.value,question,instance,index,options);
-				element.parentNode.insertBefore(component.element,element);
-				component.addOnChangeHandler(function(value) {
-					element.value = value;
-					instanceElement.value = instance.serialize();
-				});
-			}
+			var component = this.uibuilder.newAuxiliarCasField(question,instance,index);
+			component.addQuizzesFieldListener(new com.wiris.quizzes.FieldSynchronizer(element,instanceElement,instance));
+			element.parentNode.insertBefore(component.getElement(),element);
 		}
 	}
 	,filterAnswerField: function(element,index,question,questionElement,instance,instanceElement,options,submitElements) {
@@ -5917,8 +5923,16 @@ com.wiris.quizzes.JsQuizzesUIBuilder.prototype = $extend(com.wiris.quizzes.impl.
 		return new com.wiris.quizzes.HxMathViewer();
 	}
 	,newAuxiliarCasField: function(question,instance,index) {
-		throw "Not implemented";
-		return null;
+		if(question == null) question = com.wiris.quizzes.api.QuizzesBuilder.getInstance().newQuestion();
+		if(instance == null) instance = com.wiris.quizzes.api.QuizzesBuilder.getInstance().newQuestionInstance();
+		var ii = instance;
+		var doc = js.Lib.document;
+		var useCalc = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CALC_ENABLED);
+		if(useCalc.toLowerCase() == "true") {
+			var calcUrl = com.wiris.quizzes.api.QuizzesBuilder.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.CALC_URL) + "/wiriscalc";
+			com.wiris.quizzes.JsDomUtils.addScript(doc,js.Lib.window,calcUrl);
+			return new com.wiris.quizzes.JsAuxiliarCalcInput(doc,instance.getProperty(com.wiris.quizzes.api.QuizzesConstants.PROPERTY_CAS_SESSION),question,instance,index,null);
+		} else return new com.wiris.quizzes.JsAuxiliarCasInput(doc,instance.getProperty(com.wiris.quizzes.api.QuizzesConstants.PROPERTY_CAS_SESSION),question,instance,index,null);
 	}
 	,newEmbeddedAnswersEditor: function(question,instance) {
 		if(question == null) question = com.wiris.quizzes.api.QuizzesBuilder.getInstance().newQuestion();
@@ -7763,9 +7777,6 @@ com.wiris.quizzes.api.QuizzesServiceListener.prototype = {
 	onResponse: null
 	,__class__: com.wiris.quizzes.api.QuizzesServiceListener
 }
-com.wiris.quizzes.api.ui.AuxiliarCasField = $hxClasses["com.wiris.quizzes.api.ui.AuxiliarCasField"] = function() { }
-com.wiris.quizzes.api.ui.AuxiliarCasField.__name__ = ["com","wiris","quizzes","api","ui","AuxiliarCasField"];
-com.wiris.quizzes.api.ui.AuxiliarCasField.__interfaces__ = [com.wiris.quizzes.api.ui.QuizzesField];
 com.wiris.quizzes.api.ui.EditorFieldListener = $hxClasses["com.wiris.quizzes.api.ui.EditorFieldListener"] = function() { }
 com.wiris.quizzes.api.ui.EditorFieldListener.__name__ = ["com","wiris","quizzes","api","ui","EditorFieldListener"];
 com.wiris.quizzes.api.ui.EditorFieldListener.prototype = {
@@ -8092,7 +8103,7 @@ com.wiris.quizzes.impl.Assertion.getParameterDefaultValue = function(assertion,p
 	return value;
 }
 com.wiris.quizzes.impl.Assertion.isSyntacticName = function(name) {
-	return com.wiris.util.type.Arrays.containsArray(com.wiris.quizzes.impl.Assertion.syntactic,name);
+	return com.wiris.util.type.Arrays.containsArray(com.wiris.quizzes.impl.Assertion.syntactic,name) || com.wiris.quizzes.impl.Assertion.SYNTAX_MATH == name;
 }
 com.wiris.quizzes.impl.Assertion.__super__ = com.wiris.util.xml.SerializableImpl;
 com.wiris.quizzes.impl.Assertion.prototype = $extend(com.wiris.util.xml.SerializableImpl.prototype,{
@@ -9046,7 +9057,8 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 	,printLocalData: function(h,q,unique,conf) {
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirislocaldatafieldset" + unique,this.t.t("inputmethod"),"wirismainfieldset");
-		h.help("wirisinputmethodhelp" + unique,"https://docs.wiris.com/quizzes/studio#correct_answer",this.t.t("manual"));
+		var langString = this.t.t("lang");
+		h.help("wirisinputmethodhelp" + unique,"https://docs.wiris.com/" + langString + "/quizzes/studio#correct_answer",this.t.t("manual"));
 		var id;
 		var inputmethod = conf.optAnswerFieldInlineEditor || conf.optAnswerFieldPopupEditor || conf.optAnswerFieldPlainText;
 		if(inputmethod) {
@@ -9252,7 +9264,8 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openDiv("wirisassertioncontrols" + unique);
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wiriscomparisonfieldset" + unique + answers,this.t.t("comparisonwithstudentanswer"),"wirismainfieldset wiriscomparisonfieldset");
-		h.help("wiriscomparisonhelp" + unique,"https://docs.wiris.com/quizzes/studio#comparison_with_student_answer",this.t.t("manual"));
+		var langString = this.t.t("lang");
+		h.help("wiriscomparisonhelp" + unique,"https://docs.wiris.com/" + langString + "/quizzes/studio#comparison_with_student_answer",this.t.t("manual"));
 		h.openDivClass("wiristolerance" + unique,"wiristolerance");
 		var idtolPrefix = "wirisassertionparam" + unique + "[" + com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS + "," + com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION + "]";
 		var idTolValue = idtolPrefix + "[tolerance_value]" + answers;
@@ -9307,7 +9320,7 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.close();
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirisadditionalchecksfieldset" + unique + answers,this.t.t("additionalproperties"),"wirismainfieldset wirisadditionalchecksfieldset");
-		h.help("wirisadditionalcheckshelp" + unique,"https://docs.wiris.com/quizzes/studio#additional_properties",this.t.t("manual"));
+		h.help("wirisadditionalcheckshelp" + unique,"https://docs.wiris.com/" + langString + "/quizzes/studio#additional_properties",this.t.t("manual"));
 		h.openDivClass("wirisstructurediv" + unique + answers,"wirissecondaryfieldset");
 		h.openDivClass("wirisstructuredivlegend" + unique + answers,"wirissecondaryfieldsetlegend");
 		h.text(this.t.t("structure") + ":");
@@ -9414,7 +9427,8 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		if(showSyntax || showComparison || showProperties || showAlgorithm || showInputMethod) {
 			h.openDivClass(null,"wirisfieldsetwrapper");
 			h.openFieldset("validationandvariables" + unique,this.t.t("validationandvariables"),"wirisfieldsetvalidationandvariables");
-			h.help("wirisvalidationandvariableshelp" + unique,"https://docs.wiris.com/quizzes/question-types#short_answer",this.t.t("manual"));
+			var langString = this.t.t("lang");
+			h.help("wirisvalidationandvariableshelp" + unique,"https://docs.wiris.com/" + langString + "/quizzes/question-types#short_answer",this.t.t("manual"));
 			h.openDl("wirisassertionsummarydl" + unique,"wirisassertionsummarydl");
 			if(showInputMethod) {
 				h.dt(this.t.t("inputmethod"));
@@ -9563,7 +9577,8 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openDiv("wirisoutputcontrols" + unique);
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirisoutputcontrolsfieldset" + unique,this.t.t("outputoptions"),"wirismainfieldset");
-		h.help("wirisoutputcontrolshelp" + unique,"https://docs.wiris.com/quizzes/studio#output_options",this.t.t("manual"));
+		var langString = this.t.t("lang");
+		h.help("wirisoutputcontrolshelp" + unique,"https://docs.wiris.com/" + langString + "/quizzes/studio#output_options",this.t.t("manual"));
 		h.openTable("wirisoutputcontrolslist" + unique,"wirisoutputcontrolslist");
 		var id;
 		h.openTr(null);
@@ -9647,7 +9662,8 @@ com.wiris.quizzes.impl.HTMLGui.prototype = {
 		h.openDiv("wirisinputcontrols" + unique);
 		h.openDivClass(null,"wirisfieldsetwrapper");
 		h.openFieldset("wirisinputcontrolsfieldset" + unique,this.t.t("allowedinput"),"wirismainfieldset");
-		h.help("wirisinputcontrolshelp" + unique,"https://docs.wiris.com/quizzes/studio#allowed_input",this.t.t("manual"));
+		var langString = this.t.t("lang");
+		h.help("wirisinputcontrolshelp" + unique,"https://docs.wiris.com/" + langString + "/quizzes/studio#allowed_input",this.t.t("manual"));
 		h.openDivClass("wirissyntaxassertions" + unique,"wirissyntaxassertions");
 		h.openUl("wirisinputcontrolslist" + unique,"wirisinputcontrolslist");
 		var i;
@@ -12906,6 +12922,21 @@ com.wiris.quizzes.impl.ProcessGetCheckAssertions.prototype = $extend(com.wiris.q
 	}
 	,__class__: com.wiris.quizzes.impl.ProcessGetCheckAssertions
 });
+com.wiris.quizzes.impl.ProcessGetFeaturedAssertions = $hxClasses["com.wiris.quizzes.impl.ProcessGetFeaturedAssertions"] = function() {
+	com.wiris.quizzes.impl.Process.call(this);
+};
+com.wiris.quizzes.impl.ProcessGetFeaturedAssertions.__name__ = ["com","wiris","quizzes","impl","ProcessGetFeaturedAssertions"];
+com.wiris.quizzes.impl.ProcessGetFeaturedAssertions.__super__ = com.wiris.quizzes.impl.Process;
+com.wiris.quizzes.impl.ProcessGetFeaturedAssertions.prototype = $extend(com.wiris.quizzes.impl.Process.prototype,{
+	newInstance: function() {
+		return new com.wiris.quizzes.impl.ProcessGetFeaturedAssertions();
+	}
+	,onSerialize: function(s) {
+		s.beginTag(com.wiris.quizzes.impl.ProcessGetFeaturedAssertions.TAGNAME);
+		s.endTag();
+	}
+	,__class__: com.wiris.quizzes.impl.ProcessGetFeaturedAssertions
+});
 com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions = $hxClasses["com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions"] = function() {
 	com.wiris.quizzes.impl.Process.call(this);
 };
@@ -14055,6 +14086,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 					var j1 = _g3++;
 					if(ac.assertion == com.wiris.quizzes.impl.Assertion.syntactic[j1]) correct = correct && ac.value == 1.0;
 				}
+				if(ac.assertion == com.wiris.quizzes.impl.Assertion.SYNTAX_MATH) correct = correct && ac.value == 1.0;
 			}
 		}
 		return correct;
@@ -14092,8 +14124,9 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 			var _g = 0;
 			while(_g < n) {
 				var i1 = _g++;
-				d[i1] = 1.0 / n;
+				d[i1] = 1.0;
 			}
+			d[n] = n;
 		} else {
 			var content = false;
 			var j = 0;
@@ -14130,11 +14163,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 				var j1 = _g++;
 				sum += d[j1];
 			}
-			var _g = 0;
-			while(_g < n) {
-				var j1 = _g++;
-				d[j1] = d[j1] / sum;
-			}
+			d[n] = sum;
 		}
 		return d;
 	}
@@ -14185,11 +14214,12 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		if(question != null && question.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE && question.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE) {
 			var distribution = this.getCompoundGradeDistribution(question.getLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTION));
 			var i;
-			var _g1 = 0, _g = distribution.length;
+			var _g1 = 0, _g = distribution.length - 1;
 			while(_g1 < _g) {
 				var i1 = _g1++;
 				grade += distribution[i1] * this.getCompoundAnswerGrade(correctAnswer,studentAnswer,i1,q);
 			}
+			grade = grade / distribution[distribution.length - 1];
 		} else if(question != null && question.getAssertionIndex(com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION,"" + correctAnswer,"" + studentAnswer) != -1) {
 			var checks = this.checks.get(studentAnswer + "");
 			grade = this.prodChecks(checks,correctAnswer,studentAnswer);
@@ -14894,6 +14924,24 @@ com.wiris.quizzes.impl.ResultGetCheckAssertions.prototype = $extend(com.wiris.qu
 	}
 	,checks: null
 	,__class__: com.wiris.quizzes.impl.ResultGetCheckAssertions
+});
+com.wiris.quizzes.impl.ResultGetFeaturedAssertions = $hxClasses["com.wiris.quizzes.impl.ResultGetFeaturedAssertions"] = function() {
+	com.wiris.quizzes.impl.Result.call(this);
+};
+com.wiris.quizzes.impl.ResultGetFeaturedAssertions.__name__ = ["com","wiris","quizzes","impl","ResultGetFeaturedAssertions"];
+com.wiris.quizzes.impl.ResultGetFeaturedAssertions.__super__ = com.wiris.quizzes.impl.Result;
+com.wiris.quizzes.impl.ResultGetFeaturedAssertions.prototype = $extend(com.wiris.quizzes.impl.Result.prototype,{
+	newInstance: function() {
+		return new com.wiris.quizzes.impl.ResultGetFeaturedAssertions();
+	}
+	,onSerialize: function(s) {
+		s.beginTag(com.wiris.quizzes.impl.ResultGetFeaturedAssertions.tagName);
+		this.onSerializeInner(s);
+		this.assertions = s.serializeArray(this.assertions,com.wiris.quizzes.impl.Assertion.tagName);
+		s.endTag();
+	}
+	,assertions: null
+	,__class__: com.wiris.quizzes.impl.ResultGetFeaturedAssertions
 });
 com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions = $hxClasses["com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions"] = function() {
 	com.wiris.quizzes.impl.Result.call(this);
@@ -15648,6 +15696,14 @@ com.wiris.system.JsDOMUtils.getComputedStyle = function(element) {
 	if(element.currentStyle) return element.currentStyle;
 	return document.defaultView.getComputedStyle(element,null);
 }
+com.wiris.system.JsDOMUtils.isStyleRuleExists = function(selector) {
+	var testComponent = js.Lib.document.createElement("div");
+	testComponent.className = "wrsUI_app";
+	js.Lib.document.body.appendChild(testComponent);
+	var result = com.wiris.system.JsDOMUtils.getComputedStyleProperty(testComponent,"transition") != "all 0s ease 0s";
+	js.Lib.document.body.removeChild(testComponent);
+	return result;
+}
 com.wiris.system.JsDOMUtils.getComputedStyleProperty = function(element,name) {
 	var value;
 	if(document.defaultView && document.defaultView.getComputedStyle) {
@@ -15972,17 +16028,23 @@ com.wiris.system.JsDOMUtils.trapFocus = function(disabledFocusContainer,focusabl
 				++focusedElementIndex;
 			}
 			var direction = previousFocused == focusedElement || com.wiris.system.JsDOMUtils.elementIsBefore(previousFocused,focusedElement)?1:-1;
-			com.wiris.system.JsDOMUtils.findFocusableAlternative(focusableElements,disabledFocusContainer,focusableContainer,focusedElementIndex,direction).focus();
+			var alternative = com.wiris.system.JsDOMUtils.findFocusableAlternative(focusableElements,disabledFocusContainer,focusableContainer,focusedElementIndex,direction);
+			if(alternative != null) alternative.focus();
 			e.stopPropagation();
 		} else lastScroll = com.wiris.system.JsDOMUtils.getWindowScroll();
 	}));
 	return descriptor;
 }
-com.wiris.system.JsDOMUtils.findFocusableAlternative = function(focusableElements,disabledFocusContainer,focusableContainer,focusedElementIndex,direction) {
+com.wiris.system.JsDOMUtils.findFocusableAlternative = function(focusableElements,disabledFocusContainer,focusableContainer,focusedElementIndex,direction,stopOnIndex) {
+	if(stopOnIndex == null) stopOnIndex = -100;
+	var originalFocusedElementIndex = focusedElementIndex;
 	focusedElementIndex += direction;
-	while(focusedElementIndex >= 0 && focusedElementIndex < focusableElements.length && com.wiris.system.JsDOMUtils.isDescendant(disabledFocusContainer,focusableElements[focusedElementIndex]) && !com.wiris.system.JsDOMUtils.isDescendant(focusableContainer,focusableElements[focusedElementIndex])) focusedElementIndex += direction;
-	if(focusedElementIndex < 0) return com.wiris.system.JsDOMUtils.findFocusableAlternative(focusableElements,disabledFocusContainer,focusableContainer,focusableElements.length - 1,-1);
-	if(focusedElementIndex >= focusableElements.length) return com.wiris.system.JsDOMUtils.findFocusableAlternative(focusableElements,disabledFocusContainer,focusableContainer,0,1);
+	while(focusedElementIndex >= 0 && focusedElementIndex < focusableElements.length && com.wiris.system.JsDOMUtils.isDescendant(disabledFocusContainer,focusableElements[focusedElementIndex]) && !com.wiris.system.JsDOMUtils.isDescendant(focusableContainer,focusableElements[focusedElementIndex])) {
+		focusedElementIndex += direction;
+		if(focusedElementIndex == stopOnIndex) return null;
+	}
+	if(focusedElementIndex < 0) return com.wiris.system.JsDOMUtils.findFocusableAlternative(focusableElements,disabledFocusContainer,focusableContainer,focusableElements.length - 1,-1,originalFocusedElementIndex);
+	if(focusedElementIndex >= focusableElements.length) return com.wiris.system.JsDOMUtils.findFocusableAlternative(focusableElements,disabledFocusContainer,focusableContainer,0,1,originalFocusedElementIndex);
 	return focusableElements[focusedElementIndex];
 }
 com.wiris.system.JsDOMUtils.untrapFocus = function(descriptor) {
@@ -16375,158 +16437,33 @@ com.wiris.system._Utf8.StringIterator.prototype = {
 	,__class__: com.wiris.system._Utf8.StringIterator
 }
 if(!com.wiris.util.css) com.wiris.util.css = {}
+com.wiris.util.css.CSSColorInfo = $hxClasses["com.wiris.util.css.CSSColorInfo"] = function(name,rgb,standard) {
+	this.name = name;
+	this.rgb = rgb;
+	this.standard = standard;
+};
+com.wiris.util.css.CSSColorInfo.__name__ = ["com","wiris","util","css","CSSColorInfo"];
+com.wiris.util.css.CSSColorInfo.prototype = {
+	getStandardVersion: function() {
+		return this.standard;
+	}
+	,getColorAsRgbHex: function() {
+		return "#" + com.wiris.common.WInteger.toHex(this.rgb,6).toLowerCase();
+	}
+	,getColor: function() {
+		return this.rgb;
+	}
+	,getName: function() {
+		return this.name;
+	}
+	,standard: null
+	,rgb: null
+	,name: null
+	,__class__: com.wiris.util.css.CSSColorInfo
+}
 com.wiris.util.css.CSSUtils = $hxClasses["com.wiris.util.css.CSSUtils"] = function() { }
 com.wiris.util.css.CSSUtils.__name__ = ["com","wiris","util","css","CSSUtils"];
-com.wiris.util.css.CSSUtils.conversion = null;
-com.wiris.util.css.CSSUtils.initConversion = function() {
-	com.wiris.util.css.CSSUtils.conversion = new Hash();
-	com.wiris.util.css.CSSUtils.conversion.set("black","#000000");
-	com.wiris.util.css.CSSUtils.conversion.set("silver","#c0c0c0");
-	com.wiris.util.css.CSSUtils.conversion.set("gray","#808080");
-	com.wiris.util.css.CSSUtils.conversion.set("white","#ffffff");
-	com.wiris.util.css.CSSUtils.conversion.set("maroon","#800000");
-	com.wiris.util.css.CSSUtils.conversion.set("red","#ff0000");
-	com.wiris.util.css.CSSUtils.conversion.set("purple","#800080");
-	com.wiris.util.css.CSSUtils.conversion.set("fuchsia","#ff00ff");
-	com.wiris.util.css.CSSUtils.conversion.set("green","#008000");
-	com.wiris.util.css.CSSUtils.conversion.set("lime","#00ff00");
-	com.wiris.util.css.CSSUtils.conversion.set("olive","#808000");
-	com.wiris.util.css.CSSUtils.conversion.set("yellow","#ffff00");
-	com.wiris.util.css.CSSUtils.conversion.set("navy","#000080");
-	com.wiris.util.css.CSSUtils.conversion.set("blue","#0000ff");
-	com.wiris.util.css.CSSUtils.conversion.set("teal","#008080");
-	com.wiris.util.css.CSSUtils.conversion.set("aqua","#00ffff");
-	com.wiris.util.css.CSSUtils.conversion.set("orange","#ffa500");
-	com.wiris.util.css.CSSUtils.conversion.set("aliceblue","#f0f8ff");
-	com.wiris.util.css.CSSUtils.conversion.set("antiquewhite","#faebd7");
-	com.wiris.util.css.CSSUtils.conversion.set("aquamarine","#7fffd4");
-	com.wiris.util.css.CSSUtils.conversion.set("azure","#f0ffff");
-	com.wiris.util.css.CSSUtils.conversion.set("beige","#f5f5dc");
-	com.wiris.util.css.CSSUtils.conversion.set("bisque","#ffe4c4");
-	com.wiris.util.css.CSSUtils.conversion.set("blanchedalmond","#ffe4c4");
-	com.wiris.util.css.CSSUtils.conversion.set("blueviolet","#8a2be2");
-	com.wiris.util.css.CSSUtils.conversion.set("brown","#a52a2a");
-	com.wiris.util.css.CSSUtils.conversion.set("burlywood","#deb887");
-	com.wiris.util.css.CSSUtils.conversion.set("cadetblue","#5f9ea0");
-	com.wiris.util.css.CSSUtils.conversion.set("chartreuse","#7fff00");
-	com.wiris.util.css.CSSUtils.conversion.set("chocolate","#d2691e");
-	com.wiris.util.css.CSSUtils.conversion.set("coral","#ff7f50");
-	com.wiris.util.css.CSSUtils.conversion.set("cornflowerblue","#6495ed");
-	com.wiris.util.css.CSSUtils.conversion.set("cornsilk","#fff8dc");
-	com.wiris.util.css.CSSUtils.conversion.set("crimson","#dc143c");
-	com.wiris.util.css.CSSUtils.conversion.set("darkblue","#00008b");
-	com.wiris.util.css.CSSUtils.conversion.set("darkcyan","#008b8b");
-	com.wiris.util.css.CSSUtils.conversion.set("darkgoldenrod","#b8860b");
-	com.wiris.util.css.CSSUtils.conversion.set("darkgray","#a9a9a9");
-	com.wiris.util.css.CSSUtils.conversion.set("darkgreen","#006400");
-	com.wiris.util.css.CSSUtils.conversion.set("darkgrey","#a9a9a9");
-	com.wiris.util.css.CSSUtils.conversion.set("darkkhaki","#bdb76b");
-	com.wiris.util.css.CSSUtils.conversion.set("darkmagenta","#8b008b");
-	com.wiris.util.css.CSSUtils.conversion.set("darkolivegreen","#556b2f");
-	com.wiris.util.css.CSSUtils.conversion.set("darkorange","#ff8c00");
-	com.wiris.util.css.CSSUtils.conversion.set("darkorchid","#9932cc");
-	com.wiris.util.css.CSSUtils.conversion.set("darkred","#8b0000");
-	com.wiris.util.css.CSSUtils.conversion.set("darksalmon","#e9967a");
-	com.wiris.util.css.CSSUtils.conversion.set("darkseagreen","#8fbc8f");
-	com.wiris.util.css.CSSUtils.conversion.set("darkslateblue","#483d8b");
-	com.wiris.util.css.CSSUtils.conversion.set("darkslategray","#2f4f4f");
-	com.wiris.util.css.CSSUtils.conversion.set("darkslategrey","#2f4f4f");
-	com.wiris.util.css.CSSUtils.conversion.set("darkturquoise","#00ced1");
-	com.wiris.util.css.CSSUtils.conversion.set("darkviolet","#9400d3");
-	com.wiris.util.css.CSSUtils.conversion.set("deeppink","#ff1493");
-	com.wiris.util.css.CSSUtils.conversion.set("deepskyblue","#00bfff");
-	com.wiris.util.css.CSSUtils.conversion.set("dimgray","#696969");
-	com.wiris.util.css.CSSUtils.conversion.set("dimgrey","#696969");
-	com.wiris.util.css.CSSUtils.conversion.set("dodgerblue","#1e90ff");
-	com.wiris.util.css.CSSUtils.conversion.set("firebrick","#b22222");
-	com.wiris.util.css.CSSUtils.conversion.set("floralwhite","#fffaf0");
-	com.wiris.util.css.CSSUtils.conversion.set("forestgreen","#228b22");
-	com.wiris.util.css.CSSUtils.conversion.set("gainsboro","#dcdcdc");
-	com.wiris.util.css.CSSUtils.conversion.set("ghostwhite","#f8f8ff");
-	com.wiris.util.css.CSSUtils.conversion.set("gold","#ffd700");
-	com.wiris.util.css.CSSUtils.conversion.set("goldenrod","#daa520");
-	com.wiris.util.css.CSSUtils.conversion.set("greenyellow","#adff2f");
-	com.wiris.util.css.CSSUtils.conversion.set("grey","#808080");
-	com.wiris.util.css.CSSUtils.conversion.set("honeydew","#f0fff0");
-	com.wiris.util.css.CSSUtils.conversion.set("hotpink","#ff69b4");
-	com.wiris.util.css.CSSUtils.conversion.set("indianred","#cd5c5c");
-	com.wiris.util.css.CSSUtils.conversion.set("indigo","#4b0082");
-	com.wiris.util.css.CSSUtils.conversion.set("ivory","#fffff0");
-	com.wiris.util.css.CSSUtils.conversion.set("khaki","#f0e68c");
-	com.wiris.util.css.CSSUtils.conversion.set("lavender","#e6e6fa");
-	com.wiris.util.css.CSSUtils.conversion.set("lavenderblush","#fff0f5");
-	com.wiris.util.css.CSSUtils.conversion.set("lawngreen","#7cfc00");
-	com.wiris.util.css.CSSUtils.conversion.set("lemonchiffon","#fffacd");
-	com.wiris.util.css.CSSUtils.conversion.set("lightblue","#add8e6");
-	com.wiris.util.css.CSSUtils.conversion.set("lightcoral","#f08080");
-	com.wiris.util.css.CSSUtils.conversion.set("lightcyan","#e0ffff");
-	com.wiris.util.css.CSSUtils.conversion.set("lightgoldenrodyellow","#fafad2");
-	com.wiris.util.css.CSSUtils.conversion.set("lightgray","#d3d3d3");
-	com.wiris.util.css.CSSUtils.conversion.set("lightgreen","#90ee90");
-	com.wiris.util.css.CSSUtils.conversion.set("lightgrey","#d3d3d3");
-	com.wiris.util.css.CSSUtils.conversion.set("lightpink","#ffb6c1");
-	com.wiris.util.css.CSSUtils.conversion.set("lightsalmon","#ffa07a");
-	com.wiris.util.css.CSSUtils.conversion.set("lightseagreen","#20b2aa");
-	com.wiris.util.css.CSSUtils.conversion.set("lightskyblue","#87cefa");
-	com.wiris.util.css.CSSUtils.conversion.set("lightslategray","#778899");
-	com.wiris.util.css.CSSUtils.conversion.set("lightslategrey","#778899");
-	com.wiris.util.css.CSSUtils.conversion.set("lightsteelblue","#b0c4de");
-	com.wiris.util.css.CSSUtils.conversion.set("lightyellow","#ffffe0");
-	com.wiris.util.css.CSSUtils.conversion.set("limegreen","#32cd32");
-	com.wiris.util.css.CSSUtils.conversion.set("linen","#faf0e6");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumaquamarine","#66cdaa");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumblue","#0000cd");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumorchid","#ba55d3");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumpurple","#9370db");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumseagreen","#3cb371");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumslateblue","#7b68ee");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumspringgreen","#00fa9a");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumturquoise","#48d1cc");
-	com.wiris.util.css.CSSUtils.conversion.set("mediumvioletred","#c71585");
-	com.wiris.util.css.CSSUtils.conversion.set("midnightblue","#191970");
-	com.wiris.util.css.CSSUtils.conversion.set("mintcream","#f5fffa");
-	com.wiris.util.css.CSSUtils.conversion.set("mistyrose","#ffe4e1");
-	com.wiris.util.css.CSSUtils.conversion.set("moccasin","#ffe4b5");
-	com.wiris.util.css.CSSUtils.conversion.set("navajowhite","#ffdead");
-	com.wiris.util.css.CSSUtils.conversion.set("oldlace","#fdf5e6");
-	com.wiris.util.css.CSSUtils.conversion.set("olivedrab","#6b8e23");
-	com.wiris.util.css.CSSUtils.conversion.set("orangered","#ff4500");
-	com.wiris.util.css.CSSUtils.conversion.set("orchid","#da70d6");
-	com.wiris.util.css.CSSUtils.conversion.set("palegoldenrod","#eee8aa");
-	com.wiris.util.css.CSSUtils.conversion.set("palegreen","#98fb98");
-	com.wiris.util.css.CSSUtils.conversion.set("paleturquoise","#afeeee");
-	com.wiris.util.css.CSSUtils.conversion.set("palevioletred","#db7093");
-	com.wiris.util.css.CSSUtils.conversion.set("papayawhip","#ffefd5");
-	com.wiris.util.css.CSSUtils.conversion.set("peachpuff","#ffdab9");
-	com.wiris.util.css.CSSUtils.conversion.set("peru","#cd853f");
-	com.wiris.util.css.CSSUtils.conversion.set("pink","#ffc0cb");
-	com.wiris.util.css.CSSUtils.conversion.set("plum","#dda0dd");
-	com.wiris.util.css.CSSUtils.conversion.set("powderblue","#b0e0e6");
-	com.wiris.util.css.CSSUtils.conversion.set("rosybrown","#bc8f8f");
-	com.wiris.util.css.CSSUtils.conversion.set("royalblue","#4169e1");
-	com.wiris.util.css.CSSUtils.conversion.set("saddlebrown","#8b4513");
-	com.wiris.util.css.CSSUtils.conversion.set("salmon","#fa8072");
-	com.wiris.util.css.CSSUtils.conversion.set("sandybrown","#f4a460");
-	com.wiris.util.css.CSSUtils.conversion.set("seagreen","#2e8b57");
-	com.wiris.util.css.CSSUtils.conversion.set("seashell","#fff5ee");
-	com.wiris.util.css.CSSUtils.conversion.set("sienna","#a0522d");
-	com.wiris.util.css.CSSUtils.conversion.set("skyblue","#87ceeb");
-	com.wiris.util.css.CSSUtils.conversion.set("slateblue","#6a5acd");
-	com.wiris.util.css.CSSUtils.conversion.set("slategray","#708090");
-	com.wiris.util.css.CSSUtils.conversion.set("slategrey","#708090");
-	com.wiris.util.css.CSSUtils.conversion.set("snow","#fffafa");
-	com.wiris.util.css.CSSUtils.conversion.set("springgreen","#00ff7f");
-	com.wiris.util.css.CSSUtils.conversion.set("steelblue","#4682b4");
-	com.wiris.util.css.CSSUtils.conversion.set("tan","#d2b48c");
-	com.wiris.util.css.CSSUtils.conversion.set("thistle","#d8bfd8");
-	com.wiris.util.css.CSSUtils.conversion.set("tomato","#ff6347");
-	com.wiris.util.css.CSSUtils.conversion.set("turquoise","#40e0d0");
-	com.wiris.util.css.CSSUtils.conversion.set("violet","#ee82ee");
-	com.wiris.util.css.CSSUtils.conversion.set("wheat","#f5deb3");
-	com.wiris.util.css.CSSUtils.conversion.set("whitesmoke","#f5f5f5");
-	com.wiris.util.css.CSSUtils.conversion.set("yellowgreen","#9acd32");
-	com.wiris.util.css.CSSUtils.conversion.set("rebeccapurple","#663399");
-}
+com.wiris.util.css.CSSUtils.COLOR_DATA = null;
 com.wiris.util.css.CSSUtils.colorToInt = function(color) {
 	if(color == null) return 0;
 	color = StringTools.trim(color);
@@ -16643,18 +16580,201 @@ com.wiris.util.css.CSSUtils.sort = function(a) {
 	}
 }
 com.wiris.util.css.CSSUtils.colorToName = function(color) {
-	if(com.wiris.util.css.CSSUtils.conversion == null) com.wiris.util.css.CSSUtils.initConversion();
-	var i = com.wiris.util.css.CSSUtils.conversion.keys();
-	while(i.hasNext()) {
-		var colorName = i.next();
-		if(com.wiris.util.css.CSSUtils.conversion.get(colorName) == color) return colorName;
+	com.wiris.util.css.CSSUtils.ensureInitialized();
+	var it = com.wiris.util.css.CSSUtils.COLOR_DATA.keys();
+	while(it.hasNext()) {
+		var colorName = it.next();
+		var colorInfo = com.wiris.util.css.CSSUtils.COLOR_DATA.get(colorName);
+		if(colorInfo.getColorAsRgbHex() == color) return colorName;
 	}
 	return color;
 }
 com.wiris.util.css.CSSUtils.nameToColor = function(name) {
-	if(com.wiris.util.css.CSSUtils.conversion == null) com.wiris.util.css.CSSUtils.initConversion();
-	if(com.wiris.util.css.CSSUtils.conversion.exists(name)) return com.wiris.util.css.CSSUtils.conversion.get(name);
-	return "#000";
+	com.wiris.util.css.CSSUtils.ensureInitialized();
+	return com.wiris.util.css.CSSUtils.COLOR_DATA.exists(name)?com.wiris.util.css.CSSUtils.COLOR_DATA.get(name).getColorAsRgbHex():"#000";
+}
+com.wiris.util.css.CSSUtils.nameToColorInfo = function(name) {
+	com.wiris.util.css.CSSUtils.ensureInitialized();
+	if(name == null) return null;
+	name = name.toLowerCase();
+	return com.wiris.util.css.CSSUtils.COLOR_DATA.exists(name)?com.wiris.util.css.CSSUtils.COLOR_DATA.get(name):null;
+}
+com.wiris.util.css.CSSUtils.rgbToColorInfo = function(rgb) {
+	com.wiris.util.css.CSSUtils.ensureInitialized();
+	var it = com.wiris.util.css.CSSUtils.COLOR_DATA.keys();
+	while(it.hasNext()) {
+		var colorName = it.next();
+		var colorInfo = com.wiris.util.css.CSSUtils.COLOR_DATA.get(colorName);
+		if(rgb == colorInfo.getColor()) return colorInfo;
+	}
+	return null;
+}
+com.wiris.util.css.CSSUtils.cssColorToRgb = function(colorValue) {
+	var potentialCssColor = com.wiris.util.css.CSSUtils.nameToColorInfo(colorValue);
+	if(potentialCssColor != null) return potentialCssColor.getColor();
+	if(com.wiris.util.css.CSSUtils.SUPPORTED_CSS_HEX_VALUES_REGEX.match(colorValue)) {
+		var hexValue = com.wiris.util.type.StringUtils.slice(colorValue,1,colorValue.length);
+		var intValue = Std.parseInt("0x" + hexValue);
+		if(hexValue.length == 3) intValue = 17 * ((intValue & 3840) << 8 | (intValue & 240) << 4 | intValue & 15);
+		return intValue;
+	}
+	return -1;
+}
+com.wiris.util.css.CSSUtils.ensureInitialized = function() {
+	if(com.wiris.util.css.CSSUtils.COLOR_DATA != null) return;
+	com.wiris.util.css.CSSUtils.COLOR_DATA = new Hash();
+	com.wiris.util.css.CSSUtils.makeColor("black",0,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("silver",12632256,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("gray",8421504,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("white",16777215,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("maroon",8388608,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("red",16711680,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("purple",8388736,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("fuchsia",16711935,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("green",32768,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("lime",65280,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("olive",8421376,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("yellow",16776960,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("navy",128,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("blue",255,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("teal",32896,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("aqua",65535,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1);
+	com.wiris.util.css.CSSUtils.makeColor("orange",16753920,com.wiris.util.css.CSSColorInfo.CSS_LEVEL_2_1);
+	com.wiris.util.css.CSSUtils.makeColor("aliceblue",15792383,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("antiquewhite",16444375,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("aquamarine",8388564,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("azure",15794175,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("beige",16119260,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("bisque",16770244,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("blanchedalmond",16772045,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("blueviolet",9055202,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("brown",10824234,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("burlywood",14596231,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("cadetblue",6266528,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("chartreuse",8388352,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("chocolate",13789470,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("coral",16744272,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("cornflowerblue",6591981,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("cornsilk",16775388,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("crimson",14423100,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("cyan",65535,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkblue",139,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkcyan",35723,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkgoldenrod",12092939,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkgray",11119017,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkgreen",25600,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkgrey",11119017,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkkhaki",12433259,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkmagenta",9109643,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkolivegreen",5597999,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkorange",16747520,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkorchid",10040012,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkred",9109504,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darksalmon",15308410,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkseagreen",9419919,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkslateblue",4734347,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkslategray",3100495,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkslategrey",3100495,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkturquoise",52945,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("darkviolet",9699539,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("deeppink",16716947,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("deepskyblue",49151,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("dimgray",6908265,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("dimgrey",6908265,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("dodgerblue",2003199,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("firebrick",11674146,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("floralwhite",16775920,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("forestgreen",2263842,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("gainsboro",14474460,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("ghostwhite",16316671,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("gold",16766720,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("goldenrod",14329120,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("greenyellow",11403055,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("grey",8421504,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("honeydew",15794160,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("hotpink",16738740,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("indianred",13458524,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("indigo",4915330,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("ivory",16777200,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("khaki",15787660,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lavender",15132410,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lavenderblush",16773365,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lawngreen",8190976,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lemonchiffon",16775885,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightblue",11393254,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightcoral",15761536,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightcyan",14745599,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightgoldenrodyellow",16448210,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightgray",13882323,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightgreen",9498256,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightgrey",13882323,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightpink",16758465,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightsalmon",16752762,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightseagreen",2142890,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightskyblue",8900346,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightslategray",7833753,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightslategrey",7833753,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightsteelblue",11584734,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("lightyellow",16777184,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("limegreen",3329330,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("linen",16445670,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("magenta",16711935,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumaquamarine",6737322,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumblue",205,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumorchid",12211667,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumpurple",9662683,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumseagreen",3978097,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumslateblue",8087790,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumspringgreen",64154,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumturquoise",4772300,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mediumvioletred",13047173,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("midnightblue",1644912,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mintcream",16121850,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("mistyrose",16770273,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("moccasin",16770229,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("navajowhite",16768685,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("oldlace",16643558,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("olivedrab",7048739,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("orangered",16729344,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("orchid",14315734,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("palegoldenrod",15657130,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("palegreen",10025880,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("paleturquoise",11529966,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("palevioletred",14381203,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("papayawhip",16773077,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("peachpuff",16767673,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("peru",13468991,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("pink",16761035,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("plum",14524637,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("powderblue",11591910,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("rosybrown",12357519,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("royalblue",4286945,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("saddlebrown",9127187,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("salmon",16416882,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("sandybrown",16032864,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("seagreen",3050327,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("seashell",16774638,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("sienna",10506797,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("skyblue",8900331,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("slateblue",6970061,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("slategray",7372944,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("slategrey",7372944,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("snow",16775930,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("springgreen",65407,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("steelblue",4620980,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("tan",13808780,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("thistle",14204888,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("tomato",16737095,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("turquoise",4251856,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("violet",15631086,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("wheat",16113331,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("whitesmoke",16119285,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("yellowgreen",10145074,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3);
+	com.wiris.util.css.CSSUtils.makeColor("rebeccapurple",6697881,com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_4);
+}
+com.wiris.util.css.CSSUtils.makeColor = function(name,rgb,standard) {
+	var colorInfo = new com.wiris.util.css.CSSColorInfo(name,rgb,standard);
+	com.wiris.util.css.CSSUtils.COLOR_DATA.set(name,colorInfo);
 }
 if(!com.wiris.util.json) com.wiris.util.json = {}
 com.wiris.util.json.StringParser = $hxClasses["com.wiris.util.json.StringParser"] = function() {
@@ -16957,6 +17077,24 @@ com.wiris.util.json.JSon.prototype = $extend(com.wiris.util.json.StringParser.pr
 		sb.b += Std.string(s);
 		sb.b += Std.string("\"");
 	}
+	,encodeArrayBoolean: function(sb,v) {
+		var v2 = new Array();
+		var i = 0;
+		while(i < v.length) {
+			v2.push(v[i]);
+			++i;
+		}
+		this.encodeArray(sb,v2);
+	}
+	,encodeArrayDouble: function(sb,v) {
+		var v2 = new Array();
+		var i = 0;
+		while(i < v.length) {
+			v2.push(v[i]);
+			++i;
+		}
+		this.encodeArray(sb,v2);
+	}
 	,encodeArrayInt: function(sb,v) {
 		var v2 = new Array();
 		var i = 0;
@@ -17010,7 +17148,7 @@ com.wiris.util.json.JSon.prototype = $extend(com.wiris.util.json.StringParser.pr
 		this.depth--;
 	}
 	,encodeImpl: function(sb,o) {
-		if(com.wiris.system.TypeTools.isHash(o)) this.encodeHash(sb,js.Boot.__cast(o , Hash)); else if(com.wiris.system.TypeTools.isArray(o)) this.encodeArray(sb,o); else if(js.Boot.__instanceof(o,Array)) this.encodeArrayInt(sb,o); else if(js.Boot.__instanceof(o,String)) this.encodeString(sb,js.Boot.__cast(o , String)); else if(js.Boot.__instanceof(o,Int)) this.encodeInteger(sb,js.Boot.__cast(o , Int)); else if(js.Boot.__instanceof(o,haxe.Int64)) this.encodeLong(sb,js.Boot.__cast(o , haxe.Int64)); else if(js.Boot.__instanceof(o,com.wiris.util.json.JSonIntegerFormat)) this.encodeIntegerFormat(sb,js.Boot.__cast(o , com.wiris.util.json.JSonIntegerFormat)); else if(js.Boot.__instanceof(o,Bool)) this.encodeBoolean(sb,js.Boot.__cast(o , Bool)); else if(js.Boot.__instanceof(o,Float)) this.encodeFloat(sb,js.Boot.__cast(o , Float)); else throw "Impossible to convert to json object of type " + Std.string(Type.getClass(o));
+		if(com.wiris.system.TypeTools.isHash(o)) this.encodeHash(sb,js.Boot.__cast(o , Hash)); else if(com.wiris.system.TypeTools.isArray(o)) this.encodeArray(sb,o); else if(js.Boot.__instanceof(o,Array)) this.encodeArrayInt(sb,o); else if(js.Boot.__instanceof(o,Array)) this.encodeArrayDouble(sb,o); else if(js.Boot.__instanceof(o,Array)) this.encodeArrayBoolean(sb,o); else if(js.Boot.__instanceof(o,String)) this.encodeString(sb,js.Boot.__cast(o , String)); else if(js.Boot.__instanceof(o,Int)) this.encodeInteger(sb,js.Boot.__cast(o , Int)); else if(js.Boot.__instanceof(o,haxe.Int64)) this.encodeLong(sb,js.Boot.__cast(o , haxe.Int64)); else if(js.Boot.__instanceof(o,com.wiris.util.json.JSonIntegerFormat)) this.encodeIntegerFormat(sb,js.Boot.__cast(o , com.wiris.util.json.JSonIntegerFormat)); else if(js.Boot.__instanceof(o,Bool)) this.encodeBoolean(sb,js.Boot.__cast(o , Bool)); else if(js.Boot.__instanceof(o,Float)) this.encodeFloat(sb,js.Boot.__cast(o , Float)); else throw "Impossible to convert to json object of type " + Std.string(Type.getClass(o));
 	}
 	,encodeObject: function(o) {
 		var sb = new StringBuf();
@@ -21308,7 +21446,7 @@ com.wiris.quizzes.impl.Assertion.CHECK_RATIONALIZED = "check_rationalized";
 com.wiris.quizzes.impl.Assertion.CHECK_MINIMAL_RADICANDS = "check_minimal_radicands";
 com.wiris.quizzes.impl.Assertion.CHECK_PRECISION = "check_precision";
 com.wiris.quizzes.impl.Assertion.EQUIVALENT_SET = "equivalent_set";
-com.wiris.quizzes.impl.Assertion.syntactic = [com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION,com.wiris.quizzes.impl.Assertion.SYNTAX_QUANTITY,com.wiris.quizzes.impl.Assertion.SYNTAX_STRING,com.wiris.quizzes.impl.Assertion.SYNTAX_MATH];
+com.wiris.quizzes.impl.Assertion.syntactic = [com.wiris.quizzes.impl.Assertion.SYNTAX_EXPRESSION,com.wiris.quizzes.impl.Assertion.SYNTAX_QUANTITY,com.wiris.quizzes.impl.Assertion.SYNTAX_STRING];
 com.wiris.quizzes.impl.Assertion.equivalent = [com.wiris.quizzes.impl.Assertion.EQUIVALENT_LITERAL,com.wiris.quizzes.impl.Assertion.EQUIVALENT_SYMBOLIC,com.wiris.quizzes.impl.Assertion.EQUIVALENT_EQUATIONS,com.wiris.quizzes.impl.Assertion.EQUIVALENT_ALL,com.wiris.quizzes.impl.Assertion.EQUIVALENT_FUNCTION];
 com.wiris.quizzes.impl.Assertion.structure = [com.wiris.quizzes.impl.Assertion.CHECK_INTEGER_FORM,com.wiris.quizzes.impl.Assertion.CHECK_FRACTION_FORM,com.wiris.quizzes.impl.Assertion.CHECK_POLYNOMIAL_FORM,com.wiris.quizzes.impl.Assertion.CHECK_RATIONAL_FUNCTION_FORM,com.wiris.quizzes.impl.Assertion.CHECK_ELEMENTAL_FUNCTION_FORM,com.wiris.quizzes.impl.Assertion.CHECK_SCIENTIFIC_NOTATION];
 com.wiris.quizzes.impl.Assertion.checks = [com.wiris.quizzes.impl.Assertion.CHECK_SIMPLIFIED,com.wiris.quizzes.impl.Assertion.CHECK_EXPANDED,com.wiris.quizzes.impl.Assertion.CHECK_FACTORIZED,com.wiris.quizzes.impl.Assertion.CHECK_RATIONALIZED,com.wiris.quizzes.impl.Assertion.CHECK_NO_COMMON_FACTOR,com.wiris.quizzes.impl.Assertion.CHECK_MINIMAL_RADICANDS,com.wiris.quizzes.impl.Assertion.CHECK_DIVISIBLE,com.wiris.quizzes.impl.Assertion.CHECK_COMMON_DENOMINATOR,com.wiris.quizzes.impl.Assertion.CHECK_UNIT,com.wiris.quizzes.impl.Assertion.CHECK_UNIT_LITERAL,com.wiris.quizzes.impl.Assertion.CHECK_PRECISION];
@@ -21430,6 +21568,7 @@ com.wiris.quizzes.impl.QuizzesServiceImpl.PROTOCOL_REST = 0;
 com.wiris.quizzes.impl.Option.options = [com.wiris.quizzes.api.QuizzesConstants.OPTION_RELATIVE_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE,com.wiris.quizzes.api.QuizzesConstants.OPTION_PRECISION,com.wiris.quizzes.api.QuizzesConstants.OPTION_TIMES_OPERATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_IMAGINARY_UNIT,com.wiris.quizzes.api.QuizzesConstants.OPTION_EXPONENTIAL_E,com.wiris.quizzes.api.QuizzesConstants.OPTION_NUMBER_PI,com.wiris.quizzes.api.QuizzesConstants.OPTION_IMPLICIT_TIMES_OPERATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_FLOAT_FORMAT,com.wiris.quizzes.api.QuizzesConstants.OPTION_DECIMAL_SEPARATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_DIGIT_GROUP_SEPARATOR,com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER,com.wiris.quizzes.api.QuizzesConstants.OPTION_STUDENT_ANSWER_PARAMETER_NAME,com.wiris.quizzes.api.QuizzesConstants.OPTION_TOLERANCE_DIGITS];
 com.wiris.quizzes.impl.Parameter.tagName = "parameter";
 com.wiris.quizzes.impl.ProcessGetCheckAssertions.tagName = "getCheckAssertions";
+com.wiris.quizzes.impl.ProcessGetFeaturedAssertions.TAGNAME = "getFeaturedAssertions";
 com.wiris.quizzes.impl.ProcessGetFeaturedSyntaxAssertions.TAGNAME = "getFeaturedSyntaxAssertions";
 com.wiris.quizzes.impl.ProcessGetTranslation.tagName = "getTranslation";
 com.wiris.quizzes.impl.ProcessGetVariables.TAGNAME = "getVariables";
@@ -21450,6 +21589,7 @@ com.wiris.quizzes.impl.ResultError.TYPE_MATHSYNTAX = "mathSyntax";
 com.wiris.quizzes.impl.ResultError.TYPE_PARAMVALUE = "paramValue";
 com.wiris.quizzes.impl.ResultErrorLocation.tagName = "location";
 com.wiris.quizzes.impl.ResultGetCheckAssertions.tagName = "getCheckAssertionsResult";
+com.wiris.quizzes.impl.ResultGetFeaturedAssertions.tagName = "getFeaturedAssertionsResult";
 com.wiris.quizzes.impl.ResultGetFeaturedSyntaxAssertions.tagName = "getFeaturedSyntaxAssertionsResult";
 com.wiris.quizzes.impl.ResultGetTranslation.tagName = "getTranslationResult";
 com.wiris.quizzes.impl.ResultGetVariables.tagName = "getVariablesResult";
@@ -21477,6 +21617,13 @@ com.wiris.system.LocalStorageCache.ITEMS_KEY = "_items";
 com.wiris.system.Logger.SEVERE = 1000;
 com.wiris.system.Logger.WARNING = 900;
 com.wiris.system.Logger.INFO = 800;
+com.wiris.util.css.CSSColorInfo.UNKNOWN = 0;
+com.wiris.util.css.CSSColorInfo.HTML_4_01_COLOR = 1;
+com.wiris.util.css.CSSColorInfo.CSS_LEVEL_1 = com.wiris.util.css.CSSColorInfo.HTML_4_01_COLOR;
+com.wiris.util.css.CSSColorInfo.CSS_LEVEL_2_1 = 2;
+com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_3 = 3;
+com.wiris.util.css.CSSColorInfo.CSS_COLOR_MODULE_LEVEL_4 = 4;
+com.wiris.util.css.CSSUtils.SUPPORTED_CSS_HEX_VALUES_REGEX = new EReg("^#[0-9a-f]{3}([0-9a-f]{3})?$","i");
 com.wiris.util.css.CSSUtils.PT_TO_PX = 1.34;
 com.wiris.util.json.JSonIntegerFormat.HEXADECIMAL = 0;
 com.wiris.util.xml.MathMLUtils.contentTagsString = "ci@cn@apply@integers@reals@rationals@naturalnumbers@complexes@primes@exponentiale@imaginaryi@notanumber@true@false@emptyset@pi@eulergamma@infinity";
