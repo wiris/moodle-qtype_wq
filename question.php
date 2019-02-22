@@ -58,7 +58,6 @@ class qtype_wq_question extends question_graded_automatically {
         $text = $this->join_all_text();
         $this->wirisquestioninstance = $builder->newQuestionInstance($this->wirisquestion);
         $this->wirisquestioninstance->setRandomSeed($variant);
-        $this->wirisquestioninstance->setParameter('user_id', $USER->id);
 
         // Begin testing code. It's never used in production.
         global $CFG;
