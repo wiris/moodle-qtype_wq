@@ -15902,9 +15902,12 @@ com.wiris.system.JsDOMUtils.getFirstDisplayedChild = function(parent) {
 	return null;
 }
 com.wiris.system.JsDOMUtils.isDescendant = function(parent,possibleDescendant) {
-	if(possibleDescendant.parentNode == null) return false;
-	if(possibleDescendant.parentNode == parent) return true;
-	return com.wiris.system.JsDOMUtils.isDescendant(parent,possibleDescendant.parentNode);
+	if(parent == null || possibleDescendant == null) return false;
+	while(possibleDescendant.parentNode != null) {
+		if(possibleDescendant.parentNode == parent) return true;
+		possibleDescendant = possibleDescendant.parentNode;
+	}
+	return false;
 }
 com.wiris.system.JsDOMUtils.parseDimension = function(x) {
 	return x < 0 || x == null?0:x;
