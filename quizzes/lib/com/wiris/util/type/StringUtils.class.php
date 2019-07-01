@@ -10,6 +10,22 @@ class com_wiris_util_type_StringUtils {
 		}
 		return $sb->b;
 	}
+	static function padLeftZeros($s, $length) {
+		if($s === null || strlen($s) >= $length) {
+			return $s;
+		}
+		$stringBuf = new StringBuf();
+		{
+			$_g = strlen($s);
+			while($_g < $length) {
+				$i = $_g++;
+				$stringBuf->add("0");
+				unset($i);
+			}
+		}
+		$stringBuf->add($s);
+		return $stringBuf->b;
+	}
 	static function compareIgnoringAccents($a, $b) {
 		return com_wiris_util_type_StringUtils::stripAccents($a) === com_wiris_util_type_StringUtils::stripAccents($b);
 	}

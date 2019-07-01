@@ -21,6 +21,9 @@ class com_wiris_quizzes_impl_HTMLGui {
 		if(!$conf->optAuxiliarCasReplaceEditor && com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_SHOW_CAS_REPLACE === $q->getProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS)) {
 			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS);
 		}
+		if(!$conf->optAuxiliarTextInput) {
+			$q->removeLocalData(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_AUXILIAR_TEXT_INPUT);
+		}
 		if(!$conf->optGradingFunction) {
 			$i = $q->getAssertionsLength() - 1;
 			while($i >= 0) {
@@ -147,6 +150,14 @@ class com_wiris_quizzes_impl_HTMLGui {
 			$h->input("text", $id, "", "", $this->t->t("gradedistribution"), "wirisadditionalinput");
 			$h->close();
 			$h->close();
+			$h->close();
+		}
+		if($conf->optAuxiliarTextInput) {
+			$h->openDivClass("wirisauxiliartextinputdiv" . _hx_string_rec($unique, ""), "wirissecondaryfieldset");
+			$id = "wirislocaldata" . _hx_string_rec($unique, "") . "[" . com_wiris_quizzes_impl_LocalData::$KEY_SHOW_AUXILIAR_TEXT_INPUT . "]";
+			$h->input("checkbox", $id, "", "true", null, null);
+			$labelText = $this->t->t("showauxiliartextinput");
+			$h->label($labelText, $id, null);
 			$h->close();
 		}
 		if($conf->optAuxiliarCas) {
