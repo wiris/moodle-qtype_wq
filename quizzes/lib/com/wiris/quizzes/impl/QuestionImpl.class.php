@@ -186,12 +186,30 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			return $this->wirisCasSession;
 		}
 	}
+	public function removeCalcOptions() {
+		$_g1 = 0; $_g = com_wiris_quizzes_impl_CalcDocumentTools::$options->length;
+		while($_g1 < $_g) {
+			$i = $_g1++;
+			$opt = com_wiris_quizzes_impl_CalcDocumentTools::$options[$i];
+			$this->removeOption($opt);
+			unset($opt,$i);
+		}
+	}
 	public function setAlgorithm($session) {
 		if(com_wiris_quizzes_impl_HTMLTools::emptyCasSession($session)) {
 			$session = null;
 		}
 		if($session !== $this->wirisCasSession || $session !== null && !($session === $this->wirisCasSession)) {
 			$this->id = null;
+			if(com_wiris_quizzes_impl_HTMLTools::isCalc($session)) {
+				$sessionDocument = new com_wiris_quizzes_impl_CalcDocumentTools($session);
+				if(($this->wirisCasSession === null || com_wiris_util_type_StringUtils::compareVersions($this->getCalcDocument()->getVersion(), "3.2") < 0) && com_wiris_util_type_StringUtils::compareVersions($sessionDocument->getVersion(), "3.2") >= 0) {
+					$this->removeCalcOptions();
+				}
+				$this->calcDocument = $sessionDocument;
+			} else {
+				$this->calcDocument = null;
+			}
 			$this->wirisCasSession = $session;
 		}
 	}
@@ -675,6 +693,10 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 	}
 	public function removeOption($name) {
+		if($this->hasCalcmeSession() && $this->isCalcmeOption($name)) {
+			$this->wirisCasSession = $this->calcDocument->removeOption($name);
+			return;
+		}
 		$this->id = null;
 		if($this->options !== null) {
 			$i = $this->options->length - 1;
@@ -687,48 +709,82 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 	}
 	public function getOption($name) {
-		if($this->options !== null) {
-			$i = null;
-			{
-				$_g1 = 0; $_g = $this->options->length;
-				while($_g1 < $_g) {
-					$i1 = $_g1++;
-					if(_hx_array_get($this->options, $i1)->name === $name) {
-						return _hx_array_get($this->options, $i1)->content;
+		if($this->hasCalcmeSession() && $this->isCalcmeOption($name)) {
+			$calcOption = $this->getCalcDocument()->getOption($name);
+			if($calcOption !== null) {
+				return $calcOption;
+			}
+		} else {
+			if($this->options !== null) {
+				$i = null;
+				{
+					$_g1 = 0; $_g = $this->options->length;
+					while($_g1 < $_g) {
+						$i1 = $_g1++;
+						if(_hx_array_get($this->options, $i1)->name === $name) {
+							return _hx_array_get($this->options, $i1)->content;
+						}
+						unset($i1);
 					}
-					unset($i1);
 				}
 			}
 		}
 		return $this->defaultOption($name);
+	}
+	public function isCalcmeOption($name) {
+		{
+			$_g1 = 0; $_g = com_wiris_quizzes_impl_CalcDocumentTools::$options->length;
+			while($_g1 < $_g) {
+				$i = $_g1++;
+				$opt = com_wiris_quizzes_impl_CalcDocumentTools::$options[$i];
+				if($opt === $name) {
+					return true;
+				}
+				unset($opt,$i);
+			}
+		}
+		return false;
+	}
+	public function getCalcDocument() {
+		if($this->calcDocument === null) {
+			$this->calcDocument = new com_wiris_quizzes_impl_CalcDocumentTools($this->wirisCasSession);
+		}
+		return $this->calcDocument;
+	}
+	public function hasCalcmeSession() {
+		return com_wiris_quizzes_impl_HTMLTools::isCalc($this->wirisCasSession) && com_wiris_util_type_StringUtils::compareVersions($this->getCalcDocument()->getVersion(), "3.2") >= 0;
 	}
 	public function setOption($name, $value) {
 		$this->id = null;
 		if($this->isImplicitOption($name, $value) || $value === null) {
 			$this->removeOption($name);
 		} else {
-			if($this->options === null) {
-				$this->options = new _hx_array(array());
-			}
-			$opt = new com_wiris_quizzes_impl_Option();
-			$opt->name = $name;
-			$opt->content = $value;
-			$opt->type = com_wiris_quizzes_impl_MathContent::$TYPE_TEXT;
-			$i = null;
-			$found = false;
-			{
-				$_g1 = 0; $_g = $this->options->length;
-				while($_g1 < $_g) {
-					$i1 = $_g1++;
-					if(_hx_array_get($this->options, $i1)->name === $name) {
-						$this->options[$i1] = $opt;
-						$found = true;
-					}
-					unset($i1);
+			if($this->hasCalcmeSession() && $this->isCalcmeOption($name)) {
+				$this->wirisCasSession = $this->calcDocument->setOption($name, $value);
+			} else {
+				if($this->options === null) {
+					$this->options = new _hx_array(array());
 				}
-			}
-			if(!$found) {
-				$this->options->push($opt);
+				$opt = new com_wiris_quizzes_impl_Option();
+				$opt->name = $name;
+				$opt->content = $value;
+				$opt->type = com_wiris_quizzes_impl_MathContent::$TYPE_TEXT;
+				$i = null;
+				$found = false;
+				{
+					$_g1 = 0; $_g = $this->options->length;
+					while($_g1 < $_g) {
+						$i1 = $_g1++;
+						if(_hx_array_get($this->options, $i1)->name === $name) {
+							$this->options[$i1] = $opt;
+							$found = true;
+						}
+						unset($i1);
+					}
+				}
+				if(!$found) {
+					$this->options->push($opt);
+				}
 			}
 		}
 	}
@@ -803,6 +859,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		$this->subquestions = $s->serializeArrayName($this->subquestions, "subquestions");
 		$s->endTag();
 	}
+	public $calcDocument;
 	public $subquestions;
 	public $localData;
 	public $options;

@@ -48,5 +48,32 @@ class com_wiris_util_type_StringUtils {
 		$span = com_wiris_util_type_IntegerTools::max(0, $endIndex - $beginIndex);
 		return _hx_substr($s, $beginIndex, $span);
 	}
+	static function compareVersions($a, $b) {
+		$va = _hx_explode(".", $a);
+		$vb = _hx_explode(".", $b);
+		$i = 0;
+		while($i < $va->length) {
+			$na = Std::parseInt($va[$i]);
+			$nb = 0;
+			if($i < $vb->length) {
+				$nb = Std::parseInt($vb[$i]);
+			}
+			$n = $na - $nb;
+			if($n !== 0) {
+				return $n;
+			}
+			$i++;
+			unset($nb,$na,$n);
+		}
+		while($i < $vb->length) {
+			$nb = Std::parseInt($vb[$i]);
+			if($nb !== 0) {
+				return -$nb;
+			}
+			$i++;
+			unset($nb);
+		}
+		return 0;
+	}
 	function __toString() { return 'com.wiris.util.type.StringUtils'; }
 }
