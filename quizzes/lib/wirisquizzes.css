@@ -74,11 +74,14 @@ div.wiristabs div.wirisalgorithmlanguage {
     padding-bottom: 10px;
 }
 div.wiristabs .wiriscaswrapper {
-    bottom: 170px;
+    bottom: 0px;
     left: 10px;
     position: absolute;
     right: 10px;
     top: 15px;
+}
+div.wirisoutputoptionswrapper  {
+    padding-top: 10px;
 }
 div.wiristabs div.wiriscasbottomwrapper {
     bottom: 0;
@@ -937,6 +940,19 @@ p.wiriscalcquizzesbeta {
     margin-left: 5px;
     font-size: 14px;
 }
+
+p.wirisoutputoptionwarning {
+    margin: 10px 0px 10px 0px;
+    font-size: 13px;
+    opacity: 0.54;
+}
+
+p.wirisoutputoptionsbottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
 
 /***
 Some CSS specially for moodle 2 standard theme.
