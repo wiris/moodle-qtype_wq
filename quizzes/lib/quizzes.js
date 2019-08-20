@@ -2157,6 +2157,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 	}
 	,setSeparators: function(options) {
 		this.calcLauncher.setSeparators(options);
+		if(this.isSessionCalc()) this.setValue(this.calcLauncher.getValue());
 	}
 	,isSessionCalc: function() {
 		if(this.value == null) return false;
@@ -2499,7 +2500,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1758, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1761, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2721,6 +2722,7 @@ com.wiris.quizzes.JsCalcLauncher.prototype = $extend(com.wiris.quizzes.JsInput.p
 	}
 	,setSeparators: function(options) {
 		this.calcWrapper.setSeparators(options);
+		this.setValue(this.calcWrapper.getValue());
 	}
 	,showTip: function() {
 		if(this.value != null && com.wiris.quizzes.impl.HTMLTools.isCalc(this.value) && !com.wiris.quizzes.impl.HTMLTools.emptyCasSession(this.value)) {
@@ -2817,7 +2819,10 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 	}
 	,setSeparators: function(options) {
 		var _g = this;
-		if(this.calc != null) this.calc.actionWithParams("setSeparatorRestrictions",options); else this.setSeparatorRestrictions = function() {
+		if(this.calc != null) {
+			this.calc.actionWithParams("setSeparatorRestrictions",options);
+			this.setValue(this.calc.getContent());
+		} else this.setSeparatorRestrictions = function() {
 			_g.setSeparators(options);
 		};
 	}
