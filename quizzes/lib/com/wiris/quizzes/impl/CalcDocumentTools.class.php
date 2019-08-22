@@ -3,8 +3,10 @@
 class com_wiris_quizzes_impl_CalcDocumentTools {
 	public function __construct($calcDocument) {
 		if(!php_Boot::$skip_constructor) {
-		$this->calcDocument = com_wiris_util_xml_WXmlUtils::parseXML($calcDocument);
-		$this->stringCalcDocument = $calcDocument;
+		if($calcDocument !== null) {
+			$this->calcDocument = com_wiris_util_xml_WXmlUtils::parseXML($calcDocument);
+			$this->stringCalcDocument = $calcDocument;
+		}
 	}}
 	public function getPropertiesElement() {
 		$it = $this->getCalcDocumentElement()->elements();
@@ -89,6 +91,9 @@ class com_wiris_quizzes_impl_CalcDocumentTools {
 	public function getVersion() {
 		return com_wiris_util_xml_WXmlUtils::getAttribute($this->getCalcDocumentElement(), "version");
 	}
+	public function hasQuizzesQuestionOptions() {
+		return $this->calcDocument !== null && com_wiris_util_type_StringUtils::compareVersions($this->getVersion(), "3.2") >= 0 && $this->getOption(com_wiris_quizzes_impl_CalcDocumentTools::$QUIZZES_QUESTION_OPTIONS) === "true";
+	}
 	public $stringCalcDocument;
 	public $calcDocument;
 	public function __call($m, $a) {
@@ -104,6 +109,7 @@ class com_wiris_quizzes_impl_CalcDocumentTools {
 	static $options;
 	static $outputMathOptions;
 	static $kernelOptions;
+	static $QUIZZES_QUESTION_OPTIONS = "quizzes_question_options";
 	function __toString() { return 'com.wiris.quizzes.impl.CalcDocumentTools'; }
 }
 com_wiris_quizzes_impl_CalcDocumentTools::$options = new _hx_array(array(com_wiris_quizzes_api_QuizzesConstants::$OPTION_PRECISION, com_wiris_quizzes_api_QuizzesConstants::$OPTION_TIMES_OPERATOR, com_wiris_quizzes_api_QuizzesConstants::$OPTION_IMAGINARY_UNIT, com_wiris_quizzes_api_QuizzesConstants::$OPTION_IMPLICIT_TIMES_OPERATOR, com_wiris_quizzes_api_QuizzesConstants::$OPTION_FLOAT_FORMAT, com_wiris_quizzes_api_QuizzesConstants::$OPTION_DECIMAL_SEPARATOR, com_wiris_quizzes_api_QuizzesConstants::$OPTION_DIGIT_GROUP_SEPARATOR));
