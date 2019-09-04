@@ -92,7 +92,7 @@ class com_wiris_quizzes_impl_CalcDocumentTools {
 		return com_wiris_util_xml_WXmlUtils::getAttribute($this->getCalcDocumentElement(), "version");
 	}
 	public function hasQuizzesQuestionOptions() {
-		return $this->calcDocument !== null && com_wiris_util_type_StringUtils::compareVersions($this->getVersion(), "3.2") >= 0 && $this->getOption(com_wiris_quizzes_impl_CalcDocumentTools::$QUIZZES_QUESTION_OPTIONS) === "true";
+		return $this->calcDocument !== null && com_wiris_util_type_StringUtils::compareVersions($this->getVersion(), "3.2") >= 0 && $this->getOption(com_wiris_quizzes_impl_CalcDocumentTools::$QUIZZES_QUESTION_OPTIONS) !== null && $this->getOption(com_wiris_quizzes_impl_CalcDocumentTools::$QUIZZES_QUESTION_OPTIONS) === "true";
 	}
 	public $stringCalcDocument;
 	public $calcDocument;

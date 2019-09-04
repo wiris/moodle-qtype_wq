@@ -203,7 +203,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			$this->id = null;
 			if(com_wiris_quizzes_impl_HTMLTools::isCalc($session)) {
 				$sessionDocument = new com_wiris_quizzes_impl_CalcDocumentTools($session);
-				if(($this->wirisCasSession === null || !$this->getCalcDocument()->hasQuizzesQuestionOptions()) && $sessionDocument->hasQuizzesQuestionOptions()) {
+				if(($this->wirisCasSession === null || !com_wiris_quizzes_impl_HTMLTools::isCalc($this->wirisCasSession) || !$this->getCalcDocument()->hasQuizzesQuestionOptions()) && $sessionDocument->hasQuizzesQuestionOptions()) {
 					$this->removeCalcOptions();
 				}
 				$this->calcDocument = $sessionDocument;
