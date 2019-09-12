@@ -2847,7 +2847,7 @@ com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.pr
 				var win = this.getOwnerWindow();
 				this.initParams.lang = this.getLang();
 				this.initParams.quizzes_question_options = "true";
-				if(!Reflect.hasField(this.initParams,"precision")) this.initParams.precision = 4;
+				if(!Reflect.hasField(this.initParams,"precision")) this.initParams.precision = "4";
 				this.calc = new win.com.wiris.js.JsCalc(this.initParams);
 			} else this.delay($bind(this,this.initCalc),100);
 		}
@@ -16256,6 +16256,18 @@ com.wiris.system.JsDOMUtils.getMousePositionImpl = function(target,e,elementScro
 	position[0] = e.clientX - com.wiris.system.JsDOMUtils.getLeft(target) - border + elementScroll[0];
 	position[1] = e.clientY - com.wiris.system.JsDOMUtils.getTop(target) - border + elementScroll[1];
 	return position;
+}
+com.wiris.system.JsDOMUtils.getMousePagePosition = function(target,e) {
+	var pagePosition = new Array();
+	pagePosition[0] = e.pageX;
+	pagePosition[1] = e.pageY;
+	return pagePosition;
+}
+com.wiris.system.JsDOMUtils.getScrollPosition = function(target,e) {
+	var elementScroll = new Array();
+	elementScroll[0] = target.scrollLeft;
+	elementScroll[1] = target.scrollTop;
+	return elementScroll;
 }
 com.wiris.system.JsDOMUtils.inFixedParent = function(element) {
 	while(element != null) {
