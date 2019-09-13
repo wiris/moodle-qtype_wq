@@ -221,7 +221,8 @@ class qtype_wq_question extends question_graded_automatically {
         $baseresponse = $this->base->is_same_response($prevresponse, $newresponse);
         $sqicompare = ((empty($newresponse['_sqi']) && empty($prevresponse['_sqi'])) || (!empty($prevresponse['_sqi']) &&
             !empty($newresponse['_sqi']) && $newresponse['_sqi'] == $prevresponse['_sqi']));
-        $auxiliarcompare = ((empty($newresponse['auxiliar_text']) && empty($prevresponse['auxiliar_text'])) || (!empty($prevresponse['auxiliar_text']) &&
+        $auxiliarcompare = ((empty($newresponse['auxiliar_text']) && empty($prevresponse['auxiliar_text'])) ||
+            (!empty($prevresponse['auxiliar_text']) &&
             !empty($newresponse['auxiliar_text']) && $newresponse['auxiliar_text'] == $prevresponse['auxiliar_text']));
         return $baseresponse && $sqicompare && $auxiliarcompare;
 

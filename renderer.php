@@ -28,9 +28,10 @@ class qtype_wq_renderer extends qtype_renderer {
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
         $result = $this->base->formulation_and_controls($qa, $options);
 
-        // Auxiliar text
-        $show_auxiliar_text_input = $qa->get_question()->wirisquestion->question->getProperty(com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_AUXILIAR_TEXT_INPUT);
-        if ($show_auxiliar_text_input) {
+        // Auxiliar text.
+        $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getProperty(
+            com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_AUXILIAR_TEXT_INPUT); // @codingStandardsIgnoreLine
+        if ($showauxiliartextinput) {
             $result .= $this->auxiliar_text($qa, $options);
         }
 
@@ -113,15 +114,15 @@ class qtype_wq_renderer extends qtype_renderer {
         }
 
         if (empty($options->readonly)) {
-            $auxiliar_text = $responseoutput->response_area_input('auxiliar_text', $qa,
+            $auxiliartext = $responseoutput->response_area_input('auxiliar_text', $qa,
                     $step, $question->auxiliartextfieldlines, $options->context);
 
         } else {
-            $auxiliar_text = $responseoutput->response_area_read_only('auxiliar_text', $qa,
+            $auxiliartext = $responseoutput->response_area_read_only('auxiliar_text', $qa,
                     $step, $question->auxiliartextfieldlines, $options->context);
         }
 
-        $result .= html_writer::tag('div', $auxiliar_text);
+        $result .= html_writer::tag('div', $auxiliartext);
 
         return $result;
     }

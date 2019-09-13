@@ -40,7 +40,7 @@ class behat_wq_base extends behat_base {
         );
         $this->ensure_node_is_visible($node);
         $node->click();
-        // Mink does not provide any way to call other steps, so we recreate the switch_to_window step from behat_general:
+        // Mink does not provide any way to call other steps, so we recreate the switch_to_window step from behat_general.
         $this->getSession()->executeScript(
                 'if (window.name == "") window.name = "' . behat_general::MAIN_WINDOW_NAME . '"');
         $this->getSession()->switchToWindow('wirisstudiopopup');
