@@ -2184,6 +2184,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 		return session;
 	}
 	,setValue: function(v) {
+		var sessionChanged = v != this.value;
 		com.wiris.quizzes.JsInput.prototype.setValue.call(this,v);
 		if(this.isEmpty()) this.value = this.getEmptyWirisCasSession();
 		this.input.value = this.value;
@@ -2207,7 +2208,7 @@ com.wiris.quizzes.JsAlgorithmInput.prototype = $extend(com.wiris.quizzes.JsInput
 				if(this.isEmpty()) this.calcLauncher.hideWarning(); else this.calcLauncher.showWarning();
 			}
 		}
-		if(this.onSessionChanged != null) this.onSessionChanged();
+		if(sessionChanged && this.onSessionChanged != null) this.onSessionChanged();
 	}
 	,getValue: function() {
 		this.value = this.input.value;
@@ -2504,7 +2505,7 @@ com.wiris.quizzes.JsCasJnlpLauncher.prototype = $extend(com.wiris.quizzes.JsInpu
 		} else {
 			this.setButtonEnabled(true);
 			this.setNote(this.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1768, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "JsComponent.hx", lineNumber : 1770, className : "com.wiris.quizzes.JsCasJnlpLauncher", methodName : "sessionReceived"});
 		}
 	}
 	,pollServiceImpl: function() {
@@ -2822,23 +2823,29 @@ com.wiris.quizzes.JsCalcWrapper.__super__ = com.wiris.quizzes.JsInput;
 com.wiris.quizzes.JsCalcWrapper.prototype = $extend(com.wiris.quizzes.JsInput.prototype,{
 	setImaginaryUnits: function(options) {
 		var _g = this;
-		if(this.calc != null) this.calc.actionWithParams("setImaginaryUnitRestrictions",options); else this.setImaginaryUnitRestrictions = function() {
+		if(this.calc != null) try {
+			this.calc.actionWithParams("setImaginaryUnitRestrictions",options);
+		} catch( e ) {
+		} else this.setImaginaryUnitRestrictions = function() {
 			_g.setImaginaryUnits(options);
 		};
 	}
 	,setSeparators: function(options) {
 		var _g = this;
-		if(this.calc != null) {
+		if(this.calc != null) try {
 			this.calc.actionWithParams("setSeparatorRestrictions",options);
 			this.setValue(this.calc.getContent());
+		} catch( e ) {
 		} else this.setSeparatorRestrictions = function() {
 			_g.setSeparators(options);
 		};
 	}
 	,setDocumentProperty: function(name,value) {
 		if(this.calc != null) {
-			this.calc.calcModel.setDocumentProperty(name,value);
-			this.setValue(this.calc.getContent());
+			if(this.calc.calcModel.getDocumentProperty(name) != value) {
+				this.calc.calcModel.setDocumentProperty(name,value);
+				this.setValue(this.calc.getContent());
+			}
 		} else this.initParams[name] = value;
 	}
 	,initCalc: function() {
