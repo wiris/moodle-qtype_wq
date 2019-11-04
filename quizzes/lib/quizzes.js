@@ -18159,6 +18159,26 @@ com.wiris.util.xml.MathMLUtils.strokesAnnotationStart = function(mathml,start,en
 	}
 	return -1;
 }
+com.wiris.util.xml.MathMLUtils.isEmptyMathML = function(math) {
+	var empty = true;
+	if(math.nodeType == Xml.Document) empty = com.wiris.util.xml.MathMLUtils.isEmptyMathML(math.firstElement()); else if(math.nodeType == Xml.Element) {
+		var name = math.getNodeName();
+		if(name == "mtext") {
+			if(math.iterator().hasNext()) {
+				var child = math.firstChild();
+				var value = com.wiris.util.xml.WXmlUtils.getNodeValue(child);
+				if(value != null && !(value == "")) empty = false;
+			}
+		} else if(!(name == "math" || name == "mrow")) empty = false; else {
+			var children = math.elements();
+			while(children.hasNext()) {
+				var next = children.next();
+				empty = empty && com.wiris.util.xml.MathMLUtils.isEmptyMathML(next);
+			}
+		}
+	}
+	return empty;
+}
 com.wiris.util.xml.MathMLUtils.prototype = {
 	__class__: com.wiris.util.xml.MathMLUtils
 }
