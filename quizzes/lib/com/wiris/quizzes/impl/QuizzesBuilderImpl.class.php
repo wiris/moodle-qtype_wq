@@ -5,6 +5,49 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
 	}}
+	public function addInterestingLocalDataToRequest($q, $qi, $qr) {
+		$sb = new StringBuf();
+		$localDataQ = com_wiris_quizzes_impl_QuizzesBuilderImpl_0($this, $q, $qi, $qr, $sb);
+		$localDataQI = com_wiris_quizzes_impl_QuizzesBuilderImpl_1($this, $localDataQ, $q, $qi, $qr, $sb);
+		$localData = null;
+		if($localDataQ === null && $localDataQI === null) {
+			return;
+		} else {
+			if($localDataQ === null) {
+				$localData = $localDataQI;
+			} else {
+				if($localDataQI === null) {
+					$localData = $localDataQ;
+				} else {
+					$localData = $localDataQ->concat($localDataQI);
+				}
+			}
+		}
+		{
+			$_g = 0;
+			while($_g < $localData->length) {
+				$ld = $localData[$_g];
+				++$_g;
+				if(com_wiris_util_type_Arrays::containsArray(com_wiris_quizzes_impl_QuizzesBuilderImpl::$INTERESTING_LOCAL_DATA_NAME_AND_VALUE, $ld->name)) {
+					if(strlen($sb->b) > 0) {
+						$sb->add(",");
+					}
+					$sb->add($ld->name . "=" . $ld->value);
+				} else {
+					if(com_wiris_util_type_Arrays::containsArray(com_wiris_quizzes_impl_QuizzesBuilderImpl::$INTERESTING_LOCAL_DATA_ONLY_NAME, $ld->name) && $ld->value !== null && strlen($ld->value) > 0) {
+						if(strlen($sb->b) > 0) {
+							$sb->add(",");
+						}
+						$sb->add($ld->name . "=true");
+					}
+				}
+				unset($ld);
+			}
+		}
+		if(strlen($sb->b) > 0) {
+			$qr->addMetaProperty("wrs-local-data", $sb->b);
+		}
+	}
 	public function newFeaturedAssertionsRequest($question) {
 		if($question === null) {
 			throw new HException("Question cannot be null.");
@@ -12,6 +55,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$q = $question;
 		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
 		$qr->question = $this->removeSubquestions($q);
+		$this->addInterestingLocalDataToRequest($question, null, $qr);
 		$qr->addProcess(new com_wiris_quizzes_impl_ProcessGetFeaturedAssertions());
 		return $qr;
 	}
@@ -23,6 +67,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
 		$qr->question = $this->removeSubquestions($q);
 		$qr->addProcess(new com_wiris_quizzes_impl_ProcessGetFeaturedSyntaxAssertions());
+		$this->addInterestingLocalDataToRequest($question, null, $qr);
 		return $qr;
 	}
 	public function getAccessProvider() {
@@ -293,13 +338,13 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		while($i < 0 || $q !== null && $q->subquestions !== null && $i < $q->subquestions->length || ($i < 0 || $qi !== null && $qi->subinstances !== null && $i < $qi->subinstances->length)) {
 			$qa = null;
 			if($q !== null) {
-				$qa = com_wiris_quizzes_impl_QuizzesBuilderImpl_0($this, $correctAnswers, $i, $instance, $lastAssNum, $lastCaNum, $lastUaNum, $q, $qa, $qi, $qq, $question, $userAnswers, $uu);
+				$qa = com_wiris_quizzes_impl_QuizzesBuilderImpl_2($this, $correctAnswers, $i, $instance, $lastAssNum, $lastCaNum, $lastUaNum, $q, $qa, $qi, $qq, $question, $userAnswers, $uu);
 			}
 			$ua = null;
 			if($qi !== null) {
-				$ua = com_wiris_quizzes_impl_QuizzesBuilderImpl_1($this, $correctAnswers, $i, $instance, $lastAssNum, $lastCaNum, $lastUaNum, $q, $qa, $qi, $qq, $question, $ua, $userAnswers, $uu);
+				$ua = com_wiris_quizzes_impl_QuizzesBuilderImpl_3($this, $correctAnswers, $i, $instance, $lastAssNum, $lastCaNum, $lastUaNum, $q, $qa, $qi, $qq, $question, $ua, $userAnswers, $uu);
 			}
-			$step = com_wiris_quizzes_impl_QuizzesBuilderImpl_2($this, $correctAnswers, $i, $instance, $lastAssNum, $lastCaNum, $lastUaNum, $q, $qa, $qi, $qq, $question, $ua, $userAnswers, $uu);
+			$step = com_wiris_quizzes_impl_QuizzesBuilderImpl_4($this, $correctAnswers, $i, $instance, $lastAssNum, $lastCaNum, $lastUaNum, $q, $qa, $qi, $qq, $question, $ua, $userAnswers, $uu);
 			$j = null;
 			if($correctAnswers === null && $qa !== null) {
 				$_g1 = 0; $_g = $qa->getCorrectAnswersLength();
@@ -645,6 +690,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$qr->question = $qq;
 		$qr->userData = $uu;
 		$qr->checkAssertions();
+		$this->addInterestingLocalDataToRequest($question, $instance, $qr);
 		return $qr;
 	}
 	public function getIndex($id) {
@@ -761,6 +807,7 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		$qr->question = $this->removeSubquestions($q);
 		$qr->userData = $qi->userData;
 		$this->setVariables($html, $q, $qi, $qr);
+		$this->addInterestingLocalDataToRequest($question, $instance, $qr);
 		return $qr;
 	}
 	public function readQuestionInstance($xml) {
@@ -857,23 +904,37 @@ class com_wiris_quizzes_impl_QuizzesBuilderImpl extends com_wiris_quizzes_api_Qu
 		}
 		return com_wiris_quizzes_impl_QuizzesBuilderImpl::$singleton;
 	}
+	static $INTERESTING_LOCAL_DATA_NAME_AND_VALUE;
+	static $INTERESTING_LOCAL_DATA_ONLY_NAME;
 	function __toString() { return 'com.wiris.quizzes.impl.QuizzesBuilderImpl'; }
 }
-function com_wiris_quizzes_impl_QuizzesBuilderImpl_0(&$퍁his, &$correctAnswers, &$i, &$instance, &$lastAssNum, &$lastCaNum, &$lastUaNum, &$q, &$qa, &$qi, &$qq, &$question, &$userAnswers, &$uu) {
+com_wiris_quizzes_impl_QuizzesBuilderImpl::$INTERESTING_LOCAL_DATA_NAME_AND_VALUE = new _hx_array(array(com_wiris_quizzes_impl_LocalData::$KEY_SHOW_AUXILIAR_TEXT_INPUT, com_wiris_quizzes_impl_LocalData::$KEY_SHOW_CAS));
+com_wiris_quizzes_impl_QuizzesBuilderImpl::$INTERESTING_LOCAL_DATA_ONLY_NAME = new _hx_array(array(com_wiris_quizzes_impl_LocalData::$KEY_AUXILIAR_TEXT, com_wiris_quizzes_impl_LocalData::$KEY_CAS_SESSION, com_wiris_quizzes_impl_LocalData::$KEY_CAS_INITIAL_SESSION));
+function com_wiris_quizzes_impl_QuizzesBuilderImpl_0(&$퍁his, &$q, &$qi, &$qr, &$sb) {
+	if($q !== null) {
+		return _hx_deref(($q))->getImpl()->localData;
+	}
+}
+function com_wiris_quizzes_impl_QuizzesBuilderImpl_1(&$퍁his, &$localDataQ, &$q, &$qi, &$qr, &$sb) {
+	if($qi !== null) {
+		return _hx_deref(($qi))->localData;
+	}
+}
+function com_wiris_quizzes_impl_QuizzesBuilderImpl_2(&$퍁his, &$correctAnswers, &$i, &$instance, &$lastAssNum, &$lastCaNum, &$lastUaNum, &$q, &$qa, &$qi, &$qq, &$question, &$userAnswers, &$uu) {
 	if($i < 0) {
 		return $q;
 	} else {
 		return $q->subquestions[$i];
 	}
 }
-function com_wiris_quizzes_impl_QuizzesBuilderImpl_1(&$퍁his, &$correctAnswers, &$i, &$instance, &$lastAssNum, &$lastCaNum, &$lastUaNum, &$q, &$qa, &$qi, &$qq, &$question, &$ua, &$userAnswers, &$uu) {
+function com_wiris_quizzes_impl_QuizzesBuilderImpl_3(&$퍁his, &$correctAnswers, &$i, &$instance, &$lastAssNum, &$lastCaNum, &$lastUaNum, &$q, &$qa, &$qi, &$qq, &$question, &$ua, &$userAnswers, &$uu) {
 	if($i < 0) {
 		return $qi->userData;
 	} else {
 		return _hx_array_get($qi->subinstances, $i)->userData;
 	}
 }
-function com_wiris_quizzes_impl_QuizzesBuilderImpl_2(&$퍁his, &$correctAnswers, &$i, &$instance, &$lastAssNum, &$lastCaNum, &$lastUaNum, &$q, &$qa, &$qi, &$qq, &$question, &$ua, &$userAnswers, &$uu) {
+function com_wiris_quizzes_impl_QuizzesBuilderImpl_4(&$퍁his, &$correctAnswers, &$i, &$instance, &$lastAssNum, &$lastCaNum, &$lastUaNum, &$q, &$qa, &$qi, &$qq, &$question, &$ua, &$userAnswers, &$uu) {
 	if($i < 0) {
 		return "";
 	} else {

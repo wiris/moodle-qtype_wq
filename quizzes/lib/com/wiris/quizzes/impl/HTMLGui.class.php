@@ -1102,6 +1102,9 @@ class com_wiris_quizzes_impl_HTMLGui {
 			$h->close();
 		}
 		$this->printLocalData($h, $q, $unique, $conf);
+		$h->openPWithClass("wirisnewinterfacead");
+		$h->raw($this->t->t("quizzesnewinterfacewarning"));
+		$h->close();
 		return $h->getString();
 	}
 	public $lang;

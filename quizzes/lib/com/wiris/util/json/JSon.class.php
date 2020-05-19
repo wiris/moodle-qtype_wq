@@ -489,6 +489,17 @@ class com_wiris_util_json_JSon extends com_wiris_util_json_StringParser {
 	static function getHash($a) {
 		return $a;
 	}
+	static function isJson($json) {
+		try {
+			com_wiris_util_json_JSon::decode($json);
+			return true;
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			if(($e = $_ex_) instanceof com_wiris_system_Exception){
+				return false;
+			} else throw $»e;;
+		}
+	}
 	function __toString() { return 'com.wiris.util.json.JSon'; }
 }
 function com_wiris_util_json_JSon_0(&$»this, &$floating, &$hex, &$sb) {
