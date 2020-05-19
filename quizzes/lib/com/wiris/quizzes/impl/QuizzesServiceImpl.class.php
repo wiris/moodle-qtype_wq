@@ -24,23 +24,15 @@ class com_wiris_quizzes_impl_QuizzesServiceImpl implements com_wiris_quizzes_api
 	public function callService($mqr, $cache, $listener, $async) {
 		$s = new com_wiris_util_xml_XmlSerializer();
 		$s->setCached($cache);
-		if(!$cache && com_wiris_quizzes_impl_QuizzesServiceImpl::$USE_CACHE) {
-			$j = null;
-			{
-				$_g1 = 0; $_g = $mqr->questionRequests->length;
-				while($_g1 < $_g) {
-					$j1 = $_g1++;
-					_hx_array_get($mqr->questionRequests, $j1)->addProcess(new com_wiris_quizzes_impl_ProcessStoreQuestion());
-					unset($j1);
-				}
-			}
-		}
 		$aqr = $mqr->questionRequests;
 		{
 			$_g = 0;
 			while($_g < $aqr->length) {
 				$qr = $aqr[$_g];
 				++$_g;
+				if(!$cache && com_wiris_quizzes_impl_QuizzesServiceImpl::$USE_CACHE) {
+					$qr->addProcess(new com_wiris_quizzes_impl_ProcessStoreQuestion());
+				}
 				if(com_wiris_quizzes_impl_QuizzesServiceImpl::$deploymentId !== null) {
 					$qr->addMetaProperty("wrs-deployment", com_wiris_quizzes_impl_QuizzesServiceImpl::getDeploymentId());
 				}
