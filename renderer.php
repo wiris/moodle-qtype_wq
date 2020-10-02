@@ -76,8 +76,8 @@ class qtype_wq_renderer extends qtype_renderer {
         $question = $qa->get_question();
         $xml = $qa->get_last_qt_var('_sqi');
         if (!empty($xml)) {
-            $builder = com_wiris_quizzes_api_QuizzesBuilder::getInstance();
-            $sqi = $builder->readQuestionInstance($xml);
+            $builder = com_wiris_quizzes_api_Quizzes::getInstance();
+            $sqi = $builder->readQuestionInstance($xml, $question->wirisquestion);
             $question->wirisquestioninstance->updateFromStudentQuestionInstance($sqi);
         }
         $sqi = $question->wirisquestioninstance->getStudentQuestionInstance();

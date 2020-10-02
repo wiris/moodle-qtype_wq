@@ -61,7 +61,7 @@ class qtype_wq_question extends question_graded_automatically {
         $this->base->start_attempt($step, $variant);
 
         // Get variables from Wiris Quizzes service.
-        $builder = com_wiris_quizzes_api_QuizzesBuilder::getInstance();
+        $builder = com_wiris_quizzes_api_Quizzes::getInstance();
         $text = $this->join_all_text();
         $this->wirisquestioninstance = $builder->newQuestionInstance($this->wirisquestion);
         $this->wirisquestioninstance->setRandomSeed($variant);
@@ -76,7 +76,7 @@ class qtype_wq_question extends question_graded_automatically {
         // End testing code.
 
         // Create request to call service.
-        $request = $builder->newVariablesRequest($text, $this->wirisquestion, $this->wirisquestioninstance);
+        $request = $builder->newVariablesRequest($text, $this->wirisquestioninstance);
         // Do the call only if needed.
         if (!$request->isEmpty()) {
             $response = $this->call_wiris_service($request);
@@ -94,14 +94,14 @@ class qtype_wq_question extends question_graded_automatically {
         $this->base->apply_attempt_state($step);
         // Recover the questioninstance variable saved on start_attempt().
         $xml = $step->get_qt_var('_qi');
-        $builder = com_wiris_quizzes_api_QuizzesBuilder::getInstance();
-        $this->wirisquestioninstance = $builder->readQuestionInstance($xml);
+        $builder = com_wiris_quizzes_api_Quizzes::getInstance();
+        $this->wirisquestioninstance = $builder->readQuestionInstance($xml, $this->wirisquestion);
 
         // Be sure that plotter images don't got removed, and recompute them
         // otherwise.
         if (!$this->wirisquestioninstance->areVariablesReady()) {
             // We make a new request to the service if plotter images are not cached.
-            $request = $builder->newVariablesRequest($this->join_all_text(), $this->wirisquestion, $this->wirisquestioninstance);
+            $request = $builder->newVariablesRequest($this->join_all_text(), $this->wirisquestioninstance);
             $response = $this->call_wiris_service($request);
             $this->wirisquestioninstance->update($response);
             // We don't need to save this question instance in database because
@@ -112,7 +112,7 @@ class qtype_wq_question extends question_graded_automatically {
         // So we need to recompute variables.
         // Each attempt builds on the last (question_attempt_step_read_only) shouldn't recompute variables.
         if ($step->get_state() instanceof question_state_complete && !($step instanceof question_attempt_step_read_only)) {
-            $request = $builder->newVariablesRequest($this->join_all_text(), $this->wirisquestion, $this->wirisquestioninstance);
+            $request = $builder->newVariablesRequest($this->join_all_text(), $this->wirisquestioninstance);
             $response = $this->call_wiris_service($request);
             $this->wirisquestioninstance->update($response);
             // Save the result.
@@ -324,7 +324,7 @@ class qtype_wq_question extends question_graded_automatically {
         global $COURSE;
         global $USER;
 
-        $builder = com_wiris_quizzes_api_QuizzesBuilder::getInstance();
+        $builder = com_wiris_quizzes_api_Quizzes::getInstance();
         $metaproperty = ((!empty($COURSE) ? $COURSE->id : '') . '/' . (!empty($question) ? $question->id : ''));
         $request->addMetaProperty('questionref', $metaproperty);
         $request->addMetaProperty('userref', (!empty($USER) ? $USER->id : ''));

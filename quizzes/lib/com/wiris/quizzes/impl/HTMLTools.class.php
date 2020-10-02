@@ -534,6 +534,12 @@ class com_wiris_quizzes_impl_HTMLTools {
 		}
 		return null;
 	}
+	public function isColor($s, $n) {
+		$gfColor = "color\":\"";
+		$gfFill = "\"fill\":\"";
+		$l = strlen($gfColor);
+		return $n > $l && (_hx_substr($s, $n - $l, $l) === $gfColor || _hx_substr($s, $n - $l, $l) === $gfFill);
+	}
 	public function isEntity($s, $n) {
 		if($n > 0 && _hx_char_code_at($s, $n - 1) === 38) {
 			$n++;
@@ -548,7 +554,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return false;
 	}
 	public function variablePosition($s, $n) {
-		if($this->insideTag($s, $n) || $this->isEntity($s, $n) || $this->insideComment($s, $n)) {
+		if($this->insideTag($s, $n) || $this->isEntity($s, $n) || $this->insideComment($s, $n) || $this->isColor($s, $n)) {
 			return com_wiris_quizzes_impl_HTMLTools::$POSITION_NONE;
 		} else {
 			$parent = $this->getParentTag($s, $n);

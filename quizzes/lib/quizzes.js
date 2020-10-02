@@ -7185,6 +7185,12 @@ com.wiris.quizzes.impl.HTMLTools.prototype = {
 		}
 		return null;
 	}
+	,isColor: function(s,n) {
+		var gfColor = "color\":\"";
+		var gfFill = "\"fill\":\"";
+		var l = gfColor.length;
+		return n > l && (HxOverrides.substr(s,n - l,l) == gfColor || HxOverrides.substr(s,n - l,l) == gfFill);
+	}
 	,isEntity: function(s,n) {
 		if(n > 0 && HxOverrides.cca(s,n - 1) == 38) {
 			n++;
@@ -7197,7 +7203,7 @@ com.wiris.quizzes.impl.HTMLTools.prototype = {
 		return false;
 	}
 	,variablePosition: function(s,n) {
-		if(this.insideTag(s,n) || this.isEntity(s,n) || this.insideComment(s,n)) return com.wiris.quizzes.impl.HTMLTools.POSITION_NONE; else {
+		if(this.insideTag(s,n) || this.isEntity(s,n) || this.insideComment(s,n) || this.isColor(s,n)) return com.wiris.quizzes.impl.HTMLTools.POSITION_NONE; else {
 			var parent = this.getParentTag(s,n);
 			if(parent == null) return com.wiris.quizzes.impl.HTMLTools.POSITION_ALL;
 			if(parent == "script" || parent == "option") return com.wiris.quizzes.impl.HTMLTools.POSITION_ONLY_TEXT; else if(parent == "style") return com.wiris.quizzes.impl.HTMLTools.POSITION_NONE; else if(parent == "mi" || parent == "mo" || parent == "mtext" || parent == "ms") return com.wiris.quizzes.impl.HTMLTools.POSITION_ONLY_MATHML; else if(parent == "td") return com.wiris.quizzes.impl.HTMLTools.POSITION_TABLE; else return com.wiris.quizzes.impl.HTMLTools.POSITION_ALL;
@@ -10021,17 +10027,46 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		b[a.length] = e;
 		return b;
 	}
+	,equalsArrays: function(a1,a2) {
+		if(a1.length != a2.length) return false;
+		var _g1 = 0, _g = a1.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(!(a1[i] == a2[i])) return false;
+		}
+		return true;
+	}
+	,hasCompoundAssociatedCheck: function(a) {
+		var answers = this.compoundChecks.keys();
+		while(answers.hasNext()) {
+			var answer = answers.next();
+			var correctAnswers = this.compoundChecks.get(answer).keys();
+			while(correctAnswers.hasNext()) {
+				var correctAnswer = correctAnswers.next();
+				var checks = this.compoundChecks.get(answer).get(correctAnswer);
+				var _g = 0;
+				while(_g < checks.length) {
+					var aa = checks[_g];
+					++_g;
+					if(aa.getAssertionName() == a.getAssertionName() && this.equalsArrays(a.getAnswers(),aa.getAnswers()) && this.equalsArrays(a.getCorrectAnswers(),aa.getCorrectAnswers())) return true;
+				}
+			}
+		}
+		return false;
+	}
 	,setChecksCompoundAnswers: function() {
 		if(this.compoundChecks == null) return;
 		var answers = this.checks.keys();
 		while(answers.hasNext()) {
-			var a = this.checks.get(answers.next());
-			var i;
-			var _g1 = 0, _g = a.length;
-			while(_g1 < _g) {
-				var i1 = _g1++;
-				a[i1].setAnswers(new Array());
-				a[i1].setCorrectAnswers(new Array());
+			var aa = this.checks.get(answers.next());
+			var _g = 0;
+			while(_g < aa.length) {
+				var a = aa[_g];
+				++_g;
+				if(this.hasCompoundAssociatedCheck(a)) {
+					a.setAnswers(new Array());
+					a.setCorrectAnswers(new Array());
+				}
 			}
 		}
 		answers = this.compoundChecks.keys();
@@ -10658,6 +10693,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 	}
 	,isCompoundAnswerSingleCheck: function(check) {
 		var id = check.getCorrectAnswer();
+		if(id == null) return false;
 		if(id.indexOf("c") > -1) return true;
 		var index = Std.parseInt(id);
 		return index >= 1000;
@@ -29160,7 +29196,7 @@ com.wiris.system.ui.JsPlotterPanel.prototype = $extend(com.wiris.system.ui.JsPan
 		var interval = time - this.lastRepaintTime;
 		this.lastRepaintTime = time;
 		this.plotterPanel.getDisplay().animateFrame(interval);
-		this.plotterPanel.getDisplay().update(this.graphics,this.lastWidth,this.lastHeight);
+		this.plotterPanel.getDisplay().update(this.graphics,this.lastWidth,this.lastHeight,this.plotterPanel.getPadding());
 		this.graphics.finish();
 		if(this.plotterPanel.isAnimated()) this.requestAnimationFrameId = requestAnimationFrame($bind(this,this.repaintImpl)); else this.requestAnimationFrameId = null;
 	}
@@ -36635,12 +36671,22 @@ com.wiris.util.ui.component.PlotterPanel = $hxClasses["com.wiris.util.ui.compone
 	this.pointerOutside = false;
 	this.firstTouch = null;
 	this.firstClick = null;
+	this.padding = [0,0,0,0];
 };
 com.wiris.util.ui.component.PlotterPanel.__name__ = ["com","wiris","util","ui","component","PlotterPanel"];
 com.wiris.util.ui.component.PlotterPanel.__interfaces__ = [com.wiris.util.graphics.DisplayListener,com.wiris.util.ui.interaction.TouchListener,com.wiris.util.ui.interaction.MouseMotionListener,com.wiris.util.ui.interaction.MouseListener];
 com.wiris.util.ui.component.PlotterPanel.__super__ = com.wiris.util.ui.component.BorderPanel;
 com.wiris.util.ui.component.PlotterPanel.prototype = $extend(com.wiris.util.ui.component.BorderPanel.prototype,{
-	dist: function(a,b) {
+	getPadding: function() {
+		return [this.padding[0],this.padding[1],this.padding[2],this.padding[3]];
+	}
+	,plotterPadding: function(top,right,bottom,left) {
+		this.padding[0] = top;
+		this.padding[1] = right;
+		this.padding[2] = bottom;
+		this.padding[3] = left;
+	}
+	,dist: function(a,b) {
 		return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
 	}
 	,cursorRequested: function(cursor) {
@@ -36832,6 +36878,7 @@ com.wiris.util.ui.component.PlotterPanel.prototype = $extend(com.wiris.util.ui.c
 	,getDisplay: function() {
 		return this.display;
 	}
+	,padding: null
 	,animated: null
 	,pointerOutside: null
 	,dragging: null

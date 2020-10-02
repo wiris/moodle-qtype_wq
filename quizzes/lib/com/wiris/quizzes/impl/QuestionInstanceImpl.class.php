@@ -51,25 +51,69 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$b[$a->length] = $e;
 		return $b;
 	}
+	public function equalsArrays($a1, $a2) {
+		if($a1->length !== $a2->length) {
+			return false;
+		}
+		{
+			$_g1 = 0; $_g = $a1->length;
+			while($_g1 < $_g) {
+				$i = $_g1++;
+				if(!($a1[$i] === $a2[$i])) {
+					return false;
+				}
+				unset($i);
+			}
+		}
+		return true;
+	}
+	public function hasCompoundAssociatedCheck($a) {
+		$answers = $this->compoundChecks->keys();
+		while($answers->hasNext()) {
+			$answer = $answers->next();
+			$correctAnswers = $this->compoundChecks->get($answer)->keys();
+			while($correctAnswers->hasNext()) {
+				$correctAnswer = $correctAnswers->next();
+				$checks = $this->compoundChecks->get($answer)->get($correctAnswer);
+				{
+					$_g = 0;
+					while($_g < $checks->length) {
+						$aa = $checks[$_g];
+						++$_g;
+						if($aa->getAssertionName() === $a->getAssertionName() && $this->equalsArrays($a->getAnswers(), $aa->getAnswers()) && $this->equalsArrays($a->getCorrectAnswers(), $aa->getCorrectAnswers())) {
+							return true;
+						}
+						unset($aa);
+					}
+					unset($_g);
+				}
+				unset($correctAnswer,$checks);
+			}
+			unset($correctAnswers,$answer);
+		}
+		return false;
+	}
 	public function setChecksCompoundAnswers() {
 		if($this->compoundChecks === null) {
 			return;
 		}
 		$answers = $this->checks->keys();
 		while($answers->hasNext()) {
-			$a = $this->checks->get($answers->next());
-			$i = null;
+			$aa = $this->checks->get($answers->next());
 			{
-				$_g1 = 0; $_g = $a->length;
-				while($_g1 < $_g) {
-					$i1 = $_g1++;
-					_hx_array_get($a, $i1)->setAnswers(new _hx_array(array()));
-					_hx_array_get($a, $i1)->setCorrectAnswers(new _hx_array(array()));
-					unset($i1);
+				$_g = 0;
+				while($_g < $aa->length) {
+					$a = $aa[$_g];
+					++$_g;
+					if($this->hasCompoundAssociatedCheck($a)) {
+						$a->setAnswers(new _hx_array(array()));
+						$a->setCorrectAnswers(new _hx_array(array()));
+					}
+					unset($a);
 				}
-				unset($_g1,$_g);
+				unset($_g);
 			}
-			unset($i,$a);
+			unset($aa);
 		}
 		$answers = $this->compoundChecks->keys();
 		while($answers->hasNext()) {
