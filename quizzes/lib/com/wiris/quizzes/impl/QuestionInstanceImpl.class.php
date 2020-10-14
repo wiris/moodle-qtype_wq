@@ -973,6 +973,9 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 	}
 	public function isCompoundAnswerSingleCheck($check) {
 		$id = $check->getCorrectAnswer();
+		if($id === null) {
+			return false;
+		}
 		if(_hx_index_of($id, "c", null) > -1) {
 			return true;
 		}

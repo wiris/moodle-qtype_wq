@@ -81,11 +81,7 @@ class com_wiris_quizzes_impl_AuthorAnswerImpl extends com_wiris_util_xml_Seriali
 		$this->question->id = null;
 	}
 	public function getFilterableValue() {
-		if($this->value->type === com_wiris_quizzes_impl_MathContent::$TYPE_GEOMETRY_FILE) {
-			return "<img " . "src=\"" . com_wiris_quizzes_impl_QuizzesImpl::getInstance()->getResourceUrl("plotter_loading.png") . "\" " . "alt=\"Plotter\" " . "class=\"wirisconstruction wirisgraphanimate\" " . "data-wirisconstruction=\"" . com_wiris_util_xml_WXmlUtils::htmlEscape($this->getValue()) . "\"" . "/>";
-		} else {
-			return $this->getValue();
-		}
+		return com_wiris_quizzes_impl_QuizzesImpl::getInstance()->mathContentToFilterableValue($this->value);
 	}
 	public function getValue() {
 		return $this->value->content;
