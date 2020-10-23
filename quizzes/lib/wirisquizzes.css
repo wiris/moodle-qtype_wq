@@ -482,24 +482,24 @@
   animation-delay: -0.1s;
 }
 
-.wrsUI_app .wrsUI_textField.wrsUI_popupTextField > input {
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > input {
   width: calc(100% - 64px);
 }
-.wrsUI_app .wrsUI_textField.wrsUI_popupTextField > input + div {
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > input + div {
   width: calc(100% - 88px);
   margin-right: 64px;
 }
-.wrsUI_app .wrsUI_textField.wrsUI_popupTextField > .wrsUI_button.wrsUI_buttonIcon {
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > .wrsUI_button.wrsUI_buttonIcon {
   position: absolute;
   min-width: 34px;
   right: 8px;
   top: calc(50% - 17px);
   bottom: calc(50% - 17px);
 }
-.wrsUI_app .wrsUI_textField.wrsUI_popupTextField.wrsUI_textFieldCorrect::after, .wrsUI_app .wrsUI_textField.wrsUI_popupTextField.wrsUI_textFieldWarning::after, .wrsUI_app .wrsUI_textField.wrsUI_popupTextField.wrsUI_textFieldError::after {
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentCorrect::after, .wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentWarning::after, .wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentError::after {
   right: 72px;
 }
-.wrsUI_app .wrsUI_textField.wrsUI_popupTextField.wrsUI_popupTextFieldClickable {
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_popupTextFieldClickable {
   cursor: pointer;
 }
 
