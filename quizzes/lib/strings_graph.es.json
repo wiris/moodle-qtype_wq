@@ -17,6 +17,7 @@
 		"tt_polygon": "Polígono",
 		"tt_vector": "Vector",
 		"tt_parallelogram": "Paralelogramo",
+		"tt_curves": "Curvas",
 		"tt_conicSections": "Secciones cónicas",
 		"tt_circleCenterAndPoint": "Círculo dados el centro y un punto",
 		"tt_circleThreePoints": "Círculo dados tres puntos",
@@ -25,6 +26,7 @@
 		"tt_ellipse": "Elipse",
 		"tt_hyperbola": "Hipérbola",
 		"tt_conic": "Cónica",
+		"tt_interpolatingPolynomial": "Polinomio interpolador",
 		"tt_measures": "Medidas",
 		"tt_area": "Área",
 		"tt_angle": "Ángulo",
@@ -34,7 +36,7 @@
 
 		"tt_bold": "negrita",
 		"tt_italic": "itálica",
-		"tt_color": "color",
+		"tt_color": "Color",
 
 		"tt_fraction": "fracción grande",
 		"tt_superscript": "superíndice",
@@ -88,7 +90,7 @@
 		"tt_lineDotted": "Puntos",
 		"tt_lineDotdash": "Rayas y puntos",
 		
-		"backgroundColor": "Color del fondo",
+		"backgroundColor": "Color de fondo",
 		"axisColor": "Color de los ejes",
 		"gridColor": "Color de la rejilla primaria",
 		"subgridColor": "Color de la rejilla secundaria",
@@ -98,7 +100,13 @@
 		"vertical": "Vertical",
 		
 		"showAxis": "Mostrar ejes",
-		"interval": "Intérvalo",
+		"intervalX": "Eje X",
+		"intervalY": "Eje Y",
+		"dimensions": "Dimensiones",
+		"color": "Color",
+		"aspectRatioLock": "Bloquea la relación de aspecto",
+		"aspectRatioUnlock": "Desbloquea la relación de aspecto",
+		"aspectRatioLabel": "X:Y",
 		"label": "Etiqueta",
 		"values": "Valores",
 		"axisStep": "Paso de los ejes",
@@ -114,6 +122,8 @@
 
 		"downloadTitle": "Descargar como imagen",
 		"downloadText": "Seleccione un tamaño para descargar el tablero gráfico como una imagen cuadrada PNG",
+		"downloadHelperText": "Imagen cuadrada (1:1)",
+		"downloadErrorText": "El tamaño debe ser un número entero positivo.",
 		"confirm": "Confirmar",
 		"cancel": "cancelar",
 		"sizeInPixels": "Tamaño en píxeles",

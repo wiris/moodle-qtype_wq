@@ -17,6 +17,7 @@
 		"tt_polygon": "Poligono",
 		"tt_vector": "Vettore",
 		"tt_parallelogram": "Parallelogrammo",
+		"tt_curves": "Curves",
 		"tt_conicSections": "Sezioni coniche",
 		"tt_circleCenterAndPoint": "Circonferenza con centro e un punto",
 		"tt_circleThreePoints": "Circonferenza con tre punti",
@@ -25,6 +26,7 @@
 		"tt_ellipse": "Ellisse",
 		"tt_hyperbola": "Iperbole",
 		"tt_conic": "Conica",
+		"tt_interpolatingPolynomial": "Interpolating polynomial",
 		"tt_measures": "Misure",
 		"tt_area": "Area",
 		"tt_angle": "Angolo",
@@ -71,7 +73,7 @@
 		"tt_zoomIn": "Aumenta",
 		"tt_zoomOut": "Riduci",
 
-		"tt_animate": "Anima",
+		"tt_animate": "Animate",
 		
 		"tt_contextual": "Contextual",
 		"tt_contextualElement": "Contextual (Elements)",
@@ -98,7 +100,13 @@
 		"vertical": "Verticale",
 		
 		"showAxis": "Mostra assi",
-		"interval": "Intervallo",
+		"intervalX": "X Axis",
+		"intervalY": "Y Axis",
+		"dimensions": "Dimensions",
+		"color": "colore",
+		"aspectRatioLock": "Lock aspect ratio",
+		"aspectRatioUnlock": "Unlock aspect ratio",
+		"aspectRatioLabel": "X:Y",
 		"label": "Etichetta",
 		"values": "Valori",
 		"axisStep": "Incremento asse",
@@ -114,6 +122,8 @@
 
 		"downloadTitle": "Download as image",
 		"downloadText": "Select a size to download the plotter as a square PNG image.",
+		"downloadHelperText": "Square Image (1:1)",
+		"downloadErrorText": "Size must be a whole number.",
 		"confirm": "conferma",
 		"cancel": "annulla",
 		"sizeInPixels": "Size in pixels",

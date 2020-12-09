@@ -17,6 +17,7 @@
 		"tt_polygon": "Veelhoek",
 		"tt_vector": "Vector",
 		"tt_parallelogram": "Parallelogram",
+		"tt_curves": "Curves",
 		"tt_conicSections": "Conische secties",
 		"tt_circleCenterAndPoint": "Cirkel middels middelpunt en punt",
 		"tt_circleThreePoints": "Cirkel middels drie punten",
@@ -25,6 +26,7 @@
 		"tt_ellipse": "Ellips",
 		"tt_hyperbola": "Hyperbool",
 		"tt_conic": "Conisch",
+		"tt_interpolatingPolynomial": "Interpolating polynomial",
 		"tt_measures": "Maatregelen",
 		"tt_area": "Gebied",
 		"tt_angle": "Hoek",
@@ -71,7 +73,7 @@
 		"tt_zoomIn": "Zoom in",
 		"tt_zoomOut": "Zoom uit",
 
-		"tt_animate": "Anima",
+		"tt_animate": "Animate",
 		
 		"tt_contextual": "Contextual",
 		"tt_contextualElement": "Contextual (Elements)",
@@ -98,7 +100,13 @@
 		"vertical": "Verticaal",
 		
 		"showAxis": "Toon as",
-		"interval": "Interval",
+		"intervalX": "X Axis",
+		"intervalY": "Y Axis",
+		"dimensions": "Dimensions",
+		"color": "kleur",
+		"aspectRatioLock": "Lock aspect ratio",
+		"aspectRatioUnlock": "Unlock aspect ratio",
+		"aspectRatioLabel": "X:Y",
 		"label": "Label",
 		"values": "Waarden",
 		"axisStep": "Asstap",
@@ -114,6 +122,8 @@
 
 		"downloadTitle": "Download as image",
 		"downloadText": "Select a size to download the plotter as a square PNG image.",
+		"downloadHelperText": "Square Image (1:1)",
+		"downloadErrorText": "Size must be a whole number.",
 		"confirm": "Confirm",
 		"cancel": "annuleren",
 		"sizeInPixels": "Size in pixels",

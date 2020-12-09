@@ -73,6 +73,14 @@ class com_wiris_util_geometry_GeometryDisplay {
 	public function getProperty($key) {
 		return $this->data->get($key);
 	}
+	public function setProperties($properties) {
+		$keys = $properties->keys();
+		while($keys->hasNext()) {
+			$key = $keys->next();
+			$this->data->set($key, $properties->get($key));
+			unset($key);
+		}
+	}
 	public function setProperty($key, $value) {
 		$this->data->set($key, $value);
 	}
@@ -88,10 +96,12 @@ class com_wiris_util_geometry_GeometryDisplay {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $ID = "id";
+	static $STYLES = "styles";
 	static $BACKGROUND_COLOR = "background_color";
 	static $CENTER = "center";
 	static $HEIGHT = "height";
 	static $WIDTH = "width";
+	static $ASPECT_RATIO = "aspect_ratio";
 	static $AXIS_X = "axis_x";
 	static $AXIS_Y = "axis_y";
 	static $AXIS_COLOR = "axis_color";
@@ -104,6 +114,8 @@ class com_wiris_util_geometry_GeometryDisplay {
 	static $GRID_X = "grid_x";
 	static $GRID_Y = "grid_y";
 	static $GRID_SUBDIVISIONS = "grid_subdivisions";
+	static $GRID_SUBDIVISIONS_X = "grid_subdivisions_x";
+	static $GRID_SUBDIVISIONS_Y = "grid_subdivisions_y";
 	static $GRID_PRIMARY_COLOR = "grid_primary_color";
 	static $GRID_SECONDARY_COLOR = "grid_secondary_color";
 	static $HORIZONTAL_GRID_STEP = "horizontal_grid_step";
@@ -120,8 +132,8 @@ class com_wiris_util_geometry_GeometryDisplay {
 	static $BASELINE = "baseline";
 	static $TOP = "top";
 	static $BOTTOM = "bottom";
+	static $AUTO = "auto";
 	static $DELETE_ON_UPDATE_FILE = "delete_on_update_file";
 	static $EXTERNAL = "external";
-	static $STYLES = "styles";
 	function __toString() { return 'com.wiris.util.geometry.GeometryDisplay'; }
 }

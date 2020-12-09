@@ -17,6 +17,7 @@
 		"tt_polygon": "Polígon",
 		"tt_vector": "Vector",
 		"tt_parallelogram": "Paral·lelogram",
+		"tt_curves": "Corbes",
 		"tt_conicSections": "Seccions còniques",
 		"tt_circleCenterAndPoint": "Cercle donats el centre i un punt",
 		"tt_circleThreePoints": "Cercle donats tres punts",
@@ -25,6 +26,7 @@
 		"tt_ellipse": "El·lipse",
 		"tt_hyperbola": "Hipèrbola",
 		"tt_conic": "Cònica",
+		"tt_interpolatingPolynomial": "Polinomi interpolador",
 		"tt_measures": "Mesures",
 		"tt_area": "Àrea",
 		"tt_angle": "Angle",
@@ -34,7 +36,7 @@
 
 		"tt_bold": "negreta",
 		"tt_italic": "itàlica",
-		"tt_color": "color",
+		"tt_color": "Color",
 
 		"tt_fraction": "fracció gran",
 		"tt_superscript": "superíndex",
@@ -98,7 +100,13 @@
 		"vertical": "Vertical",
 		
 		"showAxis": "Mostrar eixos",
-		"interval": "Intèrval",
+		"intervalX": "Eix X",
+		"intervalY": "Eix Y",
+		"dimensions": "Dimensions",
+		"color": "Color",
+		"aspectRatioLock": "Bloqueja la relació d’aspecte",
+		"aspectRatioUnlock": "Desbloqueja la relació d’aspecte",
+		"aspectRatioLabel": "X:Y",
 		"label": "Etiqueta",
 		"values": "Valors",
 		"axisStep": "Pas dels eixos",
@@ -114,6 +122,8 @@
 
 		"downloadTitle": "Descarregar com a imatge",
 		"downloadText": "Seleccioneu una mida per descarregar el tauler gràfic com una imatge PNG quadrada.",
+		"downloadHelperText": "Imatge quadrada (1:1)",
+		"downloadErrorText": "La mida ha de ser un nombre enter positiu.",
 		"confirm": "Confirmar",
 		"cancel": "cancel·lar",
 		"sizeInPixels": "Mida en píxels",

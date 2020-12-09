@@ -72,6 +72,10 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 		}
 		return $b;
 	}
+	public function importAssertionNameAndParams($a) {
+		$this->name = $a->name;
+		$this->parameters = $a->parameters;
+	}
 	public function copy() {
 		$a = new com_wiris_quizzes_impl_Assertion();
 		$a->name = $this->name;

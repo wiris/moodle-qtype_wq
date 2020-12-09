@@ -4,6 +4,13 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
+		if(com_wiris_settings_PlatformSettings::$IS_JAVASCRIPT) {
+			$telemetryUrl = $this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_URL);
+			$telemetryToken = $this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_TOKEN);
+			$deploymentId = $this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$DEPLOYMENT_ID);
+			$this->telemetryService = new com_wiris_util_telemetry_TelemetryServiceImpl($telemetryUrl, $telemetryToken, $deploymentId);
+			$this->tracker = new com_wiris_quizzes_telemetry_QuizzesTracker($this->telemetryService);
+		}
 	}}
 	public function mathContentToFilterableValue($value) {
 		if($value->type === com_wiris_quizzes_impl_MathContent::$TYPE_GEOMETRY_FILE) {
@@ -1074,12 +1081,12 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
-		else if(isset($this->ï¿½dynamics[$m]) && is_callable($this->ï¿½dynamics[$m]))
-			return call_user_func_array($this->ï¿½dynamics[$m], $a);
+		else if(isset($this->»dynamics[$m]) && is_callable($this->»dynamics[$m]))
+			return call_user_func_array($this->»dynamics[$m], $a);
 		else if('toString' == $m)
 			return $this->__toString();
 		else
-			throw new HException('Unable to call ï¿½'.$m.'ï¿½');
+			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $singleton = null;
 	static function getInstance() {

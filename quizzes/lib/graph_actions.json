@@ -100,6 +100,10 @@
     "title": "tt_conicSections"
   },
   {
+    "id": "curves",
+    "title": "tt_curves"
+  },
+  {
     "id": "newCircleByCenterAndPoint",
     "title": "tt_circleCenterAndPoint",
     "icon": {
@@ -152,6 +156,14 @@
     "title": "tt_conic",
     "icon": {
       "name": "conic",
+      "type": "svg"
+    }
+  },
+  {
+    "id": "newInterpolatingPolynomialByPoints",
+    "title": "tt_interpolatingPolynomial",
+    "icon": {
+      "name": "interpolating_polynomial",
       "type": "svg"
     }
   },

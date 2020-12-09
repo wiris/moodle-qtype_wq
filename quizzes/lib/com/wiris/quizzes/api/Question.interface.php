@@ -14,6 +14,7 @@ interface com_wiris_quizzes_api_Question extends com_wiris_quizzes_api_Serializa
 	function getAnswerFieldType();
 	function setAnswerFieldType($type);
 	function removeSlot($slot);
+	function addNewSlotFromModel($slot);
 	function addNewSlot();
 	function getSlots();
 	//;

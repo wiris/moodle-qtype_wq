@@ -986,7 +986,7 @@ class com_wiris_quizzes_test_Tester {
 	}
 	public function responseImages2($s, $q, $qi) {
 		$text = "#p";
-		$md5s = new _hx_array(array("1d35f135d9d9e9a3596c4143ac6b10bf", "4e0fa2b5e6d8b12ce9fda6541fdb5557", "d12e3d4c916bf89de659e0d53002dc8e", "49f8df1ac28ce771814d9f968ea13e36"));
+		$md5s = new _hx_array(array("1d35f135d9d9e9a3596c4143ac6b10bf", "4e0fa2b5e6d8b12ce9fda6541fdb5557", "d12e3d4c916bf89de659e0d53002dc8e", "49f8df1ac28ce771814d9f968ea13e36", "bb1be75495f251c3a3dc7098a0f9d9ef"));
 		$qi->update($s);
 		$res = $qi->expandVariables($text);
 		if(!$this->checkImage($res, $md5s)) {
@@ -1013,7 +1013,7 @@ class com_wiris_quizzes_test_Tester {
 	}
 	public function responseImages1($s, $q, $qi) {
 		$text = "#p";
-		$md5s = new _hx_array(array("1d35f135d9d9e9a3596c4143ac6b10bf", "4e0fa2b5e6d8b12ce9fda6541fdb5557", "d12e3d4c916bf89de659e0d53002dc8e", "49f8df1ac28ce771814d9f968ea13e36"));
+		$md5s = new _hx_array(array("1d35f135d9d9e9a3596c4143ac6b10bf", "4e0fa2b5e6d8b12ce9fda6541fdb5557", "d12e3d4c916bf89de659e0d53002dc8e", "49f8df1ac28ce771814d9f968ea13e36", "bb1be75495f251c3a3dc7098a0f9d9ef"));
 		$qi->update($s);
 		$res = $qi->expandVariables($text);
 		if(!$this->checkImage($res, $md5s)) {

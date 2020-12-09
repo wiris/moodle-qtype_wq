@@ -29,6 +29,9 @@ class com_wiris_quizzes_impl_QuestionInternal extends com_wiris_util_xml_Seriali
 	}
 	public function removeSlot($slot) {
 	}
+	public function addNewSlotFromModel($slot) {
+		return null;
+	}
 	public function addNewSlot() {
 		return null;
 	}

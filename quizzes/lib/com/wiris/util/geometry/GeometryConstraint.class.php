@@ -121,6 +121,7 @@ class com_wiris_util_geometry_GeometryConstraint {
 	static $LABEL_OF_ELEMENT = "label_of_element";
 	static $LABEL_FIXED = "label_fixed";
 	static $ELEMENT_BY_LABEL = "element_by_label";
+	static $INTERPOLATING_POLYNOMIAL_BY_POINTS = "interpolating_polynomial_by_points";
 	static $TYPE = "type";
 	static $INPUT = "input";
 	static $OUTPUT = "output";

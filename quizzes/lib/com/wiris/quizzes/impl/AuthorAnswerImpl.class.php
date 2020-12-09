@@ -97,6 +97,29 @@ class com_wiris_quizzes_impl_AuthorAnswerImpl extends com_wiris_util_xml_Seriali
 		$s->serializeArrayName($this->validations, com_wiris_quizzes_impl_AuthorAnswerImpl::$VALIDATIONS_TAGNAME);
 		$s->endTag();
 	}
+	public function copyData($aa) {
+		$this->setValue($aa->getValue());
+		$this->comparison->importAssertionNameAndParams($aa->comparison->copy());
+		if($this->validations === null) {
+			$this->validations = new _hx_array(array());
+		}
+		while($this->validations->length > 0) {
+			$this->removeValidation($this->validations[$this->validations->length - 1]);
+		}
+		if($aa->validations !== null) {
+			$vals = $aa->validations;
+			{
+				$_g = 0;
+				while($_g < $vals->length) {
+					$val = $vals[$_g];
+					++$_g;
+					$val2 = com_wiris_quizzes_impl_ValidationAssertion::fromAssertion($val);
+					$this->validations->push($val2);
+					unset($val2,$val);
+				}
+			}
+		}
+	}
 	public $slot;
 	public $question;
 	public $validations;
@@ -116,7 +139,7 @@ class com_wiris_quizzes_impl_AuthorAnswerImpl extends com_wiris_util_xml_Seriali
 	static $TAGNAME = "authorAnswer";
 	static $VALIDATIONS_TAGNAME = "validationAssertions";
 	static $ATTRIBUTE_ID = "id";
-	static function newAuthorAnswerWithQuestionCallback($question, $slot) {
+	static function newWithQuestionCallback($question, $slot) {
 		$aa = new com_wiris_quizzes_impl_AuthorAnswerImpl();
 		$aa->question = $question;
 		$aa->slot = $slot;

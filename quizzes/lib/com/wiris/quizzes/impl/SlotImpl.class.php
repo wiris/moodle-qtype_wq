@@ -90,13 +90,16 @@ class com_wiris_quizzes_impl_SlotImpl extends com_wiris_util_xml_SerializableImp
 			$this->question->authorAnswerRemoved($answer);
 		}
 	}
-	public function addNewAuthorAnswer($value) {
-		$aa = com_wiris_quizzes_impl_AuthorAnswerImpl::newAuthorAnswerWithQuestionCallback($this->question, $this);
-		$value = com_wiris_quizzes_impl_HTMLTools::convertEditor2Newlines($value);
-		$aa->value->set($value);
+	public function addAuthorAnswerImpl($aa) {
 		$this->authorAnswers->push($aa);
 		$this->question->authorAnswerAdded($aa, $this);
 		return $aa;
+	}
+	public function addNewAuthorAnswer($value) {
+		$aa = com_wiris_quizzes_impl_AuthorAnswerImpl::newWithQuestionCallback($this->question, $this);
+		$value = com_wiris_quizzes_impl_HTMLTools::convertEditor2Newlines($value);
+		$aa->value->set($value);
+		return $this->addAuthorAnswerImpl($aa);
 	}
 	public function getAuthorAnswers() {
 		$aa = new _hx_array(array());
@@ -112,6 +115,35 @@ class com_wiris_quizzes_impl_SlotImpl extends com_wiris_util_xml_SerializableImp
 		$this->localData = $s->serializeArrayName($this->localData, com_wiris_quizzes_impl_SlotImpl::$LOCALDATA_TAGNAME);
 		$this->initialContent = $s->serializeChildName($this->initialContent, com_wiris_quizzes_impl_InitialContent::$TAGNAME);
 		$s->endTag();
+	}
+	public function copyData($slot) {
+		$this->setInitialContent($slot->getInitialContent());
+		$this->syntax->importAssertionNameAndParams($slot->syntax->copy());
+		if($slot->localData !== null) {
+			$this->localData = new _hx_array(array());
+			$ldArray = $slot->localData;
+			{
+				$_g = 0;
+				while($_g < $ldArray->length) {
+					$ld = $ldArray[$_g];
+					++$_g;
+					$this->setLocalData($ld->name, $ld->value);
+					unset($ld);
+				}
+			}
+		}
+		$authorAnswers = $slot->authorAnswers;
+		if($authorAnswers !== null) {
+			$_g = 0;
+			while($_g < $authorAnswers->length) {
+				$aa = $authorAnswers[$_g];
+				++$_g;
+				$aaClone = com_wiris_quizzes_impl_AuthorAnswerImpl::newWithQuestionCallback($this->question, $this);
+				$aaClone->copyData($aa);
+				$this->addAuthorAnswerImpl($aaClone);
+				unset($aaClone,$aa);
+			}
+		}
 	}
 	public $question;
 	public $localData;
@@ -133,7 +165,7 @@ class com_wiris_quizzes_impl_SlotImpl extends com_wiris_util_xml_SerializableImp
 	static $ATTRIBUTE_ID = "id";
 	static $AUTHORANSWERS_TAGNAME = "authorAnswers";
 	static $LOCALDATA_TAGNAME = "localData";
-	static function newSlotWithQuestionCallback($question) {
+	static function newWithQuestionCallback($question) {
 		$slot = new com_wiris_quizzes_impl_SlotImpl();
 		$slot->question = $question;
 		return $slot;

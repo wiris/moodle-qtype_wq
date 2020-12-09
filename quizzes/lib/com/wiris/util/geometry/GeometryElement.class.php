@@ -252,6 +252,7 @@ class com_wiris_util_geometry_GeometryElement {
 	static $LENGTH = "length";
 	static $DISTANCE = "distance";
 	static $LABEL = "label";
+	static $INTERPOLATING_POLYNOMIAL = "interpolating_polynomial";
 	static $HISTOGRAM = "histogram";
 	static $BOX_PLOT = "box_plot";
 	static $BAR_CHART = "bar_chart";

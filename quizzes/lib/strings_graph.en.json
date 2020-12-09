@@ -17,6 +17,7 @@
 		"tt_polygon": "Polygon",
 		"tt_vector": "Vector",
 		"tt_parallelogram": "Parallelogram",
+		"tt_curves": "Curves",
 		"tt_conicSections": "Conic sections",
 		"tt_circleCenterAndPoint": "Circle by center and point",
 		"tt_circleThreePoints": "Circle by three points",
@@ -25,6 +26,7 @@
 		"tt_ellipse": "Ellipse",
 		"tt_hyperbola": "Hyperbola",
 		"tt_conic": "Conic",
+		"tt_interpolatingPolynomial": "Interpolating polynomial",
 		"tt_measures": "Measures",
 		"tt_area": "Area",
 		"tt_angle": "Angle",
@@ -34,7 +36,7 @@
 
 		"tt_bold": "bold",
 		"tt_italic": "italic",
-		"tt_color": "color",
+		"tt_color": "Color",
 
 		"tt_fraction": "big fraction",
 		"tt_superscript": "superscript",
@@ -71,7 +73,7 @@
 		"tt_zoomIn": "Zoom in",
 		"tt_zoomOut": "Zoom out",
 
-		"tt_animate": "Anima",
+		"tt_animate": "Animate",
 		
 		"tt_contextual": "Contextual",
 		"tt_contextualElement": "Contextual (Elements)",
@@ -98,7 +100,13 @@
 		"vertical": "Vertical",
 		
 		"showAxis": "Show axis",
-		"interval": "Interval",
+		"intervalX": "X Axis",
+		"intervalY": "Y Axis",
+		"dimensions": "Dimensions",
+		"color": "Color",
+		"aspectRatioLock": "Lock aspect ratio",
+		"aspectRatioUnlock": "Unlock aspect ratio",
+		"aspectRatioLabel": "X:Y",
 		"label": "Label",
 		"values": "Values",
 		"axisStep": "Axis step",
@@ -114,6 +122,8 @@
 
 		"downloadTitle": "Download as image",
 		"downloadText": "Select a size to download the plotter as a square PNG image.",
+		"downloadHelperText": "Square Image (1:1)",
+		"downloadErrorText": "Size must be a whole number.",
 		"confirm": "Confirm",
 		"cancel": "cancel",
 		"sizeInPixels": "Size in pixels",

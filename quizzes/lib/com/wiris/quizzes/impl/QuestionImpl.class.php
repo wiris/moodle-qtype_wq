@@ -158,7 +158,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 					$ca = $_g1[$_g];
 					++$_g;
 					$s = $this->addNewSlot();
-					$aa = com_wiris_quizzes_impl_AuthorAnswerImpl::newAuthorAnswerWithQuestionCallback($this, $s);
+					$aa = com_wiris_quizzes_impl_AuthorAnswerImpl::newWithQuestionCallback($this, $s);
 					$aa->value = $ca;
 					$aa->id = $ca->id;
 					$s->syntax->setCorrectAnswer($aa->id);
@@ -207,7 +207,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 							unset($_g3);
 						}
 						if($correctAnswer === null) {
-							$correctAnswer = com_wiris_quizzes_impl_AuthorAnswerImpl::newAuthorAnswerWithQuestionCallback($this, $slot);
+							$correctAnswer = com_wiris_quizzes_impl_AuthorAnswerImpl::newWithQuestionCallback($this, $slot);
 							$correctAnswer->id = $caIndex;
 							$correctAnswer->value = $this->correctAnswers[Std::parseInt($caIndex)];
 							$slot->authorAnswers->push($correctAnswer);
@@ -393,6 +393,18 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		$this->correctAnswers->push($authorAnswer->value);
 		$this->assertionAdded($authorAnswer->comparison, $authorAnswer->id, $slot->id);
 		$slot->syntax->addCorrectAnswer(_hx_string_rec($index, "") . "");
+		if($authorAnswer->validations !== null && $authorAnswer->validations->length > 0) {
+			$validationAssertions = $authorAnswer->validations;
+			{
+				$_g = 0;
+				while($_g < $validationAssertions->length) {
+					$validation = $validationAssertions[$_g];
+					++$_g;
+					$this->assertionAdded($validation, $authorAnswer->id, $slot->id);
+					unset($validation);
+				}
+			}
+		}
 	}
 	public function removeSlot($slot) {
 		$this->id = null;
@@ -413,16 +425,23 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			}
 		}
 	}
-	public function addNewSlot() {
+	public function addSlotImpl($slot) {
 		$this->id = null;
 		if($this->slots === null) {
 			$this->slots = new _hx_array(array());
 		}
-		$slot = com_wiris_quizzes_impl_SlotImpl::newSlotWithQuestionCallback($this);
-		$id = _hx_string_rec($this->slots->length, "") . "";
-		$slot->id = $id;
+		$slot->id = _hx_string_rec($this->slots->length, "") . "";
 		$this->slots->push($slot);
-		$this->assertionAdded($slot->syntax, null, $id);
+		$this->assertionAdded($slot->syntax, null, $slot->id);
+	}
+	public function addNewSlotFromModel($slot) {
+		$newSlot = $this->addNewSlot();
+		$newSlot->copyData($slot);
+		return $newSlot;
+	}
+	public function addNewSlot() {
+		$slot = com_wiris_quizzes_impl_SlotImpl::newWithQuestionCallback($this);
+		$this->addSlotImpl($slot);
 		return $slot;
 	}
 	public function getSlots() {

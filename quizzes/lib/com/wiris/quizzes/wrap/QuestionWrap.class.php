@@ -50,6 +50,21 @@ class com_wiris_quizzes_wrap_QuestionWrap implements com_wiris_quizzes_api_Quest
 			}
 		}
 	}
+	public function addNewSlotFromModel($slot) {
+		try {
+			$this->wrapper->start();
+			$s = new com_wiris_quizzes_wrap_SlotWrap($this->question->addNewSlotFromModel($slot));
+			$this->wrapper->stop();
+			return $s;
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			$e = $_ex_;
+			{
+				$this->wrapper->stop();
+				throw new HException($e);
+			}
+		}
+	}
 	public function addNewSlot() {
 		try {
 			$this->wrapper->start();

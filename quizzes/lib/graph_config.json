@@ -48,7 +48,7 @@
               ]
             },
             {
-              "id": "conicSections",
+              "id": "curves",
               "items": [
                 {
                   "id": "newCircleByCenterAndPoint"
@@ -70,6 +70,9 @@
                 },
                 {
                   "id": "newConicByFivePoints"
+                },
+                {
+                  "id": "newInterpolatingPolynomialByPoints"
                 }
               ]
             },

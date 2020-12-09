@@ -17,6 +17,7 @@
 		"tt_polygon": "Polygon",
 		"tt_vector": "Vector",
 		"tt_parallelogram": "Parallelogram",
+		"tt_curves": "Curves",
 		"tt_conicSections": "Koniske inndelinger",
 		"tt_circleCenterAndPoint": "Sirkel etter senter og punkt",
 		"tt_circleThreePoints": "Sirkel etter tre punkter",
@@ -25,6 +26,7 @@
 		"tt_ellipse": "Ellipse",
 		"tt_hyperbola": "Hyperbel",
 		"tt_conic": "Konisk",
+		"tt_interpolatingPolynomial": "Interpolating polynomial",
 		"tt_measures": "Målinger",
 		"tt_area": "Område",
 		"tt_angle": "Hjørne",
@@ -71,7 +73,7 @@
 		"tt_zoomIn": "Zoom inn",
 		"tt_zoomOut": "Zoom ut",
 
-		"tt_animate": "Anima",
+		"tt_animate": "Animate",
 		
 		"tt_contextual": "Contextual",
 		"tt_contextualElement": "Contextual (Elements)",
@@ -98,7 +100,13 @@
 		"vertical": "Vertikal",
 		
 		"showAxis": "Vis akse",
-		"interval": "Intervall",
+		"intervalX": "X Axis",
+		"intervalY": "Y Axis",
+		"dimensions": "Dimensions",
+		"color": "farge",
+		"aspectRatioLock": "Lock aspect ratio",
+		"aspectRatioUnlock": "Unlock aspect ratio",
+		"aspectRatioLabel": "X:Y",
 		"label": "Etikett",
 		"values": "Verdier",
 		"axisStep": "Aksetrinn",
@@ -114,6 +122,8 @@
 
 		"downloadTitle": "Download as image",
 		"downloadText": "Select a size to download the plotter as a square PNG image.",
+		"downloadHelperText": "Square Image (1:1)",
+		"downloadErrorText": "Size must be a whole number.",
 		"confirm": "bekreft",
 		"cancel": "avbryt",
 		"sizeInPixels": "Size in pixels",
