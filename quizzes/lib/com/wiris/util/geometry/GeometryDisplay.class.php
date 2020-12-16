@@ -84,6 +84,9 @@ class com_wiris_util_geometry_GeometryDisplay {
 	public function setProperty($key, $value) {
 		$this->data->set($key, $value);
 	}
+	public function toJSON() {
+		return com_wiris_util_json_JSon::encode($this->data);
+	}
 	public $data;
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -120,7 +123,6 @@ class com_wiris_util_geometry_GeometryDisplay {
 	static $GRID_SECONDARY_COLOR = "grid_secondary_color";
 	static $HORIZONTAL_GRID_STEP = "horizontal_grid_step";
 	static $VERTICAL_GRID_STEP = "vertical_grid_step";
-	static $MAGNETIC_GRID = "magnetic_grid";
 	static $STATS_AXIS = "stats_axis";
 	static $HORIZONTAL_ORIENTATION = "horizontal_orientation";
 	static $ABOVE = "above";
@@ -135,5 +137,8 @@ class com_wiris_util_geometry_GeometryDisplay {
 	static $AUTO = "auto";
 	static $DELETE_ON_UPDATE_FILE = "delete_on_update_file";
 	static $EXTERNAL = "external";
+	static function fromJSON($json) {
+		return new com_wiris_util_geometry_GeometryDisplay(com_wiris_util_json_JSon::getHash(com_wiris_util_json_JSon::decode($json)));
+	}
 	function __toString() { return 'com.wiris.util.geometry.GeometryDisplay'; }
 }

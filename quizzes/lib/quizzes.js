@@ -3296,7 +3296,11 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 	}
 	,cloneLastSlotUntilIndexAchieved: function(question,slots,index) {
 		if(index < 0 || index < slots.length) return;
-		var model = slots[slots.length - 1];
+		var model;
+		if(slots.length == 0) {
+			model = question.addNewSlot();
+			slots.push(model);
+		} else model = slots[slots.length - 1];
 		while(slots.length <= index) slots.push(question.addNewSlotFromModel(model));
 	}
 	,createAnswerFeedback: function(index,question,instance,options) {
@@ -3505,28 +3509,32 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 					currentQuestionIndex++;
 				}
 				lastQuestionElement = questionElement;
-				switch(className) {
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_LANG:
-					this.uibuilder.setLanguage(element.value);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUTHOR_FIELD:
-					this.filterAuthoringField(element,index,question,questionElement,instance,instanceElement,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FIELD:
-					this.filterAnswerField(element,index,question,questionElement,instance,instanceElement,options,submitElements);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUXILIAR_CAS_APPLET:
-					this.filterAuxiliarCasApplet(element,index,question,questionElement,instance,instanceElement,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FEEDBACK:
-					this.filterAnswerFeedback(element,index,question,instance,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION:
-					this.filterQuestion(element,index,question,instance,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION_INSTANCE:
-					this.filterQuestionInstance(element,index,question,instance,options);
-					break;
+				try {
+					switch(className) {
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_LANG:
+						this.uibuilder.setLanguage(element.value);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUTHOR_FIELD:
+						this.filterAuthoringField(element,index,question,questionElement,instance,instanceElement,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FIELD:
+						this.filterAnswerField(element,index,question,questionElement,instance,instanceElement,options,submitElements);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUXILIAR_CAS_APPLET:
+						this.filterAuxiliarCasApplet(element,index,question,questionElement,instance,instanceElement,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FEEDBACK:
+						this.filterAnswerFeedback(element,index,question,instance,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION:
+						this.filterQuestion(element,index,question,instance,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION_INSTANCE:
+						this.filterQuestionInstance(element,index,question,instance,options);
+						break;
+					}
+				} catch( e ) {
+					haxe.Log.trace("An error ocurred rendering the field " + className + " with index " + index + ".",{ fileName : "JsQuizzesFilter.hx", lineNumber : 248, className : "com.wiris.quizzes.JsQuizzesFilter", methodName : "filterFields"});
 				}
 				element.style.display = "none";
 				com.wiris.quizzes.JsDomUtils.addClass(element,"wirisprocessed");
@@ -12764,7 +12772,7 @@ com.wiris.util.ui.component.FlowPanel.prototype = $extend(com.wiris.util.ui.comp
 	,__class__: com.wiris.util.ui.component.FlowPanel
 });
 com.wiris.quizzes.impl.ui.AnswerFeedbackImpl = $hxClasses["com.wiris.quizzes.impl.ui.AnswerFeedbackImpl"] = function(questionInstance,slot,authorAnswer,componentBuilder) {
-	this.fieldDecorationFeedback = true;
+	this.decorateAnswerField = true;
 	com.wiris.util.ui.component.FlowPanel.call(this,com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
 	this.setApplicationClass(com.wiris.quizzes.impl.ui.AnswerFeedbackImpl.CLASS_QUIZZES_ANSWER_FEEDBACK).addClass(com.wiris.util.ui.component.Panel.CLASS_PANEL_SOLID);
 	this.getStyle().setBackgroundColor(com.wiris.util.graphics.Color.fromARGB([0,0,0,0]));
@@ -12772,7 +12780,7 @@ com.wiris.quizzes.impl.ui.AnswerFeedbackImpl = $hxClasses["com.wiris.quizzes.imp
 	this.questionInstance = questionInstance;
 	this.authorAnswer = authorAnswer;
 	this.setComponentBuilder(componentBuilder);
-	this.answerWeight = 0;
+	this.answerWeight = 1.0;
 	this.embeddedComponent = null;
 	this.answerFeedback = new com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent();
 	this.answerFeedback.getStyle().setMargin(0,0,0,0);
@@ -12791,10 +12799,10 @@ com.wiris.quizzes.impl.ui.AnswerFeedbackImpl.prototype = $extend(com.wiris.util.
 		return this.answerFeedback.getCompoundAnswerFeedback(answer);
 	}
 	,getCompoundGrade: function(index) {
-		return this.questionInstance.getCompoundGrade(this.slot,this.authorAnswer,index);
+		return this.questionInstance.getCompoundGrade(this.slot,this.authorAnswer,index) * this.answerWeight;
 	}
 	,getGrade: function() {
-		return this.questionInstance.getGrade(this.slot,this.authorAnswer);
+		return this.questionInstance.getGrade(this.slot,this.authorAnswer) * this.answerWeight;
 	}
 	,getFeedbackText: function() {
 		return this.answerFeedback.getFeedbackText();
@@ -12802,8 +12810,14 @@ com.wiris.quizzes.impl.ui.AnswerFeedbackImpl.prototype = $extend(com.wiris.util.
 	,setAnswerWeight: function(fraction) {
 		this.answerWeight = fraction;
 	}
+	,isShowEmbeddedFeedback: function() {
+		return this.answerFeedback.isShowFeedback();
+	}
+	,isShowFieldDecorationFeedback: function() {
+		return this.decorateAnswerField;
+	}
 	,showFieldDecorationFeedback: function(visible) {
-		this.fieldDecorationFeedback = visible;
+		this.decorateAnswerField = visible;
 	}
 	,showAssertionsFeedback: function(visible) {
 		this.answerFeedback.showAssertionsFeedback(visible);
@@ -12818,13 +12832,11 @@ com.wiris.quizzes.impl.ui.AnswerFeedbackImpl.prototype = $extend(com.wiris.util.
 		}
 	}
 	,setEmbedded: function(component) {
-		if(this.fieldDecorationFeedback) {
-			this.embeddedComponent = component;
-			this.embeddedComponent.setEmbeddedFeedback(this);
-		}
+		this.embeddedComponent = component;
+		this.embeddedComponent.setEmbeddedFeedback(this);
 	}
 	,answerWeight: null
-	,fieldDecorationFeedback: null
+	,decorateAnswerField: null
 	,answerFeedback: null
 	,embeddedComponent: null
 	,authorAnswer: null
@@ -12891,8 +12903,8 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 		this.contextPanel.setVisible(false);
 	}
 	,mouseEnter: function(e) {
-		if(this.embeddedFeedback != null) {
-			if(this.isCompoundAnswer() == com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_TRUE) {
+		if(this.embeddedFeedback != null && this.embeddedFeedback.isShowEmbeddedFeedback()) {
+			if(this.getFieldType() != com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_GRAPH_EDITOR && this.isCompoundAnswer() == com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_TRUE) {
 				this.contextPanel.removeAllComponents();
 				this.contextPanel.addComponent(this.embeddedFeedback.getCompoundAnswerFeedback(com.wiris.util.type.Arrays.indexOfElement(this.component.getComponents(),e.getSource())));
 			}
@@ -12952,6 +12964,7 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 				if(this.readOnly) parameters.set(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_VIEW_ONLY,"true");
 				this.component = new com.wiris.quizzes.impl.ui.component.GraphInputComponent(parameters);
 				this.component.getStyle().setWidth(800).setHeight(494);
+				this.getStyle().setWidth(800);
 				this.component.getStyle().setMargin(20,0,0,0);
 				this.component.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID,null));
 			} else if(this.isCompoundAnswer() == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE) {
@@ -13069,27 +13082,34 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 		}
 		return compoundAnswers;
 	}
+	,setEmbeddedFeedbackImpl: function() {
+		if(!(this.isCompoundAnswer() == com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_TRUE)) this.contextPanel.addComponent(this.embeddedFeedback);
+	}
+	,decorateInputComponent: function(grade,component) {
+		if(grade == 1.0) component.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_CORRECT); else if(grade == 0.0) component.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_ERROR); else if(grade == -1.0) component.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE); else component.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_WARNING);
+	}
+	,decorateField: function(feedback) {
+		if(this.getFieldType() != com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_GRAPH_EDITOR && this.isCompoundAnswer() == com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_TRUE) {
+			var textFields = this.getComponent().getTextFields();
+			var _g = 0;
+			while(_g < textFields.length) {
+				var textField = textFields[_g];
+				++_g;
+				var grade = feedback != null?feedback.getCompoundGrade(com.wiris.util.type.Arrays.indexOfElement(textFields,textField)):-1.0;
+				this.decorateInputComponent(grade,textField);
+			}
+		} else {
+			var grade = feedback != null?feedback.getGrade():-1.0;
+			this.decorateInputComponent(grade,this.getComponent());
+		}
+	}
 	,setEmbeddedFeedback: function(feedback) {
-		if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_GRAPH_EDITOR) return;
 		this.contextPanel.removeAllComponents();
+		this.decorateField(null);
 		this.embeddedFeedback = feedback;
 		if(feedback != null) {
-			if(!(this.isCompoundAnswer() == com.wiris.quizzes.api.QuizzesConstants.PROPERTY_VALUE_COMPOUND_ANSWER_TRUE)) {
-				this.contextPanel.addComponent(this.embeddedFeedback);
-				if(this.getFieldType() != com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR) {
-					var grade = this.embeddedFeedback.getGrade();
-					if(grade == 1.0) this.getComponent().setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_CORRECT); else if(grade == 0.0) this.getComponent().setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR); else this.getComponent().setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_WARNING);
-				}
-			} else {
-				var textFields = this.getComponent().getTextFields();
-				var _g = 0;
-				while(_g < textFields.length) {
-					var textField = textFields[_g];
-					++_g;
-					var grade = this.embeddedFeedback.getCompoundGrade(com.wiris.util.type.Arrays.indexOfElement(textFields,textField));
-					if(grade == 1.0) textField.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_CORRECT); else if(grade == 0.0) textField.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR); else textField.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_WARNING);
-				}
-			}
+			if(feedback.isShowFieldDecorationFeedback()) this.decorateField(this.embeddedFeedback);
+			if(feedback.isShowEmbeddedFeedback()) this.setEmbeddedFeedbackImpl();
 		}
 		this.changeState();
 	}
@@ -14350,6 +14370,9 @@ com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent.prototype = $extend(
 			}
 		}
 	}
+	,isShowFeedback: function() {
+		return this.correctAnswerFeedback || this.assertionsFeedback;
+	}
 	,context: null
 	,assertionsFeedback: null
 	,correctAnswerFeedback: null
@@ -14400,29 +14423,35 @@ com.wiris.quizzes.impl.ui.component.AnswerTypeComponent.prototype = $extend(com.
 });
 com.wiris.util.ui.component.InputComponent = $hxClasses["com.wiris.util.ui.component.InputComponent"] = function() {
 	com.wiris.util.ui.component.Component.call(this);
+	this.status = com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE;
+	this.addClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT);
 	this.inputComponentListeners = new Array();
 };
 com.wiris.util.ui.component.InputComponent.__name__ = ["com","wiris","util","ui","component","InputComponent"];
 com.wiris.util.ui.component.InputComponent.__super__ = com.wiris.util.ui.component.Component;
 com.wiris.util.ui.component.InputComponent.prototype = $extend(com.wiris.util.ui.component.Component.prototype,{
-	setStatus: function(status) {
+	getStatus: function() {
+		return this.status;
+	}
+	,setStatus: function(status) {
+		this.status = status;
 		if(status == com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE) {
 			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_PARTIALLY_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_INCORRECT);
+			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_WARNING);
+			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_ERROR);
 		} else if(status == com.wiris.util.ui.component.InputComponent.STATUS_CORRECT) {
 			this.addClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_PARTIALLY_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_INCORRECT);
-		} else if(status == com.wiris.util.ui.component.InputComponent.STATUS_PARTIALLY_CORRECT) {
+			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_WARNING);
+			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_ERROR);
+		} else if(status == com.wiris.util.ui.component.InputComponent.STATUS_WARNING) {
 			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_CORRECT);
-			this.addClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_PARTIALLY_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_INCORRECT);
-		} else if(status == com.wiris.util.ui.component.InputComponent.STATUS_INCORRECT) {
+			this.addClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_WARNING);
+			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_ERROR);
+		} else if(status == com.wiris.util.ui.component.InputComponent.STATUS_ERROR) {
 			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_PARTIALLY_CORRECT);
-			this.addClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_INCORRECT);
-		}
+			this.removeClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_WARNING);
+			this.addClass(com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_ERROR);
+		} else this.status = com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE;
 	}
 	,componentSet: function() {
 		var _g = 0, _g1 = this.inputComponentListeners;
@@ -14435,6 +14464,7 @@ com.wiris.util.ui.component.InputComponent.prototype = $extend(com.wiris.util.ui
 	,addInputComponentListener: function(listener) {
 		this.inputComponentListeners.push(listener);
 	}
+	,status: null
 	,inputComponentListeners: null
 	,__class__: com.wiris.util.ui.component.InputComponent
 });
@@ -15079,13 +15109,13 @@ com.wiris.quizzes.impl.ui.component.CompoundAnswerComponent.prototype = $extend(
 				var j = HxOverrides.iter(this.compoundAnswerTextFields);
 				while(j.hasNext()) {
 					var textField = j.next();
-					textField.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR);
+					textField.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_ERROR);
 				}
 			} else {
 				var j = HxOverrides.iter(this.compoundAnswerTextFields);
 				while(j.hasNext()) {
 					var textField = j.next();
-					textField.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_INDETERMINATE);
+					textField.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE);
 				}
 			}
 			this.compoundAnswerTextFields[this.compoundAnswerTextFields.length - 1].setValue((remainingValue + "").substring(0,remainingValue > 10.0?4:3));
@@ -15126,7 +15156,7 @@ com.wiris.quizzes.impl.ui.component.CompoundAnswerComponent.prototype = $extend(
 						valueTextField.setSuffix("%");
 						valueTextField.getStyle().setWidth(100);
 						valueTextField.setReadOnly(true);
-						if(surpassMaxRatio) valueTextField.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR);
+						if(surpassMaxRatio) valueTextField.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_ERROR);
 						if(compoundRatios.length > 0) valueTextField.setValue(compoundRatios[com.wiris.util.type.Arrays.indexOfElement(compoundAnswers,answer)]); else valueTextField.setValue(totalAnswerLabel);
 						this.compoundAnswerTextFields.push(valueTextField);
 						components.push(valueTextField);
@@ -15136,7 +15166,7 @@ com.wiris.quizzes.impl.ui.component.CompoundAnswerComponent.prototype = $extend(
 						valueTextField.setSuffix("%");
 						valueTextField.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CompoundAnswerComponent.COMPOUND_ANSWER_ID_RATIOS_CHANGED,null));
 						valueTextField.getStyle().setWidth(100);
-						if(surpassMaxRatio) valueTextField.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR);
+						if(surpassMaxRatio) valueTextField.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_ERROR);
 						if(compoundRatios.length > 0) valueTextField.setValue(compoundRatios[com.wiris.util.type.Arrays.indexOfElement(compoundAnswers,answer)]); else valueTextField.setValue(defaultAnswerLabel);
 						if(compoundAnswers.length > 10) valueTextField.addOption(defaultAnswerLabel,defaultAnswerLabel + "%");
 						valueTextField.addActionListener(this);
@@ -15719,7 +15749,7 @@ com.wiris.quizzes.impl.ui.component.GraphValidationElement.prototype = $extend(c
 		return this.textField.getValue();
 	}
 	,setInvalid: function(invalid) {
-		this.textField.setStatus(invalid?com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR:com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_INDETERMINATE);
+		this.textField.setStatus(invalid?com.wiris.util.ui.component.InputComponent.STATUS_ERROR:com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE);
 	}
 	,setFieldVisible: function(visible) {
 		this.textField.setVisible(visible);
@@ -17065,7 +17095,7 @@ com.wiris.quizzes.impl.ui.component.MathLabel.prototype = $extend(com.wiris.util
 	,__class__: com.wiris.quizzes.impl.ui.component.MathLabel
 });
 com.wiris.util.ui.component.TextComponent = $hxClasses["com.wiris.util.ui.component.TextComponent"] = function() {
-	com.wiris.util.ui.component.Component.call(this);
+	com.wiris.util.ui.component.InputComponent.call(this);
 	this.addClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT).addClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_EMPTY);
 	this.getStyle().setWidth(com.wiris.util.ui.Style.SIZE_FULL);
 	this.text = "";
@@ -17076,8 +17106,8 @@ com.wiris.util.ui.component.TextComponent = $hxClasses["com.wiris.util.ui.compon
 };
 com.wiris.util.ui.component.TextComponent.__name__ = ["com","wiris","util","ui","component","TextComponent"];
 com.wiris.util.ui.component.TextComponent.__interfaces__ = [com.wiris.util.ui.component.Field];
-com.wiris.util.ui.component.TextComponent.__super__ = com.wiris.util.ui.component.Component;
-com.wiris.util.ui.component.TextComponent.prototype = $extend(com.wiris.util.ui.component.Component.prototype,{
+com.wiris.util.ui.component.TextComponent.__super__ = com.wiris.util.ui.component.InputComponent;
+com.wiris.util.ui.component.TextComponent.prototype = $extend(com.wiris.util.ui.component.InputComponent.prototype,{
 	getComponent: function() {
 		return this;
 	}
@@ -17136,7 +17166,7 @@ com.wiris.util.ui.component.TextComponent.prototype = $extend(com.wiris.util.ui.
 	}
 	,setEnabled: function(enabled) {
 		if(enabled) this.removeClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_DISABLED); else this.addClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_DISABLED);
-		return com.wiris.util.ui.component.Component.prototype.setEnabled.call(this,enabled);
+		return com.wiris.util.ui.component.InputComponent.prototype.setEnabled.call(this,enabled);
 	}
 	,changeAction: null
 	,readOnly: null
@@ -17152,7 +17182,6 @@ com.wiris.util.ui.component.TextField = $hxClasses["com.wiris.util.ui.component.
 	this.addClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD);
 	this.valid = true;
 	this.required = false;
-	this.status = com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_INDETERMINATE;
 	this.errorText = "";
 	this.helperText = "";
 };
@@ -17184,41 +17213,18 @@ com.wiris.util.ui.component.TextField.prototype = $extend(com.wiris.util.ui.comp
 	,getHelperText: function() {
 		return this.helperText;
 	}
-	,setStatus: function(status) {
-		this.status = status;
-		if(this.status == com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_INDETERMINATE) {
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_WARNING);
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_ERROR);
-		} else if(this.status == com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_CORRECT) {
-			this.addClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_WARNING);
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_ERROR);
-		} else if(this.status == com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_WARNING) {
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_CORRECT);
-			this.addClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_WARNING);
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_ERROR);
-		} else if(this.status == com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR) {
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_CORRECT);
-			this.removeClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_WARNING);
-			this.addClass(com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_ERROR);
-		}
-	}
-	,getStatus: function() {
-		return this.status;
-	}
 	,clearError: function() {
 		this.setError(null);
 	}
 	,setError: function(error) {
 		if(error != null) {
-			if(this.getStatus() != com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR) {
-				this.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR);
+			if(this.getStatus() != com.wiris.util.ui.component.InputComponent.STATUS_ERROR) {
+				this.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_ERROR);
 				this.errorText = error;
 				this.changeState();
 			}
-		} else if(this.getStatus() == com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR) {
-			this.setStatus(com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_INDETERMINATE);
+		} else if(this.getStatus() == com.wiris.util.ui.component.InputComponent.STATUS_ERROR) {
+			this.setStatus(com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE);
 			this.errorText = "";
 			this.changeState();
 		}
@@ -17239,7 +17245,6 @@ com.wiris.util.ui.component.TextField.prototype = $extend(com.wiris.util.ui.comp
 	,errorText: null
 	,required: null
 	,valid: null
-	,status: null
 	,__class__: com.wiris.util.ui.component.TextField
 });
 com.wiris.quizzes.impl.ui.component.MathTextField = $hxClasses["com.wiris.quizzes.impl.ui.component.MathTextField"] = function() {
@@ -18736,7 +18741,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 	}
 	,updateAuxiliaryInitialContent: function(context) {
 		this.updateLayout(context,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_AUXILIARY_INITIAL_CONTENT_TOOLBAR_TITLE,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_AUXILIARY_INITIAL_CONTENT_HELP_URL,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_AUXILIARY_INITIAL_CONTENT_ID);
-		this.auxiliaryInitialContent.setAlgorithm(context.getQuestionImpl().getProperty(com.wiris.quizzes.api.PropertyName.CAS_SESSION));
+		this.auxiliaryInitialContent.setAlgorithm(context.getSlot().getProperty(com.wiris.quizzes.api.PropertyName.CAS_SESSION));
 	}
 	,updateVariablesFunctions: function(context) {
 		var questionImpl = context.getQuestionImpl();
@@ -28587,7 +28592,7 @@ com.wiris.system.ui.JsTextComponent.prototype = $extend(com.wiris.system.ui.JsCo
 			var helperText = "";
 			var textField = this.textComponent;
 			if(self.textInput.required != textField.isRequired()) self.textInput.required = textField.isRequired();
-			if(textField.getStatus() == com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR) helperText = textField.getErrorText(); else helperText = textField.getHelperText();
+			if(textField.getStatus() == com.wiris.util.ui.component.InputComponent.STATUS_ERROR) helperText = textField.getErrorText(); else helperText = textField.getHelperText();
 			if(self.helperText.innerText != helperText) {
 				self.helperText.style.display = "block";
 				self.helperText.innerText = helperText;
@@ -30330,6 +30335,9 @@ com.wiris.util.geometry.GeometryDisplay = $hxClasses["com.wiris.util.geometry.Ge
 	this.data = data;
 };
 com.wiris.util.geometry.GeometryDisplay.__name__ = ["com","wiris","util","geometry","GeometryDisplay"];
+com.wiris.util.geometry.GeometryDisplay.fromJSON = function(json) {
+	return new com.wiris.util.geometry.GeometryDisplay(com.wiris.util.json.JSon.getHash(com.wiris.util.json.JSon.decode(json)));
+}
 com.wiris.util.geometry.GeometryDisplay.prototype = {
 	isStatsPlotter: function() {
 		var property = this.getProperty(com.wiris.util.geometry.GeometryDisplay.STATS_AXIS);
@@ -30391,6 +30399,9 @@ com.wiris.util.geometry.GeometryDisplay.prototype = {
 	}
 	,setProperty: function(key,value) {
 		this.data.set(key,value);
+	}
+	,toJSON: function() {
+		return com.wiris.util.json.JSon.encode(this.data);
 	}
 	,data: null
 	,__class__: com.wiris.util.geometry.GeometryDisplay
@@ -42822,13 +42833,14 @@ com.wiris.quizzes.impl.ui.component.AnswerTypeComponent.HOME_ANSWER_TYPE_LABEL_T
 com.wiris.quizzes.impl.ui.component.AnswerTypeComponent.HOME_ANSWER_TYPE_ID_EQUATION = "equation";
 com.wiris.quizzes.impl.ui.component.AnswerTypeComponent.HOME_ANSWER_TYPE_ID_GRAPHIC = "graphic";
 com.wiris.quizzes.impl.ui.component.AnswerTypeComponent.HOME_ANSWER_TYPE_ID_TEXT = "text";
+com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT = "inputComponent";
 com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_CORRECT = "inputComponentCorrect";
-com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_INCORRECT = "inputComponentIncorrect";
-com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_PARTIALLY_CORRECT = "inputComponentPartiallyCorrect";
+com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_ERROR = "inputComponentError";
+com.wiris.util.ui.component.InputComponent.CLASS_INPUT_COMPONENT_WARNING = "inputComponentWarning";
 com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE = 0;
 com.wiris.util.ui.component.InputComponent.STATUS_CORRECT = 1;
-com.wiris.util.ui.component.InputComponent.STATUS_PARTIALLY_CORRECT = 2;
-com.wiris.util.ui.component.InputComponent.STATUS_INCORRECT = 3;
+com.wiris.util.ui.component.InputComponent.STATUS_WARNING = 2;
+com.wiris.util.ui.component.InputComponent.STATUS_ERROR = 3;
 com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.CLASS_MATH_TYPE_COMPONENT = "mathTypeComponent";
 com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.ACTION_HAND_OPENED_ID = "handOpened";
 com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.ACTION_HAND_CLOSED_ID = "handClosed";
@@ -43077,13 +43089,6 @@ com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_WITH_SUFFIX = "te
 com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_DISABLED = "textComponentDisabled";
 com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_OUTLINED = "textComponentOutlined";
 com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD = "textField";
-com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_CORRECT = "textFieldCorrect";
-com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_WARNING = "textFieldWarning";
-com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD_ERROR = "textFieldError";
-com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_INDETERMINATE = 0;
-com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_CORRECT = 1;
-com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_WARNING = 2;
-com.wiris.util.ui.component.TextField.TEXT_FIELD_STATUS_ERROR = 3;
 com.wiris.quizzes.impl.ui.component.MathTextField.CLASS_MATH_TEXT_FIELD = "mathTextField";
 com.wiris.quizzes.impl.ui.component.PopupTextField.CLASS_POPUP_TEXT_FIELD = "popupTextField";
 com.wiris.quizzes.impl.ui.component.PopupTextField.CLASS_POPUP_TEXT_FIELD_WINDOW = "popupTextFieldWindow";
@@ -43589,7 +43594,6 @@ com.wiris.util.geometry.GeometryDisplay.GRID_PRIMARY_COLOR = "grid_primary_color
 com.wiris.util.geometry.GeometryDisplay.GRID_SECONDARY_COLOR = "grid_secondary_color";
 com.wiris.util.geometry.GeometryDisplay.HORIZONTAL_GRID_STEP = "horizontal_grid_step";
 com.wiris.util.geometry.GeometryDisplay.VERTICAL_GRID_STEP = "vertical_grid_step";
-com.wiris.util.geometry.GeometryDisplay.MAGNETIC_GRID = "magnetic_grid";
 com.wiris.util.geometry.GeometryDisplay.STATS_AXIS = "stats_axis";
 com.wiris.util.geometry.GeometryDisplay.HORIZONTAL_ORIENTATION = "horizontal_orientation";
 com.wiris.util.geometry.GeometryDisplay.ABOVE = "above";
