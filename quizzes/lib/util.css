@@ -426,7 +426,7 @@ md-elevation-transition {
 }
 
 .wrsUI_app .wrsUI_aux_contextPanelWrapper {
-  z-index: 1000;
+  z-index: 2000;
   position: absolute !important;
   display: flex !important;
   max-height: 100vh;
@@ -532,7 +532,7 @@ md-elevation-transition {
   left: 1px !important;
   width: auto !important;
   height: auto !important;
-  z-index: 1000 !important;
+  z-index: 2000 !important;
   box-shadow: 0 0 10px 10px #000 !important;
 }
 .wrsUI_app .wrsUI_mainContent {
@@ -1502,7 +1502,7 @@ md-elevation-transition {
   opacity: 0;
 }
 .wrsUI_app .wrsUI_aux_window.wrsUI_windowModal {
-  z-index: 999;
+  z-index: 1999;
 }
 .wrsUI_app .wrsUI_aux_window:not(.wrsUI_windowModal) > .wrsUI_aux_darkLayer {
   display: none;

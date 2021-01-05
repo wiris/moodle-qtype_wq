@@ -890,6 +890,10 @@ class com_wiris_quizzes_impl_HTMLTools {
 	public function prepareFormulas($text) {
 		$start = 0;
 		while(($start = _hx_index_of($text, "<math", $start)) !== -1) {
+			if(_hx_index_of($text, "/>", $start) !== -1 && _hx_index_of($text, "/>", $start) < _hx_index_of($text, ">", $start)) {
+				$start = _hx_index_of($text, ">", $start) + 1;
+				continue;
+			}
 			$length = _hx_index_of($text, "</math>", $start) - $start + strlen("</math>");
 			$formula = _hx_substr($text, $start, $length);
 			$pos = 0;

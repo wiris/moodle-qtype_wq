@@ -361,7 +361,7 @@
 		"quizzes_studio_graph_validation_options_superfluous_text": "Prohibit superfluous elements in the student answer",
 		"quizzes_studio_graph_validation_options_superfluous_helper": "There can not be more elements in the student answer than elements present in the correct answer.",
 		"quizzes_studio_graph_validation_options_color_text": "Match color",
-		"quizzes_studio_graph_validation_options_color_helper": "The elements in the student answer must have the same color as the ones in the correct answer",
+		"quizzes_studio_graph_validation_options_color_helper": "The elements in the student answer must have the same color as the ones in the correct answer.",
 		"quizzes_studio_graph_validation_options_line_type_text": "Match line type",
 		"quizzes_studio_graph_validation_options_line_type_helper": "The elements in the student answer must have the same line type (solid, dashed) as the ones in the correct answer.",
 		"quizzes_studio_graph_validation_options_selector_select_all": "All elements",
