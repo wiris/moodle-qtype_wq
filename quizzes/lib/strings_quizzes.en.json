@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Input syntax",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "All",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Constants",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Choose the letters that are interpreted as constants instead of free variables. You may define more constants at Define random variables and functions panel.",

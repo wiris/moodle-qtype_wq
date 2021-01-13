@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Input-syntaks",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Alle",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "konstanter",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Vælg de bogstaver, der fortolkes som konstanter i stedet for frie variabler. Du kan definere flere konstanter med panelet Definer tilfældige variabler og funktioner.",

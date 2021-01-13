@@ -1027,6 +1027,48 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		}
 		return $this->newEvalMultipleAnswersRequest(null, null, $instance->question, $instance);
 	}
+	public function newVariablesRequestWithQuestionData($html, $instance) {
+		if($instance === null) {
+			throw new HException("The question instance cannot be null!");
+		}
+		$qi = $instance;
+		$question = $qi->question;
+		$sb = new StringBuf();
+		if($question !== null) {
+			$slots = $question->getSlots();
+			{
+				$_g = 0;
+				while($_g < $slots->length) {
+					$slot = $slots[$_g];
+					++$_g;
+					if($slot->getSyntax()->getName() == com_wiris_quizzes_api_assertion_SyntaxName::$GRAPHIC) {
+						continue;
+					}
+					if($slot->getInitialContent() !== null) {
+						$sb->add($slot->getInitialContent());
+					}
+					$authorAnswers = $slot->getAuthorAnswers();
+					{
+						$_g1 = 0;
+						while($_g1 < $authorAnswers->length) {
+							$authorAnswer = $authorAnswers[$_g1];
+							++$_g1;
+							if($authorAnswer->getValue() !== null) {
+								$sb->add($authorAnswer->getValue());
+							}
+							unset($authorAnswer);
+						}
+						unset($_g1);
+					}
+					unset($slot,$authorAnswers);
+				}
+			}
+		}
+		if($html !== null) {
+			$sb->add($html);
+		}
+		return $this->newVariablesRequest($sb->b, $instance);
+	}
 	public function newVariablesRequest($html, $instance) {
 		if($instance === null) {
 			throw new HException("The question instance cannot be null!");

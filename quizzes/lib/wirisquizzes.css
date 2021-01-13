@@ -666,6 +666,11 @@
   font-weight: 500;
   color: rgba(0, 0, 0, 0.54);
 }
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_panelCard .wrsUI_label.wrsUI_actionLabel {
+  margin: 8px 4px;
+  font-size: 14px;
+  color: #077680;
+}
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_panelCard > .wrsUI_divider {
   width: calc(100% + 32px) !important;
   margin: 16px 0 16px -16px;

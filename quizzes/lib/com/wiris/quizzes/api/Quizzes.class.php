@@ -33,6 +33,9 @@ class com_wiris_quizzes_api_Quizzes {
 	public function newGradeRequest($instance) {
 		return null;
 	}
+	public function newVariablesRequestWithQuestionData($html, $instance) {
+		return null;
+	}
 	public function newVariablesRequest($html, $instance) {
 		return null;
 	}

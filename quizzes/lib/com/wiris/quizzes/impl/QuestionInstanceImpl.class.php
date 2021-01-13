@@ -334,11 +334,26 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$this->userData->answers = $ii->userData->answers;
 		$this->localData = $ii->localData;
 	}
-	public function getCompoundAnswerVariables($variables, $question) {
+	public function copyVariableToStudentHash($variable, $studentVariables) {
+		$variableKeys = $this->variables->keys();
+		while($variableKeys->hasNext()) {
+			$type = $variableKeys->next();
+			$typeVariables = $this->variables->get($type);
+			if($typeVariables->exists($variable)) {
+				if(!$studentVariables->exists($type)) {
+					$studentVariables->set($type, new Hash());
+				}
+				$studentVariables->get($type)->set($variable, $typeVariables->get($variable));
+			}
+			unset($typeVariables,$type);
+		}
+	}
+	public function getStudentQuestionInstanceVariables($variables, $question) {
 		if($question === null || $variables === null) {
 			return null;
 		}
 		$studentVariables = new Hash();
+		$tools = new com_wiris_quizzes_impl_HTMLTools();
 		$slots = $question->getSlots();
 		{
 			$_g = 0;
@@ -355,7 +370,6 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 						$_g2 = 0; $_g1 = $compoundAnswer->length;
 						while($_g2 < $_g1) {
 							$i = $_g2++;
-							$tools = new com_wiris_quizzes_impl_HTMLTools();
 							$answer = $compoundAnswer[$i];
 							$compoundAnswerVariables = $tools->extractVariableNames($answer[0]);
 							{
@@ -363,27 +377,30 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 								while($_g3 < $compoundAnswerVariables->length) {
 									$compoundAnswerVariable = $compoundAnswerVariables[$_g3];
 									++$_g3;
-									$variableKeys = $variables->keys();
-									while($variableKeys->hasNext()) {
-										$type = $variableKeys->next();
-										$typeVariables = $variables->get($type);
-										if($typeVariables->exists($compoundAnswerVariable)) {
-											if(!$studentVariables->exists($type)) {
-												$studentVariables->set($type, new Hash());
-											}
-											$studentVariables->get($type)->set($compoundAnswerVariable, $typeVariables->get($compoundAnswerVariable));
-										}
-										unset($typeVariables,$type);
-									}
-									unset($variableKeys,$compoundAnswerVariable);
+									$this->copyVariableToStudentHash($compoundAnswerVariable, $studentVariables);
+									unset($compoundAnswerVariable);
 								}
 								unset($_g3);
 							}
-							unset($tools,$i,$compoundAnswerVariables,$answer);
+							unset($i,$compoundAnswerVariables,$answer);
 						}
 						unset($_g2,$_g1);
 					}
 					unset($mathContent,$compoundAnswer,$authorAnswers,$authorAnswerValue);
+				}
+				if($slot->getSyntax()->getName() != com_wiris_quizzes_api_assertion_SyntaxName::$GRAPHIC && $slot->getInitialContent() !== null) {
+					$variableNames = $tools->extractVariableNames($slot->getInitialContent());
+					{
+						$_g1 = 0;
+						while($_g1 < $variableNames->length) {
+							$variable = $variableNames[$_g1];
+							++$_g1;
+							$this->copyVariableToStudentHash($variable, $studentVariables);
+							unset($variable);
+						}
+						unset($_g1);
+					}
+					unset($variableNames);
 				}
 				unset($slot);
 			}
@@ -398,7 +415,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$qi->localData = $this->localData;
 		$qi->checks = $this->checks;
 		$qi->compoundChecks = $this->compoundChecks;
-		$qi->variables = $this->getCompoundAnswerVariables($this->variables, $this->question);
+		$qi->variables = $this->getStudentQuestionInstanceVariables($this->variables, $this->question);
 		return $qi;
 	}
 	public function getBooleanVariableValue($name) {
@@ -680,6 +697,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 			$l = haxe_Utf8::length($s);
 			$i = 0;
 			$sb = new StringBuf();
+
 			while($i < $l && $j < $n) {
 				$c = com_wiris_quizzes_impl_QuestionInstanceImpl_1($this, $content, $d, $i, $j, $l, $n, $s, $sb);
 				$digit = $this->isNumberPart($c);
@@ -912,7 +930,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 					$c = $checks[$i1];
 					if(!(StringTools::startsWith($c->getAssertionName(), "syntax") && ($c->getAnswers()->length > 1 || $c->getCorrectAnswers()->length > 1))) {
 						if(Std::parseInt($c->getCorrectAnswer()) === $correctAnswer) {
-							$correct = $correct && $c->value === 1.0;
+							$correct = $correct && ($c->value === 1.0 || _hx_equal($c->value, 1));
 						}
 					}
 					unset($i1,$c);

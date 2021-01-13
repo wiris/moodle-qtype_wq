@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Σύνταξη εισόδου",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Όλα",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Σταθερές",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Επιλέξτε τα γράμματα που θα ερμηνεύονται ως σταθερές αντί για ελεύθερες μεταβλητές. Μπορείτε να ορίσετε περισσότερες σταθερές στο τμήμα «Καθορισμός τυχαίων μεταβλητών και συναρτήσεων».",

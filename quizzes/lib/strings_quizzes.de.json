@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Eingabesyntax",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Alle",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Konstanten",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Wähle die Buchstaben aus, die anstelle von freien Variablen als Konstanten interpretiert werden. Du kannst weitere Konstanten im Bedienungsfeld „Zufallsvariablen und Funktionen“ festlegen.",

@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Sintaxi d'entrada",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Totes",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Cap",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Constants",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Seleccioneu els caràcters que desitgeu que siguin interpretats com a constants i no com a variables lliures. Pot definir constants addicionals al panell per definir variables aleatòries i funcions.",

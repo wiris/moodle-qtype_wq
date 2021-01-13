@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Sintassi input",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Tutto",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Costanti",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Scegli le lettere da interpretare come costanti e non come variabili libere. Puoi definire più costanti nel pannello “Definisci variabili casuali e funzioni”.",

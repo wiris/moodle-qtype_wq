@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Syntaxe de la saisie",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Tout",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Constantes",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Choisissez les lettres à interpréter comme constantes plutôt que des variables libres. Vous pouvez définir d’autres constantes dans le volet Définir les variables aléatoires et les fonctions.",

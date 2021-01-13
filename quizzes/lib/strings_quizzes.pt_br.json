@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Sintaxe de entrada",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Tudo",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Constantes",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Escolha as letras que são interpretadas como constantes em vez de variáveis livres. Você pode definir mais constantes no painel Definir variáveis e funções aleatórias.",

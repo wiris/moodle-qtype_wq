@@ -148,6 +148,7 @@
 		"quizzes_studio_input_options_input_syntax_title": "Inndatasyntaks",
 
 		"quizzes_studio_input_options_input_syntax_select_all_label": "Alle",
+		"quizzes_studio_input_options_input_syntax_clear_all_label": "Clear",
 
 		"quizzes_studio_input_options_input_syntax_constants_label": "Konstantar",
 		"quizzes_studio_input_options_input_syntax_constants_helper_text": "Vel bokstavane som er tolka som konstantar i staden for frie variablar. Du kan definere fleire konstantar på Definer tilfeldige variablar og funksjonspanel.",
