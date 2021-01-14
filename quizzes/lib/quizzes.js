@@ -13015,9 +13015,8 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 				if(stringDef != null) parameters.set(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_TOOLBAR_DEFINITION,stringDef);
 				if(this.readOnly) parameters.set(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_VIEW_ONLY,"true");
 				this.component = new com.wiris.quizzes.impl.ui.component.GraphInputComponent(parameters);
-				this.component.getStyle().setWidth(800).setHeight(494);
-				this.getStyle().setWidth(800);
-				this.component.getStyle().setMargin(20,0,0,0);
+				this.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setMaxWidth(800).setHeight(494);
+				this.component.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setMaxWidth(800).setHeight(494).setMargin(20,0,0,0);
 				this.component.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID,null));
 			} else if(this.isCompoundAnswer() == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE) {
 				if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD) this.component = new com.wiris.quizzes.impl.ui.component.QuizzesCompoundTextField(this.slot,this.questionInstance,this); else {
