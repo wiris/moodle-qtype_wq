@@ -420,6 +420,7 @@ md-elevation-transition {
   height: 24px;
   stroke-width: 0;
   opacity: 1;
+  box-sizing: content-box;
 }
 .wrsUI_app .wrsUI_aux_SVGIcon:disabled {
   opacity: 0.26;

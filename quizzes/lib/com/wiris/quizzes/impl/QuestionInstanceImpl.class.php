@@ -697,7 +697,6 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 			$l = haxe_Utf8::length($s);
 			$i = 0;
 			$sb = new StringBuf();
-
 			while($i < $l && $j < $n) {
 				$c = com_wiris_quizzes_impl_QuestionInstanceImpl_1($this, $content, $d, $i, $j, $l, $n, $s, $sb);
 				$digit = $this->isNumberPart($c);
