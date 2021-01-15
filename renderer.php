@@ -31,8 +31,12 @@ class qtype_wq_renderer extends qtype_renderer {
         $result = $this->base->formulation_and_controls($qa, $options);
 
         // Auxiliar text.
-        $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getProperty(
-            com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_AUXILIAR_TEXT_INPUT); // @codingStandardsIgnoreLine
+        if (isset($qa->get_question()->wirisquestion->question->getSlots()[0])) {
+            $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getSlots()[0]->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
+        } else  {
+            $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
+        }
+
         if ($showauxiliartextinput) {
             $result .= $this->auxiliar_text($qa, $options);
         }
