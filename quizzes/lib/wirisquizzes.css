@@ -924,7 +924,7 @@
   line-height: 30px;
 }
 .wrsUI_app .wrsUI_graphValidationElement .wrsUI_componentContent .wrsUI_aux_textComponentSuffix {
-  line-height: 30px;
+  line-height: 30px !important;
 }
 .wrsUI_app .wrsUI_graphValidationElement .wrsUI_divider {
   position: inherit;
