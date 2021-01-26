@@ -572,6 +572,7 @@ md-elevation-transition {
   padding: 0 8px;
   height: 36px;
   min-width: 64px;
+  -webkit-appearance: none;
   perspective: 1px;
 }
 .wrsUI_app .wrsUI_button > .wrsUI_aux_ripple {
@@ -1668,6 +1669,7 @@ md-elevation-transition {
   margin: 0;
   overflow: hidden;
   background: transparent;
+  -webkit-appearance: none;
   perspective: 1px;
 }
 .wrsUI_app .wrsUI_buttonPanel > .wrsUI_label {
