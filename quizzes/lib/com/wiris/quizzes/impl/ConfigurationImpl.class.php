@@ -226,7 +226,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_VERSION = "";
 	static $DEF_DEPLOYMENT_ID = "quizzes-unknown";
 	static $DEF_LICENSE_ID = "";
-	static $DEF_TELEMETRY_URL = "https://telemetry.wiris.net";
+	static $DEF_TELEMETRY_URL;
 	static $DEF_TELEMETRY_TOKEN = "1lt1OnlX3898VauysJ1nr5ODR8CNfVmB80KGxSSt";
 	static $DEF_QUIZZES_LOGGING_LEVEL = "WARNING";
 	static $DEF_QUIZZES_TRACKING_ENABLED = "true";
@@ -249,4 +249,5 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.ConfigurationImpl'; }
 }
+com_wiris_quizzes_impl_ConfigurationImpl::$DEF_TELEMETRY_URL = com_wiris_quizzes_impl_ConfigurationImpl::$DEF_SERVICE_URL . "/telemetry";
 com_wiris_quizzes_impl_ConfigurationImpl::$thisLock = _hx_anonymous(array());

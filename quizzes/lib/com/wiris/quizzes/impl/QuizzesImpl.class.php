@@ -4,13 +4,6 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
-		if(com_wiris_settings_PlatformSettings::$IS_JAVASCRIPT) {
-			$telemetryUrl = $this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_URL);
-			$telemetryToken = $this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_TOKEN);
-			$deploymentId = $this->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$DEPLOYMENT_ID);
-			$this->telemetryService = new com_wiris_util_telemetry_TelemetryServiceImpl($telemetryUrl, $telemetryToken, $deploymentId);
-			$this->tracker = new com_wiris_quizzes_telemetry_QuizzesTracker($this->telemetryService);
-		}
 	}}
 	public function mathContentToFilterableValue($value) {
 		if($value->type === com_wiris_quizzes_impl_MathContent::$TYPE_GEOMETRY_FILE) {
@@ -1221,29 +1214,6 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			$qr->variables($variables, com_wiris_quizzes_impl_MathContent::$TYPE_TEXT);
 			$qr->variables($variables, com_wiris_quizzes_impl_MathContent::$TYPE_MATHML);
 		}
-	}
-	static function getTrackingDataFromSlot($slot) {
-		if($slot === null) {
-			return null;
-		}
-		$telemetryData = new Hash();
-		$localData = $slot->localData;
-		{
-			$_g = 0;
-			while($_g < $localData->length) {
-				$ld = $localData[$_g];
-				++$_g;
-				if(com_wiris_util_type_Arrays::containsArray(com_wiris_quizzes_telemetry_QuizzesTracker::$LOCAL_DATA_ALLOWED_KEYS, $ld->name)) {
-					$telemetryData->set($ld->name, $ld->value);
-				}
-				unset($ld);
-			}
-		}
-		$syntax = com_wiris_quizzes_impl_QuizzesEnumUtils::syntaxName2String($slot->getSyntax()->getName());
-		if($syntax !== null) {
-			$telemetryData->set(com_wiris_quizzes_telemetry_QuizzesTracker::$SYNTAX_KEY, $syntax);
-		}
-		return $telemetryData;
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.QuizzesImpl'; }
 }

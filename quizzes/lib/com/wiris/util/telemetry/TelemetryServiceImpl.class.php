@@ -14,6 +14,9 @@ class com_wiris_util_telemetry_TelemetryServiceImpl implements com_wiris_util_sy
 		$this->session = new com_wiris_util_telemetry_Session(null);
 		$this->logger = new com_wiris_util_telemetry_TelemetryLoggerImpl($this, com_wiris_util_telemetry_LoggingLevel::$DEBUG);
 	}}
+	public function getSender() {
+		return $this->sender;
+	}
 	public function onHTTPStatus($status, $id) {
 		$connection = $this->pendingRequests->get($id);
 		$reqData = $this->requestData->get($id);

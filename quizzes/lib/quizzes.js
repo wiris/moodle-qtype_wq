@@ -1910,13 +1910,6 @@ com.wiris.quizzes.api.Quizzes.prototype = {
 com.wiris.quizzes.impl.QuizzesImpl = $hxClasses["com.wiris.quizzes.impl.QuizzesImpl"] = function() {
 	this.componentBuilder = null;
 	com.wiris.quizzes.api.Quizzes.call(this);
-	if(com.wiris.settings.PlatformSettings.IS_JAVASCRIPT) {
-		var telemetryUrl = this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.TELEMETRY_URL);
-		var telemetryToken = this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.TELEMETRY_TOKEN);
-		var deploymentId = this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.DEPLOYMENT_ID);
-		this.telemetryService = new com.wiris.util.telemetry.TelemetryServiceImpl(telemetryUrl,telemetryToken,deploymentId);
-		this.tracker = new com.wiris.quizzes.telemetry.QuizzesTracker(this.telemetryService);
-	}
 };
 com.wiris.quizzes.impl.QuizzesImpl.__name__ = ["com","wiris","quizzes","impl","QuizzesImpl"];
 com.wiris.quizzes.impl.QuizzesImpl.getInstance = function() {
@@ -1992,20 +1985,6 @@ com.wiris.quizzes.impl.QuizzesImpl.setVariables = function(html,q,qi,qr) {
 		qr.variables(variables,com.wiris.quizzes.impl.MathContent.TYPE_TEXT);
 		qr.variables(variables,com.wiris.quizzes.impl.MathContent.TYPE_MATHML);
 	}
-}
-com.wiris.quizzes.impl.QuizzesImpl.getTrackingDataFromSlot = function(slot) {
-	if(slot == null) return null;
-	var telemetryData = new Hash();
-	var localData = slot.localData;
-	var _g = 0;
-	while(_g < localData.length) {
-		var ld = localData[_g];
-		++_g;
-		if(com.wiris.util.type.Arrays.containsArray(com.wiris.quizzes.telemetry.QuizzesTracker.LOCAL_DATA_ALLOWED_KEYS,ld.name)) telemetryData.set(ld.name,ld.value);
-	}
-	var syntax = com.wiris.quizzes.impl.QuizzesEnumUtils.syntaxName2String(slot.getSyntax().getName());
-	if(syntax != null) telemetryData.set(com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_KEY,syntax);
-	return telemetryData;
 }
 com.wiris.quizzes.impl.QuizzesImpl.__super__ = com.wiris.quizzes.api.Quizzes;
 com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Quizzes.prototype,{
@@ -2820,6 +2799,12 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 });
 com.wiris.quizzes.JsQuizzes = $hxClasses["com.wiris.quizzes.JsQuizzes"] = function() {
 	com.wiris.quizzes.impl.QuizzesImpl.call(this);
+	var telemetryUrl = this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.TELEMETRY_URL);
+	var telemetryToken = this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.TELEMETRY_TOKEN);
+	var deploymentId = this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.DEPLOYMENT_ID);
+	this.telemetryService = new com.wiris.util.telemetry.TelemetryServiceImpl(telemetryUrl,telemetryToken,deploymentId);
+	this.telemetryService.getSender().setParameters(this.getTelemetryServerParameters());
+	this.tracker = new com.wiris.quizzes.telemetry.QuizzesTracker(this.telemetryService);
 };
 com.wiris.quizzes.JsQuizzes.__name__ = ["com","wiris","quizzes","JsQuizzes"];
 com.wiris.quizzes.JsQuizzes.singleton = null;
@@ -2883,6 +2868,11 @@ com.wiris.quizzes.JsQuizzes.prototype = $extend(com.wiris.quizzes.impl.QuizzesIm
 	,getQuizzesComponentBuilder: function() {
 		if(this.componentBuilder == null) this.componentBuilder = new com.wiris.quizzes.JsQuizzesApiComponentBuilder();
 		return this.componentBuilder;
+	}
+	,getTelemetryServerParameters: function() {
+		var h = com.wiris.system.TelemetryUtils.getSenderParameters();
+		h.set(com.wiris.util.telemetry.Sender.PRODUCT_VERSION_KEY,this.getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.VERSION));
+		return h;
 	}
 	,config: null
 	,__class__: com.wiris.quizzes.JsQuizzes
@@ -6928,7 +6918,7 @@ com.wiris.quizzes.impl.HTMLTools.prototype = {
 			if(close == null) close = ")";
 			var separators = e.get("separators");
 			if(separators == null) separators = ",";
-			if(open == "(" && close == ")" && e.firstElement().getNodeName() == "mtable") {
+			if(open == "(" && close == ")" && e.firstElement() != null && e.firstElement().getNodeName() == "mtable") {
 				open = "";
 				close = "";
 			}
@@ -13191,28 +13181,29 @@ com.wiris.quizzes.impl.ui.AuthoringFieldImpl.prototype = $extend(com.wiris.util.
 	actionPerformed: function(e) {
 		var action = e.getAction();
 		var actionId = action.getId();
-		if(actionId == com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CORRECT_ANSWER_CHANGED_ACTION_ID || actionId == com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_QUESTION_UPDATED_ACTION_ID) {
-			var _g = 0, _g1 = this.quizzesFieldListeners;
-			while(_g < _g1.length) {
-				var l = _g1[_g];
-				++_g;
-				l.contentChanged(this);
-			}
-			this.performAction(action);
-		} else if(actionId == "contentChangeStarted") {
-			var _g = 0, _g1 = this.quizzesFieldListeners;
-			while(_g < _g1.length) {
-				var l = _g1[_g];
-				++_g;
-				l.contentChangeStarted(this);
-			}
+		if(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED == actionId) this.fireContentChanged(); else if(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGE_STARTED == actionId) this.fireContentChangeStarted();
+	}
+	,fireContentChangeStarted: function() {
+		var _g = 0, _g1 = this.quizzesFieldListeners;
+		while(_g < _g1.length) {
+			var l = _g1[_g];
+			++_g;
+			l.contentChangeStarted(this);
+		}
+	}
+	,fireContentChanged: function() {
+		var _g = 0, _g1 = this.quizzesFieldListeners;
+		while(_g < _g1.length) {
+			var l = _g1[_g];
+			++_g;
+			l.contentChanged(this);
 		}
 	}
 	,getElement: function() {
 		if(com.wiris.util.ui.component.FlowPanel.prototype.getElement.call(this) == null) {
 			this.addComponent(this.getComponent());
 			if(this.context.isQuizzesStudio()) {
-				if(!(this.component.getApplicationClass() == com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.CLASS_QUIZZES_EMBEDDED_AUTHORING_FIELD)) new com.wiris.quizzes.impl.ui.async.LoadSummaryTask(this,this.component.getSummary());
+				if(!(this.getComponent().getApplicationClass() == com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.CLASS_QUIZZES_EMBEDDED_AUTHORING_FIELD)) new com.wiris.quizzes.impl.ui.async.LoadSummaryTask(this,this.component.getSummary());
 			}
 			this.getComponentBuilder().buildComponent(this,null);
 		}
@@ -13225,12 +13216,12 @@ com.wiris.quizzes.impl.ui.AuthoringFieldImpl.prototype = $extend(com.wiris.util.
 				this.component.setContext(this.context);
 			} else if(this.context.isInlineMathEditor()) {
 				this.component = new com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent(this.context,null);
-				this.component.getStyle().setWidth(450).setHeight(200).setMargin(0,0,5,0);
+				this.component.getComponent().getStyle().setWidth(450).setHeight(200).setMargin(0,0,5,0);
 			} else return null;
 			this.context.setAuthoringField(this.component);
-			this.component.addActionListener(this);
+			this.component.getComponent().addActionListener(this);
 		}
-		return this.component;
+		return this.component.getComponent();
 	}
 	,getQuestion: function() {
 		return this.context.getInputQuestion();
@@ -13284,7 +13275,7 @@ com.wiris.quizzes.impl.ui.AuthoringFieldImpl.prototype = $extend(com.wiris.util.
 	,showCorrectAnswer: function(visible) {
 		this.context.setOptOpenAnswer(visible);
 		this.context.setShowTestQuestion(visible);
-		if(this.component != null) this.component.changeState();
+		if(this.component != null) this.component.getComponent().changeState();
 	}
 	,showGradingCriteria: function(visible) {
 		this.context.setShowGradingCriteria(visible);
@@ -13806,7 +13797,18 @@ com.wiris.quizzes.impl.ui.QuizzesStudioContext = $hxClasses["com.wiris.quizzes.i
 };
 com.wiris.quizzes.impl.ui.QuizzesStudioContext.__name__ = ["com","wiris","quizzes","impl","ui","QuizzesStudioContext"];
 com.wiris.quizzes.impl.ui.QuizzesStudioContext.prototype = {
-	generateQuestionInstance: function() {
+	importToInputQuestion: function() {
+		var studioQimpl = this.getQuestionImpl();
+		var inputQimpl = this.getInputQuestionImpl();
+		inputQimpl.importQuestion(studioQimpl);
+		var studioSimpl = this.getSlot();
+		var inputSimpl = this.getInputSlot();
+		inputSimpl.importSlot(studioSimpl);
+		var studioAAimpl = this.getAuthorAnswer();
+		var inputAAimpl = this.getInputAuthorAnswer();
+		inputAAimpl.importAuthorAnswer(studioAAimpl);
+	}
+	,generateQuestionInstance: function() {
 		this.questionInstance = com.wiris.quizzes.api.Quizzes.getInstance().newQuestionInstance(this.question);
 		return this.questionInstance;
 	}
@@ -14487,6 +14489,14 @@ com.wiris.quizzes.impl.ui.component.AnswerTypeComponent.prototype = $extend(com.
 	,answerTypeLabel: null
 	,__class__: com.wiris.quizzes.impl.ui.component.AnswerTypeComponent
 });
+com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent = $hxClasses["com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent"] = function() { }
+com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent.__name__ = ["com","wiris","quizzes","impl","ui","component","AuthoringFieldComponent"];
+com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent.prototype = {
+	innerContentChanged: null
+	,saveQuestion: null
+	,getComponent: null
+	,__class__: com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent
+}
 com.wiris.util.ui.component.InputComponent = $hxClasses["com.wiris.util.ui.component.InputComponent"] = function() {
 	com.wiris.util.ui.component.Component.call(this);
 	this.status = com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE;
@@ -14706,30 +14716,34 @@ com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.prototype = $extend(c
 	,__class__: com.wiris.quizzes.impl.ui.component.MathTypeInputComponent
 });
 com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent = $hxClasses["com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent"] = function(context,parameters) {
-	this.listening = true;
 	com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.call(this,parameters);
 	this.slot = context.getSlot();
 	this.authorAnswer = context.getAuthorAnswer();
 	this.setValue(this.authorAnswer.getValue());
 	this.setGrammarUrl(this.getGrammarUrl(),true);
 	new com.wiris.quizzes.impl.ui.controller.ReservedWordsRequestController(this).update();
-	this.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CORRECT_ANSWER_CHANGED_ACTION_ID,null));
+	this.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.CONTENT_CHANGED,null));
 	this.addActionListener(this);
 };
 com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.__name__ = ["com","wiris","quizzes","impl","ui","component","AuthoringFieldMathTypeComponent"];
-com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.__interfaces__ = [com.wiris.quizzes.impl.ui.controller.ReservedWordsConsumer,com.wiris.util.ui.interaction.ActionListener];
+com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.__interfaces__ = [com.wiris.util.ui.interaction.ActionListener,com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent,com.wiris.quizzes.impl.ui.controller.ReservedWordsConsumer];
 com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.__super__ = com.wiris.quizzes.impl.ui.component.MathTypeInputComponent;
 com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.prototype = $extend(com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.prototype,{
-	actionPerformed: function(e) {
-		if(!this.listening) return;
+	innerContentChanged: function() {
+		this.saveQuestion();
+	}
+	,saveQuestion: function() {
 		this.authorAnswer.setValue(this.getValue());
-		var action = e.getAction();
-		var actionId = action.getId();
-		if(actionId == com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CORRECT_ANSWER_CHANGED_ACTION_ID) {
-			this.listening = false;
-			this.performAction(action);
-			this.listening = true;
-		}
+		this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED,com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED));
+	}
+	,actionPerformed: function(e) {
+		if(e.getAction().getId() == com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.CONTENT_CHANGED) this.innerContentChanged();
+	}
+	,getType: function() {
+		return com.wiris.quizzes.api.ui.AuthoringFieldType.INLINE_MATH_EDITOR;
+	}
+	,getComponent: function() {
+		return this;
 	}
 	,setMathtypeParameters: function(parameters) {
 		this.setParameters(parameters);
@@ -14740,7 +14754,6 @@ com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.prototype = 
 		grammarUrl += "reservedWords=true&measureUnits=true&json=true";
 		return grammarUrl;
 	}
-	,listening: null
 	,slot: null
 	,authorAnswer: null
 	,__class__: com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent
@@ -18628,59 +18641,65 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent = $hxClasses["com.wir
 	com.wiris.util.ui.component.BorderPanel.call(this,false);
 	this.setId(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.ID_QUIZZES_STUDIO).addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_QUIZZES_STUDIO);
 	this.getStyle().setWidth(com.wiris.util.ui.Style.SIZE_FULL).setMinHeight(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupWindow.WINDOW_HEIGHT_DEFAULT);
-	this.controller = new com.wiris.quizzes.impl.ui.controller.QuizzesStudioController(this);
+	this.studioController = new com.wiris.quizzes.impl.ui.controller.QuizzesStudioController(this);
 	this.activityContainer = new com.wiris.util.ui.component.ActivityContainer();
-	this.home = new com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeActivity(this.controller);
+	this.home = new com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeActivity(this.studioController);
 	this.activityContainer.registerActivity(this.home,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_ID);
-	this.inputOptions = new com.wiris.quizzes.impl.ui.component.InputOptionsActivity(this.controller);
+	this.inputOptions = new com.wiris.quizzes.impl.ui.component.InputOptionsActivity(this.studioController);
 	this.activityContainer.registerActivity(this.inputOptions,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_INPUT_OPTIONS_ID);
-	this.validationOptions = new com.wiris.quizzes.impl.ui.component.ValidationOptionsActivity(this.controller);
+	this.validationOptions = new com.wiris.quizzes.impl.ui.component.ValidationOptionsActivity(this.studioController);
 	this.activityContainer.registerActivity(this.validationOptions,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VALIDATION_OPTIONS_ID);
-	this.variableOptions = new com.wiris.quizzes.impl.ui.component.VariableOptionsActivity(this.controller);
+	this.variableOptions = new com.wiris.quizzes.impl.ui.component.VariableOptionsActivity(this.studioController);
 	this.activityContainer.registerActivity(this.variableOptions,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VARIABLES_FUNCTIONS_ID);
-	this.auxiliaryInitialContent = new com.wiris.quizzes.impl.ui.component.AuxiliaryInitialContentActivity(this.controller);
+	this.auxiliaryInitialContent = new com.wiris.quizzes.impl.ui.component.AuxiliaryInitialContentActivity(this.studioController);
 	this.activityContainer.registerActivity(this.auxiliaryInitialContent,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_AUXILIARY_INITIAL_CONTENT_ID);
-	this.testQuestion = new com.wiris.quizzes.impl.ui.component.TestQuestionActivity(this.controller);
+	this.testQuestion = new com.wiris.quizzes.impl.ui.component.TestQuestionActivity(this.studioController);
 	this.activityContainer.registerActivity(this.testQuestion,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_TEST_QUESTION_ID);
-	this.customizeToolbar = new com.wiris.quizzes.impl.ui.component.CustomizeToolbarActivity(this.controller);
+	this.customizeToolbar = new com.wiris.quizzes.impl.ui.component.CustomizeToolbarActivity(this.studioController);
 	this.activityContainer.registerActivity(this.customizeToolbar,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CUSTOMIZE_TOOLBAR_ID);
-	this.graphValidationOptions = new com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity(this.controller);
+	this.graphValidationOptions = new com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity(this.studioController);
 	this.activityContainer.registerActivity(this.graphValidationOptions,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_ID);
-	this.viewSource = new com.wiris.quizzes.impl.ui.component.ViewSourceActivity(this.controller);
+	this.viewSource = new com.wiris.quizzes.impl.ui.component.ViewSourceActivity(this.studioController);
 	this.activityContainer.registerActivity(this.viewSource,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VIEW_SOURCE_ID);
-	this.quizzesStudioToolbar = new com.wiris.quizzes.impl.ui.component.QuizzesStudioToolbarComponent(this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_TOOLBAR_TITLE),this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_HELP_URL),this.controller);
-	this.quizzesStudioToolbar.updateToolbarVisibility(this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_TOOLBAR_TITLE),false,this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_HELP_URL));
-	this.quizzesStudioBottomBar = new com.wiris.quizzes.impl.ui.component.QuizzesStudioBottomBar(this.controller);
+	this.quizzesStudioToolbar = new com.wiris.quizzes.impl.ui.component.QuizzesStudioToolbarComponent(this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_TOOLBAR_TITLE),this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_HELP_URL),this.studioController);
+	this.quizzesStudioToolbar.updateToolbarVisibility(this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_TOOLBAR_TITLE),false,this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_HELP_URL));
+	this.quizzesStudioBottomBar = new com.wiris.quizzes.impl.ui.component.QuizzesStudioBottomBar(this.studioController);
 	this.addComponent(this.quizzesStudioToolbar,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.addComponent(this.activityContainer,com.wiris.util.ui.component.BorderPanel.POSITION_CENTER);
 	this.addComponent(this.quizzesStudioBottomBar,com.wiris.util.ui.component.BorderPanel.POSITION_SOUTH);
 	this.openFileDialog = new com.wiris.util.ui.component.OpenFileDialog(".xml");
 	this.openFileDialog.setId("importQuestionDialog");
 	this.addComponentImpl(this.openFileDialog);
-	this.openFileDialog.addChangeListener(this.controller);
-	this.confirmImportDialog = com.wiris.util.ui.component.Dialog.newConfirmDialog(this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_TITLE),this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_LABEL),this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CONFIRM_BUTTON_LABEL),this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CANCEL_BUTTON_LABEL),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CONFIRM_BUTTON_ID,null),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CANCEL_BUTTON_ID,null));
+	this.openFileDialog.addChangeListener(this.studioController);
+	this.confirmImportDialog = com.wiris.util.ui.component.Dialog.newConfirmDialog(this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_TITLE),this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_LABEL),this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CONFIRM_BUTTON_LABEL),this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CANCEL_BUTTON_LABEL),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CONFIRM_BUTTON_ID,null),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_IMPORT_DIALOG_CANCEL_BUTTON_ID,null));
 	this.addComponentImpl(this.confirmImportDialog);
-	this.confirmImportDialog.addActionListener(this.controller);
-	this.confirmOptionsDialog = com.wiris.util.ui.component.Dialog.newConfirmDialog(this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_TITLE),this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_LABEL),this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CONFIRM_BUTTON_LABEL),this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CANCEL_BUTTON_LABEL),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CONFIRM_BUTTON_ID,null),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CANCEL_BUTTON_ID,null));
+	this.confirmImportDialog.addActionListener(this.studioController);
+	this.confirmOptionsDialog = com.wiris.util.ui.component.Dialog.newConfirmDialog(this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_TITLE),this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_LABEL),this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CONFIRM_BUTTON_LABEL),this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CANCEL_BUTTON_LABEL),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CONFIRM_BUTTON_ID,null),new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CONFIRM_RELEVANT_OPTIONS_DIALOG_CANCEL_BUTTON_ID,null));
 	this.confirmOptionsDialog.setEasyModalCloseEnabled(false);
 	this.addComponentImpl(this.confirmOptionsDialog);
-	this.confirmOptionsDialog.addActionListener(this.controller);
+	this.confirmOptionsDialog.addActionListener(this.studioController);
 	this.activityContainer.showActivity(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_ID);
 	this.addKeyListener(this);
 	this.ready = true;
 };
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__name__ = ["com","wiris","quizzes","impl","ui","component","QuizzesStudioComponent"];
-com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__interfaces__ = [com.wiris.util.ui.interaction.KeyListener];
+com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__interfaces__ = [com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent,com.wiris.util.ui.interaction.KeyListener];
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__super__ = com.wiris.util.ui.component.BorderPanel;
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(com.wiris.util.ui.component.BorderPanel.prototype,{
-	isReady: function() {
+	innerContentChanged: function() {
+		this.saveQuestion();
+	}
+	,getComponent: function() {
+		return this;
+	}
+	,isReady: function() {
 		return this.ready;
 	}
 	,getContext: function() {
-		return this.controller.getContext();
+		return this.studioController.getContext();
 	}
 	,setContext: function(context) {
-		this.controller.setContext(context);
+		this.studioController.setContext(context);
 		this.resetActivity();
 		this.updateHome(context);
 	}
@@ -18812,7 +18831,8 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 		this.testQuestion.copyCorrectAnswer(correctAnswer);
 	}
 	,saveQuestion: function() {
-		this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_QUESTION_UPDATED_ACTION_ID,null));
+		this.getContext().importToInputQuestion();
+		this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED,null));
 	}
 	,updateQuestionSource: function(context) {
 		this.updateLayout(context,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VIEW_SOURCE_TOOLBAR_TITLE,null,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VIEW_SOURCE_ID);
@@ -18865,7 +18885,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 		this.updateLayout(context,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_TITLE,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_INPUT_OPTIONS_HELP_URL,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_ID);
 	}
 	,updateGraphToolbar: function(context) {
-		this.quizzesStudioToolbar.updateToolbarVisibility(this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CUSTOMIZE_TOOLBAR_TOOLBAR_TITLE),true,this.controller.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_INPUT_OPTIONS_HELP_URL));
+		this.quizzesStudioToolbar.updateToolbarVisibility(this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_CUSTOMIZE_TOOLBAR_TOOLBAR_TITLE),true,this.studioController.t(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_INPUT_OPTIONS_HELP_URL));
 		this.quizzesStudioBottomBar.updateVisibility(context,true);
 		var definition = com.wiris.util.ui.controller.ToolbarDefinition.deserialize(context.getSlot().getProperty(com.wiris.quizzes.api.PropertyName.GRAPH_TOOLBAR));
 		this.customizeToolbar.updateVisibility(definition);
@@ -19076,12 +19096,20 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 	}
 	,showPreviousActivity: function(context) {
 		var activityId = this.getPreviousActivityId();
+		var current = this.getCurrentActivityId();
 		if(activityId != null) {
-			if(this.activityContainer.returnToPreviousActivity()) this.updateActivity(activityId,context);
+			if(this.activityContainer.returnToPreviousActivity()) {
+				com.wiris.quizzes.impl.QuizzesImpl.getInstance().getTracker().activitySwitch(context.getQuestion(),current,activityId);
+				this.updateActivity(activityId,context);
+			}
 		}
 	}
 	,showNextActivity: function(activityId,context) {
-		if(this.activityContainer.showActivity(activityId)) this.updateActivity(activityId,context);
+		var current = this.getCurrentActivityId();
+		if(this.activityContainer.showActivity(activityId)) {
+			com.wiris.quizzes.impl.QuizzesImpl.getInstance().getTracker().activitySwitch(context.getQuestion(),current,activityId);
+			this.updateActivity(activityId,context);
+		}
 	}
 	,setValue: function(value) {
 		this.home.setCorrectAnswer(value);
@@ -19090,7 +19118,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 		return this.home.getCorrectAnswer();
 	}
 	,ready: null
-	,controller: null
+	,studioController: null
 	,openFileDialog: null
 	,confirmOptionsDialog: null
 	,confirmImportDialog: null
@@ -19215,7 +19243,6 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField = $hxClasses["co
 	this.addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.CLASS_AUTHORING_FIELD);
 	this.setId(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_ID);
 	this.context = context;
-	this.controller = new com.wiris.quizzes.impl.ui.controller.AuthoringFieldController(this.context,this);
 	this.setOpenPopupAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_OPEN_STUDIO_BUTTON_ID,null));
 	this.getButton().setId(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_OPEN_STUDIO_BUTTON_ID);
 	this.getButton().addClass(com.wiris.util.ui.component.Button.CLASS_BUTTON_CONTAINED);
@@ -19224,15 +19251,31 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField = $hxClasses["co
 	this.setValue(this.context.getInputAuthorAnswer().getValue());
 	this.summary = new com.wiris.quizzes.impl.ui.component.AuthoringFieldSummaryComponent();
 	this.summary.updateSummary(this.context);
-	this.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CORRECT_ANSWER_CHANGED_ACTION_ID,null));
+	this.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.TEXT_FIELD_CORRECT_ANSWER_CHANGED,null));
+	this.addActionListener(this);
 };
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.__name__ = ["com","wiris","quizzes","impl","ui","component","QuizzesStudioPopupTextField"];
+com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.__interfaces__ = [com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent];
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.__super__ = com.wiris.quizzes.impl.ui.component.PopupTextField;
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.prototype = $extend(com.wiris.quizzes.impl.ui.component.PopupTextField.prototype,{
-	actionPerformed: function(e) {
+	innerContentChanged: function() {
+	}
+	,getType: function() {
+		return com.wiris.quizzes.api.ui.AuthoringFieldType.STUDIO;
+	}
+	,getComponent: function() {
+		return this;
+	}
+	,actionPerformed: function(e) {
 		var action = e.getAction();
 		var actionId = action.getId();
-		if(actionId == com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupWindow.ACCEPT_EASY_MODAL_SAVE_AND_CLOSE_ACTION_ID) this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_SAVE_STUDIO_ACTION_ID,null)); else if(actionId == com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_CLOSE_STUDIO_ACTION_ID) new com.wiris.quizzes.impl.ui.async.ReleaseWindowTask(this); else com.wiris.quizzes.impl.ui.component.PopupTextField.prototype.actionPerformed.call(this,e);
+		if(actionId == com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupWindow.ACCEPT_EASY_MODAL_SAVE_AND_CLOSE_ACTION_ID) {
+			this.saveQuestion();
+			new com.wiris.quizzes.impl.ui.async.ReleaseWindowTask(this);
+		} else if(actionId == com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_CLOSE_STUDIO_ACTION_ID) new com.wiris.quizzes.impl.ui.async.ReleaseWindowTask(this); else if(actionId == com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.TEXT_FIELD_CORRECT_ANSWER_CHANGED) {
+			this.context.getInputAuthorAnswer().setValue(this.getValue());
+			this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED,null));
+		} else com.wiris.quizzes.impl.ui.component.PopupTextField.prototype.actionPerformed.call(this,e);
 	}
 	,open: function() {
 		if(!this.isWindowLoaded()) {
@@ -19245,6 +19288,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.prototype = $ext
 		this.quizzesWindow.openStudio(this);
 	}
 	,saveQuestion: function() {
+		this.context.importToInputQuestion();
 		var correctAnswer = this.context.getInputAuthorAnswer().getValue();
 		if(com.wiris.quizzes.impl.MathContent.getMathType(correctAnswer) == com.wiris.quizzes.impl.MathContent.TYPE_MATHML) {
 			var tools = new com.wiris.quizzes.impl.HTMLTools();
@@ -19252,7 +19296,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.prototype = $ext
 		}
 		this.setValue(correctAnswer);
 		this.summary.updateSummary(this.context);
-		this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_QUESTION_UPDATED_ACTION_ID,null));
+		this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED,null));
 	}
 	,getContext: function() {
 		return this.context;
@@ -19273,7 +19317,6 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.prototype = $ext
 		return this.quizzesWindow;
 	}
 	,summary: null
-	,controller: null
 	,quizzesWrapper: null
 	,quizzesWindow: null
 	,context: null
@@ -19327,6 +19370,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupWindow.prototype = $extend
 		this.setParent(authoringField);
 		this.setMinHeight(authoringField);
 		this.setContext(authoringField.getContext());
+		com.wiris.quizzes.impl.QuizzesImpl.getInstance().getTracker().studioOpened(authoringField.getContext().getQuestion());
 		this.open();
 	}
 	,getContext: function() {
@@ -20819,66 +20863,6 @@ com.wiris.quizzes.impl.ui.component.WirisCasInputWrapperComponent.prototype = $e
 	,casLabel: null
 	,__class__: com.wiris.quizzes.impl.ui.component.WirisCasInputWrapperComponent
 });
-com.wiris.quizzes.impl.ui.controller.AuthoringFieldController = $hxClasses["com.wiris.quizzes.impl.ui.controller.AuthoringFieldController"] = function(context,authoringField) {
-	this.context = context;
-	this.authoringField = authoringField;
-	this.authoringField.addActionListener(this);
-};
-com.wiris.quizzes.impl.ui.controller.AuthoringFieldController.__name__ = ["com","wiris","quizzes","impl","ui","controller","AuthoringFieldController"];
-com.wiris.quizzes.impl.ui.controller.AuthoringFieldController.__interfaces__ = [com.wiris.util.ui.interaction.ActionListener];
-com.wiris.quizzes.impl.ui.controller.AuthoringFieldController.prototype = {
-	actionPerformed: function(e) {
-		var source = e.getSource();
-		var action = e.getAction();
-		var actionId = action.getId();
-		var command = action.getCommand();
-		if(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CORRECT_ANSWER_CHANGED_ACTION_ID == actionId) {
-			var correctAnswer = source.getValue();
-			this.context.getInputAuthorAnswer().setValue(correctAnswer);
-			this.context.setPreviewCorrectAnswerUpdated(false);
-		} else if(com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_OPEN_STUDIO_BUTTON_ID == actionId) {
-			var correctAnswer = this.context.getInputAuthorAnswer().getValue();
-			var initialContent = this.context.getInputSlot().getInitialContent();
-			if(this.context.getAuthorAnswer().getValue() == null || this.context.getAuthorAnswer().getValue() == "") {
-				if(correctAnswer != null) this.context.getAuthorAnswer().setValue(correctAnswer);
-			}
-			if(this.context.getSlot().getInitialContent() == null || this.context.getSlot().getInitialContent() == "") {
-				if(initialContent != null) this.context.getSlot().setInitialContent(initialContent);
-			}
-		} else if(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_QUESTION_UPDATED_ACTION_ID == actionId) return;
-	}
-	,areFeaturedOptionsCompatible: function() {
-		return !(this.isFeaturedSyntaxChange() || this.isFeaturedAssertionsChange());
-	}
-	,isFeaturedAssertionsChange: function() {
-		var comparison = this.context.getAuthorAnswer().getComparison();
-		if(!com.wiris.system.ArrayEx.contains(this.context.getFeaturedAssertions(),comparison.name)) return true;
-		var validations = this.context.getAuthorAnswer().getValidations();
-		var _g = 0;
-		while(_g < validations.length) {
-			var validation = validations[_g];
-			++_g;
-			var validationA = validation;
-			if(!com.wiris.system.ArrayEx.contains(this.context.getFeaturedAssertions(),validationA.name)) return true;
-		}
-		return false;
-	}
-	,isFeaturedSyntaxChange: function() {
-		var syntax = this.context.getSlot().getSyntax();
-		var assertionParams = syntax.parameters;
-		if(assertionParams == null) return false;
-		var _g = 0;
-		while(_g < assertionParams.length) {
-			var ap = assertionParams[_g];
-			++_g;
-			if(!com.wiris.system.ArrayEx.contains(this.context.getFeaturedParams(),ap.name)) return true;
-		}
-		return false;
-	}
-	,authoringField: null
-	,context: null
-	,__class__: com.wiris.quizzes.impl.ui.controller.AuthoringFieldController
-}
 com.wiris.quizzes.impl.ui.controller.QuizzesServiceRequestController = $hxClasses["com.wiris.quizzes.impl.ui.controller.QuizzesServiceRequestController"] = function(controller) {
 	this.controller = controller;
 	this.executed = false;
@@ -21190,7 +21174,8 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		var action = e.getAction();
 		var actionId = action.getId();
 		var command = action.getCommand();
-		if(com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_QUESTION_UPDATED_ACTION_ID == actionId) return; else if("allOptions" == actionId) {
+		if(actionId == com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED || actionId == com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGE_STARTED) return;
+		if("allOptions" == actionId) {
 			if(source.isSelected()) {
 				this.context.setShowAllOptions(true);
 				if(this.quizzesStudio.isReady()) {
@@ -21214,7 +21199,11 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 				this.updateFeaturedSyntaxAssertions(com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.REQUEST_OVERWRITE_IF_NOT_COMPLIANT);
 				this.updateFeaturedValidationAssertions(com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.REQUEST_OVERWRITE_IF_NOT_COMPLIANT);
 			}
-		} else if("cancelRelevantOptions" == actionId) this.quizzesStudio.cancelShowRelevantOptions(); else if("closeStudio" == actionId) this.quizzesStudio.closeStudio(); else if("saveStudio" == actionId) {
+		} else if("cancelRelevantOptions" == actionId) this.quizzesStudio.cancelShowRelevantOptions(); else if("closeStudio" == actionId) {
+			com.wiris.quizzes.impl.QuizzesImpl.getInstance().getTracker().studioClosed(this.context.getQuestion(),this.quizzesStudio.getCurrentActivityId(),com.wiris.quizzes.telemetry.QuizzesTracker.VALUE_CANCEL);
+			this.quizzesStudio.closeStudio();
+		} else if("saveStudio" == actionId) {
+			com.wiris.quizzes.impl.QuizzesImpl.getInstance().getTracker().studioClosed(this.context.getQuestion(),this.quizzesStudio.getCurrentActivityId(),com.wiris.quizzes.telemetry.QuizzesTracker.VALUE_CANCEL);
 			this.saveQuestion();
 			this.quizzesStudio.closeStudio();
 		} else if("showActivity" == actionId) {
@@ -21224,7 +21213,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		} else if("goBack" == actionId) {
 			this.updateReservedWords();
 			this.showPreviousActivity();
-		} else if("import" == actionId) this.requestImportFile(); else if("export" == actionId) this.requestExportFile(); else if("viewSource" == actionId) this.showActivity(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VIEW_SOURCE_ID); else if("confirmImport" == actionId) this.loadImportedQuestion(this.tempImportQuestion,this.tempImportSlot,this.tempImportAuthorAnswer); else if("algorithmChanged" == actionId) {
+		} else if("import" == actionId) this.requestImportFile(); else if("export" == actionId) this.requestExportFile(); else if("viewSource" == actionId) this.showActivity(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VIEW_SOURCE_ID); else if("help" == actionId) com.wiris.quizzes.impl.QuizzesImpl.getInstance().getTracker().helpRequested(this.context.getQuestion(),this.quizzesStudio.getCurrentActivityId()); else if("confirmImport" == actionId) this.loadImportedQuestion(this.tempImportQuestion,this.tempImportSlot,this.tempImportAuthorAnswer); else if("algorithmChanged" == actionId) {
 			var algorithm = source.getValue();
 			this.context.getQuestion().setAlgorithm(algorithm);
 		} else if("convertAlgorithm" == actionId) this.quizzesStudio.convertAlgorithm(this.context.getQuestion().getAlgorithm()); else if("auxiliaryInitialContentChanged" == actionId) {
@@ -21980,7 +21969,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 			} else source.getParent().getStyle().setMaxWidth(450);
 			new com.wiris.quizzes.impl.ui.async.ChangeStateTask(source.getParent().getParent());
 		}
-		if(this.context.isInlineQuizzesStudio()) this.saveQuestion();
+		if(this.context.getAuthoringField() != null) this.context.getAuthoringField().innerContentChanged();
 	}
 	,updateFeaturedValidationAssertions: function(requestType) {
 		if(this.context.getSlot().getSyntax().getName() != com.wiris.quizzes.api.assertion.SyntaxName.MATH) return;
@@ -22324,18 +22313,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		this.quizzesStudio.requestImportFile();
 	}
 	,saveQuestion: function() {
-		var studioQimpl = this.context.getQuestionImpl();
-		var inputQimpl = this.context.getInputQuestionImpl();
-		inputQimpl.importQuestion(studioQimpl);
-		var studioSimpl = this.context.getSlot();
-		var inputSimpl = this.context.getInputSlot();
-		inputSimpl.importSlot(studioSimpl);
-		var studioAAimpl = this.context.getAuthorAnswer();
-		var inputAAimpl = this.context.getInputAuthorAnswer();
-		inputAAimpl.importAuthorAnswer(studioAAimpl);
-		var telemetryData = com.wiris.quizzes.impl.QuizzesImpl.getTrackingDataFromSlot(inputSimpl);
-		com.wiris.quizzes.impl.QuizzesImpl.getInstance().getTracker().sendInformation(com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_SAVE,telemetryData);
-		if(this.context.isQuizzesStudio()) this.context.getAuthoringField().saveQuestion(); else if(this.context.isInlineQuizzesStudio()) this.quizzesStudio.saveQuestion();
+		this.context.getAuthoringField().saveQuestion();
 	}
 	,setComparisonParameters: function(comparison,text) {
 		if(comparison.getName() == com.wiris.quizzes.api.assertion.ComparisonName.MATHEMATICALLY_EQUAL) {
@@ -22753,42 +22731,76 @@ com.wiris.util.telemetry.Tracker.prototype = {
 }
 if(!com.wiris.quizzes.telemetry) com.wiris.quizzes.telemetry = {}
 com.wiris.quizzes.telemetry.QuizzesTracker = $hxClasses["com.wiris.quizzes.telemetry.QuizzesTracker"] = function(service) {
+	this.activityTimestamp = -1;
+	this.studioTimestamp = -1;
 	com.wiris.util.telemetry.Tracker.call(this,service);
 };
 com.wiris.quizzes.telemetry.QuizzesTracker.__name__ = ["com","wiris","quizzes","telemetry","QuizzesTracker"];
-com.wiris.quizzes.telemetry.QuizzesTracker.parameters = null;
-com.wiris.quizzes.telemetry.QuizzesTracker.getParameters = function() {
-	if(com.wiris.quizzes.telemetry.QuizzesTracker.parameters == null) {
-		com.wiris.quizzes.telemetry.QuizzesTracker.parameters = new Hash();
-		com.wiris.quizzes.telemetry.QuizzesTracker.parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.TOPIC_KEY,[]);
-		com.wiris.quizzes.telemetry.QuizzesTracker.parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.AUXILIARY_TEXT_INPUT_KEY,com.wiris.quizzes.telemetry.QuizzesTracker.BOOLEAN_INPUTS);
-		com.wiris.quizzes.telemetry.QuizzesTracker.parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.AUXILIARY_TEXT_KEY,com.wiris.quizzes.telemetry.QuizzesTracker.BOOLEAN_INPUTS);
-		com.wiris.quizzes.telemetry.QuizzesTracker.parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.CAS_SESSION_KEY,com.wiris.quizzes.telemetry.QuizzesTracker.BOOLEAN_INPUTS);
-		com.wiris.quizzes.telemetry.QuizzesTracker.parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.CAS_KEY,[com.wiris.quizzes.telemetry.QuizzesTracker.CAS_FALSE_VALUE,com.wiris.quizzes.telemetry.QuizzesTracker.CAS_ADD_VALUE,com.wiris.quizzes.telemetry.QuizzesTracker.CAS_REPLACE_VALUE]);
-		com.wiris.quizzes.telemetry.QuizzesTracker.parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_KEY,[com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_MATH_VALUE,com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_TEXT_VALUE,com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_GRAPHIC_VALUE]);
-	}
-	return com.wiris.quizzes.telemetry.QuizzesTracker.parameters;
-}
 com.wiris.quizzes.telemetry.QuizzesTracker.getIndex = function(topic) {
-	if(topic == com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_SAVE) return 1;
+	if(topic == com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_OPENED) return 1; else if(topic == com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_CLOSED) return 2; else if(topic == com.wiris.quizzes.telemetry.QuizzesTrackingTopic.HELP_REQUESTED) return 3; else if(topic == com.wiris.quizzes.telemetry.QuizzesTrackingTopic.ACTIVITY_SWITCH) return 4;
 	return -1;
 }
 com.wiris.quizzes.telemetry.QuizzesTracker.__super__ = com.wiris.util.telemetry.Tracker;
 com.wiris.quizzes.telemetry.QuizzesTracker.prototype = $extend(com.wiris.util.telemetry.Tracker.prototype,{
 	sendInformation: function(topic,parameters) {
 		var index = com.wiris.quizzes.telemetry.QuizzesTracker.getIndex(topic);
-		if(index >= 0) {
-			var allowedParameters = com.wiris.quizzes.telemetry.QuizzesTracker.getParameters();
-			this.filterParameters(parameters,allowedParameters);
-			this.sendInformationImpl(index,parameters);
-		}
+		if(index >= 0) this.sendInformationImpl(index,parameters);
 	}
+	,activitySwitch: function(question,from,to) {
+		var parameters = new Hash();
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_QUESTION,question.serialize());
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_FROM,from);
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_TO,to);
+		if(this.activityTimestamp != -1) {
+			var activityTime = new Date().getTime() - this.activityTimestamp;
+			this.studioTimestamp = new Date().getTime();
+			parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_ACTIVITY_TIME,activityTime + "");
+		}
+		this.sendInformation(com.wiris.quizzes.telemetry.QuizzesTrackingTopic.ACTIVITY_SWITCH,parameters);
+	}
+	,helpRequested: function(question,activity) {
+		var parameters = new Hash();
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_QUESTION,question.serialize());
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_ACTIVITY,activity);
+		this.sendInformation(com.wiris.quizzes.telemetry.QuizzesTrackingTopic.HELP_REQUESTED,parameters);
+	}
+	,studioClosed: function(question,activity,cause) {
+		var parameters = new Hash();
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_QUESTION,question.serialize());
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_ACTIVITY,activity);
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_CAUSE,cause);
+		if(this.studioTimestamp != -1) {
+			var sessionTime = new Date().getTime() - this.studioTimestamp;
+			this.studioTimestamp = -1;
+			this.activityTimestamp = -1;
+			parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_SESSION_TIME,sessionTime + "");
+		}
+		this.sendInformation(com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_CLOSED,parameters);
+	}
+	,studioOpened: function(question) {
+		this.studioTimestamp = new Date().getTime();
+		this.activityTimestamp = new Date().getTime();
+		var parameters = new Hash();
+		parameters.set(com.wiris.quizzes.telemetry.QuizzesTracker.KEY_QUESTION,question.serialize());
+		this.sendInformation(com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_OPENED,parameters);
+	}
+	,activityTimestamp: null
+	,studioTimestamp: null
 	,__class__: com.wiris.quizzes.telemetry.QuizzesTracker
 });
-com.wiris.quizzes.telemetry.QuizzesTrackingTopic = $hxClasses["com.wiris.quizzes.telemetry.QuizzesTrackingTopic"] = { __ename__ : ["com","wiris","quizzes","telemetry","QuizzesTrackingTopic"], __constructs__ : ["STUDIO_SAVE"] }
-com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_SAVE = ["STUDIO_SAVE",0];
-com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_SAVE.toString = $estr;
-com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_SAVE.__enum__ = com.wiris.quizzes.telemetry.QuizzesTrackingTopic;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic = $hxClasses["com.wiris.quizzes.telemetry.QuizzesTrackingTopic"] = { __ename__ : ["com","wiris","quizzes","telemetry","QuizzesTrackingTopic"], __constructs__ : ["STUDIO_OPENED","STUDIO_CLOSED","HELP_REQUESTED","ACTIVITY_SWITCH"] }
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_OPENED = ["STUDIO_OPENED",0];
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_OPENED.toString = $estr;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_OPENED.__enum__ = com.wiris.quizzes.telemetry.QuizzesTrackingTopic;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_CLOSED = ["STUDIO_CLOSED",1];
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_CLOSED.toString = $estr;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.STUDIO_CLOSED.__enum__ = com.wiris.quizzes.telemetry.QuizzesTrackingTopic;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.HELP_REQUESTED = ["HELP_REQUESTED",2];
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.HELP_REQUESTED.toString = $estr;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.HELP_REQUESTED.__enum__ = com.wiris.quizzes.telemetry.QuizzesTrackingTopic;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.ACTIVITY_SWITCH = ["ACTIVITY_SWITCH",3];
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.ACTIVITY_SWITCH.toString = $estr;
+com.wiris.quizzes.telemetry.QuizzesTrackingTopic.ACTIVITY_SWITCH.__enum__ = com.wiris.quizzes.telemetry.QuizzesTrackingTopic;
 com.wiris.system.ui.JsComponent = $hxClasses["com.wiris.system.ui.JsComponent"] = function(component) {
 	this.component = component;
 	this.element = null;
@@ -25282,6 +25294,14 @@ com.wiris.system.TelemetryUtils.sendBatch = function(data) {
 	var apiKey = data.get(com.wiris.system.TelemetryUtils.HEADERS_KEY).get(com.wiris.system.TelemetryUtils.API_KEY_KEY);
 	var body = data.get(com.wiris.system.TelemetryUtils.BODY_KEY);
 	fetch(url,{ method : "POST", headers : { 'x-api-key' : apiKey, 'Content-Type' : com.wiris.system.TelemetryUtils.CONTENT_TYPE_VALUE}, body : body, keepalive : true});
+}
+com.wiris.system.TelemetryUtils.getSenderParameters = function() {
+	var params = new Hash();
+	params.set(com.wiris.util.telemetry.Sender.USER_AGENT_KEY,js.Lib.window.navigator.userAgent);
+	params.set(com.wiris.util.telemetry.Sender.OS_KEY,js.Lib.window.navigator.platform);
+	params.set(com.wiris.util.telemetry.Sender.LANGUAGE_KEY,js.Lib.window.navigator.language);
+	params.set(com.wiris.util.telemetry.Sender.DOMAIN_KEY,js.Lib.window.location.hostname);
+	return params;
 }
 com.wiris.system.TypeTools = $hxClasses["com.wiris.system.TypeTools"] = function() { }
 com.wiris.system.TypeTools.__name__ = ["com","wiris","system","TypeTools"];
@@ -32367,7 +32387,7 @@ com.wiris.util.telemetry.Sender.prototype = {
 		var hash = new Hash();
 		hash.set(com.wiris.util.telemetry.Sender.ID_KEY,this.id);
 		hash.set(com.wiris.util.telemetry.Sender.DEPLOYMENT_KEY,this.deployment);
-		if(this.parameters != null) com.wiris.util.type.HashUtils.putAll(hash,this.parameters);
+		if(this.parameters != null) com.wiris.util.type.HashUtils.putAll(this.parameters,hash);
 		return hash;
 	}
 	,serialize: function() {
@@ -32513,7 +32533,10 @@ com.wiris.util.telemetry.TelemetryServiceImpl.populateRequestErrors = function()
 	return hash;
 }
 com.wiris.util.telemetry.TelemetryServiceImpl.prototype = {
-	onHTTPStatus: function(status,id) {
+	getSender: function() {
+		return this.sender;
+	}
+	,onHTTPStatus: function(status,id) {
 		var connection = this.pendingRequests.get(id);
 		var reqData = this.requestData.get(id);
 		var text = this.requestMessages.get(status + "");
@@ -42751,7 +42774,7 @@ com.wiris.quizzes.impl.ConfigurationImpl.DEF_GRAPH_URL = "http://www.wiris.net/d
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_VERSION = "";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_DEPLOYMENT_ID = "quizzes-unknown";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_LICENSE_ID = "";
-com.wiris.quizzes.impl.ConfigurationImpl.DEF_TELEMETRY_URL = "https://telemetry.wiris.net";
+com.wiris.quizzes.impl.ConfigurationImpl.DEF_TELEMETRY_URL = com.wiris.quizzes.impl.ConfigurationImpl.DEF_SERVICE_URL + "/telemetry";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_TELEMETRY_TOKEN = "1lt1OnlX3898VauysJ1nr5ODR8CNfVmB80KGxSSt";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_QUIZZES_LOGGING_LEVEL = "WARNING";
 com.wiris.quizzes.impl.ConfigurationImpl.DEF_QUIZZES_TRACKING_ENABLED = "true";
@@ -42911,8 +42934,8 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID = "st
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.MAX_ATTEMPTS_TO_EXPAND_INITIAL_CONTENT_VARIABLES = 5;
 com.wiris.quizzes.impl.ui.AuthoringFieldImpl.__meta__ = { fields : { showAuxiliarTextInput : { Deprecated : null}, showAuxiliarCasReplaceEditor : { Deprecated : null}, showAuxiliarCas : { Deprecated : null}, showPreviewTab : { Deprecated : null}, showVariablesTab : { Deprecated : null}, showValidationTab : { Deprecated : null}, showCorrectAnswerTab : { Deprecated : null}}};
 com.wiris.quizzes.impl.ui.AuthoringFieldImpl.CLASS_QUIZZES_AUTHORING_FIELD = "quizzesAuthoringField";
-com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CORRECT_ANSWER_CHANGED_ACTION_ID = "authoringFieldCorrectAnswerChanged";
-com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_QUESTION_UPDATED_ACTION_ID = "authoringFieldQuestionUpdated";
+com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGED = "authoringFieldContentChanged";
+com.wiris.quizzes.impl.ui.AuthoringFieldImpl.AUTHORING_FIELD_CONTENT_CHANGE_STARTED = "authoringFieldContentChangeStarted";
 com.wiris.quizzes.impl.ui.AuxiliaryCalcInputImpl.CLASS_QUIZZES_AUXILIARY_CALCME_INPUT = "quizzesAuxiliaryCalcMeInput";
 com.wiris.quizzes.impl.ui.AuxiliaryCalcInputImpl.ACTION_ID_AUXILIARY_CALC_ME_CONTENT_CHANGED = "auxiliaryCalcMeContentChanged";
 com.wiris.util.ui.component.ShadowComponent.CLASS_SHADOW_COMPONENT = "shadowComponent";
@@ -42946,6 +42969,7 @@ com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.CLASS_MATH_TYPE_COMPO
 com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.ACTION_HAND_OPENED_ID = "handOpened";
 com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.ACTION_HAND_CLOSED_ID = "handClosed";
 com.wiris.quizzes.impl.ui.component.MathTypeInputComponent.EMPTY_MATHML = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"/>";
+com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.CONTENT_CHANGED = "authoringFieldMathTypeContentChanged";
 com.wiris.quizzes.impl.ui.component.AuthoringFieldSummaryComponent.QUIZZES_STUDIO_SUMMARY_TITLE = "quizzes_studio_summary_title";
 com.wiris.quizzes.impl.ui.component.AuthoringFieldSummaryComponent.QUIZZES_STUDIO_SUMMARY_INPUT_METHOD_TITLE = "quizzes_studio_summary_input_method_title";
 com.wiris.quizzes.impl.ui.component.AuthoringFieldSummaryComponent.QUIZZES_STUDIO_SUMMARY_ALLOWED_INPUT_TITLE = "quizzes_studio_summary_allowed_input_title";
@@ -43403,6 +43427,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_OPEN_STUDIO_BUTTON_FOREGROUND_COLOR = "#f2f2f2";
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_SAVE_STUDIO_ACTION_ID = "saveStudio";
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.AUTHORING_FIELD_CLOSE_STUDIO_ACTION_ID = "closeStudioWindow";
+com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.TEXT_FIELD_CORRECT_ANSWER_CHANGED = "studioPopupTextFieldCorrectAnswerChanged";
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupTextField.CLASS_AUTHORING_FIELD = "authoringField";
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupWindow.POPUP_TEXT_FIELD_WARNING_SAVE_AND_CLOSE_BUTTON_LABEL = "popup_text_field_warning_save_and_close_button_label";
 com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupWindow.POPUP_TEXT_FIELD_WARNING_CLOSE_WITHOUT_SAVING_BUTTON_LABEL = "popup_text_field_warning_close_without_saving_button_label";
@@ -43552,20 +43577,15 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_DECIMAL_P
 com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.REQUEST_IGNORE_NON_COMPLIANT_PARTS = 0;
 com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.REQUEST_DISABLE_IF_NOT_COMPLIANT = 1;
 com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.REQUEST_OVERWRITE_IF_NOT_COMPLIANT = 2;
-com.wiris.quizzes.telemetry.QuizzesTracker.TOPIC_KEY = "topic";
-com.wiris.quizzes.telemetry.QuizzesTracker.AUXILIARY_TEXT_INPUT_KEY = "auxiliary-text-input";
-com.wiris.quizzes.telemetry.QuizzesTracker.AUXILIARY_TEXT_KEY = "auxiliary-text";
-com.wiris.quizzes.telemetry.QuizzesTracker.CAS_SESSION_KEY = "cas-session";
-com.wiris.quizzes.telemetry.QuizzesTracker.CAS_KEY = "cas";
-com.wiris.quizzes.telemetry.QuizzesTracker.CAS_FALSE_VALUE = "false";
-com.wiris.quizzes.telemetry.QuizzesTracker.CAS_ADD_VALUE = "add";
-com.wiris.quizzes.telemetry.QuizzesTracker.CAS_REPLACE_VALUE = "replace";
-com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_KEY = "syntax";
-com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_MATH_VALUE = "math";
-com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_TEXT_VALUE = "text";
-com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_GRAPHIC_VALUE = "graphic";
-com.wiris.quizzes.telemetry.QuizzesTracker.LOCAL_DATA_ALLOWED_KEYS = [com.wiris.quizzes.telemetry.QuizzesTracker.AUXILIARY_TEXT_INPUT_KEY,com.wiris.quizzes.telemetry.QuizzesTracker.CAS_KEY,com.wiris.quizzes.telemetry.QuizzesTracker.SYNTAX_KEY];
-com.wiris.quizzes.telemetry.QuizzesTracker.BOOLEAN_INPUTS = ["false","true"];
+com.wiris.quizzes.telemetry.QuizzesTracker.KEY_QUESTION = "question";
+com.wiris.quizzes.telemetry.QuizzesTracker.KEY_ACTIVITY = "activity";
+com.wiris.quizzes.telemetry.QuizzesTracker.KEY_CAUSE = "cause";
+com.wiris.quizzes.telemetry.QuizzesTracker.KEY_ACTIVITY_TIME = "activity-time";
+com.wiris.quizzes.telemetry.QuizzesTracker.KEY_SESSION_TIME = "session-time";
+com.wiris.quizzes.telemetry.QuizzesTracker.KEY_FROM = "from";
+com.wiris.quizzes.telemetry.QuizzesTracker.KEY_TO = "to";
+com.wiris.quizzes.telemetry.QuizzesTracker.VALUE_CANCEL = "cancel";
+com.wiris.quizzes.telemetry.QuizzesTracker.VALUE_SAVE = "save";
 com.wiris.system.ui.JsComponent.TEXT_ALIGN_VALUES = ["left","center","right"];
 com.wiris.system.ui.JsComponent.VERTICAL_ALIGN_VALUES = ["top","middle","bottom","baseline"];
 com.wiris.system.ui.JsComponent.ALIGN_ITEMS_VALUES = ["flex-start","center","flex-end","stretch","baseline","space-between"];
@@ -43859,7 +43879,7 @@ com.wiris.util.graphics.DisplaySettings.ALWAYS = "always";
 com.wiris.util.graphics.DisplaySettings.FOCUS = "focus";
 com.wiris.util.graphics.DisplaySettings.NEVER = "never";
 com.wiris.util.graphics.DisplaySettings.DEFAULT_MAGNETIC_GRID = true;
-com.wiris.util.graphics.DisplaySettings.DEFAULT_DISPLAY_ELEMENT_NAMES = "always";
+com.wiris.util.graphics.DisplaySettings.DEFAULT_DISPLAY_ELEMENT_NAMES = "never";
 com.wiris.util.graphics.DisplaySettings.DEFAULT_DISPLAY_ELEMENT_VALUES = "focus";
 com.wiris.util.json.JSonIntegerFormat.HEXADECIMAL = 0;
 com.wiris.util.lang.Words.words = new Hash();
@@ -43884,6 +43904,7 @@ com.wiris.util.telemetry.Sender.MAC_ADDRESS_KEY = "mac_address";
 com.wiris.util.telemetry.Sender.BACKEND_KEY = "backend";
 com.wiris.util.telemetry.Sender.FRAMEWORK_KEY = "framework";
 com.wiris.util.telemetry.Sender.PLATFORM_KEY = "platform";
+com.wiris.util.telemetry.Sender.LANGUAGE_KEY = "language";
 com.wiris.util.telemetry.Session.ID_KEY = "id";
 com.wiris.util.telemetry.Session.PAGE_KEY = "page";
 com.wiris.util.telemetry.TelemetryLoggerImpl.NONE = "NONE";

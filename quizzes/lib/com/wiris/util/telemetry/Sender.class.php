@@ -12,7 +12,7 @@ class com_wiris_util_telemetry_Sender {
 		$hash->set(com_wiris_util_telemetry_Sender::$ID_KEY, $this->id);
 		$hash->set(com_wiris_util_telemetry_Sender::$DEPLOYMENT_KEY, $this->deployment);
 		if($this->parameters !== null) {
-			com_wiris_util_type_HashUtils::putAll($hash, $this->parameters);
+			com_wiris_util_type_HashUtils::putAll($this->parameters, $hash);
 		}
 		return $hash;
 	}
@@ -60,6 +60,7 @@ class com_wiris_util_telemetry_Sender {
 	static $BACKEND_KEY = "backend";
 	static $FRAMEWORK_KEY = "framework";
 	static $PLATFORM_KEY = "platform";
+	static $LANGUAGE_KEY = "language";
 	static function newWithRandomId($deployment, $parameters) {
 		return new com_wiris_util_telemetry_Sender($deployment, $parameters, com_wiris_system_UUIDUtils::generateV4(null, null));
 	}

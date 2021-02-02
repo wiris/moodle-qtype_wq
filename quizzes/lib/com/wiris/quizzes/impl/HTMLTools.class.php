@@ -101,7 +101,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 				if($separators === null) {
 					$separators = ",";
 				}
-				if($open === "(" && $close === ")" && $e->firstElement()->getNodeName() === "mtable") {
+				if($open === "(" && $close === ")" && $e->firstElement() !== null && $e->firstElement()->getNodeName() === "mtable") {
 					$open = "";
 					$close = "";
 				}

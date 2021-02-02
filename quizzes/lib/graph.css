@@ -380,18 +380,11 @@ md-elevation-transition {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
-.toolbarButton:not(.wrsUI_switch):not(:disabled):hover:not(.wrsUI_focused), .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch):not(:disabled):hover:not(.wrsUI_focused), .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled):hover:not(.wrsUI_focused) {
+.toolbarButton:not(.wrsUI_switch):not(:disabled):hover, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch):not(:disabled):hover, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled):hover, .toolbarButton:not(.wrsUI_switch):not(:disabled).wrsUI_focused, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_focused, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_focused {
   background: rgba(0, 0, 0, 0.1);
 }
 .toolbarButton:not(.wrsUI_switch):not(:disabled):active, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch):not(:disabled):active, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled):active, .toolbarButton:not(.wrsUI_switch):not(:disabled).wrsUI_selected, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_selected, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_selected, .toolbarButton:not(.wrsUI_switch):not(:disabled).wrsUI_contextPanelButtonPressed, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_contextPanelButtonPressed, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_contextPanelButtonPressed {
   background: rgba(0, 0, 0, 0.15);
-}
-.toolbarButton:not(.wrsUI_switch).wrsUI_focused, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch).wrsUI_focused, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch).wrsUI_focused {
-  background: transparent;
-}
-.toolbarButton:not(.wrsUI_switch).wrsUI_focused > .wrsUI_aux_ripple, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch).wrsUI_focused > .wrsUI_aux_ripple, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch).wrsUI_focused > .wrsUI_aux_ripple {
-  width: 31.5px;
-  padding-bottom: 31.5px;
 }
 .toolbarButton:not(.wrsUI_switch).wrsUI_focused:not(.wrsUI_aux_rippling) > .wrsUI_aux_ripple, .wrsUI_app .wrsUI_dropdownDialog .wrsUI_button:not(.wrsUI_switch).wrsUI_focused:not(.wrsUI_aux_rippling) > .wrsUI_aux_ripple, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch).wrsUI_focused:not(.wrsUI_aux_rippling) > .wrsUI_aux_ripple {
   opacity: 0.99;
