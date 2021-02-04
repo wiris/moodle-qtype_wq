@@ -3521,28 +3521,34 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 					currentQuestionIndex++;
 				}
 				lastQuestionElement = questionElement;
-				switch(className) {
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_LANG:
-					this.uibuilder.setLanguage(element.value);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUTHOR_FIELD:
-					this.filterAuthoringField(element,index,question,questionElement,instance,instanceElement,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FIELD:
-					this.filterAnswerField(element,index,question,questionElement,instance,instanceElement,options,submitElements);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUXILIAR_CAS_APPLET:
-					this.filterAuxiliarCasApplet(element,index,question,questionElement,instance,instanceElement,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FEEDBACK:
-					this.filterAnswerFeedback(element,index,question,instance,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION:
-					this.filterQuestion(element,index,question,instance,options);
-					break;
-				case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION_INSTANCE:
-					this.filterQuestionInstance(element,index,question,instance,options);
-					break;
+				try {
+					switch(className) {
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_LANG:
+						this.uibuilder.setLanguage(element.value);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUTHOR_FIELD:
+						this.filterAuthoringField(element,index,question,questionElement,instance,instanceElement,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FIELD:
+						this.filterAnswerField(element,index,question,questionElement,instance,instanceElement,options,submitElements);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_AUXILIAR_CAS_APPLET:
+						this.filterAuxiliarCasApplet(element,index,question,questionElement,instance,instanceElement,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_ANSWER_FEEDBACK:
+						this.filterAnswerFeedback(element,index,question,instance,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION:
+						this.filterQuestion(element,index,question,instance,options);
+						break;
+					case com.wiris.quizzes.JsQuizzesFilter.CLASS_QUESTION_INSTANCE:
+						this.filterQuestionInstance(element,index,question,instance,options);
+						break;
+					}
+				} catch( e ) {
+					com.wiris.quizzes.JsDomUtils.addClass(element,"wiriserrorprocessing");
+					haxe.Log.trace("An error occurred processing the field with class name " + className + " and index " + index + ".",{ fileName : "JsQuizzesFilter.hx", lineNumber : 249, className : "com.wiris.quizzes.JsQuizzesFilter", methodName : "filterFields"});
+					haxe.Log.trace(e,{ fileName : "JsQuizzesFilter.hx", lineNumber : 250, className : "com.wiris.quizzes.JsQuizzesFilter", methodName : "filterFields"});
 				}
 				element.style.display = "none";
 				com.wiris.quizzes.JsDomUtils.addClass(element,"wirisprocessed");
@@ -24819,6 +24825,17 @@ com.wiris.system.JsDOMUtils.addScript = function(d,win,url) {
 		script.setAttribute("type","text/javascript");
 		script.setAttribute("src",url);
 		d.getElementsByTagName("head")[0].appendChild(script);
+		return script;
+	}
+	return null;
+}
+com.wiris.system.JsDOMUtils.addStylesheet = function(d,url) {
+	if(!com.wiris.system.JsDOMUtils.existsCSS(d,url)) {
+		var link = d.createElement("link");
+		link.setAttribute("rel","stylesheet");
+		link.setAttribute("type","text/css");
+		link.setAttribute("href",url);
+		d.getElementsByTagName("head")[0].appendChild(link);
 	}
 }
 com.wiris.system.JsDOMUtils.loadTextFile = function(elem,func) {
