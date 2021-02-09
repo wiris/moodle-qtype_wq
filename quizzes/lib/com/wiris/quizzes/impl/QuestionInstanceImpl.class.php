@@ -929,7 +929,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 					$c = $checks[$i1];
 					if(!(StringTools::startsWith($c->getAssertionName(), "syntax") && ($c->getAnswers()->length > 1 || $c->getCorrectAnswers()->length > 1))) {
 						if(Std::parseInt($c->getCorrectAnswer()) === $correctAnswer) {
-							$correct = $correct && ($c->value === 1.0 || _hx_equal($c->value, 1));
+							$correct = $correct && $c->value > 0.999;
 						}
 					}
 					unset($i1,$c);
