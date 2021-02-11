@@ -6,6 +6,7 @@ class com_wiris_quizzes_impl_SlotImpl extends com_wiris_util_xml_SerializableImp
 		parent::__construct();
 		$this->syntax = com_wiris_quizzes_impl_SyntaxAssertion::getDefaultSyntax();
 		$this->initialContent = new com_wiris_quizzes_impl_InitialContent();
+		$this->initialContent->set("");
 		$this->authorAnswers = new _hx_array(array());
 		$this->localData = new _hx_array(array());
 	}}

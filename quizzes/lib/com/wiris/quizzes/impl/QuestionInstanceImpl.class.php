@@ -755,6 +755,22 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 			if($elements !== null && $index < $elements->length) {
 				$checks = $this->getCompoundAnswerChecks($correctAnswer, $studentAnswer, $elements[$index] . "", true);
 			}
+			$noSuperfluousElementsIndex = $qimpl->getAssertionIndex(com_wiris_quizzes_impl_Assertion::$CHECK_NO_SUPERFLUOUS, _hx_string_rec($correctAnswer, "") . "", _hx_string_rec($studentAnswer, "") . "");
+			if($checks !== null && $noSuperfluousElementsIndex !== -1) {
+				$slotChecks = $this->checks->get(_hx_string_rec($studentAnswer, "") . "");
+				{
+					$_g = 0;
+					while($_g < $slotChecks->length) {
+						$c = $slotChecks[$_g];
+						++$_g;
+						if($c->getAnswer() !== null && $c->getAnswer() === _hx_string_rec($correctAnswer, "") . "" && com_wiris_quizzes_impl_Assertion::$CHECK_NO_SUPERFLUOUS === $c->getAssertionName()) {
+							$checks->push($c);
+							break;
+						}
+						unset($c);
+					}
+				}
+			}
 		} else {
 			$checks = $this->getCompoundAnswerChecks($correctAnswer, $studentAnswer, _hx_string_rec($index, "") . "", false);
 		}
@@ -1081,7 +1097,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		return ((Std::parseInt($a->get("ordinal")) > Std::parseInt($b->get("ordinal"))) ? 1 : -1);
 	}
 	public function parseCompoundGraphicalAssertionChecks($checks) {
-		$toDelete = new _hx_array(array());
+		$parsedChecks = new _hx_array(array());
 		$assertionsInfo = new Hash();
 		{
 			$_g = 0;
@@ -1089,24 +1105,25 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 				$c = $checks[$_g];
 				++$_g;
 				if(_hx_index_of($c->getCorrectAnswer(), "cg", null) === -1) {
+					$parsedChecks->push($c);
 					continue;
 				}
 				$strs = _hx_explode("_", $c->getCorrectAnswer());
 				$correctAnswer = $strs[0];
 				$elemCount = _hx_substr($strs[1], 2, null);
 				$elemId = $strs[2];
-				if(!$assertionsInfo->exists($c->assertion)) {
-					$assertionsInfo->set($c->assertion, new _hx_array(array()));
+				$answer = $c->getAnswer();
+				if(!$assertionsInfo->exists($c->assertion . "_" . $correctAnswer . "_" . $answer)) {
+					$assertionsInfo->set($c->assertion . "_" . $correctAnswer . "_" . $answer, new _hx_array(array()));
 				}
 				$piece = new Hash();
 				$piece->set("elemId", $elemId);
 				$piece->set("ordinal", $elemCount);
 				$piece->set("grade", _hx_string_rec($c->value, "") . "");
 				$piece->set("correctAnswer", $correctAnswer);
-				$piece->set("answer", $c->getAnswer());
-				$assertionsInfo->get($c->assertion)->push($piece);
-				$toDelete->push($c);
-				unset($strs,$piece,$elemId,$elemCount,$correctAnswer,$c);
+				$piece->set("answer", $answer);
+				$assertionsInfo->get($c->assertion . "_" . $correctAnswer . "_" . $answer)->push($piece);
+				unset($strs,$piece,$elemId,$elemCount,$correctAnswer,$c,$answer);
 			}
 		}
 		$it = $assertionsInfo->keys();
@@ -1130,7 +1147,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 					$c->setAnswer($answer . "_cg" . $elemId);
 					$c->setCorrectAnswer($correctAnswer . "_cg" . $elemId);
 					$grade_prev = $grade;
-					$checks->push($c);
+					$parsedChecks->push($c);
 					unset($piece,$i,$grade,$elemId,$c);
 				}
 				unset($_g1,$_g);
@@ -1140,18 +1157,10 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 			$cc->value = (($grade_prev > 0.99) ? 1 : 0);
 			$cc->setAnswer($answer);
 			$cc->setCorrectAnswer($correctAnswer);
-			$checks->push($cc);
+			$parsedChecks->push($cc);
 			unset($pieces,$grade_prev,$correctAnswer,$cc,$assertion,$answer);
 		}
-		{
-			$_g = 0;
-			while($_g < $toDelete->length) {
-				$c = $toDelete[$_g];
-				++$_g;
-				$checks->remove($c);
-				unset($c);
-			}
-		}
+		return $parsedChecks;
 	}
 	public function isCompoundGraphicalAnswerChecks($checks) {
 		if($checks !== null) {
@@ -1223,7 +1232,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 							$assertionsResult = $result;
 							$resultChecks = $assertionsResult->checks;
 							if($this->isCompoundGraphicalAnswerChecks($resultChecks)) {
-								$this->parseCompoundGraphicalAssertionChecks($resultChecks);
+								$resultChecks = $this->parseCompoundGraphicalAssertionChecks($resultChecks);
 							}
 							if($this->isCompoundAnswerChecks($resultChecks)) {
 								$this->collapseCompoundAnswerChecks($resultChecks);

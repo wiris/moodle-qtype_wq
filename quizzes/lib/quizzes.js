@@ -1102,6 +1102,14 @@ com.wiris.hand.HandListener.prototype = {
 	,contentChanged: null
 	,__class__: com.wiris.hand.HandListener
 }
+if(!com.wiris.kernel) com.wiris.kernel = {}
+if(!com.wiris.kernel.plotter) com.wiris.kernel.plotter = {}
+com.wiris.kernel.plotter.QuizzesCorrectAnswerPlotter = $hxClasses["com.wiris.kernel.plotter.QuizzesCorrectAnswerPlotter"] = function() { }
+com.wiris.kernel.plotter.QuizzesCorrectAnswerPlotter.__name__ = ["com","wiris","kernel","plotter","QuizzesCorrectAnswerPlotter"];
+com.wiris.kernel.plotter.QuizzesCorrectAnswerPlotter.prototype = {
+	getElementsToGrade: null
+	,__class__: com.wiris.kernel.plotter.QuizzesCorrectAnswerPlotter
+}
 if(!com.wiris.util) com.wiris.util = {}
 if(!com.wiris.util.graphics) com.wiris.util.graphics = {}
 com.wiris.util.graphics.Display = $hxClasses["com.wiris.util.graphics.Display"] = function() { }
@@ -1142,8 +1150,6 @@ com.wiris.util.graphics.Display.prototype = {
 	,getOptionDictionary: null
 	,__class__: com.wiris.util.graphics.Display
 }
-if(!com.wiris.kernel) com.wiris.kernel = {}
-if(!com.wiris.kernel.plotter) com.wiris.kernel.plotter = {}
 com.wiris.kernel.plotter.QuizzesValidationPlotter = $hxClasses["com.wiris.kernel.plotter.QuizzesValidationPlotter"] = function() { }
 com.wiris.kernel.plotter.QuizzesValidationPlotter.__name__ = ["com","wiris","kernel","plotter","QuizzesValidationPlotter"];
 com.wiris.kernel.plotter.QuizzesValidationPlotter.__interfaces__ = [com.wiris.util.graphics.Display];
@@ -1152,7 +1158,7 @@ com.wiris.kernel.plotter.QuizzesValidationPlotter.prototype = {
 	,focusElement: null
 	,setElementTolerances: null
 	,setElementTolerance: null
-	,getElementsSummary: null
+	,getElementSummary: null
 	,__class__: com.wiris.kernel.plotter.QuizzesValidationPlotter
 }
 if(!com.wiris.quizzes) com.wiris.quizzes = {}
@@ -1997,18 +2003,6 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		mc.set(value);
 		return this.mathContentToFilterableValue(mc);
 	}
-	,getGraphElementsFromGeometryFile: function(geometryFile) {
-		var parsed = com.wiris.util.geometry.GeometryFile.readJSON(geometryFile);
-		var identifiers = new Array();
-		var i;
-		var _g1 = 0, _g = parsed.getElementsLength();
-		while(_g1 < _g) {
-			var i1 = _g1++;
-			var element = parsed.getElement(i1);
-			if(!(element.getType() == com.wiris.util.geometry.GeometryElement.LABEL)) identifiers.push(element.getId());
-		}
-		return identifiers;
-	}
 	,getElementsToGrade: function(geometryFile,assertion) {
 		if(assertion.getParam(com.wiris.quizzes.impl.Assertion.PARAM_ELEMENTS_TO_GRADE) != null) {
 			var ao = com.wiris.util.json.JSon.getArray(com.wiris.util.json.JSon.decode(assertion.getParam(com.wiris.quizzes.impl.Assertion.PARAM_ELEMENTS_TO_GRADE)));
@@ -2020,7 +2014,10 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 				strings.push(com.wiris.util.json.JSon.getString(o));
 			}
 			return strings;
-		} else return this.getGraphElementsFromGeometryFile(geometryFile);
+		} else {
+			var g = com.wiris.util.geometry.GeometryFile.readJSON(geometryFile);
+			return g.getDisplaysLength() >= 1?g.getDisplay(0).getElementNames():new Array();
+		}
 	}
 	,getElementsToGradeFromAuthorAnswer: function(authorAnswer) {
 		return this.getElementsToGrade(authorAnswer.getValue(),authorAnswer.getComparison());
@@ -10596,6 +10593,19 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 			var ass = qimpl.getAssertion(graphicalAssertionIndex);
 			var elements = com.wiris.quizzes.impl.QuizzesImpl.getInstance().getElementsToGrade(ca,ass);
 			if(elements != null && index < elements.length) checks = this.getCompoundAnswerChecks(correctAnswer,studentAnswer,elements[index] + "",true);
+			var noSuperfluousElementsIndex = qimpl.getAssertionIndex(com.wiris.quizzes.impl.Assertion.CHECK_NO_SUPERFLUOUS,correctAnswer + "",studentAnswer + "");
+			if(checks != null && noSuperfluousElementsIndex != -1) {
+				var slotChecks = this.checks.get(studentAnswer + "");
+				var _g = 0;
+				while(_g < slotChecks.length) {
+					var c = slotChecks[_g];
+					++_g;
+					if(c.getAnswer() != null && c.getAnswer() == correctAnswer + "" && com.wiris.quizzes.impl.Assertion.CHECK_NO_SUPERFLUOUS == c.getAssertionName()) {
+						checks.push(c);
+						break;
+					}
+				}
+			}
 		} else checks = this.getCompoundAnswerChecks(correctAnswer,studentAnswer,index + "",false);
 		var grade = 0.0;
 		if(checks != null) grade = this.prodChecks(checks,-1,-1);
@@ -10844,26 +10854,29 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		return Std.parseInt(a.get("ordinal")) > Std.parseInt(b.get("ordinal"))?1:-1;
 	}
 	,parseCompoundGraphicalAssertionChecks: function(checks) {
-		var toDelete = new Array();
+		var parsedChecks = new Array();
 		var assertionsInfo = new Hash();
 		var _g = 0;
 		while(_g < checks.length) {
 			var c = checks[_g];
 			++_g;
-			if(c.getCorrectAnswer().indexOf("cg") == -1) continue;
+			if(c.getCorrectAnswer().indexOf("cg") == -1) {
+				parsedChecks.push(c);
+				continue;
+			}
 			var strs = c.getCorrectAnswer().split("_");
 			var correctAnswer = strs[0];
 			var elemCount = HxOverrides.substr(strs[1],2,null);
 			var elemId = strs[2];
-			if(!assertionsInfo.exists(c.assertion)) assertionsInfo.set(c.assertion,new Array());
+			var answer = c.getAnswer();
+			if(!assertionsInfo.exists(c.assertion + "_" + correctAnswer + "_" + answer)) assertionsInfo.set(c.assertion + "_" + correctAnswer + "_" + answer,new Array());
 			var piece = new Hash();
 			piece.set("elemId",elemId);
 			piece.set("ordinal",elemCount);
 			piece.set("grade",c.value + "");
 			piece.set("correctAnswer",correctAnswer);
-			piece.set("answer",c.getAnswer());
-			assertionsInfo.get(c.assertion).push(piece);
-			toDelete.push(c);
+			piece.set("answer",answer);
+			assertionsInfo.get(c.assertion + "_" + correctAnswer + "_" + answer).push(piece);
 		}
 		var it = assertionsInfo.keys();
 		while(it.hasNext()) {
@@ -10885,21 +10898,16 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 				c.setAnswer(answer + "_cg" + elemId);
 				c.setCorrectAnswer(correctAnswer + "_cg" + elemId);
 				grade_prev = grade;
-				checks.push(c);
+				parsedChecks.push(c);
 			}
 			var cc = new com.wiris.quizzes.impl.AssertionCheckImpl();
 			cc.assertion = assertion;
 			cc.value = grade_prev > 0.99?1:0;
 			cc.setAnswer(answer);
 			cc.setCorrectAnswer(correctAnswer);
-			checks.push(cc);
+			parsedChecks.push(cc);
 		}
-		var _g = 0;
-		while(_g < toDelete.length) {
-			var c = toDelete[_g];
-			++_g;
-			HxOverrides.remove(checks,c);
-		}
+		return parsedChecks;
 	}
 	,isCompoundGraphicalAnswerChecks: function(checks) {
 		if(checks != null) {
@@ -10954,7 +10962,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 					}
 					var assertionsResult = result;
 					var resultChecks = assertionsResult.checks;
-					if(this.isCompoundGraphicalAnswerChecks(resultChecks)) this.parseCompoundGraphicalAssertionChecks(resultChecks);
+					if(this.isCompoundGraphicalAnswerChecks(resultChecks)) resultChecks = this.parseCompoundGraphicalAssertionChecks(resultChecks);
 					if(this.isCompoundAnswerChecks(resultChecks)) this.collapseCompoundAnswerChecks(resultChecks);
 					this.checks = this.checksToHash(resultChecks,this.checks);
 				}
@@ -11837,6 +11845,7 @@ com.wiris.quizzes.impl.SlotImpl = $hxClasses["com.wiris.quizzes.impl.SlotImpl"] 
 	com.wiris.util.xml.SerializableImpl.call(this);
 	this.syntax = com.wiris.quizzes.impl.SyntaxAssertion.getDefaultSyntax();
 	this.initialContent = new com.wiris.quizzes.impl.InitialContent();
+	this.initialContent.set("");
 	this.authorAnswers = new Array();
 	this.localData = new Array();
 };
@@ -12185,6 +12194,9 @@ com.wiris.util.ui.component.Component = $hxClasses["com.wiris.util.ui.component.
 	this.defaultFocusListeners = new Array();
 	this.defaultKeyListeners = new Array();
 	this.defaultDragAndDropListeners = new Array();
+	this.actionListenersLocked = false;
+	this.actionListenersToRemove = new Array();
+	this.actionListenersToAdd = new Array();
 	this.addFocusListener(this.componentStateManager);
 	this.addKeyListener(this.componentStateManager);
 	this.addMouseListener(this.componentStateManager);
@@ -12233,7 +12245,23 @@ com.wiris.util.ui.component.Component.prototype = {
 		if(com.wiris.util.ui.interaction.EventType.ACTION_EVENT == eventType) {
 			var actionEvent = e;
 			var i = HxOverrides.iter(this.actionListeners);
+			this.actionListenersLocked = true;
 			while(i.hasNext() && e.isPropagating()) this.fireActionEvent(i.next(),actionEvent);
+			var _g = 0, _g1 = this.actionListenersToRemove;
+			while(_g < _g1.length) {
+				var l = _g1[_g];
+				++_g;
+				HxOverrides.remove(this.actionListeners,l);
+			}
+			var _g = 0, _g1 = this.actionListenersToAdd;
+			while(_g < _g1.length) {
+				var l = _g1[_g];
+				++_g;
+				this.actionListeners.push(l);
+			}
+			this.actionListenersToRemove = new Array();
+			this.actionListenersToAdd = new Array();
+			this.actionListenersLocked = false;
 			i = HxOverrides.iter(this.defaultActionListeners);
 			while(i.hasNext() && !e.defaultIsPrevented()) this.fireActionEvent(i.next(),actionEvent);
 		} else if(com.wiris.util.ui.interaction.EventType.CHANGE_EVENT == eventType) {
@@ -12401,14 +12429,14 @@ com.wiris.util.ui.component.Component.prototype = {
 		return this;
 	}
 	,removeActionListener: function(listener) {
-		HxOverrides.remove(this.actionListeners,listener);
+		if(this.actionListenersLocked) this.actionListenersToRemove.push(listener); else HxOverrides.remove(this.actionListeners,listener);
 		return this;
 	}
 	,isActionListener: function(listener) {
-		return com.wiris.system.ArrayEx.contains(this.actionListeners,listener);
+		if(this.actionListenersLocked) return com.wiris.system.ArrayEx.contains(this.actionListeners,listener) && !com.wiris.system.ArrayEx.contains(this.actionListenersToRemove,listener) || com.wiris.system.ArrayEx.contains(this.actionListenersToAdd,listener); else return com.wiris.system.ArrayEx.contains(this.actionListeners,listener);
 	}
 	,addActionListener: function(listener) {
-		this.actionListeners.push(listener);
+		if(this.actionListenersLocked) this.actionListenersToAdd.push(listener); else this.actionListeners.push(listener);
 		return this;
 	}
 	,removeComponentListener: function(listener) {
@@ -12588,6 +12616,9 @@ com.wiris.util.ui.component.Component.prototype = {
 	,getId: function() {
 		return this.id;
 	}
+	,actionListenersToAdd: null
+	,actionListenersToRemove: null
+	,actionListenersLocked: null
 	,defaultDragAndDropListeners: null
 	,defaultKeyListeners: null
 	,defaultFocusListeners: null
@@ -13618,7 +13649,10 @@ com.wiris.quizzes.impl.ui.QuizzesContext.getInstance = function() {
 	return com.wiris.quizzes.impl.ui.QuizzesContext.instance;
 }
 com.wiris.quizzes.impl.ui.QuizzesContext.prototype = {
-	getTranslator: function() {
+	getGraphTranslator: function() {
+		return this.graphTranslatorContainer.getTranslator(this.language);
+	}
+	,getTranslator: function() {
 		return this.translatorContainer.getTranslator(this.language);
 	}
 	,setLanguage: function(language) {
@@ -13631,8 +13665,7 @@ com.wiris.quizzes.impl.ui.QuizzesContext.prototype = {
 		return this.translatorContainer.getAvailableLanguages();
 	}
 	,graphT: function(code) {
-		var translator = this.graphTranslatorContainer.getTranslator(this.language);
-		return translator.t(code);
+		return this.getGraphTranslator().t(code);
 	}
 	,t: function(code) {
 		return this.getTranslator().t(code);
@@ -13817,6 +13850,35 @@ com.wiris.quizzes.impl.ui.QuizzesStudioContext.prototype = {
 	,generateQuestionInstance: function() {
 		this.questionInstance = com.wiris.quizzes.api.Quizzes.getInstance().newQuestionInstance(this.question);
 		return this.questionInstance;
+	}
+	,getGraphicalRatios: function() {
+		var active = this.getGraphicalElementsActive();
+		var ret = new Array();
+		var _g = 0;
+		while(_g < active.length) {
+			var elem = active[_g];
+			++_g;
+			ret.push(this.graphicalElements.get(elem) + "");
+		}
+		return ret;
+	}
+	,setGraphicalElements: function(graphicalElements) {
+		this.graphicalElements = graphicalElements;
+	}
+	,getGraphicalElementsActive: function() {
+		var ret = new Array();
+		var i = this.graphicalElements.keys();
+		while(i.hasNext()) {
+			var elem = i.next();
+			if(this.isGraphicalElementActive(elem)) ret.push(elem);
+		}
+		return ret;
+	}
+	,isGraphicalElementActive: function(elem) {
+		return this.graphicalElements.exists(elem) && !(com.wiris.quizzes.impl.ui.QuizzesStudioContext.GRAPHICAL_ELEMENT_NOT_ACTIVE == this.graphicalElements.get(elem));
+	}
+	,getGraphicalElements: function() {
+		return this.graphicalElements;
 	}
 	,isInlineMathEditor: function() {
 		return this.fieldType == com.wiris.quizzes.api.ui.AuthoringFieldType.INLINE_MATH_EDITOR;
@@ -14039,6 +14101,7 @@ com.wiris.quizzes.impl.ui.QuizzesStudioContext.prototype = {
 	,globalContext: null
 	,fieldType: null
 	,authoringField: null
+	,graphicalElements: null
 	,correctAnswerUpdated: null
 	,showAllOptions: null
 	,featuredAssertions: null
@@ -15312,7 +15375,10 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.__name__ = ["com","wi
 com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.__interfaces__ = [com.wiris.util.ui.interaction.MouseListener];
 com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.__super__ = com.wiris.util.ui.component.FlowPanel;
 com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.prototype = $extend(com.wiris.util.ui.component.FlowPanel.prototype,{
-	mouseExit: function(e) {
+	getCorrectAnswerGraph: function() {
+		return this.correctAnswerGraph;
+	}
+	,mouseExit: function(e) {
 	}
 	,mouseEnter: function(e) {
 	}
@@ -15795,7 +15861,6 @@ com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity = $hxClasses[
 	com.wiris.util.ui.component.ActivityPanel.call(this);
 	this.addClass(com.wiris.util.ui.component.Panel.CLASS_PANEL_SOLID).addClass(com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.CLASS_GRAPH_VALIDATION_OPTIONS);
 	this.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHeightWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT);
-	this.controller = controller;
 	var wrapper = new com.wiris.util.ui.component.FlowPanel(com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
 	wrapper.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHeightWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setVerticalAlignment(com.wiris.util.ui.Style.VERTICAL_ALIGNMENT_TOP);
 	wrapper.addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_FULL_SIZE_PANEL);
@@ -15872,28 +15937,15 @@ com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.prototype = $
 	,focusGraphElement: function(element) {
 		this.getPlotter().focusElement(element);
 	}
-	,updateGraphElementTolerances: function(elements,tolerance) {
-		if(elements == null) this.getPlotter().setElementTolerances(tolerance); else {
-			this.getPlotter().setElementTolerances(0);
-			var _g = 0;
-			while(_g < elements.length) {
-				var elem = elements[_g];
-				++_g;
-				this.getPlotter().setElementTolerance(elem,Std.parseFloat(this.toleranceSlider.getValue()));
-			}
+	,updateGraphElementTolerances: function(context) {
+		var toleranceStr = context.getAuthorAnswer().getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE);
+		var tolerance = toleranceStr != null?Std.parseFloat(toleranceStr):0;
+		this.getPlotter().setElementTolerances(0);
+		var i = context.getGraphicalElements().keys();
+		while(i.hasNext()) {
+			var elem = i.next();
+			if(context.isGraphicalElementActive(elem)) this.getPlotter().setElementTolerance(elem,tolerance);
 		}
-	}
-	,setTolerance: function(tolerance) {
-		this.toleranceSlider.setValue(tolerance);
-	}
-	,setMatchColor: function(selected) {
-		this.matchColorCheckBox.setSelected(selected);
-	}
-	,setMatchLineStyle: function(selected) {
-		this.matchLineStyleCheckBox.setSelected(selected);
-	}
-	,setSuperfluous: function(selected) {
-		this.superfluousCheckBox.setSelected(selected);
 	}
 	,updateGraphicalMaxTolerance: function(newGraphSize) {
 		var tolerance = Std.parseFloat(this.toleranceSlider.getValue()), newTolerance;
@@ -15905,20 +15957,37 @@ com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.prototype = $
 		this.toleranceSlider.setRange(0,newMax).setValue(newTolerance + "");
 		return tolerance;
 	}
-	,updateContent: function(value,distribute,ratios,activeElements) {
-		this.graphView.setValue(value);
-		this.populateElementSelector(ratios,activeElements,distribute);
-	}
-	,populateElementSelector: function(ratios,activeElements,distribute) {
-		var elements = new Array();
-		this.elementSelector.clean();
-		try {
-			elements = this.getPlotter().getElementsSummary(false,false);
-		} catch( t ) {
-			this.elementSelector.setMessage(this.controller.t(com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.LOADING_ELEMENTS_ERROR));
-			return;
+	,updateContent: function(context) {
+		var authorAnswer = context.getAuthorAnswer();
+		this.graphView.setValue(authorAnswer.getValue());
+		var syntax = context.getSlot().getSyntax();
+		if(syntax.getName() == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC) {
+			var superfluous = false;
+			var matchColor = false;
+			var matchLineStyle = false;
+			var validations = authorAnswer.getValidations();
+			var _g = 0;
+			while(_g < validations.length) {
+				var v = validations[_g];
+				++_g;
+				if(v.getName() == com.wiris.quizzes.api.assertion.ValidationName.CHECK_NO_SUPERFLUOUS) superfluous = true; else if(v.getName() == com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE) matchLineStyle = true; else if(v.getName() == com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR) matchColor = true;
+			}
+			this.superfluousCheckBox.setSelected(superfluous);
+			this.matchLineStyleCheckBox.setSelected(matchLineStyle);
+			this.matchColorCheckBox.setSelected(matchColor);
+			this.toleranceSlider.setValue(authorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE));
 		}
-		this.elementSelector.setGraphAnswers(elements,ratios,activeElements,distribute);
+		this.elementSelector.clean();
+		var elements = new Array();
+		var i = context.getGraphicalElements().keys();
+		while(i.hasNext()) {
+			var elem = i.next();
+			var elemSummary = this.getPlotter().getElementSummary(elem);
+			elements.push(elemSummary);
+		}
+		var distribute = context.getSlot().getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE;
+		this.elementSelector.setGraphAnswers(elements,context.getGraphicalRatios(),context.getGraphicalElementsActive(),distribute);
+		this.updateGraphElementTolerances(context);
 	}
 	,graphSize: null
 	,toleranceSlider: null
@@ -15927,7 +15996,6 @@ com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.prototype = $
 	,superfluousCheckBox: null
 	,elementSelector: null
 	,graphView: null
-	,controller: null
 	,__class__: com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity
 });
 com.wiris.quizzes.impl.ui.component.GraphValidationSelector = $hxClasses["com.wiris.quizzes.impl.ui.component.GraphValidationSelector"] = function(controller) {
@@ -16087,37 +16155,35 @@ com.wiris.quizzes.impl.ui.component.GraphValidationSelector.prototype = $extend(
 	,areValuesDistributed: function() {
 		return this.gradeDistribution.isSelected();
 	}
-	,getActiveElements: function() {
-		var array = new Array();
+	,getGraphicalElements: function() {
+		var ret = new Hash();
 		var _g = 0, _g1 = this.elements;
 		while(_g < _g1.length) {
 			var element = _g1[_g];
 			++_g;
-			if(element.isActive()) array.push(element.getId());
+			var ratio = element.isActive()?Std.parseFloat(element.getValue()):com.wiris.quizzes.impl.ui.QuizzesStudioContext.GRAPHICAL_ELEMENT_NOT_ACTIVE;
+			ret.set(element.getId(),ratio);
 		}
-		return array;
-	}
-	,areAllElementsSelected: function() {
-		return this.checkBoxHeader.isSelected() && !this.checkBoxHeader.hasClass(com.wiris.quizzes.impl.ui.component.GraphValidationSelector.CLASS_UNDETERMINED);
+		return ret;
 	}
 	,setMessage: function(message) {
 		var label = com.wiris.util.ui.component.Label.newImportantWithText(message);
 		label.getStyle().setMargin(30,30,30,30);
 		this.elementsPanel.addComponent(label);
 	}
-	,setGraphAnswersImpl: function(elements,ratios,activeElements,distribute) {
-		if(elements != null && elements.length > 0) {
-			var surpassMaxRatio = false;
-			if(ratios.length > 0) {
-				var totalRatios = 0;
-				var _g = 0;
-				while(_g < ratios.length) {
-					var ratio = ratios[_g];
-					++_g;
-					totalRatios += Std.parseFloat(ratio);
-				}
-				if(totalRatios < this.ROUND_VALUE || totalRatios > this.MAX_VALUE) surpassMaxRatio = true;
+	,setGraphAnswers: function(elements,ratios,activeElements,distribute) {
+		var surpassMaxRatio = false;
+		if(ratios.length > 0) {
+			var totalRatios = 0;
+			var _g = 0;
+			while(_g < ratios.length) {
+				var ratio = ratios[_g];
+				++_g;
+				totalRatios += Std.parseFloat(ratio);
 			}
+			if(totalRatios < this.ROUND_VALUE || totalRatios > this.MAX_VALUE) surpassMaxRatio = true;
+		}
+		if(elements.length > 1) {
 			var defaultAnswerWeight = 1.0 / elements.length * 100.0;
 			var defaultAnswerLabel = (defaultAnswerWeight + "").substring(0,defaultAnswerWeight > 10.0?4:3);
 			var lastAnswerWeight = 100.0 - (elements.length - 1.0) * Std.parseFloat(defaultAnswerLabel);
@@ -16152,32 +16218,9 @@ com.wiris.quizzes.impl.ui.component.GraphValidationSelector.prototype = $extend(
 				validationElement.addActionListener(this);
 				validationElement.addMouseListener(this);
 			}
-			this.updateHeaderCheckboxState();
-			this.gradeDistribution.setSelected(distribute);
 		}
-	}
-	,setGraphAnswers: function(elements,ratios,activeElements,distribute) {
-		var answerRatios = new Array();
-		var active = new Array();
-		if(activeElements != null) active = com.wiris.util.json.JSon.decode(activeElements); else {
-			var _g = 0;
-			while(_g < elements.length) {
-				var element = elements[_g];
-				++_g;
-				active.push(element.getId());
-			}
-		}
-		if(ratios != null && !(ratios == "")) {
-			var tempRatios = ratios.split(" ");
-			if(tempRatios.length == active.length) answerRatios = tempRatios;
-		} else if(active.length > 0) {
-			var _g1 = 0, _g = active.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				answerRatios.push(100.0 / active.length + "");
-			}
-		}
-		this.setGraphAnswersImpl(elements,answerRatios,active,distribute);
+		this.updateHeaderCheckboxState();
+		this.gradeDistribution.setSelected(distribute);
 	}
 	,clean: function() {
 		this.elementsPanel.removeAllComponents();
@@ -18636,7 +18679,10 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__name__ = ["com","wi
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__interfaces__ = [com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent,com.wiris.util.ui.interaction.KeyListener];
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__super__ = com.wiris.util.ui.component.BorderPanel;
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(com.wiris.util.ui.component.BorderPanel.prototype,{
-	innerContentChanged: function() {
+	getCorrectAnswerGraph: function() {
+		return this.home.getCorrectAnswerGraph();
+	}
+	,innerContentChanged: function() {
 		this.saveQuestion();
 	}
 	,getComponent: function() {
@@ -18679,14 +18725,11 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 	,focusGraphElement: function(element) {
 		this.graphValidationOptions.focusGraphElement(element);
 	}
-	,updateMaxTolerance: function(graphWidth) {
-		return this.graphValidationOptions.updateGraphicalMaxTolerance(graphWidth);
-	}
 	,updateGraphicalMaxTolerance: function(graphSize) {
 		return this.graphValidationOptions.updateGraphicalMaxTolerance(graphSize);
 	}
-	,updateGraphElementTolerances: function(elements,tolerance) {
-		this.graphValidationOptions.updateGraphElementTolerances(elements,tolerance);
+	,updateGraphElementTolerances: function(context) {
+		this.graphValidationOptions.updateGraphElementTolerances(context);
 	}
 	,setMinHeight: function(px) {
 		if(this.getContext() != null && this.getContext().isInlineQuizzesStudio()) this.getStyle().setMinHeight(px); else this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_MIN_HEIGHT_CHANGED_ACTION_ID,px + "px"));
@@ -18805,33 +18848,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 		if(this.variableOptions.isUseCas()) this.variableOptions.setCasOutputOptions(questionImpl,context.getSlot());
 	}
 	,updateGraphValidationOptions: function(context) {
-		var slot = context.getSlot();
-		var authorAnswer = context.getAuthorAnswer();
-		var graphValue = authorAnswer.getValue();
-		var syntax = slot.getSyntax();
-		var syntaxAssertion = syntax.getName();
-		var validations = authorAnswer.getValidations();
-		var distribute = slot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE;
-		var ratios = slot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION);
-		var activeElements = authorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE);
-		var tolerance = authorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE);
-		var superfluous = false;
-		var matchColor = false;
-		var matchLineStyle = false;
-		var _g = 0;
-		while(_g < validations.length) {
-			var v = validations[_g];
-			++_g;
-			if(v.getName() == com.wiris.quizzes.api.assertion.ValidationName.CHECK_NO_SUPERFLUOUS) superfluous = true; else if(v.getName() == com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE) matchLineStyle = true; else if(v.getName() == com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR) matchColor = true;
-		}
-		if(syntaxAssertion == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC) {
-			this.graphValidationOptions.setSuperfluous(superfluous);
-			this.graphValidationOptions.setMatchLineStyle(matchLineStyle);
-			this.graphValidationOptions.setMatchColor(matchColor);
-			this.graphValidationOptions.setTolerance(tolerance);
-		}
-		this.graphValidationOptions.updateContent(graphValue,distribute,ratios,activeElements);
-		this.graphValidationOptions.updateGraphElementTolerances(activeElements == null?null:com.wiris.util.json.JSon.decode(activeElements),tolerance == null?0:Std.parseFloat(tolerance));
+		this.graphValidationOptions.updateContent(context);
 		this.updateLayout(context,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_TITLE,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_INPUT_OPTIONS_HELP_URL,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_ID);
 	}
 	,updateGraphToolbar: function(context) {
@@ -19018,12 +19035,15 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 		while(this.activityContainer.getHistory().length > 0) this.activityContainer.returnToPreviousActivity();
 	}
 	,getPreviousActivityId: function() {
-		var lastActivity = this.activityContainer.getHistory()[this.activityContainer.getHistory().length - 1];
-		var registeredActivities = this.activityContainer.getRegisteredActivities();
-		var i = registeredActivities.keys();
-		while(i.hasNext()) {
-			var activityId = i.next();
-			if(registeredActivities.get(activityId) == lastActivity) return activityId;
+		var historyLength = this.activityContainer.getHistory().length;
+		if(historyLength > 0) {
+			var lastActivity = this.activityContainer.getHistory()[historyLength - 1];
+			var registeredActivities = this.activityContainer.getRegisteredActivities();
+			var i = registeredActivities.keys();
+			while(i.hasNext()) {
+				var activityId = i.next();
+				if(registeredActivities.get(activityId) == lastActivity) return activityId;
+			}
 		}
 		return null;
 	}
@@ -19108,7 +19128,10 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeActivity = $hxClasses["com.
 com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeActivity.__name__ = ["com","wiris","quizzes","impl","ui","component","QuizzesStudioHomeActivity"];
 com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeActivity.__super__ = com.wiris.util.ui.component.ActivityPanel;
 com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeActivity.prototype = $extend(com.wiris.util.ui.component.ActivityPanel.prototype,{
-	getMainFocus: function() {
+	getCorrectAnswerGraph: function() {
+		return this.correctAnswerContainer.getCorrectAnswerGraph();
+	}
+	,getMainFocus: function() {
 		return this.correctAnswerContainer.getMainFocus();
 	}
 	,setGraphCustomToolbar: function(customToolbar) {
@@ -19307,6 +19330,11 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioPopupWindow.prototype = $extend
 			this.close();
 			this.performAction(action);
 		} else if(actionId == com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_MIN_HEIGHT_CHANGED_ACTION_ID) this.getStyle().setCSSVariable("--quizzes-studio-min-height",action.getCommand()); else com.wiris.quizzes.impl.ui.component.PopupWindow.prototype.actionPerformed.call(this,e);
+	}
+	,easyModalClose: function() {
+		var inputQuestion = this.getContext().getInputQuestion().getImpl();
+		var question = this.getContext().getQuestion().getImpl();
+		if(question.serialize() == inputQuestion.serialize()) this.close(); else this.confirmDialog.open();
 	}
 	,setMinHeight: function(authoringField) {
 		if(authoringField.getContext().getSlot().getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC) {
@@ -20899,10 +20927,6 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController = $hxClasses["com.w
 	this.updating = false;
 	this.quizzesStudio = quizzesStudio;
 	this.quizzesStudio.addActionListener(this);
-	this.graphAllElementsActive = true;
-	this.graphRatios = new Array();
-	this.graphElements = new Array();
-	this.graphActiveElements = new Array();
 	this.inputType = com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR;
 	this.evaluationRequest = new com.wiris.quizzes.impl.ui.controller.EvaluationRequestController(this);
 	this.variablesRequest = new com.wiris.quizzes.impl.ui.controller.VariablesRequestController(this);
@@ -20911,7 +20935,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController = $hxClasses["com.w
 	this.reservedWordsRequestController = new com.wiris.quizzes.impl.ui.controller.ReservedWordsRequestController(this);
 };
 com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.__name__ = ["com","wiris","quizzes","impl","ui","controller","QuizzesStudioController"];
-com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.__interfaces__ = [com.wiris.quizzes.impl.ui.controller.ReservedWordsConsumer,com.wiris.util.ui.interaction.ChangeListener,com.wiris.util.ui.interaction.ActionListener];
+com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.__interfaces__ = [com.wiris.util.ui.interaction.InputComponentListener,com.wiris.quizzes.impl.ui.controller.ReservedWordsConsumer,com.wiris.util.ui.interaction.ChangeListener,com.wiris.util.ui.interaction.ActionListener];
 com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.splitEscaped = function(target,delimiter) {
 	if(target != null && !(target == "")) {
 		target = StringTools.replace(target,"\\,","\\comma");
@@ -20928,7 +20952,12 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.splitEscaped = func
 	} else return new Array();
 }
 com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
-	algorithmEditorActionWithParams: function(name,parameters) {
+	filterEmptyMathML: function(mathml) {
+		if(com.wiris.quizzes.impl.MathContent.getMathType(mathml) == com.wiris.quizzes.impl.MathContent.TYPE_MATHML) {
+			if(!com.wiris.quizzes.impl.MathContent.isEmpty(mathml)) return mathml; else return "";
+		} else return mathml;
+	}
+	,algorithmEditorActionWithParams: function(name,parameters) {
 		this.quizzesStudio.algorithmEditorActionWithParams(name,parameters);
 	}
 	,setContext: function(context) {
@@ -21121,6 +21150,12 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		this.functionName = value;
 		this.setComparisonAssertionParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.FUNCTION_NAME,this.functionName);
 	}
+	,setElementsToGradeParameter: function(active) {
+		var paramValue = com.wiris.util.json.JSon.encode(active);
+		this.setComparisonAssertionParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE,paramValue);
+		if(this.context.getAuthorAnswer().getValidation(com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR) != null) this.setValidationAssertionParameter(com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR,com.wiris.quizzes.api.assertion.ValidationParameterName.ELEMENTS_TO_GRADE,paramValue);
+		if(this.context.getAuthorAnswer().getValidation(com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE) != null) this.setValidationAssertionParameter(com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE,com.wiris.quizzes.api.assertion.ValidationParameterName.ELEMENTS_TO_GRADE,paramValue);
+	}
 	,actionPerformed: function(e) {
 		if(this.updating || this.context == null) return;
 		var source = e.getSource();
@@ -21175,10 +21210,10 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 			this.setProperty(com.wiris.quizzes.api.PropertyName.CAS_SESSION,algorithm);
 		} else if("initialContentChanged" == actionId) {
 			var initialContent = source.getValue();
-			this.setInitialContent(initialContent);
+			this.setInitialContent(this.filterEmptyMathML(initialContent));
 		} else if("studioCorrectAnswerChanged" == actionId) {
 			var correctAnswer = source.getValue();
-			this.setStudioCorrectAnswer(correctAnswer);
+			this.setStudioCorrectAnswer(this.filterEmptyMathML(correctAnswer));
 			this.context.setPreviewCorrectAnswerUpdated(false);
 			if(!this.context.isShowAllOptions() && this.context.getSlot().getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH) {
 				this.updateFeaturedSyntaxAssertions(com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.REQUEST_DISABLE_IF_NOT_COMPLIANT);
@@ -21186,37 +21221,24 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 			}
 			if(this.context.getSlot().getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH && this.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE) this.updateCurrentActivity();
 			if(js.Boot.__instanceof(source,com.wiris.quizzes.impl.ui.component.GraphInputComponent)) {
-				try {
-					var display = source.getGraph().getGraphModel().getDisplay();
-					var summary = display.getElementsSummary(false,false);
-					this.graphElements = new Array();
-					var _g = 0;
-					while(_g < summary.length) {
-						var element = summary[_g];
-						++_g;
-						this.graphElements.push(element.getId());
-					}
-					if(this.graphAllElementsActive && this.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_AND) {
-						this.graphActiveElements = this.graphElements;
-						this.graphRatios = new Array();
-					} else {
-						var _g1 = 0, _g = this.graphActiveElements.length;
-						while(_g1 < _g) {
-							var i = _g1++;
-							if(!com.wiris.system.ArrayEx.contains(this.graphElements,this.graphActiveElements[i])) {
-								if(this.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE) this.graphRatios.splice(i,1);
-								this.graphActiveElements.splice(i,1);
-							}
-						}
-					}
-				} catch( t ) {
-					this.graphRatios = new Array();
-					this.graphElements = new Array();
-					this.graphActiveElements = new Array();
+				var correctAnswerGraph = source;
+				var correctAnswerPlotter = correctAnswerGraph.getGraph().getGraphModel().getDisplay();
+				var correctAnswerElements = correctAnswerPlotter.getElementsToGrade(false,false,false);
+				var previousGraphElements = this.context.getGraphicalElements();
+				var graphElements = new Hash();
+				var _g = 0;
+				while(_g < correctAnswerElements.length) {
+					var elem = correctAnswerElements[_g];
+					++_g;
+					var ratio = previousGraphElements.exists(elem)?previousGraphElements.get(elem):0.0;
+					graphElements.set(elem,ratio);
 				}
-				if(this.graphActiveElements.length > 1) this.setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE); else this.setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE);
-				if(this.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE) this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION,this.graphRatios.join(" "));
-				if(this.graphAllElementsActive) this.removeComparisonAssertionParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE); else this.setComparisonAssertionParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE,com.wiris.util.json.JSon.encode(this.graphActiveElements));
+				this.context.setGraphicalElements(graphElements);
+				var graphActiveElements = this.context.getGraphicalElementsActive();
+				this.setElementsToGradeParameter(graphActiveElements);
+				if(graphActiveElements.length > 1) this.setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE); else this.setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE);
+				var graphRatios = this.context.getGraphicalRatios();
+				if(this.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE) this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION,graphRatios.join(" "));
 			}
 		} else if("graphToolbarChanged" == actionId) {
 			var graphDefinition = source.computeGraphToolbarDefinition();
@@ -21251,29 +21273,30 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 			if(js.Boot.__instanceof(source,com.wiris.quizzes.impl.ui.component.GraphInputComponent)) {
 				var graphModel = source.getGraph().getGraphModel();
 				var graphWidth = Std.parseFloat(Std.string(graphModel.getDisplay().getOptionDictionary().get("width")) + "");
-				var newTolerance = this.quizzesStudio.updateGraphicalMaxTolerance(graphWidth);
-				this.quizzesStudio.updateGraphElementTolerances(this.graphActiveElements,newTolerance);
+				this.quizzesStudio.updateGraphicalMaxTolerance(graphWidth);
+				this.quizzesStudio.updateGraphElementTolerances(this.context);
 			} else if(js.Boot.__instanceof(source,com.wiris.quizzes.impl.ui.component.GraphValidationSelector)) {
 				var selector = source;
 				if(selector.activeElements() > 1) this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE); else this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_FALSE);
-				this.graphActiveElements = selector.getActiveElements();
-				this.graphAllElementsActive = selector.areAllElementsSelected();
+				var graphElements = selector.getGraphicalElements();
+				this.context.setGraphicalElements(graphElements);
 				if(selector.areValuesDistributed()) {
-					this.graphRatios = selector.getValues();
+					var graphRatios = this.context.getGraphicalRatios();
 					this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE);
-					this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION,this.graphRatios.join(" "));
+					this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION,graphRatios.join(" "));
 				} else {
 					this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE,com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_AND);
 					this.context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION,null);
 				}
-				if(this.graphAllElementsActive) this.removeComparisonAssertionParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE); else this.setComparisonAssertionParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE,com.wiris.util.json.JSon.encode(this.graphActiveElements));
-				this.quizzesStudio.updateGraphElementTolerances(this.graphActiveElements,this.tolerance);
+				var graphActiveElements = this.context.getGraphicalElementsActive();
+				this.setElementsToGradeParameter(graphActiveElements);
+				this.quizzesStudio.updateGraphElementTolerances(this.context);
 			}
 		} else if("tolerance" == actionId) {
 			var value = source.getValue();
 			this.setComparisonAssertionParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE,value);
 			this.tolerance = Std.parseFloat(value);
-			this.quizzesStudio.updateGraphElementTolerances(this.graphActiveElements,this.tolerance);
+			this.quizzesStudio.updateGraphElementTolerances(this.context);
 		} else if("superfluous" == actionId) {
 			var superfluous = source.isSelected();
 			if(superfluous) this.addValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_NO_SUPERFLUOUS); else this.removeValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_NO_SUPERFLUOUS);
@@ -21281,13 +21304,15 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 			var matchLineType = source.isSelected();
 			if(matchLineType) {
 				this.addValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE);
-				if(this.graphActiveElements.length > 0) this.setValidationAssertionParameter(com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE,com.wiris.quizzes.api.assertion.ValidationParameterName.ELEMENTS_TO_GRADE,com.wiris.util.json.JSon.encode(this.graphActiveElements));
+				var graphActiveElements = this.context.getGraphicalElementsActive();
+				if(graphActiveElements.length > 0) this.setValidationAssertionParameter(com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE,com.wiris.quizzes.api.assertion.ValidationParameterName.ELEMENTS_TO_GRADE,com.wiris.util.json.JSon.encode(graphActiveElements));
 			} else this.removeValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_LINE_STYLE);
 		} else if("matchColor" == actionId) {
 			var matchColor = source.isSelected();
 			if(matchColor) {
 				this.addValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR);
-				if(this.graphActiveElements.length > 0) this.setValidationAssertionParameter(com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR,com.wiris.quizzes.api.assertion.ValidationParameterName.ELEMENTS_TO_GRADE,com.wiris.util.json.JSon.encode(this.graphActiveElements));
+				var graphActiveElements = this.context.getGraphicalElementsActive();
+				if(graphActiveElements.length > 0) this.setValidationAssertionParameter(com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR,com.wiris.quizzes.api.assertion.ValidationParameterName.ELEMENTS_TO_GRADE,com.wiris.util.json.JSon.encode(graphActiveElements));
 			} else this.removeValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_COLOR);
 		} else if(com.wiris.quizzes.impl.ui.component.GraphValidationSelector.ACTION_FOCUS_GRAPH_ELEMENT == actionId) this.quizzesStudio.focusGraphElement(command); else if(com.wiris.quizzes.impl.ui.component.GraphValidationSelector.ACTION_UNFOCUS_GRAPH_ELEMENT == actionId) this.quizzesStudio.unfocusGraphElement(command); else if("simplified" == actionId) {
 			if(source.isSelected()) this.addValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_SIMPLIFIED); else this.removeValidationAssertion(com.wiris.quizzes.api.assertion.ValidationName.CHECK_SIMPLIFIED);
@@ -22312,29 +22337,49 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		this.setComparisonParameters(this.textAuthorAnswer.getComparison(),true);
 		this.setValidationsParameters(this.textAuthorAnswer.getValidations());
 	}
+	,loadGraphCorrectAnswerElements: function(plotter) {
+		var toGrade = plotter.getElementsToGrade(false,false,false);
+		var graphElementsMap = new Hash();
+		var _g = 0;
+		while(_g < toGrade.length) {
+			var elementToGrade = toGrade[_g];
+			++_g;
+			if(this.tempLoadGraphActiveElements == null) graphElementsMap.set(elementToGrade,0.0); else {
+				var index = com.wiris.util.type.Arrays.indexOfElement(this.tempLoadGraphActiveElements,elementToGrade);
+				if(index == -1) graphElementsMap.set(elementToGrade,com.wiris.quizzes.impl.ui.QuizzesStudioContext.GRAPHICAL_ELEMENT_NOT_ACTIVE); else if(this.tempLoadGraphicalRatios == null || this.tempLoadGraphicalRatios.length <= index) graphElementsMap.set(elementToGrade,0.0); else graphElementsMap.set(elementToGrade,Std.parseFloat(this.tempLoadGraphicalRatios[index]));
+			}
+		}
+		this.tempLoadGraphicalRatios = null;
+		this.tempLoadGraphActiveElements = null;
+		this.context.setGraphicalElements(graphElementsMap);
+	}
+	,onSetComponent: function(inputComponent) {
+		this.loadGraphCorrectAnswerElements(inputComponent.getGraph().getGraphModel().getDisplay());
+	}
 	,loadGraphicQuestion: function() {
-		this.graphAllElementsActive = this.graphAuthorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE) == null;
-		if(!this.graphAllElementsActive) {
+		var graphAllElementsActive = this.graphAuthorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE) == null;
+		if(graphAllElementsActive) this.tempLoadGraphActiveElements = null; else {
+			this.tempLoadGraphActiveElements = new Array();
 			var objActiveElements = com.wiris.util.json.JSon.getArray(com.wiris.util.json.JSon.decode(this.graphAuthorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.ELEMENTS_TO_GRADE)));
-			this.graphActiveElements = new Array();
 			var _g = 0;
 			while(_g < objActiveElements.length) {
 				var elem = objActiveElements[_g];
 				++_g;
-				this.graphActiveElements.push(com.wiris.util.json.JSon.getString(elem));
+				this.tempLoadGraphActiveElements.push(com.wiris.util.json.JSon.getString(elem));
 			}
 		}
-		if(this.graphSlot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE) {
-			var ratios = this.graphSlot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION);
-			this.graphRatios = com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.splitEscaped(ratios," ");
-		}
+		if(this.graphSlot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_GRADE_DISTRIBUTE) this.tempLoadGraphicalRatios = com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.splitEscaped(this.graphSlot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION)," "); else this.tempLoadGraphicalRatios = null;
+		var correctAnswerGraph = this.quizzesStudio.getCorrectAnswerGraph();
+		this.updating = true;
+		correctAnswerGraph.setValue(this.graphAuthorAnswer.getValue());
+		this.updating = false;
+		if(correctAnswerGraph.getGraph() != null) this.loadGraphCorrectAnswerElements(correctAnswerGraph.getGraph().getGraphModel().getDisplay()); else correctAnswerGraph.addInputComponentListener(this);
 	}
 	,loadMathQuestion: function() {
 		var questionImpl = this.mathQuestion.getImpl();
 		this.inputType = com.wiris.quizzes.impl.QuizzesEnumUtils.string2answerFieldType(this.getProperty(com.wiris.quizzes.api.PropertyName.ANSWER_FIELD_TYPE));
 		this.orderMatters = true;
 		this.repetitionMatters = true;
-		if(this.mathAuthorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE) == "") this.mathAuthorAnswer.getComparison().setParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE,"0.001");
 		this.toleranceType = this.getAssertionToleranceType(questionImpl,this.mathAuthorAnswer);
 		this.tolerance = this.toleranceType == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_PERCENT_ERROR || this.toleranceType == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_ABSOLUTE_ERROR?Std.parseFloat(this.getAssertionToleranceValue(questionImpl,this.mathAuthorAnswer)):0.1;
 		this.toleranceDigits = this.toleranceType == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_SIGNIFICANT_FIGURES || this.toleranceType == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_DECIMAL_PLACES?Std.parseInt(this.getAssertionToleranceValue(questionImpl,this.mathAuthorAnswer)):3;
@@ -22422,7 +22467,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 	}
 	,loadQuestion: function(question,slot,authorAnswer) {
 		var questionImpl = question.getImpl();
-		this.configureQuestion(questionImpl);
+		this.configureQuestion(questionImpl,slot,authorAnswer);
 		this.loadQuestionImpl(question,slot,authorAnswer);
 		this.reservedWordsChanged();
 		this.context.setPreviewCorrectAnswerUpdated(false);
@@ -22463,7 +22508,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		}
 		return true;
 	}
-	,configureQuestion: function(questionImpl) {
+	,configureQuestion: function(questionImpl,slot,authorAnswer) {
 		if(!this.context.isOptOpenAnswer()) {
 		}
 		if(!this.context.isOptAuxiliaryCas()) {
@@ -22493,6 +22538,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		}
 		var type = com.wiris.quizzes.impl.QuizzesEnumUtils.string2answerFieldType(questionImpl.getProperty(com.wiris.quizzes.api.PropertyName.ANSWER_FIELD_TYPE));
 		if(!this.context.isOptAnswerFieldInlineEditor() && type == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR || !this.context.isOptAnswerFieldPopupEditor() && type == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR || !this.context.isOptAnswerFieldPlainText() && type == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD) questionImpl.removeLocalData(com.wiris.quizzes.api.QuizzesConstants.PROPERTY_ANSWER_FIELD_TYPE);
+		if(slot.getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH && (authorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE) == null || authorAnswer.getComparison().getParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE) == "")) authorAnswer.getComparison().setParameter(com.wiris.quizzes.api.assertion.ComparisonParameterName.TOLERANCE,"0.001");
 	}
 	,copyCorrectAnswer: function(correctAnswer) {
 		this.quizzesStudio.copyCorrectAnswer(correctAnswer);
@@ -22519,10 +22565,8 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		return this.context;
 	}
 	,updating: null
-	,graphActiveElements: null
-	,graphElements: null
-	,graphRatios: null
-	,graphAllElementsActive: null
+	,tempLoadGraphActiveElements: null
+	,tempLoadGraphicalRatios: null
 	,auxiliaryInitialContent: null
 	,reservedWordsRequestController: null
 	,allowAllPrefixes: null
@@ -24202,33 +24246,36 @@ com.wiris.system.JsOSData.prototype = {
 }
 com.wiris.system.JsBrowser = $hxClasses["com.wiris.system.JsBrowser"] = function() {
 	this.dataBrowser = new Array();
-	this.addBrowser("navigator.userAgent",null,"Edge",null,"Edge");
-	this.addBrowser("navigator.userAgent",null,"Chrome",null,"Chrome");
-	this.addBrowser("navigator.userAgent",null,"OmniWeb",null,"OmniWeb");
-	this.addBrowser("navigator.vendor",null,"Apple","Version","Safari");
-	this.addBrowser(null,"window.opera",null,"Version","Opera");
-	this.addBrowser("navigator.vendor",null,"iCab",null,"iCab");
-	this.addBrowser("navigator.vendor",null,"KDE",null,"Konkeror");
-	this.addBrowser("navigator.userAgent",null,"Firefox",null,"Firefox");
-	this.addBrowser("navigator.vendor",null,"Camino",null,"Camino");
-	this.addBrowser("navigator.userAgent",null,"Netscape",null,"Netscape");
-	this.addBrowser("navigator.userAgent",null,"MSIE","MSIE","Explorer");
-	this.addBrowser("navigator.userAgent",null,"Trident","rv","Explorer");
-	this.addBrowser("navigator.userAgent",null,"Gecko","rv","Mozilla");
-	this.addBrowser("navigator.userAgent",null,"Mozilla","Mozilla","Netscape");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"Edge",null,"Edge");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"Chrome",null,"Chrome");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"OmniWeb",null,"OmniWeb");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_VENDOR,null,"Apple","Version","Safari");
+	this.addBrowser(null,com.wiris.system.JsBrowser.SOURCE_WINDOW_OPERA,null,"Version","Opera");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_VENDOR,null,"iCab",null,"iCab");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_VENDOR,null,"KDE",null,"Konkeror");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"Firefox",null,"Firefox");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_VENDOR,null,"Camino",null,"Camino");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"Netscape",null,"Netscape");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"MSIE","MSIE","Explorer");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"Trident","rv","Explorer");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"Gecko","rv","Mozilla");
+	this.addBrowser(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,null,"Mozilla","Mozilla","Netscape");
 	this.dataOS = new Array();
-	this.addOS("navigator.platform","Win","Windows");
-	this.addOS("navigator.platform","Mac","Mac");
-	this.addOS("navigator.userAgent","iPhone","iOS");
-	this.addOS("navigator.userAgent","iPad","iOS");
-	this.addOS("navigator.userAgent","Android","Android");
-	this.addOS("navigator.platform","Linux","Linux");
+	this.addOS(com.wiris.system.JsBrowser.SOURCE_PLATFORM,"Win","Windows");
+	this.addOS(com.wiris.system.JsBrowser.SOURCE_PLATFORM,"Mac","Mac");
+	this.addOS(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,"iPhone","iOS");
+	this.addOS(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,"iPad","iOS");
+	this.addOS(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,"Android","Android");
+	this.addOS(com.wiris.system.JsBrowser.SOURCE_PLATFORM,"Linux","Linux");
 	if(window.matchMedia != null) this.hasCoarsePointer = window.matchMedia("(any-pointer: coarse)").matches; else this.hasCoarsePointer = false;
 	this.setBrowser();
 	this.setOS();
 	this.touchable = this.isIOS() || this.isAndroid();
 };
 com.wiris.system.JsBrowser.__name__ = ["com","wiris","system","JsBrowser"];
+com.wiris.system.JsBrowser.getBrowserInfo = function(source) {
+	if(source == com.wiris.system.JsBrowser.SOURCE_USER_AGENT) return navigator.userAgent; else if(source == com.wiris.system.JsBrowser.SOURCE_VENDOR) return navigator.vendor; else if(source == com.wiris.system.JsBrowser.SOURCE_WINDOW_OPERA) return window.opera; else if(source == com.wiris.system.JsBrowser.SOURCE_PLATFORM) return navigator.platform; else if(source == com.wiris.system.JsBrowser.SOURCE_APP_VERSION) return navigator.appVersion; else return null;
+}
 com.wiris.system.JsBrowser.prototype = {
 	isTouchable: function() {
 		return this.touchable;
@@ -24267,7 +24314,7 @@ com.wiris.system.JsBrowser.prototype = {
 		return this.browser;
 	}
 	,searchVersion: function(prop,search) {
-		var str = js.Boot.__cast(eval(prop) , String);
+		var str = js.Boot.__cast(com.wiris.system.JsBrowser.getBrowserInfo(prop) , String);
 		var index = str.indexOf(search);
 		if(index == -1) return null;
 		return "" + Std.parseFloat(HxOverrides.substr(str,index + search.length + 1,null));
@@ -24276,7 +24323,7 @@ com.wiris.system.JsBrowser.prototype = {
 		var i = HxOverrides.iter(this.dataOS);
 		while(i.hasNext()) {
 			var s = i.next();
-			var str = js.Boot.__cast(eval(s.string) , String);
+			var str = js.Boot.__cast(com.wiris.system.JsBrowser.getBrowserInfo(s.string) , String);
 			if(str.indexOf(s.subString) != -1) {
 				this.os = s.identity;
 				return;
@@ -24288,13 +24335,13 @@ com.wiris.system.JsBrowser.prototype = {
 		while(i.hasNext()) {
 			var b = i.next();
 			if(b.string != null) {
-				var obj = eval(b.string);
+				var obj = com.wiris.system.JsBrowser.getBrowserInfo(b.string);
 				if(obj != null) {
 					var str = js.Boot.__cast(obj , String);
 					if(str.indexOf(b.subString) != -1) {
 						this.browser = b.identity;
-						this.ver = this.searchVersion("navigator.userAgent",b.versionSearch);
-						if(this.ver == null) this.ver = this.searchVersion("navigator.appVersion",b.versionSearch);
+						this.ver = this.searchVersion(com.wiris.system.JsBrowser.SOURCE_USER_AGENT,b.versionSearch);
+						if(this.ver == null) this.ver = this.searchVersion(com.wiris.system.JsBrowser.SOURCE_APP_VERSION,b.versionSearch);
 						return;
 					}
 				}
@@ -25798,6 +25845,7 @@ com.wiris.system.graphics.JsClientGraphicsContext.initialize = function(resource
 		com.wiris.system.graphics.JsClientGraphicsContext.addFont("round_brackets2654","wrs_roundBrackets2654Char");
 		com.wiris.system.graphics.JsClientGraphicsContext.addFont("round_brackets3054","wrs_roundBrackets3054Char");
 		com.wiris.system.graphics.JsClientGraphicsContext.addFont("round_brackets3454","wrs_roundBrackets3454Char");
+		com.wiris.system.graphics.JsClientGraphicsContext.addFont("moe-arabic","wrs_font_moeArabic");
 		com.wiris.system.graphics.JsClientGraphicsContext.fontList.push("negationFont");
 		com.wiris.system.graphics.JsClientGraphicsContext.fontList.push("Arial");
 	}
@@ -30671,36 +30719,28 @@ com.wiris.util.geometry.GeometryElementStyle.prototype = {
 	,data: null
 	,__class__: com.wiris.util.geometry.GeometryElementStyle
 }
-com.wiris.util.geometry.GeometryElementSummary = $hxClasses["com.wiris.util.geometry.GeometryElementSummary"] = function(data) {
-	this.data = data;
+com.wiris.util.geometry.GeometryElementSummary = $hxClasses["com.wiris.util.geometry.GeometryElementSummary"] = function(id,type,definition) {
+	this.id = id;
+	this.type = type;
+	this.definition = definition;
 };
 com.wiris.util.geometry.GeometryElementSummary.__name__ = ["com","wiris","util","geometry","GeometryElementSummary"];
-com.wiris.util.geometry.GeometryElementSummary.readJSON = function(json) {
-	return new com.wiris.util.geometry.GeometryElementSummary(com.wiris.util.json.JSon.getHash(com.wiris.util.json.JSon.decode(json)));
-}
-com.wiris.util.geometry.GeometryElementSummary.newGeometryElementSummary = function() {
-	return new com.wiris.util.geometry.GeometryElementSummary(new Hash());
+com.wiris.util.geometry.GeometryElementSummary.fromGeometryElement = function(geometryElement,definition) {
+	return new com.wiris.util.geometry.GeometryElementSummary(geometryElement.getId(),geometryElement.getType(),definition);
 }
 com.wiris.util.geometry.GeometryElementSummary.prototype = {
-	setId: function(id) {
-		this.data.set(com.wiris.util.geometry.GeometryElement.ID,id);
-	}
-	,getId: function() {
-		return com.wiris.util.json.JSon.getString(this.data.get(com.wiris.util.geometry.GeometryElement.ID));
-	}
-	,setType: function(type) {
-		this.data.set(com.wiris.util.geometry.GeometryElement.TYPE,type);
+	getDefinition: function() {
+		return this.definition;
 	}
 	,getType: function() {
-		return com.wiris.util.json.JSon.getString(this.data.get(com.wiris.util.geometry.GeometryElement.TYPE));
+		return this.type;
 	}
-	,setDefinition: function(definition) {
-		this.data.set(com.wiris.util.geometry.GeometryElement.DEFINITION,definition);
+	,getId: function() {
+		return this.id;
 	}
-	,getDefinition: function() {
-		return com.wiris.util.json.JSon.getString(this.data.get(com.wiris.util.geometry.GeometryElement.DEFINITION));
-	}
-	,data: null
+	,definition: null
+	,type: null
+	,id: null
 	,__class__: com.wiris.util.geometry.GeometryElementSummary
 }
 com.wiris.util.geometry.GeometryHandwriting = $hxClasses["com.wiris.util.geometry.GeometryHandwriting"] = function(data) {
@@ -39284,16 +39324,16 @@ com.wiris.util.xml.WCharacterBase.isWord = function(c) {
 	return false;
 }
 com.wiris.util.xml.WCharacterBase.isArabianString = function(s) {
-	var i = s.length - 1;
-	while(i >= 0) {
-		if(!com.wiris.util.xml.WCharacterBase.isArabian(HxOverrides.cca(s,i))) return false;
-		--i;
+	var length = com.wiris.system.Utf8.getLength(s);
+	var _g = 0;
+	while(_g < length) {
+		var i = _g++;
+		if(!com.wiris.util.xml.WCharacterBase.isArabian(com.wiris.system.Utf8.charCodeAt(s,i))) return false;
 	}
 	return true;
 }
 com.wiris.util.xml.WCharacterBase.isArabian = function(c) {
-	if(c >= 1536 && c <= 1791 && !com.wiris.util.xml.WCharacterBase.isDigit(c)) return true;
-	return false;
+	if(com.wiris.util.xml.WCharacterBase.isDigit(c)) return false; else return c >= 1536 && c <= 1791 || c >= 126464 && c <= 126705;
 }
 com.wiris.util.xml.WCharacterBase.isHebrew = function(c) {
 	if(c >= 1424 && c <= 1535) return true;
@@ -42907,6 +42947,7 @@ com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.__meta__ = { fields : { showAux
 com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.CLASS_QUIZZES_EMBEDDED_AUTHORING_FIELD = "quizzesEmbeddedAuthoringField";
 com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG = "en";
 com.wiris.quizzes.impl.ui.QuizzesContext.AVAILABLE_LANGS = "ca,da,de,el,en,es,fr,it,no,nn,pt,pt_br";
+com.wiris.quizzes.impl.ui.QuizzesStudioContext.GRAPHICAL_ELEMENT_NOT_ACTIVE = -1.0;
 com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent.STUDENT_ANSWER_FEEDBACK_LABEL_INDETERMINATE = "quizzes_studio_test_question_student_answer_feedback_label";
 com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent.STUDENT_ANSWER_FEEDBACK_LABEL_CORRECT = "quizzes_studio_test_question_student_answer_feedback_correct_label";
 com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent.STUDENT_ANSWER_FEEDBACK_LABEL_PARTIALLY_CORRECT = "quizzes_studio_test_question_student_answer_feedback_partially_correct_label";
@@ -43012,7 +43053,6 @@ com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.MATCH_COLOR_T
 com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.MATCH_LINE_TYPE_TEXT = "quizzes_studio_graph_validation_options_line_type_text";
 com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.MATCH_COLOR_HELPER = "quizzes_studio_graph_validation_options_color_helper";
 com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.MATCH_LINE_TYPE_HELPER = "quizzes_studio_graph_validation_options_line_type_helper";
-com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.LOADING_ELEMENTS_ERROR = "quizzes_studio_graph_validation_options_loading_elements_error";
 com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.CLASS_GRAPH_VALIDATION_OPTIONS = "graphValidationOptions";
 com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.CLASS_ACTIVITY_WRAPPER = "activityWrapper";
 com.wiris.quizzes.impl.ui.component.GraphValidationOptionsActivity.CLASS_ELEMENTS_CONTAINER = "elementsContainer";
@@ -43564,6 +43604,11 @@ com.wiris.settings.PlatformSettings.PARSE_XML_ENTITIES = true;
 com.wiris.settings.PlatformSettings.UTF8_CONVERSION = false;
 com.wiris.settings.PlatformSettings.IS_JAVASCRIPT = true;
 com.wiris.settings.PlatformSettings.IS_FLASH = false;
+com.wiris.system.JsBrowser.SOURCE_USER_AGENT = "userAgent";
+com.wiris.system.JsBrowser.SOURCE_VENDOR = "vendor";
+com.wiris.system.JsBrowser.SOURCE_WINDOW_OPERA = "opera";
+com.wiris.system.JsBrowser.SOURCE_PLATFORM = "platform";
+com.wiris.system.JsBrowser.SOURCE_APP_VERSION = "navigator.appVersion";
 com.wiris.system.JsDOMUtils.TOUCHHOLD_MOVE_MARGIN = 10;
 com.wiris.system.JsDOMUtils.browser = new com.wiris.system.JsBrowser();
 com.wiris.system.JsDOMUtils.initialized = false;
