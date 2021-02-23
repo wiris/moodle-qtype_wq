@@ -307,7 +307,7 @@ $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'
 
 $wrap = com_wiris_system_CallWrapper::getInstance();
 $wrap->start();
-$configuration = com_wiris_quizzes_impl_Quizzes::getInstance()->getConfiguration();
+$configuration = com_wiris_quizzes_api_Quizzes::getInstance()->getConfiguration();
 // @codingStandardsIgnoreStart
 $reporttext = 'PROXY_URL: ' . $configuration->get(com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL) . '<br>';
 $reporttext .= 'CACHE_DIR: ' . $configuration->get(com_wiris_quizzes_api_ConfigurationKeys::$CACHE_DIR) . '<br>';
@@ -328,7 +328,7 @@ $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'
 
 $wrap = com_wiris_system_CallWrapper::getInstance();
 $wrap->start();
-$configuration = com_wiris_quizzes_impl_Quizzes::getInstance()->getConfiguration();
+$configuration = com_wiris_quizzes_api_Quizzes::getInstance()->getConfiguration();
 // @codingStandardsIgnoreStart
 $parsedurl = parse_url($configuration->get(com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL));
 // @codingStandardsIgnoreEnd
@@ -351,7 +351,7 @@ $output .= html_writer::start_tag('tr', array('class' => 'wrs_filter wrs_plugin'
 
 $wrap = com_wiris_system_CallWrapper::getInstance();
 $wrap->start();
-$configuration = com_wiris_quizzes_impl_Quizzes::getInstance()->getConfiguration();
+$configuration = com_wiris_quizzes_api_Quizzes::getInstance()->getConfiguration();
 // @codingStandardsIgnoreStart
 $reporttext = $configuration->get(com_wiris_quizzes_api_ConfigurationKeys::$SERVICE_URL);
 // @codingStandardsIgnoreEnd
@@ -498,7 +498,7 @@ try {
     $connections = haxe_Unserializer::run($data);
     $stamp = Math::floor(haxe_Timer::stamp());
     $maxconnections = $connections->length;
-    $configmaxconnections = com_wiris_quizzes_impl_Quizzes::
+    $configmaxconnections = com_wiris_quizzes_api_Quizzes::
     // @codingStandardsIgnoreStart
     getInstance()->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$MAXCONNECTIONS);
     // @codingStandardsIgnoreEnd
