@@ -81,6 +81,8 @@
 		"quizzes_studio_toolbar_back_button_tooltip": "Retour",
 		"quizzes_studio_toolbar_test_question_button_tooltip": "Tester cette question",
 		"quizzes_studio_toolbar_help_button_tooltip": "Aide",
+		"quizzes_studio_toolbar_send_feedback_button_tooltip": "Envoyer des commentaires",
+
 		"quizzes_studio_toolbar_more_options_dropdown_tooltip": "Autres options",
 		"quizzes_studio_toolbar_more_options_dropdown_import_label": "Importer",
 		"quizzes_studio_toolbar_more_options_dropdown_export_label": "Exporter",
