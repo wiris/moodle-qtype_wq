@@ -16,23 +16,6 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		$mc->set($value);
 		return $this->mathContentToFilterableValue($mc);
 	}
-	public function getGraphElementsFromGeometryFile($geometryFile) {
-		$parsed = com_wiris_util_geometry_GeometryFile::readJSON($geometryFile);
-		$identifiers = new _hx_array(array());
-		$i = null;
-		{
-			$_g1 = 0; $_g = $parsed->getElementsLength();
-			while($_g1 < $_g) {
-				$i1 = $_g1++;
-				$element = $parsed->getElement($i1);
-				if(!($element->getType() === com_wiris_util_geometry_GeometryElement::$LABEL)) {
-					$identifiers->push($element->getId());
-				}
-				unset($i1,$element);
-			}
-		}
-		return $identifiers;
-	}
 	public function getElementsToGrade($geometryFile, $assertion) {
 		if($assertion->getParam(com_wiris_quizzes_impl_Assertion::$PARAM_ELEMENTS_TO_GRADE) !== null) {
 			$ao = com_wiris_util_json_JSon::getArray(com_wiris_util_json_JSon::decode($assertion->getParam(com_wiris_quizzes_impl_Assertion::$PARAM_ELEMENTS_TO_GRADE)));
@@ -48,7 +31,8 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			}
 			return $strings;
 		} else {
-			return $this->getGraphElementsFromGeometryFile($geometryFile);
+			$g = com_wiris_util_geometry_GeometryFile::readJSON($geometryFile);
+			return (($g->getDisplaysLength() >= 1) ? $g->getDisplay(0)->getElementNames() : new _hx_array(array()));
 		}
 	}
 	public function getElementsToGradeFromAuthorAnswer($authorAnswer) {

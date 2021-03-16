@@ -450,20 +450,25 @@ class com_wiris_util_xml_WCharacterBase {
 		return false;
 	}
 	static function isArabianString($s) {
-		$i = strlen($s) - 1;
-		while($i >= 0) {
-			if(!com_wiris_util_xml_WCharacterBase::isArabian(_hx_char_code_at($s, $i))) {
-				return false;
+		$length = haxe_Utf8::length($s);
+		{
+			$_g = 0;
+			while($_g < $length) {
+				$i = $_g++;
+				if(!com_wiris_util_xml_WCharacterBase::isArabian(haxe_Utf8::charCodeAt($s, $i))) {
+					return false;
+				}
+				unset($i);
 			}
-			--$i;
 		}
 		return true;
 	}
 	static function isArabian($c) {
-		if($c >= 1536 && $c <= 1791 && !com_wiris_util_xml_WCharacterBase::isDigit($c)) {
-			return true;
+		if(com_wiris_util_xml_WCharacterBase::isDigit($c)) {
+			return false;
+		} else {
+			return $c >= 1536 && $c <= 1791 || $c >= 126464 && $c <= 126705;
 		}
-		return false;
 	}
 	static function isHebrew($c) {
 		if($c >= 1424 && $c <= 1535) {

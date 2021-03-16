@@ -81,6 +81,8 @@
 		"quizzes_studio_toolbar_back_button_tooltip": "Enrere",
 		"quizzes_studio_toolbar_test_question_button_tooltip": "Previsualització",
 		"quizzes_studio_toolbar_help_button_tooltip": "Ajuda",
+		"quizzes_studio_toolbar_send_feedback_button_tooltip": "Doneu la vostra opinió",
+
 		"quizzes_studio_toolbar_more_options_dropdown_tooltip": "Més opcions",
 		"quizzes_studio_toolbar_more_options_dropdown_import_label": "Importar",
 		"quizzes_studio_toolbar_more_options_dropdown_export_label": "Exportar",
@@ -144,6 +146,8 @@
 		"quizzes_studio_input_options_answer_input_method_no_auxiliar_input_helper_text": "No mostris cap camp d'entrada auxiliar a més del campo d'entrada de la resposta.",
 		"quizzes_studio_input_options_answer_input_method_define_initial_content_button_label": "Contingut inicial",
 		"quizzes_studio_input_options_answer_input_method_customize_toolbar_label": "Personalitzeu la barra d'eines",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_label": "Amaga les opcions de fitxer de CalcMe",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_helper_text": "No mostris la possibilitat d'obrir, descarregar o desar sessions de CalcMe a l'estudiantat.",
 
 		"quizzes_studio_input_options_input_syntax_title": "Sintaxi d'entrada",
 

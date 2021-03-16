@@ -81,6 +81,8 @@
 		"quizzes_studio_toolbar_back_button_tooltip": "Atrás",
 		"quizzes_studio_toolbar_test_question_button_tooltip": "Vista previa",
 		"quizzes_studio_toolbar_help_button_tooltip": "Ayuda",
+		"quizzes_studio_toolbar_send_feedback_button_tooltip": "Dé su opinión",
+
 		"quizzes_studio_toolbar_more_options_dropdown_tooltip": "Más opciones",
 		"quizzes_studio_toolbar_more_options_dropdown_import_label": "Importar",
 		"quizzes_studio_toolbar_more_options_dropdown_export_label": "Exportar",
@@ -144,6 +146,8 @@
 		"quizzes_studio_input_options_answer_input_method_no_auxiliar_input_helper_text": "No muestres ningún campo de entrada auxiliar además del campo de entrada de la respuesta.",
 		"quizzes_studio_input_options_answer_input_method_define_initial_content_button_label": "Contenido inicial",
 		"quizzes_studio_input_options_answer_input_method_customize_toolbar_label": "Personalice la barra de herramientas",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_label": "Esconde las opciones de fichero de CalcMe",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_helper_text": "No muestres la posibilidad de abrir, descargar o guardar sesiones de CalcMe al estudiantado.",
 
 		"quizzes_studio_input_options_input_syntax_title": "Sintaxis de entrada",
 
@@ -512,14 +516,14 @@
 		
 		"syntax_graphic": "gráfica",
 		"syntax_graphic_description" :"(gráficas, elementos geométricos...)",
-		"syntax_graphic_corect_feedback": "La sintaxi de la resposta es vàlida",
+		"syntax_graphic_corect_feedback": "La sintaxis de la resposta es vàlida",
 	
 		"check_color": "el color coincide",
 		"check_linestyle": "el estilo de linea coincide",
 		"check_no_superfluous": "no contiene elementos superfluos",
 	
-		"equivalent_graphic": "geométricament igual",
-		"equivalent_graphic_correct_feedback": "La respuesta es geométricament igual a la correcta"
+		"equivalent_graphic": "geométricamente igual",
+		"equivalent_graphic_correct_feedback": "La respuesta es geométricamente igual a la correcta"
 	}
 }
 
