@@ -142,6 +142,10 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 		$sb->add($prefix . "DEF_VERSION" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$VERSION)) . "\";\x0A");
 		$sb->add($prefix . "DEF_DEPLOYMENT_ID" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$DEPLOYMENT_ID)) . "\";\x0A");
 		$sb->add($prefix . "DEF_LICENSE_ID" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$LICENSE_ID)) . "\";\x0A");
+		$sb->add($prefix . "DEF_TELEMETRY_URL" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_URL)) . "\";\x0A");
+		$sb->add($prefix . "DEF_TELEMETRY_TOKEN" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_TOKEN)) . "\";\x0A");
+		$sb->add($prefix . "DEF_QUIZZES_LOGGING_LEVEL" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$QUIZZES_LOGGING_LEVEL)) . "\";\x0A");
+		$sb->add($prefix . "DEF_QUIZZES_TRACKING_ENABLED" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$QUIZZES_TRACKING_ENABLED)) . "\";\x0A");
 		return $sb->b;
 	}
 	public function set($key, $value) {
