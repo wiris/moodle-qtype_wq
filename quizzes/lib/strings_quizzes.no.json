@@ -146,6 +146,8 @@
 		"quizzes_studio_input_options_answer_input_method_no_auxiliar_input_helper_text": "Ikke vis den hjelpende CalcMe-kalkulatoren i inndatafeltet for studentens svar.",
 		"quizzes_studio_input_options_answer_input_method_define_initial_content_button_label": "Definer første innhold",
 		"quizzes_studio_input_options_answer_input_method_customize_toolbar_label": "Tilpass verktøyt",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_label": "Hide CalcMe file options",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_helper_text": "Hide options such as opening, saving, or downloading CalcMe documents to students",
 
 		"quizzes_studio_input_options_input_syntax_title": "Inndatasyntaks",
 

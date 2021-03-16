@@ -146,6 +146,8 @@
 		"quizzes_studio_input_options_answer_input_method_no_auxiliar_input_helper_text": "No muestres ningún campo de entrada auxiliar además del campo de entrada de la respuesta.",
 		"quizzes_studio_input_options_answer_input_method_define_initial_content_button_label": "Contenido inicial",
 		"quizzes_studio_input_options_answer_input_method_customize_toolbar_label": "Personalice la barra de herramientas",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_label": "Esconde las opciones de fichero de CalcMe",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_helper_text": "No muestres la posibilidad de abrir, descargar o guardar sesiones de CalcMe al estudiantado.",
 
 		"quizzes_studio_input_options_input_syntax_title": "Sintaxis de entrada",
 
