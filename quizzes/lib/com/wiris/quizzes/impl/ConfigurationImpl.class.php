@@ -142,6 +142,10 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 		$sb->add($prefix . "DEF_VERSION" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$VERSION)) . "\";\x0A");
 		$sb->add($prefix . "DEF_DEPLOYMENT_ID" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$DEPLOYMENT_ID)) . "\";\x0A");
 		$sb->add($prefix . "DEF_LICENSE_ID" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$LICENSE_ID)) . "\";\x0A");
+		$sb->add($prefix . "DEF_TELEMETRY_URL" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_URL)) . "\";\x0A");
+		$sb->add($prefix . "DEF_TELEMETRY_TOKEN" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_TOKEN)) . "\";\x0A");
+		$sb->add($prefix . "DEF_QUIZZES_LOGGING_LEVEL" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$QUIZZES_LOGGING_LEVEL)) . "\";\x0A");
+		$sb->add($prefix . "DEF_QUIZZES_TRACKING_ENABLED" . " = \"" . $this->jsEscape($this->get(com_wiris_quizzes_api_ConfigurationKeys::$QUIZZES_TRACKING_ENABLED)) . "\";\x0A");
 		return $sb->b;
 	}
 	public function set($key, $value) {
@@ -226,7 +230,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_VERSION = "";
 	static $DEF_DEPLOYMENT_ID = "quizzes-unknown";
 	static $DEF_LICENSE_ID = "";
-	static $DEF_TELEMETRY_URL;
+	static $DEF_TELEMETRY_URL = "https://telemetry.wiris.net";
 	static $DEF_TELEMETRY_TOKEN = "1lt1OnlX3898VauysJ1nr5ODR8CNfVmB80KGxSSt";
 	static $DEF_QUIZZES_LOGGING_LEVEL = "WARNING";
 	static $DEF_QUIZZES_TRACKING_ENABLED = "true";
@@ -249,5 +253,4 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.ConfigurationImpl'; }
 }
-com_wiris_quizzes_impl_ConfigurationImpl::$DEF_TELEMETRY_URL = com_wiris_quizzes_impl_ConfigurationImpl::$DEF_SERVICE_URL . "/telemetry";
 com_wiris_quizzes_impl_ConfigurationImpl::$thisLock = _hx_anonymous(array());

@@ -81,6 +81,8 @@
 		"quizzes_studio_toolbar_back_button_tooltip": "Back",
 		"quizzes_studio_toolbar_test_question_button_tooltip": "Test this question",
 		"quizzes_studio_toolbar_help_button_tooltip": "Help",
+		"quizzes_studio_toolbar_send_feedback_button_tooltip": "Send feedback",
+
 		"quizzes_studio_toolbar_more_options_dropdown_tooltip": "More options",
 		"quizzes_studio_toolbar_more_options_dropdown_import_label": "Import",
 		"quizzes_studio_toolbar_more_options_dropdown_export_label": "Export",
@@ -144,6 +146,8 @@
 		"quizzes_studio_input_options_answer_input_method_no_auxiliar_input_helper_text": "Don’t show the auxiliary CalcMe calculator for the student answer input field.",
 		"quizzes_studio_input_options_answer_input_method_define_initial_content_button_label": "Define initial content",
 		"quizzes_studio_input_options_answer_input_method_customize_toolbar_label": "Customize toolbar",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_label": "Hide CalcMe file options",
+		"quizzes_studio_input_options_answer_input_method_auxiliar_input_hide_file_menu_helper_text": "Hide options such as opening, saving, or downloading CalcMe documents to students",
 
 		"quizzes_studio_input_options_input_syntax_title": "Input syntax",
 
