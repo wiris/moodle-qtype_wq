@@ -613,6 +613,22 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 				if($ass->isSyntactic()) {
 					$syntax = $ass;
 				}
+				if($correctAnswers !== null) {
+					$assCA = $ass->getCorrectAnswers();
+					$caCounter = $assCA->length - 1;
+					while($caCounter >= 0) {
+						$ca = $assCA[$caCounter];
+						if(Std::parseInt($ca) >= $correctAnswers->length) {
+							$ass->removeCorrectAnswer($ca);
+						}
+						$caCounter--;
+						unset($ca);
+					}
+					if($ass->getCorrectAnswers()->length === 0) {
+						continue;
+					}
+					unset($caCounter,$assCA);
+				}
 				$qq->assertions->push($ass);
 				unset($j1,$ass);
 			}

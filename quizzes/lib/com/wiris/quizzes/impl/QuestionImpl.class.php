@@ -179,6 +179,19 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 		return $correctAnswers;
 	}
+	public function assertionIndex($a) {
+		{
+			$_g1 = 0; $_g = $this->assertions->length;
+			while($_g1 < $_g) {
+				$i = $_g1++;
+				if($this->assertions[$i] === $a) {
+					return $i;
+				}
+				unset($i);
+			}
+		}
+		return -1;
+	}
 	public function updateSlotsImpl($overrideDeprecated) {
 		if($this->slots === null) {
 			$this->slots = new _hx_array(array());
@@ -289,9 +302,14 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 									$comparisonAssertion = com_wiris_quizzes_impl_ComparisonAssertion::fromAssertion($a);
 									$this->assertionRemoved($correctAnswer->comparison);
 									$correctAnswer->comparison = $comparisonAssertion;
-									$this->assertions[$i] = $comparisonAssertion;
+									$index = $this->assertionIndex($a);
+									if($index !== -1) {
+										$this->assertions[$index] = $comparisonAssertion;
+									} else {
+										$this->assertions->push($comparisonAssertion);
+									}
 									$a = $comparisonAssertion;
-									unset($comparisonAssertion);
+									unset($index,$comparisonAssertion);
 								} else {
 									if($a->isCheck() || $a->isStructure()) {
 										$validationAssertion = com_wiris_quizzes_impl_ValidationAssertion::fromAssertion($a);
@@ -310,9 +328,14 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 											}
 											unset($_g4,$_g3);
 										}
-										$this->assertions[$i] = $validationAssertion;
+										$index = $this->assertionIndex($a);
+										if($index !== -1) {
+											$this->assertions[$index] = $validationAssertion;
+										} else {
+											$this->assertions->push($validationAssertion);
+										}
 										$a = $validationAssertion;
-										unset($validationAssertion);
+										unset($validationAssertion,$index);
 									}
 								}
 							}
@@ -333,9 +356,14 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 						$this->assertionRemoved($slot->syntax);
 						$slot->syntax = $syntaxAssertion;
 						$slot->syntax->setCorrectAnswers($this->getSlotCorrectAnswersIds($slot));
-						$this->assertions[$i] = $syntaxAssertion;
+						$index = $this->assertionIndex($a);
+						if($index !== -1) {
+							$this->assertions[$index] = $syntaxAssertion;
+						} else {
+							$this->assertions->push($syntaxAssertion);
+						}
 						$a = $syntaxAssertion;
-						unset($syntaxAssertion);
+						unset($syntaxAssertion,$index);
 					}
 				}
 				unset($slotId,$slot,$i,$correctAnswers,$a);

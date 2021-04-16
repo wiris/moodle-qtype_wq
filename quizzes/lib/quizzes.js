@@ -2441,6 +2441,16 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 				var j1 = _g1++;
 				var ass = qa.assertions[j1].copy();
 				if(ass.isSyntactic()) syntax = ass;
+				if(correctAnswers != null) {
+					var assCA = ass.getCorrectAnswers();
+					var caCounter = assCA.length - 1;
+					while(caCounter >= 0) {
+						var ca = assCA[caCounter];
+						if(Std.parseInt(ca) >= correctAnswers.length) ass.removeCorrectAnswer(ca);
+						caCounter--;
+					}
+					if(ass.getCorrectAnswers().length == 0) continue;
+				}
 				qq.assertions.push(ass);
 			}
 		}
@@ -6712,7 +6722,7 @@ com.wiris.quizzes.impl.HTMLTools.convertEditor2Newlines = function(mml) {
 	return mml;
 }
 com.wiris.quizzes.impl.HTMLTools.emptyCasSession = function(value) {
-	return value == null || value.indexOf("<mo") == -1 && value.indexOf("<mi") == -1 && value.indexOf("<mn") == -1 && value.indexOf("<csymbol") == -1;
+	return value == null || value.indexOf("<mo") == -1 && value.indexOf("<mi") == -1 && value.indexOf("<mn") == -1 && value.indexOf("<csymbol") == -1 && value.indexOf("algorithm") == -1;
 }
 com.wiris.quizzes.impl.HTMLTools.hasCasSessionParameter = function(session,parameter,name) {
 	session = com.wiris.util.xml.WXmlUtils.resolveEntities(session);
@@ -9388,6 +9398,14 @@ com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.Q
 		}
 		return correctAnswers;
 	}
+	,assertionIndex: function(a) {
+		var _g1 = 0, _g = this.assertions.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.assertions[i] == a) return i;
+		}
+		return -1;
+	}
 	,updateSlotsImpl: function(overrideDeprecated) {
 		if(this.slots == null) this.slots = new Array();
 		if(this.assertions == null || this.assertions.length == 0) {
@@ -9474,7 +9492,8 @@ com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.Q
 					var comparisonAssertion = com.wiris.quizzes.impl.ComparisonAssertion.fromAssertion(a);
 					this.assertionRemoved(correctAnswer.comparison);
 					correctAnswer.comparison = comparisonAssertion;
-					this.assertions[i] = comparisonAssertion;
+					var index = this.assertionIndex(a);
+					if(index != -1) this.assertions[index] = comparisonAssertion; else this.assertions.push(comparisonAssertion);
 					a = comparisonAssertion;
 				} else if(a.isCheck() || a.isStructure()) {
 					var validationAssertion = com.wiris.quizzes.impl.ValidationAssertion.fromAssertion(a);
@@ -9489,7 +9508,8 @@ com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.Q
 							}
 						}
 					}
-					this.assertions[i] = validationAssertion;
+					var index = this.assertionIndex(a);
+					if(index != -1) this.assertions[index] = validationAssertion; else this.assertions.push(validationAssertion);
 					a = validationAssertion;
 				}
 			}
@@ -9504,7 +9524,8 @@ com.wiris.quizzes.impl.QuestionImpl.prototype = $extend(com.wiris.quizzes.impl.Q
 				this.assertionRemoved(slot.syntax);
 				slot.syntax = syntaxAssertion;
 				slot.syntax.setCorrectAnswers(this.getSlotCorrectAnswersIds(slot));
-				this.assertions[i] = syntaxAssertion;
+				var index = this.assertionIndex(a);
+				if(index != -1) this.assertions[index] = syntaxAssertion; else this.assertions.push(syntaxAssertion);
 				a = syntaxAssertion;
 			}
 		}
@@ -13193,9 +13214,9 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 	setEmbeddedAnswerFieldStyle: function(embedded) {
 		if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD || this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
 			if(embedded) {
-				this.addClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_EMBEDDED_ANSWER_FIELD).getStyle().setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
+				this.addClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_EMBEDDED_ANSWER_FIELD).getStyle().setWidth(com.wiris.util.ui.Style.SIZE_AUTO).setMinWidth(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD?50:75);
 				var component = this.getComponent();
-				component.addClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_OUTLINED).getStyle().setMinWidth(100).setMinHeight(20).setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
+				component.addClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_OUTLINED).getStyle().setMinWidth(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD?50:75).setMinHeight(20).setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
 				if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
 					var popupTextField = component;
 					popupTextField.getButton().getStyle().setWidth(23).setHeight(23);
