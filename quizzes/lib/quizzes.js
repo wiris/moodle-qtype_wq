@@ -3398,7 +3398,9 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 		if(embedded) component.setEmbeddedAnswerFieldStyle(true);
 		if(com.wiris.quizzes.JsDomUtils.hasClassString(options,"wiriscopystyle")) {
 			var width = element.clientWidth;
-			component.getStyle().setWidth(width);
+			var size = element.size;
+			if(width > component.getComponent().getStyle().getMinWidth()) component.getComponent().getStyle().setMinWidth(width);
+			component.setTextInputSize(size);
 		}
 		element.parentNode.insertBefore(answerElement,element);
 		if(com.wiris.quizzes.JsDomUtils.hasClassString(options,"wirisembeddedfeedback")) {
@@ -13211,10 +13213,13 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.__name__ = ["com","wiris","quizzes","i
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.__interfaces__ = [com.wiris.quizzes.impl.ui.controller.ReservedWordsConsumer,com.wiris.util.ui.interaction.MouseListener,com.wiris.util.ui.interaction.ChangeListener,com.wiris.quizzes.api.ui.AnswerField,com.wiris.util.ui.interaction.ActionListener];
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.__super__ = com.wiris.util.ui.component.FlowPanel;
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.component.FlowPanel.prototype,{
-	setEmbeddedAnswerFieldStyle: function(embedded) {
+	setTextInputSize: function(inputSize) {
+		if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD || this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) this.getComponent().setSize(inputSize);
+	}
+	,setEmbeddedAnswerFieldStyle: function(embedded) {
 		if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD || this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
 			if(embedded) {
-				this.addClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_EMBEDDED_ANSWER_FIELD).getStyle().setWidth(com.wiris.util.ui.Style.SIZE_AUTO).setMinWidth(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD?50:75);
+				this.addClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_EMBEDDED_ANSWER_FIELD).getStyle().setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
 				var component = this.getComponent();
 				component.addClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_OUTLINED).getStyle().setMinWidth(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD?50:75).setMinHeight(20).setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
 				if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
@@ -17614,6 +17619,7 @@ com.wiris.util.ui.component.TextField = $hxClasses["com.wiris.util.ui.component.
 	this.required = false;
 	this.errorText = "";
 	this.helperText = "";
+	this.size = com.wiris.util.ui.component.TextField.NO_SIZE;
 };
 com.wiris.util.ui.component.TextField.__name__ = ["com","wiris","util","ui","component","TextField"];
 com.wiris.util.ui.component.TextField.newWithLabel = function(label) {
@@ -17634,7 +17640,17 @@ com.wiris.util.ui.component.TextField.newWithLabelAndPlaceholder = function(labe
 }
 com.wiris.util.ui.component.TextField.__super__ = com.wiris.util.ui.component.TextComponent;
 com.wiris.util.ui.component.TextField.prototype = $extend(com.wiris.util.ui.component.TextComponent.prototype,{
-	getErrorText: function() {
+	getSize: function() {
+		return this.size;
+	}
+	,setSize: function(size) {
+		this.size = size;
+		this.changeState();
+	}
+	,usesSize: function() {
+		return this.size == com.wiris.util.ui.component.TextField.NO_SIZE;
+	}
+	,getErrorText: function() {
 		return this.errorText;
 	}
 	,setHelperText: function(helperText) {
@@ -17671,6 +17687,7 @@ com.wiris.util.ui.component.TextField.prototype = $extend(com.wiris.util.ui.comp
 	,setValid: function(valid) {
 		this.valid = valid;
 	}
+	,size: null
 	,helperText: null
 	,errorText: null
 	,required: null
@@ -24148,6 +24165,10 @@ com.wiris.quizzes.ui.JsMathTextField.prototype = $extend(com.wiris.system.ui.JsC
 		} else {
 			if(self.textInput.value != this.mathTextField.getValue()) self.textInput.value = this.mathTextField.getValue();
 			if(self.textInput.placeholder != this.mathTextField.getPlaceholder()) self.textInput.placeholder = this.mathTextField.getPlaceholder();
+			var sizeOrMinusOne = self.textInput.hasAttribute("size")?self.textInput.size:com.wiris.util.ui.component.TextField.NO_SIZE;
+			if(sizeOrMinusOne != this.mathTextField.getSize()) {
+				if(this.mathTextField.getSize() == com.wiris.util.ui.component.TextField.NO_SIZE) self.textInput.removeAttribute("size"); else self.textInput.size = "" + this.mathTextField.getSize();
+			}
 			self.imageDisplay.style.display = "none";
 			self.textInput.style.display = "inline-block";
 		}
@@ -29050,6 +29071,10 @@ com.wiris.system.ui.JsTextComponent.prototype = $extend(com.wiris.system.ui.JsCo
 			var textField = this.textComponent;
 			if(self.textInput.required != textField.isRequired()) self.textInput.required = textField.isRequired();
 			if(textField.getStatus() == com.wiris.util.ui.component.InputComponent.STATUS_ERROR) helperText = textField.getErrorText(); else helperText = textField.getHelperText();
+			var sizeOrMinusOne = self.textInput.hasAttribute("size")?self.textInput.size:com.wiris.util.ui.component.TextField.NO_SIZE;
+			if(sizeOrMinusOne != textField.getSize()) {
+				if(textField.getSize() == com.wiris.util.ui.component.TextField.NO_SIZE) self.textInput.removeAttribute("size"); else self.textInput.size = "" + textField.getSize();
+			}
 			if(self.helperText.innerText != helperText) {
 				self.helperText.style.display = "block";
 				self.helperText.innerText = helperText;
@@ -29083,6 +29108,8 @@ com.wiris.system.ui.JsTextComponent.prototype = $extend(com.wiris.system.ui.JsCo
 				if(this.textComponent.usesMaximum()) input.max = self.textComponent.getMaximum();
 				input.step = self.textComponent.getStep();
 			} else if(js.Boot.__instanceof(this.textComponent,com.wiris.util.ui.component.PasswordTextField)) input.type = "password"; else input.type = "text";
+			var textField = this.textComponent;
+			if(textField.usesSize()) input.size = "" + textField.getSize();
 		} else if(js.Boot.__instanceof(this.textComponent,com.wiris.util.ui.component.TextArea)) input = this.createElement("textarea");
 		return input;
 	}
@@ -43616,6 +43643,7 @@ com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_WITH_SUFFIX = "te
 com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_DISABLED = "textComponentDisabled";
 com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_OUTLINED = "textComponentOutlined";
 com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD = "textField";
+com.wiris.util.ui.component.TextField.NO_SIZE = -1;
 com.wiris.quizzes.impl.ui.component.MathTextField.CLASS_MATH_TEXT_FIELD = "mathTextField";
 com.wiris.quizzes.impl.ui.component.PopupTextField.CLASS_POPUP_TEXT_FIELD = "popupTextField";
 com.wiris.quizzes.impl.ui.component.PopupTextField.CLASS_POPUP_TEXT_FIELD_WINDOW = "popupTextFieldWindow";
