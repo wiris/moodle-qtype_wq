@@ -20110,7 +20110,7 @@ com.wiris.quizzes.impl.ui.component.StudentAnswerComparisonComponent = $hxClasse
 	this.functionNameDropdown.setChangeValueAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.StudentAnswerComparisonComponent.STUDENT_ANSWER_COMPARISON_ID_FUNCTION_NAME,null));
 	this.functionNameDropdown.addActionListener(this.controller);
 	this.functionNameDropdown.setVisible(false);
-	this.functionNameTextField = new com.wiris.util.ui.component.TextField();
+	this.functionNameTextField = com.wiris.util.ui.component.TextField.newWithLabel(this.controller.t(com.wiris.quizzes.impl.ui.component.StudentAnswerComparisonComponent.STUDENT_ANSWER_COMPARISON_LABEL_FUNCTION_NAME_DROPDOWN));
 	this.functionNameTextField.setId("validationOptionsCustomGradingFunctionFunctionNameTextField");
 	this.functionNameTextField.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.StudentAnswerComparisonComponent.STUDENT_ANSWER_COMPARISON_ID_FUNCTION_NAME,null));
 	this.functionNameTextField.addActionListener(this.controller);
