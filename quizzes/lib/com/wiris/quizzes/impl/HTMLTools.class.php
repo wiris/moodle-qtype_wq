@@ -1906,6 +1906,9 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $xml;
 	}
 	static function parseCompoundAnswer($correctAnswer) {
+		if($correctAnswer === null) {
+			return new _hx_array(array());
+		}
 		if($correctAnswer->content !== null && com_wiris_quizzes_impl_MathContent::$TYPE_TEXT === $correctAnswer->type) {
 			return com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswerText($correctAnswer);
 		} else {

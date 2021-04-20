@@ -369,6 +369,9 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			while($_g < $qq->length) {
 				$c = $qq[$_g];
 				++$_g;
+				if($c === null) {
+					continue;
+				}
 				$parts = com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswer($c);
 				if($aux !== null) {
 					$aux->set($c->id, $parts->length);

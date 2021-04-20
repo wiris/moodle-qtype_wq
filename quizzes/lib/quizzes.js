@@ -2261,6 +2261,7 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		while(_g < qq.length) {
 			var c = qq[_g];
 			++_g;
+			if(c == null) continue;
 			var parts = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(c);
 			if(aux != null) aux.set(c.id,parts.length);
 			var k;
@@ -6572,6 +6573,7 @@ com.wiris.quizzes.impl.HTMLTools.ensureRootTag = function(xml,tag) {
 	return xml;
 }
 com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer = function(correctAnswer) {
+	if(correctAnswer == null) return new Array();
 	if(correctAnswer.content != null && com.wiris.quizzes.impl.MathContent.TYPE_TEXT == correctAnswer.type) return com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswerText(correctAnswer); else if(correctAnswer.content != null && com.wiris.quizzes.impl.MathContent.TYPE_MATHML == correctAnswer.type) return com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswerMathML(correctAnswer); else return new Array();
 }
 com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswerText = function(correctAnswer) {
@@ -15609,7 +15611,6 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent = $hxClasses["com.wir
 	this.initialContent.setId("initialContentMathField");
 	this.initialContent.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_INITIAL_CONTENT_CHANGED,null));
 	this.initialContent.addActionListener(controller);
-	this.initialContent.getStyle().setHeight(200);
 	this.initialContentTextField = com.wiris.util.ui.component.TextField.newWithLabel(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_INITIAL_CONTENT_TAB_LABEL));
 	this.initialContentTextField.setId("initialContentTextField");
 	this.initialContentTextField.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_INITIAL_CONTENT_CHANGED,null));
@@ -15636,7 +15637,6 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent = $hxClasses["com.wir
 	this.correctAnswer.setId("correctAnswerMathField");
 	this.correctAnswer.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_CORRECT_ANSWER_CHANGED,null));
 	this.correctAnswer.addActionListener(controller);
-	this.correctAnswer.getStyle().setHeight(200);
 	this.correctAnswerTextField = com.wiris.util.ui.component.TextField.newWithLabel(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_CORRECT_ANSWER_TAB_LABEL));
 	this.correctAnswerTextField.setId("correctAnswerTextField");
 	this.correctAnswerTextField.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_CORRECT_ANSWER_CHANGED,null));
@@ -15650,25 +15650,21 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent = $hxClasses["com.wir
 	this.correctAnswerGraph.getStyle().setWidth(800).setHeight(494);
 	this.correctAnswerGraph.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_CORRECT_ANSWER_CHANGED,null));
 	this.correctAnswerGraph.addActionListener(controller);
-	this.importCorrectAnswer = com.wiris.util.ui.component.Button.newWithTextAndIcon("Import Correct Answer",new com.wiris.util.ui.MaterialIcon("content_copy"),new com.wiris.util.ui.Action("importCorrectAnswer","importCorrectAnswer"),this.controller);
-	this.importInitialContent = com.wiris.util.ui.component.Button.newWithTextAndIcon("Import Initial Content",new com.wiris.util.ui.MaterialIcon("content_copy"),new com.wiris.util.ui.Action("importCorrectAnswer","importCorrectAnswer"),this.controller);
 	this.tabbedPanel = new com.wiris.util.ui.component.TabbedPanel();
 	this.tabbedPanel.addClass(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.CLASS_CORRECT_ANSWER_TABBED_PANEL);
 	this.tabbedPanel.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setMaxWidth(800).setMinWidth(450).setMinHeight(200);
 	this.initialContentTab = this.tabbedPanel.createTab(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_INITIAL_CONTENT_TAB_LABEL),null,null);
-	this.initialContentTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT);
+	this.initialContentTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHeight(200);
 	this.initialContentTab.addComponent(this.initialContent,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentTextField,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentCompoundMath,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentCompoundText,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentGraph,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
-	this.initialContentTab.addComponent(this.importCorrectAnswer,com.wiris.util.ui.component.BorderPanel.POSITION_SOUTH_EAST);
 	this.correctAnswerTab = this.tabbedPanel.createTab(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_CORRECT_ANSWER_TAB_LABEL),null,null);
-	this.correctAnswerTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT);
+	this.correctAnswerTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHeight(200);
 	this.correctAnswerTab.addComponent(this.correctAnswer,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.correctAnswerTab.addComponent(this.correctAnswerTextField,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.correctAnswerTab.addComponent(this.correctAnswerGraph,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
-	this.correctAnswerTab.addComponent(this.importInitialContent,com.wiris.util.ui.component.BorderPanel.POSITION_SOUTH_EAST);
 	this.tabbedPanel.selectTab(1);
 	this.addComponent(this.mathCorrectAnswerLabel);
 	this.addComponent(this.graphCorrectAnswerLabel);
@@ -15785,8 +15781,6 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.prototype = $extend(c
 		return this.correctAnswer.getValue();
 	}
 	,compoundAnswer: null
-	,importInitialContent: null
-	,importCorrectAnswer: null
 	,controller: null
 	,correctAnswerTextField: null
 	,correctAnswerGraph: null
