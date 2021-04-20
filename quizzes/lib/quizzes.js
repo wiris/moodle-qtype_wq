@@ -3354,7 +3354,6 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 					break;
 				}
 			}
-			if(authorAnswer == null) return component;
 			component = this.uibuilder.newAnswerFeedback(instance,slot,authorAnswer);
 			component.showCorrectAnswerFeedback(cfg.showCorrectAnswerFeedback);
 			component.showAssertionsFeedback(cfg.showAssertionsFeedback);
@@ -13098,7 +13097,7 @@ com.wiris.quizzes.impl.ui.AnswerFeedbackImpl = $hxClasses["com.wiris.quizzes.imp
 	this.embeddedComponent = null;
 	this.answerFeedback = new com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent();
 	this.answerFeedback.getStyle().setMargin(0,0,0,0);
-	this.answerFeedback.setPreviewAnswerFeedback(this.questionInstance,this.slot,this.authorAnswer);
+	if(this.areQuestionObjectsNotNull()) this.answerFeedback.setPreviewAnswerFeedback(this.questionInstance,this.slot,this.authorAnswer);
 	this.addComponent(this.answerFeedback);
 };
 com.wiris.quizzes.impl.ui.AnswerFeedbackImpl.__name__ = ["com","wiris","quizzes","impl","ui","AnswerFeedbackImpl"];
@@ -13113,10 +13112,12 @@ com.wiris.quizzes.impl.ui.AnswerFeedbackImpl.prototype = $extend(com.wiris.util.
 		return this.answerFeedback.getCompoundAnswerFeedback(answer);
 	}
 	,getCompoundGrade: function(index) {
-		return this.questionInstance.getCompoundGrade(this.slot,this.authorAnswer,index) * this.answerWeight;
+		var grade = this.areQuestionObjectsNotNull()?this.questionInstance.getCompoundGrade(this.slot,this.authorAnswer,index):-1.0;
+		return grade * this.answerWeight;
 	}
 	,getGrade: function() {
-		return this.questionInstance.getGrade(this.slot,this.authorAnswer) * this.answerWeight;
+		var grade = this.areQuestionObjectsNotNull()?this.questionInstance.getGrade(this.slot,this.authorAnswer):-1.0;
+		return grade * this.answerWeight;
 	}
 	,getFeedbackText: function() {
 		return this.answerFeedback.getFeedbackText();
@@ -13148,6 +13149,9 @@ com.wiris.quizzes.impl.ui.AnswerFeedbackImpl.prototype = $extend(com.wiris.util.
 	,setEmbedded: function(component) {
 		this.embeddedComponent = component;
 		this.embeddedComponent.setEmbeddedFeedback(this);
+	}
+	,areQuestionObjectsNotNull: function() {
+		return this.slot != null && this.authorAnswer != null && this.questionInstance != null;
 	}
 	,answerWeight: null
 	,decorateAnswerField: null
@@ -15605,6 +15609,7 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent = $hxClasses["com.wir
 	this.initialContent.setId("initialContentMathField");
 	this.initialContent.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_INITIAL_CONTENT_CHANGED,null));
 	this.initialContent.addActionListener(controller);
+	this.initialContent.getStyle().setHeight(200);
 	this.initialContentTextField = com.wiris.util.ui.component.TextField.newWithLabel(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_INITIAL_CONTENT_TAB_LABEL));
 	this.initialContentTextField.setId("initialContentTextField");
 	this.initialContentTextField.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_INITIAL_CONTENT_CHANGED,null));
@@ -15631,6 +15636,7 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent = $hxClasses["com.wir
 	this.correctAnswer.setId("correctAnswerMathField");
 	this.correctAnswer.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_CORRECT_ANSWER_CHANGED,null));
 	this.correctAnswer.addActionListener(controller);
+	this.correctAnswer.getStyle().setHeight(200);
 	this.correctAnswerTextField = com.wiris.util.ui.component.TextField.newWithLabel(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_CORRECT_ANSWER_TAB_LABEL));
 	this.correctAnswerTextField.setId("correctAnswerTextField");
 	this.correctAnswerTextField.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_CORRECT_ANSWER_CHANGED,null));
@@ -15644,21 +15650,25 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent = $hxClasses["com.wir
 	this.correctAnswerGraph.getStyle().setWidth(800).setHeight(494);
 	this.correctAnswerGraph.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.ACTION_CORRECT_ANSWER_CHANGED,null));
 	this.correctAnswerGraph.addActionListener(controller);
+	this.importCorrectAnswer = com.wiris.util.ui.component.Button.newWithTextAndIcon("Import Correct Answer",new com.wiris.util.ui.MaterialIcon("content_copy"),new com.wiris.util.ui.Action("importCorrectAnswer","importCorrectAnswer"),this.controller);
+	this.importInitialContent = com.wiris.util.ui.component.Button.newWithTextAndIcon("Import Initial Content",new com.wiris.util.ui.MaterialIcon("content_copy"),new com.wiris.util.ui.Action("importCorrectAnswer","importCorrectAnswer"),this.controller);
 	this.tabbedPanel = new com.wiris.util.ui.component.TabbedPanel();
 	this.tabbedPanel.addClass(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.CLASS_CORRECT_ANSWER_TABBED_PANEL);
 	this.tabbedPanel.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setMaxWidth(800).setMinWidth(450).setMinHeight(200);
 	this.initialContentTab = this.tabbedPanel.createTab(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_INITIAL_CONTENT_TAB_LABEL),null,null);
-	this.initialContentTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHeight(200);
+	this.initialContentTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT);
 	this.initialContentTab.addComponent(this.initialContent,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentTextField,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentCompoundMath,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentCompoundText,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.initialContentTab.addComponent(this.initialContentGraph,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
+	this.initialContentTab.addComponent(this.importCorrectAnswer,com.wiris.util.ui.component.BorderPanel.POSITION_SOUTH_EAST);
 	this.correctAnswerTab = this.tabbedPanel.createTab(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_CORRECT_ANSWER_TAB_LABEL),null,null);
-	this.correctAnswerTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHeight(200);
+	this.correctAnswerTab.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT);
 	this.correctAnswerTab.addComponent(this.correctAnswer,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.correctAnswerTab.addComponent(this.correctAnswerTextField,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
 	this.correctAnswerTab.addComponent(this.correctAnswerGraph,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
+	this.correctAnswerTab.addComponent(this.importInitialContent,com.wiris.util.ui.component.BorderPanel.POSITION_SOUTH_EAST);
 	this.tabbedPanel.selectTab(1);
 	this.addComponent(this.mathCorrectAnswerLabel);
 	this.addComponent(this.graphCorrectAnswerLabel);
@@ -15775,6 +15785,8 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.prototype = $extend(c
 		return this.correctAnswer.getValue();
 	}
 	,compoundAnswer: null
+	,importInitialContent: null
+	,importCorrectAnswer: null
 	,controller: null
 	,correctAnswerTextField: null
 	,correctAnswerGraph: null
