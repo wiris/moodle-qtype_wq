@@ -22777,7 +22777,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		this.matchingDigitsRelativeTolerance = this.toleranceType != com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_DECIMAL_PLACES;
 		this.gradeDistribution = this.mathSlot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE);
 		this.compoundRatios = this.mathSlot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION) != null?com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.splitEscaped(this.mathSlot.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER_GRADE_DISTRIBUTION)," "):new Array();
-		this.precisionRelative = false;
+		this.precisionRelative = true;
 		this.anyNotation = true;
 		this.functionName = "";
 		this.argumentsUnevaluated = false;
