@@ -21457,7 +21457,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		return false;
 	}
 	,isToleranceTypeDigits: function() {
-		return this.tolerance == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_SIGNIFICANT_FIGURES || this.tolerance == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_DECIMAL_PLACES;
+		return this.toleranceType == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_SIGNIFICANT_FIGURES || this.toleranceType == com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.TOLERANCE_DECIMAL_PLACES;
 	}
 	,onFeaturedAssertionsResponse: function(response,requestType) {
 		var questionResponseImpl = response;
