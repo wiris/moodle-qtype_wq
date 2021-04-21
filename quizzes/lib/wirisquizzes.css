@@ -35,6 +35,34 @@
 .wrsUI_app.wrsUI_quizzesAnswerField, .wrsUI_app .wrsUI_quizzesAnswerField {
   flex-shrink: 1 !important;
 }
+.wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField {
+  display: inline-block;
+  width: auto;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField > input, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField > input {
+  line-height: 25px;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_inputComponentCorrect::after, .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_inputComponentWarning::after, .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_inputComponentError::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_inputComponentCorrect::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_inputComponentWarning::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_inputComponentError::after {
+  right: 0px;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > .wrsUI_button.wrsUI_buttonIcon, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > .wrsUI_button.wrsUI_buttonIcon {
+  position: absolute;
+  min-width: 18px;
+  right: 1px;
+  top: calc(50% - 12px);
+  padding: 4px;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > input, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > input {
+  width: calc(100% - 25px);
+  border-width: 0 6px;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > input + div, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > input + div {
+  width: calc(100% - 10px);
+  margin-right: 35px;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentCorrect::after, .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentWarning::after, .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentError::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentCorrect::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentWarning::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentError::after {
+  right: 23px;
+}
 
 .wrsUI_app.wrsUI_quizzesAuthoringField {
   background: transparent !important;
@@ -854,7 +882,7 @@
   margin: 12px 24px 24px 24px;
 }
 .wrsUI_app .wrsUI_graphValidationOptions .wrsUI_quizzesFullSizePanel .wrsUI_elementsContainer .wrsUI_elementSelector {
-  width: 50%;
+  width: 56%;
   margin: 0 0 0 10px;
   padding: 0;
 }
@@ -928,5 +956,3 @@
 .wrsUI_app .wrsUI_graphValidationElement .wrsUI_divider {
   position: inherit;
 }
-
-/*# sourceMappingURL=wirisquizzes_temp.css.map */

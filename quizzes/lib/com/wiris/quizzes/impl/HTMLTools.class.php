@@ -1906,6 +1906,9 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $xml;
 	}
 	static function parseCompoundAnswer($correctAnswer) {
+		if($correctAnswer === null) {
+			return new _hx_array(array());
+		}
 		if($correctAnswer->content !== null && com_wiris_quizzes_impl_MathContent::$TYPE_TEXT === $correctAnswer->type) {
 			return com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswerText($correctAnswer);
 		} else {
@@ -2114,7 +2117,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $mml;
 	}
 	static function emptyCasSession($value) {
-		return $value === null || _hx_index_of($value, "<mo", null) === -1 && _hx_index_of($value, "<mi", null) === -1 && _hx_index_of($value, "<mn", null) === -1 && _hx_index_of($value, "<csymbol", null) === -1;
+		return $value === null || _hx_index_of($value, "<mo", null) === -1 && _hx_index_of($value, "<mi", null) === -1 && _hx_index_of($value, "<mn", null) === -1 && _hx_index_of($value, "<csymbol", null) === -1 && _hx_index_of($value, "algorithm", null) === -1;
 	}
 	static function hasCasSessionParameter($session, $parameter, $name) {
 		$session = com_wiris_util_xml_WXmlUtils::resolveEntities($session);

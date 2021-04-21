@@ -16,9 +16,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021031700;
+$plugin->version = 2021042100;
 $plugin->requires = 2011120500; // Moodle 2.2.
-$plugin->release = '4.2.5';
+$plugin->release = '4.2.6';
 $plugin->maturity = MATURITY_RC;
 $plugin->component = 'qtype_wq';
 $plugin->dependencies = array (

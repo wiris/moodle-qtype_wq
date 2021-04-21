@@ -451,14 +451,15 @@ class com_wiris_util_xml_WCharacterBase {
 	}
 	static function isArabianString($s) {
 		$length = haxe_Utf8::length($s);
+		$i = null;
 		{
 			$_g = 0;
 			while($_g < $length) {
-				$i = $_g++;
-				if(!com_wiris_util_xml_WCharacterBase::isArabian(haxe_Utf8::charCodeAt($s, $i))) {
+				$i1 = $_g++;
+				if(!com_wiris_util_xml_WCharacterBase::isArabian(haxe_Utf8::charCodeAt($s, $i1))) {
 					return false;
 				}
-				unset($i);
+				unset($i1);
 			}
 		}
 		return true;

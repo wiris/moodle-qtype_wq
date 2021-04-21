@@ -1427,10 +1427,10 @@ md-elevation-transition {
 }
 
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer {
-  background: url("decoration/drawing_panel_empty.svg?v=4.2.5") center center no-repeat;
+  background: url("decoration/drawing_panel_empty.svg?v=dev") center center no-repeat;
 }
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer canvas {
-  background: url("decoration/drawing_panel_grid.png?v=4.2.5");
+  background: url("decoration/drawing_panel_grid.png?v=dev");
 }
 .wrsUI_app .wrsUI_drawingPanel .wrsUI_aux_canvasContainer {
   position: absolute;
@@ -2202,18 +2202,11 @@ md-elevation-transition {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
-.toolbarButton:not(.wrsUI_switch):not(:disabled):hover:not(.wrsUI_focused), .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled):hover:not(.wrsUI_focused) {
+.toolbarButton:not(.wrsUI_switch):not(:disabled):hover, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled):hover, .toolbarButton:not(.wrsUI_switch):not(:disabled).wrsUI_focused, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_focused {
   background: rgba(0, 0, 0, 0.1);
 }
 .toolbarButton:not(.wrsUI_switch):not(:disabled):active, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled):active, .toolbarButton:not(.wrsUI_switch):not(:disabled).wrsUI_selected, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_selected, .toolbarButton:not(.wrsUI_switch):not(:disabled).wrsUI_contextPanelButtonPressed, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch):not(:disabled).wrsUI_contextPanelButtonPressed {
   background: rgba(0, 0, 0, 0.15);
-}
-.toolbarButton:not(.wrsUI_switch).wrsUI_focused, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch).wrsUI_focused {
-  background: transparent;
-}
-.toolbarButton:not(.wrsUI_switch).wrsUI_focused > .wrsUI_aux_ripple, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch).wrsUI_focused > .wrsUI_aux_ripple {
-  width: 31.5px;
-  padding-bottom: 31.5px;
 }
 .toolbarButton:not(.wrsUI_switch).wrsUI_focused:not(.wrsUI_aux_rippling) > .wrsUI_aux_ripple, .wrsUI_app .wrsUI_toolBar .wrsUI_button:not(.wrsUI_switch).wrsUI_focused:not(.wrsUI_aux_rippling) > .wrsUI_aux_ripple {
   opacity: 0.99;
@@ -3323,7 +3316,7 @@ md-elevation-transition {
 }
 .wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined {
   border-radius: 4px;
-  border: none;
+  border: none !important;
   box-shadow: inset 0 0 0px 1px #778e9a;
   background-color: transparent;
   box-sizing: border-box !important;
@@ -3334,8 +3327,26 @@ md-elevation-transition {
 .wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_focused {
   box-shadow: inset 0 0 0px 2px #6793a9;
 }
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_focused.wrsUI_inputComponentError {
+  box-shadow: inset 0 0 0px 2px #FF0000;
+}
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_focused.wrsUI_inputComponentWarning {
+  box-shadow: inset 0 0 0px 2px #C99A08;
+}
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_focused.wrsUI_inputComponentCorrect {
+  box-shadow: inset 0 0 0px 2px #318849;
+}
 .wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_focused input {
   caret-color: #6793a9;
+}
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_inputComponentError {
+  box-shadow: inset 0 0 0px 1px #FF0000;
+}
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_inputComponentWarning {
+  box-shadow: inset 0 0 0px 1px #C99A08;
+}
+.wrsUI_app .wrsUI_inputComponent.wrsUI_textComponent.wrsUI_textComponentOutlined.wrsUI_inputComponentCorrect {
+  box-shadow: inset 0 0 0px 1px #318849;
 }
 
 .wrsUI_app.wrsUI_animated .wrsUI_textComponent label {
@@ -3946,5 +3957,3 @@ md-elevation-transition {
 .wrsUI_app .wrsUI_formulaViewer {
   pointer-events: none;
 }
-
-/*# sourceMappingURL=util_tmp.css.map */

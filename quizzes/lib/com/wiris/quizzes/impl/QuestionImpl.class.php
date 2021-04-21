@@ -33,7 +33,8 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 	}
 	public function prepareForSlots() {
 		$correctAnswersToSlots = new Hash();
-		$indexesFound = new _hx_array(array());
+		$assertionCorrectAnswerIndexes = new _hx_array(array());
+		$assertionAnswerIndexes = new _hx_array(array());
 		{
 			$_g = 0; $_g1 = $this->assertions;
 			while($_g < $_g1->length) {
@@ -44,8 +45,8 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 				}
 				$slotIndex = $a->getAnswer();
 				$slotIndexI = Std::parseInt($slotIndex);
-				if(!com_wiris_system_ArrayEx::contains($indexesFound, $slotIndexI)) {
-					$indexesFound->push($slotIndexI);
+				if(!com_wiris_system_ArrayEx::contains($assertionAnswerIndexes, $slotIndexI)) {
+					$assertionAnswerIndexes->push($slotIndexI);
 				}
 				$correctAnswers = $a->getCorrectAnswers();
 				{
@@ -57,8 +58,8 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 							return false;
 						}
 						$caIndexI = Std::parseInt($caIndex);
-						if(!com_wiris_system_ArrayEx::contains($indexesFound, $caIndexI)) {
-							$indexesFound->push($caIndexI);
+						if(!com_wiris_system_ArrayEx::contains($assertionCorrectAnswerIndexes, $caIndexI)) {
+							$assertionCorrectAnswerIndexes->push($caIndexI);
 						}
 						$correctAnswersToSlots->set($caIndex, $slotIndex);
 						unset($caIndexI,$caIndex);
@@ -68,15 +69,15 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 				unset($slotIndexI,$slotIndex,$correctAnswers,$a);
 			}
 		}
-		$existingIndexes = new _hx_array(array());
+		$questionCorrectAnswerIndexes = new _hx_array(array());
 		if($this->correctAnswers !== null) {
 			$_g = 0; $_g1 = $this->correctAnswers;
 			while($_g < $_g1->length) {
 				$ca = $_g1[$_g];
 				++$_g;
 				$id = Std::parseInt($ca->id);
-				if(!com_wiris_system_ArrayEx::contains($existingIndexes, $id)) {
-					$existingIndexes->push($id);
+				if(!com_wiris_system_ArrayEx::contains($questionCorrectAnswerIndexes, $id)) {
+					$questionCorrectAnswerIndexes->push($id);
 				}
 				unset($id,$ca);
 			}
@@ -85,25 +86,46 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 		{
 			$_g = 0;
-			while($_g < $existingIndexes->length) {
-				$index = $existingIndexes[$_g];
+			while($_g < $questionCorrectAnswerIndexes->length) {
+				$index = $questionCorrectAnswerIndexes[$_g];
 				++$_g;
-				if(!com_wiris_system_ArrayEx::contains($indexesFound, $index)) {
-					$a = com_wiris_quizzes_impl_SyntaxAssertion::getDefaultSyntax();
-					$a->setCorrectAnswer(_hx_string_rec($index, "") . "");
-					$a->setAnswer(_hx_string_rec($index, "") . "");
-					$this->assertions->push($a);
-					unset($a);
+				if(!com_wiris_system_ArrayEx::contains($assertionCorrectAnswerIndexes, $index)) {
+					$bound = false;
+					$answerIndex = $assertionAnswerIndexes[$assertionAnswerIndexes->length - 1];
+					while($answerIndex >= 0 && !$bound) {
+						{
+							$_g1 = 0; $_g2 = $this->assertions;
+							while($_g1 < $_g2->length) {
+								$assertion = $_g2[$_g1];
+								++$_g1;
+								if($assertion->isSyntactic() && $assertion->hasAnswer(_hx_string_rec($answerIndex, "") . "")) {
+									$assertion->addCorrectAnswer(_hx_string_rec($index, "") . "");
+									$bound = true;
+								}
+								unset($assertion);
+							}
+							unset($_g2,$_g1);
+						}
+						$answerIndex--;
+					}
+					if(!$bound) {
+						$a = com_wiris_quizzes_impl_SyntaxAssertion::getDefaultSyntax();
+						$a->setCorrectAnswer(_hx_string_rec($index, "") . "");
+						$a->setAnswer(_hx_string_rec($index, "") . "");
+						$this->assertions->push($a);
+						unset($a);
+					}
+					unset($bound,$answerIndex);
 				}
 				unset($index);
 			}
 		}
 		{
 			$_g = 0;
-			while($_g < $indexesFound->length) {
-				$index = $indexesFound[$_g];
+			while($_g < $assertionCorrectAnswerIndexes->length) {
+				$index = $assertionCorrectAnswerIndexes[$_g];
 				++$_g;
-				if(!com_wiris_system_ArrayEx::contains($existingIndexes, $index)) {
+				if(!com_wiris_system_ArrayEx::contains($questionCorrectAnswerIndexes, $index)) {
 					$ca = new com_wiris_quizzes_impl_CorrectAnswer();
 					$ca->id = _hx_string_rec($index, "") . "";
 					$ca->set("");
@@ -144,6 +166,32 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			}
 		}
 	}
+	public function getSlotCorrectAnswersIds($slot) {
+		$aa = $slot->authorAnswers;
+		$correctAnswers = new _hx_array(array());
+		{
+			$_g1 = 0; $_g = $aa->length;
+			while($_g1 < $_g) {
+				$i = $_g1++;
+				$correctAnswers[$i] = _hx_array_get($aa, $i)->id;
+				unset($i);
+			}
+		}
+		return $correctAnswers;
+	}
+	public function assertionIndex($a) {
+		{
+			$_g1 = 0; $_g = $this->assertions->length;
+			while($_g1 < $_g) {
+				$i = $_g1++;
+				if($this->assertions[$i] === $a) {
+					return $i;
+				}
+				unset($i);
+			}
+		}
+		return -1;
+	}
 	public function updateSlotsImpl($overrideDeprecated) {
 		if($this->slots === null) {
 			$this->slots = new _hx_array(array());
@@ -174,11 +222,21 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			return;
 		}
 		$this->importDeprecated();
+		$assertionsCopy = new _hx_array(array());
 		{
-			$_g1 = 0; $_g = $this->assertions->length;
+			$_g = 0; $_g1 = $this->assertions;
+			while($_g < $_g1->length) {
+				$a = $_g1[$_g];
+				++$_g;
+				$assertionsCopy->push($a);
+				unset($a);
+			}
+		}
+		{
+			$_g1 = 0; $_g = $assertionsCopy->length;
 			while($_g1 < $_g) {
 				$i = $_g1++;
-				$a = $this->assertions[$i];
+				$a = $assertionsCopy[$i];
 				$slotId = Std::parseInt($a->getAnswer());
 				$correctAnswers = $a->getCorrectAnswers();
 				while($slotId >= $this->slots->length) {
@@ -209,11 +267,17 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 						if($correctAnswer === null) {
 							$correctAnswer = com_wiris_quizzes_impl_AuthorAnswerImpl::newWithQuestionCallback($this, $slot);
 							$correctAnswer->id = $caIndex;
+							$correctAnswer->comparison->setAnswer(_hx_string_rec($slotId, "") . "");
+							$correctAnswer->comparison->setCorrectAnswer($caIndex);
 							$correctAnswer->value = $this->correctAnswers[Std::parseInt($caIndex)];
+							$this->assertions->push($correctAnswer->comparison);
 							$slot->authorAnswers->push($correctAnswer);
 						}
 						if(Std::is($a, _hx_qtype("com.wiris.quizzes.impl.ComparisonAssertion"))) {
-							$correctAnswer->comparison = $a;
+							if($correctAnswer->comparison !== $a) {
+								$this->assertionRemoved($correctAnswer->comparison);
+								$correctAnswer->comparison = $a;
+							}
 						} else {
 							if(Std::is($a, _hx_qtype("com.wiris.quizzes.impl.ValidationAssertion"))) {
 								if($correctAnswer->getValidation($a->getName()) === null) {
@@ -225,6 +289,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 											$j = $_g4++;
 											$v = $correctAnswer->validations[$j];
 											if($v->name === $a->name) {
+												$this->assertionRemoved($correctAnswer->validations[$j]);
 												$correctAnswer->validations[$j] = $a;
 											}
 											unset($v,$j);
@@ -235,12 +300,18 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 							} else {
 								if($a->isEquivalence()) {
 									$comparisonAssertion = com_wiris_quizzes_impl_ComparisonAssertion::fromAssertion($a);
+									$this->assertionRemoved($correctAnswer->comparison);
 									$correctAnswer->comparison = $comparisonAssertion;
-									$this->assertions[$i] = $comparisonAssertion;
+									$index = $this->assertionIndex($a);
+									if($index !== -1) {
+										$this->assertions[$index] = $comparisonAssertion;
+									} else {
+										$this->assertions->push($comparisonAssertion);
+									}
 									$a = $comparisonAssertion;
-									unset($comparisonAssertion);
+									unset($index,$comparisonAssertion);
 								} else {
-									if($a->isCheck()) {
+									if($a->isCheck() || $a->isStructure()) {
 										$validationAssertion = com_wiris_quizzes_impl_ValidationAssertion::fromAssertion($a);
 										if($correctAnswer->getValidation($validationAssertion->getName()) === null) {
 											$correctAnswer->validations->push($validationAssertion);
@@ -250,15 +321,21 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 												$j = $_g4++;
 												$v = $correctAnswer->validations[$j];
 												if($v->name === $validationAssertion->name) {
+													$this->assertionRemoved($correctAnswer->validations[$j]);
 													$correctAnswer->validations[$j] = $validationAssertion;
 												}
 												unset($v,$j);
 											}
 											unset($_g4,$_g3);
 										}
-										$this->assertions[$i] = $validationAssertion;
+										$index = $this->assertionIndex($a);
+										if($index !== -1) {
+											$this->assertions[$index] = $validationAssertion;
+										} else {
+											$this->assertions->push($validationAssertion);
+										}
 										$a = $validationAssertion;
-										unset($validationAssertion);
+										unset($validationAssertion,$index);
 									}
 								}
 							}
@@ -272,14 +349,21 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 						$this->assertionRemoved($slot->syntax);
 						$slot->syntax = $a;
 					}
+					$slot->syntax->setCorrectAnswers($this->getSlotCorrectAnswersIds($slot));
 				} else {
 					if($a->isSyntactic()) {
 						$syntaxAssertion = com_wiris_quizzes_impl_SyntaxAssertion::fromAssertion($a);
 						$this->assertionRemoved($slot->syntax);
 						$slot->syntax = $syntaxAssertion;
-						$this->assertions[$i] = $syntaxAssertion;
+						$slot->syntax->setCorrectAnswers($this->getSlotCorrectAnswersIds($slot));
+						$index = $this->assertionIndex($a);
+						if($index !== -1) {
+							$this->assertions[$index] = $syntaxAssertion;
+						} else {
+							$this->assertions->push($syntaxAssertion);
+						}
 						$a = $syntaxAssertion;
-						unset($syntaxAssertion);
+						unset($syntaxAssertion,$index);
 					}
 				}
 				unset($slotId,$slot,$i,$correctAnswers,$a);
@@ -1067,7 +1151,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 			if($name === com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_INPUT_FIELD) {
 				return com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_INLINE_EDITOR;
 			} else {
-				if($name === com_wiris_quizzes_impl_LocalData::$KEY_SHOW_CAS) {
+				if($name === com_wiris_quizzes_impl_LocalData::$KEY_SHOW_CAS || $name === com_wiris_quizzes_impl_LocalData::$KEY_SHOW_AUXILIARY_TEXT_INPUT) {
 					return com_wiris_quizzes_impl_LocalData::$VALUE_SHOW_CAS_FALSE;
 				} else {
 					if($name === com_wiris_quizzes_impl_LocalData::$KEY_CAS_INITIAL_SESSION) {
