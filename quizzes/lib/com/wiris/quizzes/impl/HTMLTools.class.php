@@ -733,41 +733,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $h->getString();
 	}
 	public function isTokensMathML($mathml) {
-		if($mathml === null) {
-			return false;
-		}
-		$mathml = com_wiris_quizzes_impl_HTMLTools::stripRootTag($mathml, "math");
-		$allowedTags = new _hx_array(array("mrow", "mn", "mi", "mo"));
-		$start = 0;
-		while(($start = _hx_index_of($mathml, "<", $start)) !== -1) {
-			$sb = new StringBuf();
-			$c = _hx_char_code_at($mathml, ++$start);
-			if($c === 47) {
-				continue;
-			}
-			while($c !== 32 && $c !== 47 && $c !== 62) {
-				$sb->b .= chr($c);
-				$c = _hx_char_code_at($mathml, ++$start);
-			}
-			if($c === 32 || $c === 47) {
-				return false;
-			}
-			$tagname = $sb->b;
-			if(!$this->inArray($tagname, $allowedTags)) {
-				return false;
-			}
-			$end = _hx_index_of($mathml, "<", ++$start);
-			$content = _hx_substr($mathml, $start, $end - $start);
-			$i = com_wiris_system_Utf8::getIterator($content);
-			while($i->hasNext()) {
-				$c = $i->next();
-				if(!(com_wiris_util_xml_WCharacterBase::isDigit($c) || com_wiris_util_xml_WCharacterBase::isLetter($c) || $c === 35)) {
-					return false;
-				}
-			}
-			unset($tagname,$sb,$i,$end,$content,$c);
-		}
-		return true;
+		return com_wiris_util_xml_MathMLUtils::isTokensMathML($mathml);
 	}
 	public function textToMathMLImpl($text) {
 		$n = haxe_Utf8::length($text);

@@ -156,6 +156,9 @@ class com_wiris_util_xml_MathMLUtils {
 			}
 			$end = _hx_index_of($mathml, "<", ++$start);
 			$content = _hx_substr($mathml, $start, $end - $start);
+			if($content === "&#xA0;" || $content === "&nbsp;") {
+				continue;
+			}
 			$i = com_wiris_system_Utf8::getIterator($content);
 			while($i->hasNext()) {
 				$c = $i->next();

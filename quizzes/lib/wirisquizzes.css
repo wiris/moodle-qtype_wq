@@ -616,6 +616,9 @@
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_tabbedPanel.wrsUI_correctAnswerTabbedPanel > .wrsUI_aux_indicator {
   background: #077680;
 }
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_tabbedPanel.wrsUI_correctAnswerTabbedPanel > .wrsUI_aux_tabbedPanelContainer .wrsUI_borderPanel.wrsUI_initialContentTab {
+  overflow-y: auto;
+}
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_toolBar.wrsUI_quizzesStudioToolBar {
   height: 72px;
   padding: 24px;
@@ -955,4 +958,18 @@
 }
 .wrsUI_app .wrsUI_graphValidationElement .wrsUI_divider {
   position: inherit;
+}
+
+table.wiristable {
+  border-collapse: collapse;
+}
+table.wiristable tr:nth-child(2n+1) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+table.wiristable td, table.wiristable th {
+  border: solid 1px #ccc;
+  border-color: rgba(0, 0, 0, 0.15);
+  padding: 5px;
+  text-align: center;
+  vertical-align: baseline;
 }
