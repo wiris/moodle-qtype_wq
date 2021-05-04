@@ -523,7 +523,10 @@
 		"check_no_superfluous": "non contiene elementi superflui",
 	
 		"equivalent_graphic": "geometricamente uguale",
-		"equivalent_graphic_correct_feedback": "La risposta è geometricamente uguale"
+		"equivalent_graphic_correct_feedback": "La risposta è geometricamente uguale",
+
+		"parameter": "parametro",
+		"answer": "risposta"
 	}
 }
 
