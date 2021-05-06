@@ -39364,11 +39364,11 @@ com.wiris.util.xml.MathMLUtils.isTokensMathML = function(mathml) {
 		if(!com.wiris.util.type.Arrays.containsArray(allowedTags,tagName)) return false;
 		var end = mathml.indexOf("<",++start);
 		var content = HxOverrides.substr(mathml,start,end - start);
-		if(content == "&#xA0;" || content == "&nbsp;") continue;
+		if(content == "&#xA0;" || content == "&nbsp;" || content == "&#8201;" || content == "&thinsp;") continue;
 		var i = com.wiris.system.Utf8.getIterator(content);
 		while(i.hasNext()) {
 			c = i.next();
-			if(!(com.wiris.util.xml.WCharacterBase.isDigit(c) || com.wiris.util.xml.WCharacterBase.isLetter(c) || c == 35 || c == 160)) return false;
+			if(!(com.wiris.util.xml.WCharacterBase.isDigit(c) || com.wiris.util.xml.WCharacterBase.isLetter(c) || c == 35 || c == 160 || c == 8201)) return false;
 		}
 	}
 	return true;
