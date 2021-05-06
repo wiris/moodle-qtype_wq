@@ -15434,7 +15434,7 @@ com.wiris.quizzes.impl.ui.component.CalcMeInputComponent.prototype = $extend(com
 com.wiris.quizzes.impl.ui.component.CompoundAnswerComponent = $hxClasses["com.wiris.quizzes.impl.ui.component.CompoundAnswerComponent"] = function(controller) {
 	this.initialized = false;
 	com.wiris.util.ui.component.FlowPanel.call(this,com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
-	this.addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_FULL_SIZE_PANEL);
+	this.setId("inputOptionsCompoundAnswerPanel").addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_FULL_SIZE_PANEL);
 	this.controller = controller;
 	this.label = com.wiris.util.ui.component.Label.newImportantWithText(controller.t(com.wiris.quizzes.impl.ui.component.CompoundAnswerComponent.COMPOUND_ANSWER_FIELD_LABEL));
 	var settingsContainer = new com.wiris.util.ui.component.FlowPanel(com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
@@ -16816,16 +16816,17 @@ com.wiris.quizzes.impl.ui.component.InputOptionsActivity.prototype = $extend(com
 	,updateVisibility: function(context) {
 		this.optionsFilter.setVisible(this.controller.getContext().isOptOpenAnswer() && this.controller.getContext().isOptInputSyntax());
 		var isQuestionCompoundAnswer = "true" == context.getSlot().getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER);
-		var correctAnswer = new com.wiris.quizzes.impl.MathContent();
-		correctAnswer.set(context.getAuthorAnswer().getValue());
-		var isCorrectAnswerCompoundSyntax = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(correctAnswer).length > 0;
-		this.compoundAnswer.setVisible(this.controller.getContext().isOptCompoundAnswer() && (isQuestionCompoundAnswer || isCorrectAnswerCompoundSyntax));
 		this.inputMethod.updateVisibility(isQuestionCompoundAnswer);
 		this.inputSyntax.updateVisibility();
 		if(!context.isShowAllOptions()) {
+			var correctAnswer = new com.wiris.quizzes.impl.MathContent();
+			correctAnswer.set(context.getAuthorAnswer().getValue());
+			var isCorrectAnswerCompoundSyntax = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(correctAnswer).length > 0;
+			this.compoundAnswer.setVisible(this.controller.getContext().isOptCompoundAnswer() && (isQuestionCompoundAnswer || isCorrectAnswerCompoundSyntax));
 			this.showFeaturedSyntaxAssertions(context.getFeaturedParams());
 			this.optionsFilter.setOptionsFilter(true);
 		} else if(this.controller.getContext().isOptInputSyntax()) {
+			this.compoundAnswer.setVisible(true);
 			this.showAllSyntaxAssertions();
 			this.optionsFilter.setOptionsFilter(false);
 		}
@@ -19120,8 +19121,8 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 	}
 	,cancelShowRelevantOptions: function() {
 		this.confirmOptionsDialog.close();
-		this.inputOptions.showAllSyntaxAssertions();
-		this.validationOptions.showAllValidationAssertions();
+		this.getContext().setShowAllOptions(true);
+		this.updateCurrentActivity(this.getContext());
 	}
 	,unfocusGraphElement: function(element) {
 		this.graphValidationOptions.unfocusGraphElement(element);
@@ -21640,6 +21641,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 				if(this.quizzesStudio.isReady()) {
 					this.quizzesStudio.showAllSyntaxAssertions();
 					this.quizzesStudio.showAllValidationAssertions();
+					this.updateCurrentActivity();
 				}
 			}
 		} else if("relevantOptions" == actionId) {
