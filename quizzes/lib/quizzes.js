@@ -16822,13 +16822,15 @@ com.wiris.quizzes.impl.ui.component.InputOptionsActivity.prototype = $extend(com
 			var correctAnswer = new com.wiris.quizzes.impl.MathContent();
 			correctAnswer.set(context.getAuthorAnswer().getValue());
 			var isCorrectAnswerCompoundSyntax = com.wiris.quizzes.impl.HTMLTools.parseCompoundAnswer(correctAnswer).length > 0;
-			this.compoundAnswer.setVisible(this.controller.getContext().isOptCompoundAnswer() && (isQuestionCompoundAnswer || isCorrectAnswerCompoundSyntax));
+			this.compoundAnswer.setVisible(this.controller.getContext().isOptOpenAnswer() && this.controller.getContext().isOptCompoundAnswer() && (isQuestionCompoundAnswer || isCorrectAnswerCompoundSyntax));
 			this.showFeaturedSyntaxAssertions(context.getFeaturedParams());
 			this.optionsFilter.setOptionsFilter(true);
-		} else if(this.controller.getContext().isOptInputSyntax()) {
-			this.compoundAnswer.setVisible(true);
-			this.showAllSyntaxAssertions();
-			this.optionsFilter.setOptionsFilter(false);
+		} else {
+			this.compoundAnswer.setVisible(this.controller.getContext().isOptOpenAnswer() && this.controller.getContext().isOptCompoundAnswer());
+			if(this.controller.getContext().isOptInputSyntax()) {
+				this.showAllSyntaxAssertions();
+				this.optionsFilter.setOptionsFilter(false);
+			}
 		}
 	}
 	,inputSyntax: null
