@@ -18763,14 +18763,14 @@ com.wiris.quizzes.impl.ui.component.QuizzesCompoundTextField.prototype = $extend
 		this.changeState();
 	}
 	,getValue: function() {
-		var compoundAnswers = new Array();
+		var value = new Array();
 		var tools = new com.wiris.quizzes.impl.HTMLTools();
-		var _g1 = 0, _g = compoundAnswers.length;
+		var _g1 = 0, _g = this.compoundAnswers.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			compoundAnswers.push([compoundAnswers[i][0],tools.textToMathML(this.textFields[i].getValue())]);
+			value.push([this.compoundAnswers[i][0],tools.textToMathML(this.textFields[i].getValue())]);
 		}
-		return com.wiris.quizzes.impl.HTMLTools.joinCompoundAnswer(compoundAnswers).content;
+		return com.wiris.quizzes.impl.HTMLTools.joinCompoundAnswer(value).content;
 	}
 	,actionPerformed: function(e) {
 		if(this.updating) return;
