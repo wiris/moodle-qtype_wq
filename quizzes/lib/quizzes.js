@@ -38522,7 +38522,7 @@ com.wiris.util.ui.controller.ActivationController = $hxClasses["com.wiris.util.u
 	this.target = target;
 	this.hasHover = hasHover;
 	this.hovering = false;
-	this.activateOnRelease = false;
+	this.activateOnRelease = true;
 	this.target.addDefaultKeyListener(this);
 	this.target.addDefaultMouseListener(this);
 };
