@@ -7898,10 +7898,13 @@ com.wiris.quizzes.impl.HTMLTools.prototype = {
 			after = openTag + HxOverrides.substr(formula2,0,closeTag2 + 1);
 		}
 		var tag1 = HxOverrides.substr(formula1,openTag1,closeTag1 + 1 - openTag1);
+		var isAnnotation = StringTools.startsWith(tag1,"<annotation");
 		var space = tag1.indexOf(" ");
-		if(space != -1) {
-			var attribs = HxOverrides.substr(tag1,space + 1,tag1.length - 1 - (space + 1));
-			value = "<mstyle " + attribs + ">" + value + "</mstyle>";
+		if(space != -1 || isAnnotation) {
+			var attribs = space != -1?" " + HxOverrides.substr(tag1,space + 1,tag1.length - 1 - (space + 1)):"";
+			var replaceTag = isAnnotation?"annotation":"mstyle";
+			if(attribs == " encoding=\"text/plain\"") value = this.mathMLToText(value);
+			value = "<" + replaceTag + attribs + ">" + value + "</" + replaceTag + ">";
 		}
 		formula1 = HxOverrides.substr(formula1,0,openTag1);
 		formula2 = HxOverrides.substr(formula2,closeTag2 + 1,null);
@@ -38519,7 +38522,7 @@ com.wiris.util.ui.controller.ActivationController = $hxClasses["com.wiris.util.u
 	this.target = target;
 	this.hasHover = hasHover;
 	this.hovering = false;
-	this.activateOnRelease = true;
+	this.activateOnRelease = false;
 	this.target.addDefaultKeyListener(this);
 	this.target.addDefaultMouseListener(this);
 };
@@ -38701,6 +38704,7 @@ com.wiris.util.ui.controller.SelectionController = $hxClasses["com.wiris.util.ui
 	this.preventNewSelectionsAtMax = true;
 	this.targets = new Hash();
 	this.activeTargets = new Array();
+	this.firesChangeActions = true;
 };
 com.wiris.util.ui.controller.SelectionController.__name__ = ["com","wiris","util","ui","controller","SelectionController"];
 com.wiris.util.ui.controller.SelectionController.__interfaces__ = [com.wiris.util.ui.interaction.KeyListener,com.wiris.util.ui.interaction.MouseListener];
@@ -38758,13 +38762,13 @@ com.wiris.util.ui.controller.SelectionController.prototype = {
 				HxOverrides.remove(this.activeTargets,lastElement);
 				lastComponent.changeState();
 				lastComponent.removeClass(com.wiris.util.ui.controller.SelectionController.CLASS_SELECTED);
-				if(lastChangeAction != null) lastComponent.performAction(lastChangeAction);
+				if(lastChangeAction != null && this.firesChangeActions) lastComponent.performAction(lastChangeAction);
 				this.activeTargets.push(id);
 			} else return;
 		} else if(this.activeTargets.length > this.minSelections) HxOverrides.remove(this.activeTargets,id); else return;
 		component.changeState();
 		if(selected) component.addClass(com.wiris.util.ui.controller.SelectionController.CLASS_SELECTED); else component.removeClass(com.wiris.util.ui.controller.SelectionController.CLASS_SELECTED);
-		if(changeAction != null) component.performAction(changeAction);
+		if(changeAction != null && this.firesChangeActions) component.performAction(changeAction);
 	}
 	,isSelected: function(id) {
 		return com.wiris.system.ArrayEx.contains(this.activeTargets,id);
@@ -38806,6 +38810,13 @@ com.wiris.util.ui.controller.SelectionController.prototype = {
 	,setMinSelections: function(minSelections) {
 		this.minSelections = minSelections;
 	}
+	,setFireChangeActions: function(firesChangeActions) {
+		this.firesChangeActions = firesChangeActions;
+	}
+	,isFireChangeActions: function() {
+		return this.firesChangeActions;
+	}
+	,firesChangeActions: null
 	,activeTargets: null
 	,targets: null
 	,groupId: null
