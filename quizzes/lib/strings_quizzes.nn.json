@@ -523,7 +523,10 @@
 		"check_no_superfluous": "inneheld ikkje overflødige element",
 	
 		"equivalent_graphic": "geometrisk likt",
-		"equivalent_graphic_correct_feedback": "Svaret er geometrisk likt"
+		"equivalent_graphic_correct_feedback": "Svaret er geometrisk likt",
+
+		"parameter": "parameter",
+		"answer": "svar"
 	}
 }
 

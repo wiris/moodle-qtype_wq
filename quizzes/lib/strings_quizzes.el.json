@@ -523,7 +523,10 @@
 		"check_no_superfluous": "δεν περιέχει περιττά στοιχεία",
 	
 		"equivalent_graphic": "γεωμετρικά ίδια",
-		"equivalent_graphic_correct_feedback": "Η απάντηση είναι γεωμετρικά ίδια"
+		"equivalent_graphic_correct_feedback": "Η απάντηση είναι γεωμετρικά ίδια",
+
+		"parameter": "παράμετρος",
+		"answer": "απάντηση"
 	}
 }
 

@@ -179,6 +179,25 @@ class com_wiris_quizzes_wrap_QuizzesWrap extends com_wiris_quizzes_api_Quizzes {
 			}
 		}
 	}
+	public function newVariablesRequestWithQuestionData($html, $instance) {
+		try {
+			$iw = $instance;
+			if($iw !== null) {
+				$instance = $iw->instance;
+			}
+			$this->wrapper->start();
+			$r = new com_wiris_quizzes_wrap_QuestionRequestWrap($this->quizzes->newVariablesRequestWithQuestionData($html, $instance));
+			$this->wrapper->stop();
+			return $r;
+		}catch(Exception $»e) {
+			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			$e = $_ex_;
+			{
+				$this->wrapper->stop();
+				throw new HException($e);
+			}
+		}
+	}
 	public function newVariablesRequest($html, $instance) {
 		try {
 			$iw = $instance;

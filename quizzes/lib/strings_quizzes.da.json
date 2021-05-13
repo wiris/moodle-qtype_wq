@@ -523,7 +523,10 @@
 		"check_no_superfluous": "indeholder ikke overflødige elementer",
 	
 		"equivalent_graphic": "geometrisk lig",
-		"equivalent_graphic_correct_feedback": "Svaret er geometrisk lig med"
+		"equivalent_graphic_correct_feedback": "Svaret er geometrisk lig med",
+
+		"parameter": "parameter",
+		"answer": "svar"
 	}
 }
 

@@ -670,14 +670,41 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			$_g1 = 0; $_g = $qq->getCorrectAnswersLength();
 			while($_g1 < $_g) {
 				$j1 = $_g1++;
-				$value = $qq->getCorrectAnswer($j1);
-				if(com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_INPUT_FIELD_PLAIN_TEXT === $qa->getLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_INPUT_FIELD) || $syntax->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_STRING) {
+				$ca = $qq->correctAnswers[$j1];
+				$value = $ca->content;
+				$isPlainTextField = $qa->getAnswerFieldType() == com_wiris_quizzes_api_ui_AnswerFieldType::$TEXT_FIELD;
+				$isStringSyntax = $syntax->name === com_wiris_quizzes_impl_Assertion::$SYNTAX_STRING;
+				$slots = $qa->slots;
+				if($slots !== null) {
+					$_g2 = 0;
+					while($_g2 < $slots->length) {
+						$slot = $slots[$_g2];
+						++$_g2;
+						$authorAnswers = $slot->authorAnswers;
+						{
+							$_g3 = 0;
+							while($_g3 < $authorAnswers->length) {
+								$authorAnswer = $authorAnswers[$_g3];
+								++$_g3;
+								if($authorAnswer->id === $ca->id) {
+									$isPlainTextField = $slot->getAnswerFieldType() == com_wiris_quizzes_api_ui_AnswerFieldType::$TEXT_FIELD;
+									$isStringSyntax = $slot->getSyntax()->getName() == com_wiris_quizzes_api_assertion_SyntaxName::$STRING;
+								}
+								unset($authorAnswer);
+							}
+							unset($_g3);
+						}
+						unset($slot,$authorAnswers);
+					}
+					unset($_g2);
+				}
+				if($isPlainTextField || $isStringSyntax) {
 					$value = $qi->expandVariablesText($value);
 				} else {
 					$value = $qi->expandVariablesMathMLEval($value);
 				}
 				$qq->setCorrectAnswer($j1, $value);
-				unset($value,$j1);
+				unset($value,$slots,$j1,$isStringSyntax,$isPlainTextField,$ca);
 			}
 		}
 		$j = $qq->assertions->length - 1;

@@ -156,10 +156,13 @@ class com_wiris_util_xml_MathMLUtils {
 			}
 			$end = _hx_index_of($mathml, "<", ++$start);
 			$content = _hx_substr($mathml, $start, $end - $start);
+			if($content === "&#xA0;" || $content === "&nbsp;" || $content === "&#8201;" || $content === "&thinsp;") {
+				continue;
+			}
 			$i = com_wiris_system_Utf8::getIterator($content);
 			while($i->hasNext()) {
 				$c = $i->next();
-				if(!(com_wiris_util_xml_WCharacterBase::isDigit($c) || com_wiris_util_xml_WCharacterBase::isLetter($c) || $c === 35 || $c === 160)) {
+				if(!(com_wiris_util_xml_WCharacterBase::isDigit($c) || com_wiris_util_xml_WCharacterBase::isLetter($c) || $c === 35 || $c === 160 || $c === 8201)) {
 					return false;
 				}
 			}

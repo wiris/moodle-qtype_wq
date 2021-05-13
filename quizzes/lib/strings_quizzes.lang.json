@@ -523,7 +523,10 @@
 		"check_no_superfluous": "${check_no_superfluous}",
 	
 		"equivalent_graphic": "${equivalent_graphic}",
-		"equivalent_graphic_correct_feedback": "${equivalent_graphic_correct_feedback}"
+		"equivalent_graphic_correct_feedback": "${equivalent_graphic_correct_feedback}",
+
+		"parameter": "${parameter}",
+		"answer": "${answer}"
 	}
 }
 
