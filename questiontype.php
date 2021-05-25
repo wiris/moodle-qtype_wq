@@ -35,6 +35,10 @@ class qtype_wq extends question_type {
     }
 
     public function save_question_options($question) {
+        $this->save_question_options_impl($question, true);
+    }
+
+    public function save_question_options_impl($question, $callbase) {
         global $DB;
         // We don't save another xml if we are in a cloze subquestion.
         if (empty($question->parent)) {
@@ -55,7 +59,9 @@ class qtype_wq extends question_type {
         }
         // Save question type options after wiris XML becaus if it fails we at
         // least have saved the Wiris part (relevant in multianswer case).
-        return $this->base->save_question_options($question);
+        if ($callbase) {
+            return $this->base->save_question_options($question);
+        }
     }
 
     public function delete_question($questionid, $contextid) {
