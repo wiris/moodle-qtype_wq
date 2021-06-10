@@ -36,14 +36,41 @@ class behat_wq_base extends behat_base {
     public function i_open_wiris_quizzes_studio() {
         $node = $this->get_text_selector_node(
             'xpath_element',
-            "//span[contains(concat(' ', normalize-space(@class), ' '), ' wirisstudioinput ')]"
+            "//*[@id='wrsUI_openStudio']"
         );
         $this->ensure_node_is_visible($node);
         $node->click();
         // Mink does not provide any way to call other steps, so we recreate the switch_to_window step from behat_general.
-        $this->getSession()->executeScript(
-                'if (window.name == "") window.name = "' . behat_general::MAIN_WINDOW_NAME . '"');
-        $this->getSession()->switchToWindow('wirisstudiopopup');
+        // $this->getSession()->executeScript(
+        //         'if (window.name == "") window.name = "' . behat_general::MAIN_WINDOW_NAME . '"');
+        // $this->getSession()->switchToWindow('wirisstudiopopup');
     }
 
+     /**
+     * Opens the n instance of Wiris Quizzes Studio when editing a question 
+     * 
+     * @When I Open Wiris Quizzes Studio Instance :instance
+     */
+    public function iOpenWirisQuizzesStudioInstance($instance) {
+        $node = $this->get_text_selector_node(
+            'xpath_element',
+            "//*[@id='wrsUI_openStudio_".$instance."']"
+        );
+        $this->ensure_node_is_visible($node);
+        $node->click();
+        // Mink does not provide any way to call other steps, so we recreate the switch_to_window step from behat_general.
+        // $this->getSession()->executeScript(
+        //         'if (window.name == "") window.name = "' . behat_general::MAIN_WINDOW_NAME . '"');
+        // $this->getSession()->switchToWindow('wirisstudiopopup');
+    }
+
+    /**
+     * Clears all the content in a focused field
+     * 
+     * @When I clear the field
+     */
+    public function iClearTheField()
+    {
+        $this->getSession()->executeScript('this.value=""');
+    }
 }
