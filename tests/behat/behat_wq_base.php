@@ -28,6 +28,14 @@ require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 
 class behat_wq_base extends behat_base {
 
+     /**
+     * @Then I choose the question type :questiontypename
+     */
+    public function i_choose_the_question_type($questiontypename) {
+        $this->execute('behat_forms::i_set_the_field_to', array($this->escape($questiontypename), 1));
+        $this->execute("behat_general::i_click_on", array('.submitbutton', "css_element"));
+    }
+
     /**
      * Opens the Wiris Quizzes Studio when editing a question.
      *
@@ -51,7 +59,7 @@ class behat_wq_base extends behat_base {
      * 
      * @When I Open Wiris Quizzes Studio Instance :instance
      */
-    public function iOpenWirisQuizzesStudioInstance($instance) {
+    public function i_open_wiris_quizzes_studio_instance($instance) {
         $node = $this->get_text_selector_node(
             'xpath_element',
             "//*[@id='wrsUI_openStudio_".$instance."']"
@@ -69,7 +77,7 @@ class behat_wq_base extends behat_base {
      * 
      * @When I clear the field
      */
-    public function iClearTheField()
+    public function i_clear_the_field()
     {
         $this->getSession()->executeScript('this.value=""');
     }
