@@ -34,7 +34,7 @@ class qtype_wq_renderer extends qtype_renderer {
         $slots = $qa->get_question()->wirisquestion->question->getSlots();
         if (isset($slots[0])) {
             $showauxiliartextinput = $slots[0]->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
-        } else  {
+        } else {
             $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
         }
 

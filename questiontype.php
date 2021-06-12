@@ -16,7 +16,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// @codingStandardsIgnoreStart
 require_once($CFG->dirroot . '/question/type/wq/config.php');
+// @codingStandardsIgnoreEnd
 require_once($CFG->dirroot . '/question/type/wq/quizzes/quizzes.php');
 
 class qtype_wq extends question_type {
