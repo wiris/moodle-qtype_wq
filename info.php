@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// @codingStandardsIgnoreStart
-require_once('../../../config.php');
-// @codingStandardsIgnoreEnd
+require_once('../../../config.php'); // @codingStandardsIgnoreLine
 
 require_once($CFG->dirroot . '/question/type/wq/config.php');
 
