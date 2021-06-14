@@ -16,6 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// @codingStandardsIgnoreLine
 require_once($CFG->dirroot . '/question/type/wq/config.php');
 require_once($CFG->dirroot . '/question/type/wq/quizzes/quizzes.php');
 
