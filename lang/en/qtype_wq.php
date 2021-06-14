@@ -95,3 +95,5 @@ $string['privacy:metadata:qtype_wq:question'] = 'Wiris Quizzes question type id'
 $string['privacy:metadata:qtype_wq:xml'] = 'Wiris Quizzes Question XML';
 
 $string['auxiliar_text'] = 'Write an optional reasoning for your answer:';
+
+$string['wq_update_warning'] = 'WirisQuizzes is evolving! On July 5th, your version of WirisQuizzes will be automatically updated to our newest release. Find all of the relevant information concerning this upgrade <a href="https://docs.wiris.com/en/quizzes/quizzes4_integration" target="_blank">here</a>. Contact <a href="mailto:support@wiris.com">support@wiris.com</a> if you have any questions.';

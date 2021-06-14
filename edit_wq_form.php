@@ -72,6 +72,8 @@ class qtype_wq_edit_form extends question_edit_form {
             }
         }
 
+        $mform->addElement('html', '<div style="text-align:center; font-weight:bold; color: red;">' . get_string('wq_update_warning', 'qtype_wq') . '</div>');
+
         $defaultvalues = array();
         $defaultvalues['wirisquestion'] = $program;
         $mform->setDefaults($defaultvalues);
