@@ -16,6 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// @codingStandardsIgnoreLine
 require_once($CFG->dirroot . '/question/type/wq/config.php');
 require_once($CFG->dirroot . '/question/type/wq/quizzes/quizzes.php');
 
@@ -119,7 +120,7 @@ class qtype_wq extends question_type {
 
         // Load question xml into Wiris Quizzes API question object.
         if (empty($question->parent)) {
-            $builder = com_wiris_quizzes_api_QuizzesBuilder::getInstance();
+            $builder = com_wiris_quizzes_api_Quizzes::getInstance();
             $question->wirisquestion = $builder->readQuestion($questiondata->options->wirisquestion);
         }
     }

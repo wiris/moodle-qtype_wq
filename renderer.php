@@ -31,9 +31,14 @@ class qtype_wq_renderer extends qtype_renderer {
         $result = $this->base->formulation_and_controls($qa, $options);
 
         // Auxiliar text.
-        $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getProperty(
-            com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_AUXILIAR_TEXT_INPUT); // @codingStandardsIgnoreLine
-        if ($showauxiliartextinput) {
+        $slots = $qa->get_question()->wirisquestion->question->getSlots();
+        if (isset($slots[0])) {
+            $showauxiliartextinput = $slots[0]->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
+        } else {
+            $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
+        }
+
+        if ($showauxiliartextinput == "true") {
             $result .= $this->auxiliar_text($qa, $options);
         }
 
@@ -76,8 +81,8 @@ class qtype_wq_renderer extends qtype_renderer {
         $question = $qa->get_question();
         $xml = $qa->get_last_qt_var('_sqi');
         if (!empty($xml)) {
-            $builder = com_wiris_quizzes_api_QuizzesBuilder::getInstance();
-            $sqi = $builder->readQuestionInstance($xml);
+            $builder = com_wiris_quizzes_api_Quizzes::getInstance();
+            $sqi = $builder->readQuestionInstance($xml, $question->wirisquestion);
             $question->wirisquestioninstance->updateFromStudentQuestionInstance($sqi);
         }
         $sqi = $question->wirisquestioninstance->getStudentQuestionInstance();

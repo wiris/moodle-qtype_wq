@@ -119,6 +119,12 @@ class com_wiris_util_xml_WCharacterBase {
 	static $MATHEMATICAL_DOUBLE_STRUCK_CAPITAL_A = 120120;
 	static $MATHEMATICAL_DOUBLE_STRUCK_SMALL_A = 120146;
 	static $MATHEMATICAL_DOUBLE_STRUCK_DIGIT_ZERO = 120792;
+	static $MATHEMATICAL_MONOSPACE_CAPITAL_A = 120432;
+	static $MATHEMATICAL_MONOSPACE_CAPITAL_Z = 120457;
+	static $MATHEMATICAL_MONOSPACE_SMALL_A = 120458;
+	static $MATHEMATICAL_MONOSPACE_SMALL_Z = 120483;
+	static $MATHEMATICAL_MONOSPACE_DIGIT_ZERO = 120822;
+	static $MATHEMATICAL_MONOSPACE_DIGIT_NINE = 120831;
 	static $MIDDLE_DOT = 183;
 	static $DOT_ABOVE = 729;
 	static $ARABIC_DECIMAL_SEPARATOR = 1643;
@@ -440,6 +446,9 @@ class com_wiris_util_xml_WCharacterBase {
 	static function isScript($c) {
 		return $c >= 119964 && $c <= 120015 || $c === 8458 || $c === 8459 || $c === 8466 || $c === 8464 || $c === 8499 || $c === 8500 || $c === 8492 || $c === 8495 || $c === 8496 || $c === 8497 || $c === 8475;
 	}
+	static function isMathematicalMonospace($codepoint) {
+		return $codepoint >= com_wiris_util_xml_WCharacterBase::$MATHEMATICAL_MONOSPACE_CAPITAL_A && $codepoint <= com_wiris_util_xml_WCharacterBase::$MATHEMATICAL_MONOSPACE_SMALL_Z || $codepoint >= com_wiris_util_xml_WCharacterBase::$MATHEMATICAL_MONOSPACE_DIGIT_ZERO && $codepoint <= com_wiris_util_xml_WCharacterBase::$MATHEMATICAL_MONOSPACE_DIGIT_NINE;
+	}
 	static function isLowerCase($c) {
 		return $c >= 97 && $c <= 122 || $c >= 224 && $c <= 255 || $c >= 591 && $c >= 659 || $c >= 661 && $c <= 687 || $c >= 940 && $c <= 974;
 	}
@@ -450,20 +459,26 @@ class com_wiris_util_xml_WCharacterBase {
 		return false;
 	}
 	static function isArabianString($s) {
-		$i = strlen($s) - 1;
-		while($i >= 0) {
-			if(!com_wiris_util_xml_WCharacterBase::isArabian(_hx_char_code_at($s, $i))) {
-				return false;
+		$length = haxe_Utf8::length($s);
+		$i = null;
+		{
+			$_g = 0;
+			while($_g < $length) {
+				$i1 = $_g++;
+				if(!com_wiris_util_xml_WCharacterBase::isArabian(haxe_Utf8::charCodeAt($s, $i1))) {
+					return false;
+				}
+				unset($i1);
 			}
-			--$i;
 		}
 		return true;
 	}
 	static function isArabian($c) {
-		if($c >= 1536 && $c <= 1791 && !com_wiris_util_xml_WCharacterBase::isDigit($c)) {
-			return true;
+		if(com_wiris_util_xml_WCharacterBase::isDigit($c)) {
+			return false;
+		} else {
+			return $c >= 1536 && $c <= 1791 || $c >= 126464 && $c <= 126705;
 		}
-		return false;
 	}
 	static function isHebrew($c) {
 		if($c >= 1424 && $c <= 1535) {

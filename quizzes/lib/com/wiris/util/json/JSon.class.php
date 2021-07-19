@@ -460,7 +460,7 @@ class com_wiris_util_json_JSon extends com_wiris_util_json_StringParser {
 			return $n;
 		} else {
 			if(Std::is($n, _hx_qtype("Int"))) {
-				return $n + 0.0;
+				return $n;
 			} else {
 				return 0.0;
 			}
