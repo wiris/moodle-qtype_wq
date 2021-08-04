@@ -418,14 +418,22 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 						while($_g1 < $authorAnswers->length) {
 							$aa = $authorAnswers[$_g1];
 							++$_g1;
-							$id = Std::parseInt($aa->value->id);
-							$ca = _hx_array_get($qq->correctAnswers->splice($id, 1), 0);
-							$correctAnswers->push($ca);
-							unset($id,$ca,$aa);
+							$correctAnswers->push($aa->value);
+							unset($aa);
 						}
 						unset($_g1);
 					}
 					$separated = $this->breakCompoundCorrectAnswersImpl($correctAnswers, $aux);
+					{
+						$_g1 = 0;
+						while($_g1 < $correctAnswers->length) {
+							$ca = $correctAnswers[$_g1];
+							++$_g1;
+							$qq->correctAnswers->remove($ca);
+							unset($ca);
+						}
+						unset($_g1);
+					}
 					$qq->correctAnswers = $qq->correctAnswers->concat($separated);
 					unset($separated,$correctAnswers,$authorAnswers);
 				}
@@ -1068,7 +1076,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 						continue;
 					}
 					if($slot->getInitialContent() !== null) {
-						$sb->add($slot->getInitialContent());
+						$sb->add($slot->getInitialContent() . " ");
 					}
 					$authorAnswers = $slot->getAuthorAnswers();
 					{
@@ -1077,7 +1085,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 							$authorAnswer = $authorAnswers[$_g1];
 							++$_g1;
 							if($authorAnswer->getValue() !== null) {
-								$sb->add($authorAnswer->getValue());
+								$sb->add($authorAnswer->getValue() . " ");
 							}
 							unset($authorAnswer);
 						}

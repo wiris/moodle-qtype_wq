@@ -714,10 +714,10 @@ class com_wiris_quizzes_impl_HTMLTools {
 		$h->imageClass($this->ImageB64Url($value), null, "wirisplotter");
 		return $h->getString();
 	}
-	public function addConstructionImageTag($value) {
+	public function addConstructionImageTag($value, $width, $height) {
 		$h = new com_wiris_quizzes_impl_HTML();
 		$src = com_wiris_quizzes_impl_QuizzesImpl::getInstance()->getResourceUrl("plotter_loading.png");
-		$h->openclose("img", new _hx_array(array(new _hx_array(array("src", $src)), new _hx_array(array("alt", "Plotter")), new _hx_array(array("title", "Plotter")), new _hx_array(array("class", "wirisconstruction")), new _hx_array(array("data-wirisconstruction", $value)))));
+		$h->openclose("img", new _hx_array(array(new _hx_array(array("src", $src)), new _hx_array(array("alt", "Plotter")), new _hx_array(array("title", "Plotter")), new _hx_array(array("class", "wirisconstruction")), new _hx_array(array("data-wirisconstruction", $value)), new _hx_array(array("data-wiriswidth", _hx_string_rec($width, "") . "")), new _hx_array(array("data-wirisheight", _hx_string_rec($height, "") . "")))));
 		return $h->getString();
 	}
 	public function addPlotterImageTag($filename) {
@@ -1141,7 +1141,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 			$pos = 0;
 			while(($pos = _hx_index_of($token, $placeholder, $pos)) !== -1) {
 				$v = $this->variablePosition($token, $pos);
-				if(($v === com_wiris_quizzes_impl_HTMLTools::$POSITION_ALL || $v === com_wiris_quizzes_impl_HTMLTools::$POSITION_TABLE || $text && $v === com_wiris_quizzes_impl_HTMLTools::$POSITION_ONLY_TEXT || $mathml && $v === com_wiris_quizzes_impl_HTMLTools::$POSITION_ONLY_MATHML) && ($name === $this->getVariableName($token, $pos) || $oldName === $this->getVariableName($token, $pos))) {
+				if(($v === com_wiris_quizzes_impl_HTMLTools::$POSITION_ALL || $v === com_wiris_quizzes_impl_HTMLTools::$POSITION_TABLE || $text && $v === com_wiris_quizzes_impl_HTMLTools::$POSITION_ONLY_TEXT || $mathml && $v === com_wiris_quizzes_impl_HTMLTools::$POSITION_ONLY_MATHML) && ($name === $this->getVariableName($token, $pos) || $oldName !== null && $oldName === $this->getVariableName($token, $pos))) {
 					$value = $variables->get($name);
 					if($text && $escapeText) {
 						$value = com_wiris_util_xml_WXmlUtils::htmlEscape($value);
@@ -1183,7 +1183,35 @@ class com_wiris_quizzes_impl_HTMLTools {
 									$value = $this->addPlotterImageB64Tag($value);
 								} else {
 									if($construction) {
-										$value = $this->addConstructionImageTag($value);
+										$width = 450;
+										$height = 450;
+										if($oldName !== null && $formula !== null) {
+											$parts = _hx_explode("_", $oldName);
+											if($parts->length === 2) {
+												$square = $parts[1];
+												$squareInt = Std::parseInt($square);
+												if($squareInt > 0) {
+													$width = $squareInt;
+													$height = $squareInt;
+												}
+												unset($squareInt,$square);
+											} else {
+												if($parts->length === 3) {
+													$fst = $parts[1];
+													$snd = $parts[2];
+													$fstInt = Std::parseInt($fst);
+													$sndInt = Std::parseInt($snd);
+													if($fstInt > 0 && $sndInt > 0) {
+														$width = $fstInt;
+														$height = $sndInt;
+													}
+													unset($sndInt,$snd,$fstInt,$fst);
+												}
+											}
+											unset($parts);
+										}
+										$value = $this->addConstructionImageTag($value, $width, $height);
+										unset($width,$height);
 									}
 								}
 							}
@@ -1418,40 +1446,6 @@ class com_wiris_quizzes_impl_HTMLTools {
 		}
 		return $formula;
 	}
-	public function replaceUnderscoreWithSubscript($formula, $variables) {
-		$k = 0;
-		while($k < strlen($formula) - strlen("</math>") && _hx_index_of(_hx_substr($formula, $k, null), "_", null) !== -1 && _hx_index_of(_hx_substr($formula, $k, null), "</mo>", null) !== -1) {
-			$currentBlock = _hx_substr($formula, 0, _hx_index_of($formula, "</mo>", _hx_index_of($formula, "_", $k)) + strlen("</mo>"));
-			$residualBlock = _hx_substr($formula, _hx_index_of($formula, "</mo>", _hx_index_of($formula, "_", $k)) + strlen("</mo>"), null);
-			$currentVariable = _hx_substr($currentBlock, _hx_last_index_of($currentBlock, "<mo>", null) + strlen("<mo>") + 1, _hx_last_index_of($currentBlock, "</mo>", null) - (_hx_last_index_of($currentBlock, "<mo>", null) + strlen("<mo>") + 1));
-			if($this->assertTextSyntax($currentVariable) && _hx_index_of($variables->get($currentVariable), $currentVariable, null) !== -1) {
-				$formula1 = _hx_substr($currentBlock, 0, _hx_last_index_of($currentBlock, "<mo>", null)) . "<msub>";
-				$newVariable = _hx_substr($currentBlock, _hx_last_index_of($currentBlock, "<mo>", null) + strlen("<mo>"), _hx_index_of($currentBlock, "_", _hx_last_index_of($currentBlock, "<mo>", null)) - (_hx_last_index_of($currentBlock, "<mo>", null) + strlen("<mo>")));
-				$subscript = _hx_substr($currentBlock, _hx_last_index_of($currentBlock, "_", null) + 1, _hx_last_index_of($currentBlock, "</mo>", null) - (_hx_last_index_of($currentBlock, "_", null) + 1));
-				$openTag = ((com_wiris_util_type_IntegerTools::isInt($subscript)) ? "<mn>" : "<mi>");
-				$closeTag = ((com_wiris_util_type_IntegerTools::isInt($subscript)) ? "</mn>" : "</mi>");
-				$formula2 = "<mo>" . $newVariable . "</mo>" . $openTag . $subscript . $closeTag . "</msub>";
-				if(_hx_index_of($currentVariable, "_", null) !== _hx_last_index_of($currentVariable, "_", null)) {
-					$first = _hx_index_of($currentBlock, "_", $k);
-					$second = _hx_index_of($currentBlock, "_", $first + 1);
-					$subscript1 = _hx_substr($currentBlock, $first + 1, $second - ($first + 1));
-					$openTag1 = ((com_wiris_util_type_IntegerTools::isInt($subscript1)) ? "<mn>" : "<mi>");
-					$closeTag1 = ((com_wiris_util_type_IntegerTools::isInt($subscript1)) ? "</mn>" : "</mi>");
-					$subscript2 = _hx_substr($currentBlock, $second + 1, _hx_last_index_of($currentBlock, "</mo>", null) - ($second + 1));
-					$openTag2 = ((com_wiris_util_type_IntegerTools::isInt($subscript2)) ? "<mn>" : "<mi>");
-					$closeTag2 = ((com_wiris_util_type_IntegerTools::isInt($subscript2)) ? "</mn>" : "</mi>");
-					$formula2 = "<mo>" . $newVariable . "</mo><mrow>" . $openTag1 . $subscript1 . $closeTag1 . "<mo>,</mo>" . $openTag2 . $subscript2 . $closeTag2 . "</mrow></msub>";
-					unset($subscript2,$subscript1,$second,$openTag2,$openTag1,$first,$closeTag2,$closeTag1);
-				}
-				$currentBlock = $formula1 . $formula2;
-				unset($subscript,$openTag,$newVariable,$formula2,$formula1,$closeTag);
-			}
-			$k = strlen($currentBlock);
-			$formula = $currentBlock . $residualBlock;
-			unset($residualBlock,$currentVariable,$currentBlock);
-		}
-		return $formula;
-	}
 	public function maxValue($a, $b) {
 		if($a === -1 && $b !== -1) {
 			return $b;
@@ -1582,6 +1576,32 @@ class com_wiris_quizzes_impl_HTMLTools {
 			return $previous . $variableName . "</mo>" . $openTag . $subscript . $closeTag . $end;
 		}
 	}
+	public function fixPlottersWithDimensions($variables) {
+		$v = $variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_GEOMETRY_FILE);
+		$plotters = $v->keys();
+		while($plotters->hasNext()) {
+			$plotter = $plotters->next();
+			$mathmlV = $variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_MATHML);
+			if($mathmlV !== null) {
+				$mathmls = $mathmlV->keys();
+				while($mathmls->hasNext()) {
+					$mathml = $mathmls->next();
+					if(StringTools::startsWith($mathml, $plotter . "_") && _hx_index_of($mathmlV->get($mathml), $mathml, null) !== -1) {
+						$parts = _hx_explode("_", $mathml);
+						if($parts->length === 2 && Std::parseInt($parts[1]) > 0 || $parts->length === 3 && Std::parseInt($parts[1]) > 0 && Std::parseInt($parts[2]) > 0) {
+							$v->set($mathml, $mathmlV->get($mathml));
+							$mathmlV->remove($mathml);
+						}
+						unset($parts);
+					}
+					unset($mathml);
+				}
+				unset($mathmls);
+			}
+			unset($plotter,$mathmlV);
+		}
+		return $v;
+	}
 	public function expandVariables($html, $variables) {
 		if($variables === null || _hx_index_of($html, "#", null) === -1) {
 			return $html;
@@ -1604,12 +1624,10 @@ class com_wiris_quizzes_impl_HTMLTools {
 				if(StringTools::startsWith($token, "<math")) {
 					$v = $variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_MATHML);
 					if($v !== null) {
-						$token = $this->replaceUnderscoreWithSubscript($token, $v);
 						$token = $this->replaceMathMLVariablesInsideMathML($token, $v);
 					}
 					$v = $variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_TEXT);
 					if($v !== null) {
-						$token = $this->replaceUnderscoreWithSubscript($token, $v);
 						$token = $this->replaceMathMLVariablesInsideMathML($token, $v);
 					}
 				} else {
@@ -1623,6 +1641,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 					}
 					$v = $variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_GEOMETRY_FILE);
 					if($v !== null) {
+						$v = $this->fixPlottersWithDimensions($variables);
 						$token = $this->replaceVariablesInsideHTML($token, $v, com_wiris_quizzes_impl_MathContent::$TYPE_GEOMETRY_FILE, true);
 					}
 					$v = $variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_MATHML);
@@ -2093,19 +2112,24 @@ class com_wiris_quizzes_impl_HTMLTools {
 	static function hasCasSessionParameter($session, $parameter, $name) {
 		$session = com_wiris_util_xml_WXmlUtils::resolveEntities($session);
 		$expr = com_wiris_quizzes_impl_HTMLTools::getParameterEReg($parameter, $name);
-		if($expr->match($session)) {
+		$exprAL = com_wiris_quizzes_impl_HTMLTools::getParameterFromAlgorithmLine($parameter, $name);
+		if($expr->match($session) || $exprAL->match($session)) {
 			return true;
 		} else {
 			$noaccents = com_wiris_util_type_StringUtils::stripAccents($parameter);
 			if(!($noaccents === $parameter)) {
 				$expr = com_wiris_quizzes_impl_HTMLTools::getParameterEReg($noaccents, $name);
-				return $expr->match($session);
+				$exprAL = com_wiris_quizzes_impl_HTMLTools::getParameterFromAlgorithmLine($noaccents, $name);
+				return $expr->match($session) || $exprAL->match($session);
 			}
 			return false;
 		}
 	}
 	static function getParameterEReg($parameter, $name) {
 		return new EReg(".*<input>\\s*<math[^>]*>\\s*<mi>" . $parameter . "</mi>\\s*<mo>\\s*(" . com_wiris_quizzes_impl_HTMLTools_19($name, $parameter) . "|\\s)\\s*</mo><mi>" . $name . "\\d*</mi>.*", "gmi");
+	}
+	static function getParameterFromAlgorithmLine($parameter, $name) {
+		return new EReg(".*" . $parameter . "\\s*" . $name . ".*", "gmi");
 	}
 	static function casSessionLang($value) {
 		$start = _hx_index_of($value, "<session", null);
