@@ -25,34 +25,34 @@ class com_wiris_util_json_parser_JsonParse {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			$e = $_ex_;
 			{
-				throw new HException(com_wiris_util_json_parser_JsonParseException::newFromMessage("Provided JSON string did not contain a value"));
+				throw new HException(new com_wiris_system_Exception("Provided JSON string did not contain a value", null));
 			}
 		}
 		if($current === 123) {
-			$currentJType = com_wiris_util_json_parser_JType::$OBJECT;
+			$currentJType = com_wiris_util_json_parser_JType::$TYPE_OBJECT;
 			$currentContainer = new Hash();
 			$i++;
 		} else {
 			if($current === 91) {
-				$currentJType = com_wiris_util_json_parser_JType::$hARRAY;
+				$currentJType = com_wiris_util_json_parser_JType::$TYPE_ARRAY;
 				$currentContainer = new _hx_array(array());
 				$propertyName = null;
 				$i++;
 			} else {
 				if($current === 34 || com_wiris_util_json_parser_JsonParse::$ALLOW_SINGLE_QUOTES && $current === 39) {
-					$currentJType = com_wiris_util_json_parser_JType::$STRING;
+					$currentJType = com_wiris_util_json_parser_JType::$TYPE_STRING;
 					$singleQuoteString = $current === 39;
 					$fieldStart = $i;
 				} else {
 					if(com_wiris_util_json_parser_JsonParse::isLetter($current)) {
-						$currentJType = com_wiris_util_json_parser_JType::$CONSTANT;
+						$currentJType = com_wiris_util_json_parser_JType::$TYPE_CONSTANT;
 						$fieldStart = $i;
 					} else {
 						if(com_wiris_util_json_parser_JsonParse::isNumberStart($current)) {
-							$currentJType = com_wiris_util_json_parser_JType::$NUMBER;
+							$currentJType = com_wiris_util_json_parser_JType::$TYPE_NUMBER;
 							$fieldStart = $i;
 						} else {
-							throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "Unexpected character \"" . _hx_string_rec($current, "") . "\" instead of root value"));
+							throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "Unexpected character \"" . _hx_string_rec($current, "") . "\" instead of root value"), null));
 						}
 					}
 				}
@@ -60,7 +60,7 @@ class com_wiris_util_json_parser_JsonParse {
 		}
 		while($i <= $end) {
 			$current = haxe_Utf8::charCodeAt($jsonString, $i);
-			if($currentJType === com_wiris_util_json_parser_JType::$NAME) {
+			if($currentJType === com_wiris_util_json_parser_JType::$TYPE_NAME) {
 				try {
 					$extracted = com_wiris_util_json_parser_JsonParse::extractString($jsonString, $i, $singleQuoteString);
 					$i = $extracted->sourceEnd;
@@ -71,15 +71,15 @@ class com_wiris_util_json_parser_JsonParse {
 					$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 					$e2 = $_ex_;
 					{
-						throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "String did not have ending quote"));
+						throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "String did not have ending quote"), null));
 					}
 				}
-				$currentJType = com_wiris_util_json_parser_JType::$HEURISTIC;
+				$currentJType = com_wiris_util_json_parser_JType::$TYPE_HEURISTIC;
 				$expectingColon = true;
 				$i++;
 				unset($e2);
 			} else {
-				if($currentJType === com_wiris_util_json_parser_JType::$STRING) {
+				if($currentJType === com_wiris_util_json_parser_JType::$TYPE_STRING) {
 					try {
 						$extracted = com_wiris_util_json_parser_JsonParse::extractString($jsonString, $i, $singleQuoteString);
 						$i = $extracted->sourceEnd;
@@ -90,7 +90,7 @@ class com_wiris_util_json_parser_JsonParse {
 						$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 						$e2 = $_ex_;
 						{
-							throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "String did not have ending quote"));
+							throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "String did not have ending quote"), null));
 						}
 					}
 					if($currentContainer === null) {
@@ -99,16 +99,16 @@ class com_wiris_util_json_parser_JsonParse {
 						$expectingComma = true;
 						if(com_wiris_system_TypeTools::isHash($currentContainer)) {
 							$currentContainer->set($propertyName, $value);
-							$currentJType = com_wiris_util_json_parser_JType::$OBJECT;
+							$currentJType = com_wiris_util_json_parser_JType::$TYPE_OBJECT;
 						} else {
 							$currentContainer->push($value);
-							$currentJType = com_wiris_util_json_parser_JType::$hARRAY;
+							$currentJType = com_wiris_util_json_parser_JType::$TYPE_ARRAY;
 						}
 					}
 					$i++;
 					unset($e2);
 				} else {
-					if($currentJType === com_wiris_util_json_parser_JType::$NUMBER) {
+					if($currentJType === com_wiris_util_json_parser_JType::$TYPE_NUMBER) {
 						$withDecimal = false;
 						$withE = false;
 						do {
@@ -136,7 +136,7 @@ class com_wiris_util_json_parser_JsonParse {
 							$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 							$e2 = $_ex_;
 							{
-								throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "\"" . $valueString . "\" expected to be a number, but wasn't"));
+								throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "\"" . $valueString . "\" expected to be a number, but wasn't"), null));
 							}
 						}
 						if($currentContainer === null) {
@@ -145,15 +145,15 @@ class com_wiris_util_json_parser_JsonParse {
 							$expectingComma = true;
 							if(com_wiris_system_TypeTools::isHash($currentContainer)) {
 								$currentContainer->set($propertyName, $value);
-								$currentJType = com_wiris_util_json_parser_JType::$OBJECT;
+								$currentJType = com_wiris_util_json_parser_JType::$TYPE_OBJECT;
 							} else {
 								$currentContainer->push($value);
-								$currentJType = com_wiris_util_json_parser_JType::$hARRAY;
+								$currentJType = com_wiris_util_json_parser_JType::$TYPE_ARRAY;
 							}
 						}
 						unset($withE,$withDecimal,$valueString,$e2);
 					} else {
-						if($currentJType === com_wiris_util_json_parser_JType::$CONSTANT) {
+						if($currentJType === com_wiris_util_json_parser_JType::$TYPE_CONSTANT) {
 							while(com_wiris_util_json_parser_JsonParse::isLetter($current) && $i++ < $end) {
 								$current = haxe_Utf8::charCodeAt($jsonString, $i);
 							}
@@ -168,13 +168,13 @@ class com_wiris_util_json_parser_JsonParse {
 										$value = null;
 									} else {
 										if(com_wiris_system_TypeTools::isHash($currentContainer)) {
-											$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$OBJECT));
+											$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
 										} else {
 											if(com_wiris_system_TypeTools::isArray($currentContainer)) {
-												$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$hARRAY));
+												$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_ARRAY));
 											}
 										}
-										throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "\"" . $valueString . "\" is not a valid constant. Missing quotes?"));
+										throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "\"" . $valueString . "\" is not a valid constant. Missing quotes?"), null));
 									}
 								}
 							}
@@ -184,57 +184,57 @@ class com_wiris_util_json_parser_JsonParse {
 								$expectingComma = true;
 								if(com_wiris_system_TypeTools::isHash($currentContainer)) {
 									$currentContainer->set($propertyName, $value);
-									$currentJType = com_wiris_util_json_parser_JType::$OBJECT;
+									$currentJType = com_wiris_util_json_parser_JType::$TYPE_OBJECT;
 								} else {
 									$currentContainer->push($value);
-									$currentJType = com_wiris_util_json_parser_JType::$hARRAY;
+									$currentJType = com_wiris_util_json_parser_JType::$TYPE_ARRAY;
 								}
 							}
 							unset($valueString);
 						} else {
-							if($currentJType === com_wiris_util_json_parser_JType::$HEURISTIC) {
+							if($currentJType === com_wiris_util_json_parser_JType::$TYPE_HEURISTIC) {
 								while(com_wiris_util_json_parser_JsonParse::isWhitespace($current) && $i++ < $end) {
 									$current = haxe_Utf8::charCodeAt($jsonString, $i);
 								}
 								if($current !== 58 && $expectingColon) {
-									$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$OBJECT));
-									throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "wasn't followed by a colon"));
+									$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
+									throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "wasn't followed by a colon"), null));
 								}
 								if($current === 58) {
 									if($expectingColon) {
 										$expectingColon = false;
 										$i++;
 									} else {
-										$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$OBJECT));
-										throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "was followed by too many colons"));
+										$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
+										throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "was followed by too many colons"), null));
 									}
 								} else {
 									if($current === 34 || com_wiris_util_json_parser_JsonParse::$ALLOW_SINGLE_QUOTES && $current === 39) {
-										$currentJType = com_wiris_util_json_parser_JType::$STRING;
+										$currentJType = com_wiris_util_json_parser_JType::$TYPE_STRING;
 										$singleQuoteString = $current === 39;
 										$fieldStart = $i;
 									} else {
 										if($current === 123) {
-											$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$OBJECT));
-											$currentJType = com_wiris_util_json_parser_JType::$OBJECT;
+											$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
+											$currentJType = com_wiris_util_json_parser_JType::$TYPE_OBJECT;
 											$currentContainer = new Hash();
 											$i++;
 										} else {
 											if($current === 91) {
-												$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$OBJECT));
-												$currentJType = com_wiris_util_json_parser_JType::$hARRAY;
+												$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
+												$currentJType = com_wiris_util_json_parser_JType::$TYPE_ARRAY;
 												$currentContainer = new _hx_array(array());
 												$i++;
 											} else {
 												if(com_wiris_util_json_parser_JsonParse::isLetter($current)) {
-													$currentJType = com_wiris_util_json_parser_JType::$CONSTANT;
+													$currentJType = com_wiris_util_json_parser_JType::$TYPE_CONSTANT;
 													$fieldStart = $i;
 												} else {
 													if(com_wiris_util_json_parser_JsonParse::isNumberStart($current)) {
-														$currentJType = com_wiris_util_json_parser_JType::$NUMBER;
+														$currentJType = com_wiris_util_json_parser_JType::$TYPE_NUMBER;
 														$fieldStart = $i;
 													} else {
-														throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "unexpected character \"" . _hx_string_rec($current, "") . "\" instead of object value"));
+														throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "unexpected character \"" . _hx_string_rec($current, "") . "\" instead of object value"), null));
 													}
 												}
 											}
@@ -242,7 +242,7 @@ class com_wiris_util_json_parser_JsonParse {
 									}
 								}
 							} else {
-								if($currentJType === com_wiris_util_json_parser_JType::$OBJECT) {
+								if($currentJType === com_wiris_util_json_parser_JType::$TYPE_OBJECT) {
 									while(com_wiris_util_json_parser_JsonParse::isWhitespace($current) && $i++ < $end) {
 										$current = haxe_Utf8::charCodeAt($jsonString, $i);
 									}
@@ -251,16 +251,16 @@ class com_wiris_util_json_parser_JsonParse {
 											$expectingComma = false;
 											$i++;
 										} else {
-											$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$OBJECT));
-											throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "followed by too many commas"));
+											$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
+											throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "followed by too many commas"), null));
 										}
 									} else {
 										if($current === 34 || com_wiris_util_json_parser_JsonParse::$ALLOW_SINGLE_QUOTES && $current === 39) {
 											if($expectingComma) {
-												$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$OBJECT));
-												throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "wasn't followed by a comma"));
+												$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
+												throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "wasn't followed by a comma"), null));
 											}
-											$currentJType = com_wiris_util_json_parser_JType::$NAME;
+											$currentJType = com_wiris_util_json_parser_JType::$TYPE_NAME;
 											$singleQuoteString = $current === 39;
 											$fieldStart = $i;
 										} else {
@@ -284,43 +284,43 @@ class com_wiris_util_json_parser_JsonParse {
 												}
 											} else {
 												if(!com_wiris_util_json_parser_JsonParse::isWhitespace($current)) {
-													throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "unexpected character '" . _hx_string_rec($current, "") . "' where a property name is expected. Missing quotes?"));
+													throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "unexpected character '" . _hx_string_rec($current, "") . "' where a property name is expected. Missing quotes?"), null));
 												}
 											}
 										}
 									}
 								} else {
-									if($currentJType === com_wiris_util_json_parser_JType::$hARRAY) {
+									if($currentJType === com_wiris_util_json_parser_JType::$TYPE_ARRAY) {
 										while(com_wiris_util_json_parser_JsonParse::isWhitespace($current) && $i++ < $end) {
 											$current = haxe_Utf8::charCodeAt($jsonString, $i);
 										}
 										if($current !== 44 && $current !== 93 && $current !== 125 && $expectingComma) {
-											$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$hARRAY));
-											throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "wasn't preceded by a comma"));
+											$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_ARRAY));
+											throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "wasn't preceded by a comma"), null));
 										}
 										if($current === 44) {
 											if($expectingComma) {
 												$expectingComma = false;
 												$i++;
 											} else {
-												$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$hARRAY));
-												throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "preceded by too many commas"));
+												$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_ARRAY));
+												throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "preceded by too many commas"), null));
 											}
 										} else {
 											if($current === 34 || com_wiris_util_json_parser_JsonParse::$ALLOW_SINGLE_QUOTES && $current === 39) {
-												$currentJType = com_wiris_util_json_parser_JType::$STRING;
+												$currentJType = com_wiris_util_json_parser_JType::$TYPE_STRING;
 												$singleQuoteString = $current === 39;
 												$fieldStart = $i;
 											} else {
 												if($current === 123) {
-													$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$hARRAY));
-													$currentJType = com_wiris_util_json_parser_JType::$OBJECT;
+													$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_ARRAY));
+													$currentJType = com_wiris_util_json_parser_JType::$TYPE_OBJECT;
 													$currentContainer = new Hash();
 													$i++;
 												} else {
 													if($current === 91) {
-														$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$hARRAY));
-														$currentJType = com_wiris_util_json_parser_JType::$hARRAY;
+														$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_ARRAY));
+														$currentJType = com_wiris_util_json_parser_JType::$TYPE_ARRAY;
 														$currentContainer = new _hx_array(array());
 														$i++;
 													} else {
@@ -344,15 +344,15 @@ class com_wiris_util_json_parser_JsonParse {
 															}
 														} else {
 															if(com_wiris_util_json_parser_JsonParse::isLetter($current)) {
-																$currentJType = com_wiris_util_json_parser_JType::$CONSTANT;
+																$currentJType = com_wiris_util_json_parser_JType::$TYPE_CONSTANT;
 																$fieldStart = $i;
 															} else {
 																if(com_wiris_util_json_parser_JsonParse::isNumberStart($current)) {
-																	$currentJType = com_wiris_util_json_parser_JType::$NUMBER;
+																	$currentJType = com_wiris_util_json_parser_JType::$TYPE_NUMBER;
 																	$fieldStart = $i;
 																} else {
-																	$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$hARRAY));
-																	throw new HException(com_wiris_util_json_parser_JsonParseException::newFromStack($stateStack, "Unexpected character \"" . _hx_string_rec($current, "") . "\" instead of array value"));
+																	$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_ARRAY));
+																	throw new HException(new com_wiris_system_Exception(com_wiris_util_json_parser_JsonParse::buildErrorMessage($stateStack, "Unexpected character \"" . _hx_string_rec($current, "") . "\" instead of array value"), null));
 																}
 															}
 														}
@@ -368,7 +368,7 @@ class com_wiris_util_json_parser_JsonParse {
 				}
 			}
 		}
-		throw new HException(com_wiris_util_json_parser_JsonParseException::newFromMessage("Root element wasn't terminated correctly (Missing ']' or '}'?)"));
+		throw new HException(new com_wiris_system_Exception("Root element wasn't terminated correctly (Missing ']' or '}'?)", null));
 	}
 	static function extractString($jsonString, $fieldStart, $singleQuote) {
 		$builder = new StringBuf();
@@ -442,6 +442,26 @@ class com_wiris_util_json_parser_JsonParse {
 	static function isNumberStart($c) {
 		return $c >= 48 && $c <= 57 || $c === 45;
 	}
+	static function buildErrorMessage($stateStack, $message) {
+		$jsonTrace = "";
+		$i = null;
+		{
+			$_g1 = 0; $_g = $stateStack->length;
+			while($_g1 < $_g) {
+				$i1 = $_g1++;
+				$name = _hx_array_get($stateStack, $i1)->propertyName;
+				if($name === null) {
+					$list = _hx_array_get($stateStack, $i1)->container;
+					$name = "[" . _hx_string_rec($list->length, "") . "]";
+					unset($list);
+				}
+				$jsonTrace .= $name . ((($i1 !== $stateStack->length - 1) ? "." : ""));
+				unset($name,$i1);
+			}
+		}
+		$jsonTrace = com_wiris_util_json_parser_JsonParse_1($i, $jsonTrace, $message, $stateStack);
+		return $jsonTrace . ": " . $message;
+	}
 	function __toString() { return 'com.wiris.util.json.parser.JsonParse'; }
 }
 function com_wiris_util_json_parser_JsonParse_0(&$builder, &$c, &$fieldStart, &$i, &$jsonString, &$ret, &$singleQuote) {
@@ -449,5 +469,12 @@ function com_wiris_util_json_parser_JsonParse_0(&$builder, &$c, &$fieldStart, &$
 		$s = new haxe_Utf8(null);
 		$s->addChar(Std::parseInt("0x" . _hx_substr($jsonString, $i + 2, 4)));
 		return $s->toString();
+	}
+}
+function com_wiris_util_json_parser_JsonParse_1(&$i, &$jsonTrace, &$message, &$stateStack) {
+	if($jsonTrace === "") {
+		return "<root>";
+	} else {
+		return "<root>." . $jsonTrace;
 	}
 }

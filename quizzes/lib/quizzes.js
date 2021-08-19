@@ -32341,28 +32341,28 @@ com.wiris.util.json.parser.ExtractedString.prototype = {
 	,sourceEnd: null
 	,__class__: com.wiris.util.json.parser.ExtractedString
 }
-com.wiris.util.json.parser.JType = $hxClasses["com.wiris.util.json.parser.JType"] = { __ename__ : ["com","wiris","util","json","parser","JType"], __constructs__ : ["ARRAY","OBJECT","HEURISTIC","NAME","STRING","NUMBER","CONSTANT"] }
-com.wiris.util.json.parser.JType.ARRAY = ["ARRAY",0];
-com.wiris.util.json.parser.JType.ARRAY.toString = $estr;
-com.wiris.util.json.parser.JType.ARRAY.__enum__ = com.wiris.util.json.parser.JType;
-com.wiris.util.json.parser.JType.OBJECT = ["OBJECT",1];
-com.wiris.util.json.parser.JType.OBJECT.toString = $estr;
-com.wiris.util.json.parser.JType.OBJECT.__enum__ = com.wiris.util.json.parser.JType;
-com.wiris.util.json.parser.JType.HEURISTIC = ["HEURISTIC",2];
-com.wiris.util.json.parser.JType.HEURISTIC.toString = $estr;
-com.wiris.util.json.parser.JType.HEURISTIC.__enum__ = com.wiris.util.json.parser.JType;
-com.wiris.util.json.parser.JType.NAME = ["NAME",3];
-com.wiris.util.json.parser.JType.NAME.toString = $estr;
-com.wiris.util.json.parser.JType.NAME.__enum__ = com.wiris.util.json.parser.JType;
-com.wiris.util.json.parser.JType.STRING = ["STRING",4];
-com.wiris.util.json.parser.JType.STRING.toString = $estr;
-com.wiris.util.json.parser.JType.STRING.__enum__ = com.wiris.util.json.parser.JType;
-com.wiris.util.json.parser.JType.NUMBER = ["NUMBER",5];
-com.wiris.util.json.parser.JType.NUMBER.toString = $estr;
-com.wiris.util.json.parser.JType.NUMBER.__enum__ = com.wiris.util.json.parser.JType;
-com.wiris.util.json.parser.JType.CONSTANT = ["CONSTANT",6];
-com.wiris.util.json.parser.JType.CONSTANT.toString = $estr;
-com.wiris.util.json.parser.JType.CONSTANT.__enum__ = com.wiris.util.json.parser.JType;
+com.wiris.util.json.parser.JType = $hxClasses["com.wiris.util.json.parser.JType"] = { __ename__ : ["com","wiris","util","json","parser","JType"], __constructs__ : ["TYPE_ARRAY","TYPE_OBJECT","TYPE_HEURISTIC","TYPE_NAME","TYPE_STRING","TYPE_NUMBER","TYPE_CONSTANT"] }
+com.wiris.util.json.parser.JType.TYPE_ARRAY = ["TYPE_ARRAY",0];
+com.wiris.util.json.parser.JType.TYPE_ARRAY.toString = $estr;
+com.wiris.util.json.parser.JType.TYPE_ARRAY.__enum__ = com.wiris.util.json.parser.JType;
+com.wiris.util.json.parser.JType.TYPE_OBJECT = ["TYPE_OBJECT",1];
+com.wiris.util.json.parser.JType.TYPE_OBJECT.toString = $estr;
+com.wiris.util.json.parser.JType.TYPE_OBJECT.__enum__ = com.wiris.util.json.parser.JType;
+com.wiris.util.json.parser.JType.TYPE_HEURISTIC = ["TYPE_HEURISTIC",2];
+com.wiris.util.json.parser.JType.TYPE_HEURISTIC.toString = $estr;
+com.wiris.util.json.parser.JType.TYPE_HEURISTIC.__enum__ = com.wiris.util.json.parser.JType;
+com.wiris.util.json.parser.JType.TYPE_NAME = ["TYPE_NAME",3];
+com.wiris.util.json.parser.JType.TYPE_NAME.toString = $estr;
+com.wiris.util.json.parser.JType.TYPE_NAME.__enum__ = com.wiris.util.json.parser.JType;
+com.wiris.util.json.parser.JType.TYPE_STRING = ["TYPE_STRING",4];
+com.wiris.util.json.parser.JType.TYPE_STRING.toString = $estr;
+com.wiris.util.json.parser.JType.TYPE_STRING.__enum__ = com.wiris.util.json.parser.JType;
+com.wiris.util.json.parser.JType.TYPE_NUMBER = ["TYPE_NUMBER",5];
+com.wiris.util.json.parser.JType.TYPE_NUMBER.toString = $estr;
+com.wiris.util.json.parser.JType.TYPE_NUMBER.__enum__ = com.wiris.util.json.parser.JType;
+com.wiris.util.json.parser.JType.TYPE_CONSTANT = ["TYPE_CONSTANT",6];
+com.wiris.util.json.parser.JType.TYPE_CONSTANT.toString = $estr;
+com.wiris.util.json.parser.JType.TYPE_CONSTANT.__enum__ = com.wiris.util.json.parser.JType;
 com.wiris.util.json.parser.JsonParse = $hxClasses["com.wiris.util.json.parser.JsonParse"] = function() {
 };
 com.wiris.util.json.parser.JsonParse.__name__ = ["com","wiris","util","json","parser","JsonParse"];
@@ -32382,63 +32382,63 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 	try {
 		while(com.wiris.util.json.parser.JsonParse.isWhitespace(current = HxOverrides.cca(jsonString,i))) i++;
 	} catch( e ) {
-		throw com.wiris.util.json.parser.JsonParseException.newFromMessage("Provided JSON string did not contain a value");
+		throw new com.wiris.system.Exception("Provided JSON string did not contain a value");
 	}
 	if(current == 123) {
-		currentJType = com.wiris.util.json.parser.JType.OBJECT;
+		currentJType = com.wiris.util.json.parser.JType.TYPE_OBJECT;
 		currentContainer = new Hash();
 		i++;
 	} else if(current == 91) {
-		currentJType = com.wiris.util.json.parser.JType.ARRAY;
+		currentJType = com.wiris.util.json.parser.JType.TYPE_ARRAY;
 		currentContainer = new Array();
 		propertyName = null;
 		i++;
 	} else if(current == 34 || com.wiris.util.json.parser.JsonParse.ALLOW_SINGLE_QUOTES && current == 39) {
-		currentJType = com.wiris.util.json.parser.JType.STRING;
+		currentJType = com.wiris.util.json.parser.JType.TYPE_STRING;
 		singleQuoteString = current == 39;
 		fieldStart = i;
 	} else if(com.wiris.util.json.parser.JsonParse.isLetter(current)) {
-		currentJType = com.wiris.util.json.parser.JType.CONSTANT;
+		currentJType = com.wiris.util.json.parser.JType.TYPE_CONSTANT;
 		fieldStart = i;
 	} else if(com.wiris.util.json.parser.JsonParse.isNumberStart(current)) {
-		currentJType = com.wiris.util.json.parser.JType.NUMBER;
+		currentJType = com.wiris.util.json.parser.JType.TYPE_NUMBER;
 		fieldStart = i;
-	} else throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"Unexpected character \"" + current + "\" instead of root value");
+	} else throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"Unexpected character \"" + current + "\" instead of root value"));
 	while(i <= end) {
 		current = HxOverrides.cca(jsonString,i);
-		if(currentJType == com.wiris.util.json.parser.JType.NAME) {
+		if(currentJType == com.wiris.util.json.parser.JType.TYPE_NAME) {
 			try {
 				var extracted = com.wiris.util.json.parser.JsonParse.extractString(jsonString,i,singleQuoteString);
 				i = extracted.sourceEnd;
 				propertyName = extracted.str;
 				singleQuoteString = false;
 			} catch( e ) {
-				throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"String did not have ending quote");
+				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"String did not have ending quote"));
 			}
-			currentJType = com.wiris.util.json.parser.JType.HEURISTIC;
+			currentJType = com.wiris.util.json.parser.JType.TYPE_HEURISTIC;
 			expectingColon = true;
 			i++;
-		} else if(currentJType == com.wiris.util.json.parser.JType.STRING) {
+		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_STRING) {
 			try {
 				var extracted = com.wiris.util.json.parser.JsonParse.extractString(jsonString,i,singleQuoteString);
 				i = extracted.sourceEnd;
 				value = extracted.str;
 				singleQuoteString = false;
 			} catch( e ) {
-				throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"String did not have ending quote");
+				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"String did not have ending quote"));
 			}
 			if(currentContainer == null) return value; else {
 				expectingComma = true;
 				if(com.wiris.system.TypeTools.isHash(currentContainer)) {
 					currentContainer.set(propertyName,value);
-					currentJType = com.wiris.util.json.parser.JType.OBJECT;
+					currentJType = com.wiris.util.json.parser.JType.TYPE_OBJECT;
 				} else {
 					currentContainer.push(value);
-					currentJType = com.wiris.util.json.parser.JType.ARRAY;
+					currentJType = com.wiris.util.json.parser.JType.TYPE_ARRAY;
 				}
 			}
 			i++;
-		} else if(currentJType == com.wiris.util.json.parser.JType.NUMBER) {
+		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_NUMBER) {
 			var withDecimal = false;
 			var withE = false;
 			do {
@@ -32449,86 +32449,86 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 			try {
 				if(withDecimal || withE) value = Std.parseFloat(valueString); else value = Std.parseInt(valueString);
 			} catch( e ) {
-				throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"\"" + valueString + "\" expected to be a number, but wasn't");
+				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"\"" + valueString + "\" expected to be a number, but wasn't"));
 			}
 			if(currentContainer == null) return value; else {
 				expectingComma = true;
 				if(com.wiris.system.TypeTools.isHash(currentContainer)) {
 					currentContainer.set(propertyName,value);
-					currentJType = com.wiris.util.json.parser.JType.OBJECT;
+					currentJType = com.wiris.util.json.parser.JType.TYPE_OBJECT;
 				} else {
 					currentContainer.push(value);
-					currentJType = com.wiris.util.json.parser.JType.ARRAY;
+					currentJType = com.wiris.util.json.parser.JType.TYPE_ARRAY;
 				}
 			}
-		} else if(currentJType == com.wiris.util.json.parser.JType.CONSTANT) {
+		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_CONSTANT) {
 			while(com.wiris.util.json.parser.JsonParse.isLetter(current) && i++ < end) current = HxOverrides.cca(jsonString,i);
 			var valueString = HxOverrides.substr(jsonString,fieldStart,i - fieldStart);
 			if("false" == valueString) value = false; else if("true" == valueString) value = true; else if("null" == valueString) value = null; else {
-				if(com.wiris.system.TypeTools.isHash(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.OBJECT)); else if(com.wiris.system.TypeTools.isArray(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.ARRAY));
-				throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"\"" + valueString + "\" is not a valid constant. Missing quotes?");
+				if(com.wiris.system.TypeTools.isHash(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT)); else if(com.wiris.system.TypeTools.isArray(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
+				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"\"" + valueString + "\" is not a valid constant. Missing quotes?"));
 			}
 			if(currentContainer == null) return value; else {
 				expectingComma = true;
 				if(com.wiris.system.TypeTools.isHash(currentContainer)) {
 					currentContainer.set(propertyName,value);
-					currentJType = com.wiris.util.json.parser.JType.OBJECT;
+					currentJType = com.wiris.util.json.parser.JType.TYPE_OBJECT;
 				} else {
 					currentContainer.push(value);
-					currentJType = com.wiris.util.json.parser.JType.ARRAY;
+					currentJType = com.wiris.util.json.parser.JType.TYPE_ARRAY;
 				}
 			}
-		} else if(currentJType == com.wiris.util.json.parser.JType.HEURISTIC) {
+		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_HEURISTIC) {
 			while(com.wiris.util.json.parser.JsonParse.isWhitespace(current) && i++ < end) current = HxOverrides.cca(jsonString,i);
 			if(current != 58 && expectingColon) {
-				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.OBJECT));
-				throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"wasn't followed by a colon");
+				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT));
+				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"wasn't followed by a colon"));
 			}
 			if(current == 58) {
 				if(expectingColon) {
 					expectingColon = false;
 					i++;
 				} else {
-					stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.OBJECT));
-					throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"was followed by too many colons");
+					stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT));
+					throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"was followed by too many colons"));
 				}
 			} else if(current == 34 || com.wiris.util.json.parser.JsonParse.ALLOW_SINGLE_QUOTES && current == 39) {
-				currentJType = com.wiris.util.json.parser.JType.STRING;
+				currentJType = com.wiris.util.json.parser.JType.TYPE_STRING;
 				singleQuoteString = current == 39;
 				fieldStart = i;
 			} else if(current == 123) {
-				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.OBJECT));
-				currentJType = com.wiris.util.json.parser.JType.OBJECT;
+				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT));
+				currentJType = com.wiris.util.json.parser.JType.TYPE_OBJECT;
 				currentContainer = new Hash();
 				i++;
 			} else if(current == 91) {
-				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.OBJECT));
-				currentJType = com.wiris.util.json.parser.JType.ARRAY;
+				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT));
+				currentJType = com.wiris.util.json.parser.JType.TYPE_ARRAY;
 				currentContainer = new Array();
 				i++;
 			} else if(com.wiris.util.json.parser.JsonParse.isLetter(current)) {
-				currentJType = com.wiris.util.json.parser.JType.CONSTANT;
+				currentJType = com.wiris.util.json.parser.JType.TYPE_CONSTANT;
 				fieldStart = i;
 			} else if(com.wiris.util.json.parser.JsonParse.isNumberStart(current)) {
-				currentJType = com.wiris.util.json.parser.JType.NUMBER;
+				currentJType = com.wiris.util.json.parser.JType.TYPE_NUMBER;
 				fieldStart = i;
-			} else throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"unexpected character \"" + current + "\" instead of object value");
-		} else if(currentJType == com.wiris.util.json.parser.JType.OBJECT) {
+			} else throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"unexpected character \"" + current + "\" instead of object value"));
+		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_OBJECT) {
 			while(com.wiris.util.json.parser.JsonParse.isWhitespace(current) && i++ < end) current = HxOverrides.cca(jsonString,i);
 			if(current == 44) {
 				if(expectingComma) {
 					expectingComma = false;
 					i++;
 				} else {
-					stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.OBJECT));
-					throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"followed by too many commas");
+					stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT));
+					throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"followed by too many commas"));
 				}
 			} else if(current == 34 || com.wiris.util.json.parser.JsonParse.ALLOW_SINGLE_QUOTES && current == 39) {
 				if(expectingComma) {
-					stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.OBJECT));
-					throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"wasn't followed by a comma");
+					stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT));
+					throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"wasn't followed by a comma"));
 				}
-				currentJType = com.wiris.util.json.parser.JType.NAME;
+				currentJType = com.wiris.util.json.parser.JType.TYPE_NAME;
 				singleQuoteString = current == 39;
 				fieldStart = i;
 			} else if(current == 125) {
@@ -32542,33 +32542,33 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 					expectingComma = true;
 					i++;
 				} else return currentContainer;
-			} else if(!com.wiris.util.json.parser.JsonParse.isWhitespace(current)) throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"unexpected character '" + current + "' where a property name is expected. Missing quotes?");
-		} else if(currentJType == com.wiris.util.json.parser.JType.ARRAY) {
+			} else if(!com.wiris.util.json.parser.JsonParse.isWhitespace(current)) throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"unexpected character '" + current + "' where a property name is expected. Missing quotes?"));
+		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_ARRAY) {
 			while(com.wiris.util.json.parser.JsonParse.isWhitespace(current) && i++ < end) current = HxOverrides.cca(jsonString,i);
 			if(current != 44 && current != 93 && current != 125 && expectingComma) {
-				stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.ARRAY));
-				throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"wasn't preceded by a comma");
+				stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
+				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"wasn't preceded by a comma"));
 			}
 			if(current == 44) {
 				if(expectingComma) {
 					expectingComma = false;
 					i++;
 				} else {
-					stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.ARRAY));
-					throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"preceded by too many commas");
+					stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
+					throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"preceded by too many commas"));
 				}
 			} else if(current == 34 || com.wiris.util.json.parser.JsonParse.ALLOW_SINGLE_QUOTES && current == 39) {
-				currentJType = com.wiris.util.json.parser.JType.STRING;
+				currentJType = com.wiris.util.json.parser.JType.TYPE_STRING;
 				singleQuoteString = current == 39;
 				fieldStart = i;
 			} else if(current == 123) {
-				stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.ARRAY));
-				currentJType = com.wiris.util.json.parser.JType.OBJECT;
+				stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
+				currentJType = com.wiris.util.json.parser.JType.TYPE_OBJECT;
 				currentContainer = new Hash();
 				i++;
 			} else if(current == 91) {
-				stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.ARRAY));
-				currentJType = com.wiris.util.json.parser.JType.ARRAY;
+				stateStack.push(new com.wiris.util.json.parser.State(null,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
+				currentJType = com.wiris.util.json.parser.JType.TYPE_ARRAY;
 				currentContainer = new Array();
 				i++;
 			} else if(current == 93) {
@@ -32583,18 +32583,18 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 					i++;
 				} else return currentContainer;
 			} else if(com.wiris.util.json.parser.JsonParse.isLetter(current)) {
-				currentJType = com.wiris.util.json.parser.JType.CONSTANT;
+				currentJType = com.wiris.util.json.parser.JType.TYPE_CONSTANT;
 				fieldStart = i;
 			} else if(com.wiris.util.json.parser.JsonParse.isNumberStart(current)) {
-				currentJType = com.wiris.util.json.parser.JType.NUMBER;
+				currentJType = com.wiris.util.json.parser.JType.TYPE_NUMBER;
 				fieldStart = i;
 			} else {
-				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.ARRAY));
-				throw com.wiris.util.json.parser.JsonParseException.newFromStack(stateStack,"Unexpected character \"" + current + "\" instead of array value");
+				stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
+				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"Unexpected character \"" + current + "\" instead of array value"));
 			}
 		}
 	}
-	throw com.wiris.util.json.parser.JsonParseException.newFromMessage("Root element wasn't terminated correctly (Missing ']' or '}'?)");
+	throw new com.wiris.system.Exception("Root element wasn't terminated correctly (Missing ']' or '}'?)");
 }
 com.wiris.util.json.parser.JsonParse.extractString = function(jsonString,fieldStart,singleQuote) {
 	var builder = new StringBuf();
@@ -32636,35 +32636,25 @@ com.wiris.util.json.parser.JsonParse.isLetter = function(c) {
 com.wiris.util.json.parser.JsonParse.isNumberStart = function(c) {
 	return c >= 48 && c <= 57 || c == 45;
 }
+com.wiris.util.json.parser.JsonParse.buildErrorMessage = function(stateStack,message) {
+	var jsonTrace = "";
+	var i;
+	var _g1 = 0, _g = stateStack.length;
+	while(_g1 < _g) {
+		var i1 = _g1++;
+		var name = stateStack[i1].propertyName;
+		if(name == null) {
+			var list = stateStack[i1].container;
+			name = "[" + list.length + "]";
+		}
+		jsonTrace += name + (i1 != stateStack.length - 1?".":"");
+	}
+	jsonTrace = jsonTrace == ""?"<root>":"<root>." + jsonTrace;
+	return jsonTrace + ": " + message;
+}
 com.wiris.util.json.parser.JsonParse.prototype = {
 	__class__: com.wiris.util.json.parser.JsonParse
 }
-com.wiris.util.json.parser.JsonParseException = $hxClasses["com.wiris.util.json.parser.JsonParseException"] = function(message) {
-	com.wiris.system.Exception.call(this,message);
-};
-com.wiris.util.json.parser.JsonParseException.__name__ = ["com","wiris","util","json","parser","JsonParseException"];
-com.wiris.util.json.parser.JsonParseException.newFromMessage = function(message) {
-	return new com.wiris.util.json.parser.JsonParseException(message);
-}
-com.wiris.util.json.parser.JsonParseException.newFromStack = function(stateStack,message) {
-	var jsonTrace = "";
-	var _g1 = 0, _g = stateStack.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var name = stateStack[i].propertyName;
-		if(name == null) {
-			var list = stateStack[i].container;
-			name = "[" + list.length + "]";
-		}
-		jsonTrace += name + (i != stateStack.length - 1?".":"");
-	}
-	jsonTrace = jsonTrace == ""?"<root>":"<root>." + jsonTrace;
-	return new com.wiris.util.json.parser.JsonParseException(jsonTrace + ": " + message);
-}
-com.wiris.util.json.parser.JsonParseException.__super__ = com.wiris.system.Exception;
-com.wiris.util.json.parser.JsonParseException.prototype = $extend(com.wiris.system.Exception.prototype,{
-	__class__: com.wiris.util.json.parser.JsonParseException
-});
 com.wiris.util.json.parser.State = $hxClasses["com.wiris.util.json.parser.State"] = function(propertyName,container,type) {
 	this.propertyName = propertyName;
 	this.container = container;
@@ -39886,6 +39876,57 @@ com.wiris.util.xml.MathMLUtils.isImplicitArgumentFactor = function(x) {
 	}
 	return false;
 }
+com.wiris.util.xml.MathMLUtils.convertEditor2Newlines = function(mml) {
+	var head = "<mtable columnalign=\"left\" rowspacing=\"0\">";
+	var start;
+	if((start = mml.indexOf(head)) != -1) {
+		start += head.length;
+		var end = mml.lastIndexOf("</mtable>");
+		mml = HxOverrides.substr(mml,start,end - start);
+		start = 0;
+		var sb = new StringBuf();
+		var lines = 0;
+		while((start = mml.indexOf("<mtd>",start)) != -1) {
+			if(lines != 0) sb.b += Std.string("<mspace linebreak=\"newline\"/>");
+			end = com.wiris.util.xml.MathMLUtils.endTag(mml,start);
+			start += 5;
+			end -= 6;
+			sb.b += Std.string(HxOverrides.substr(mml,start,end - start));
+			start = end + 6;
+			lines++;
+		}
+		mml = sb.b;
+		mml = com.wiris.util.xml.MathMLUtils.ensureRootTag(mml,"math");
+	}
+	return mml;
+}
+com.wiris.util.xml.MathMLUtils.endTag = function(xml,n) {
+	var name = com.wiris.util.xml.MathMLUtils.tagName(xml,n);
+	var depth = 1;
+	var pos = n + 1;
+	while(depth > 0) {
+		pos = xml.indexOf("<",pos);
+		if(pos == -1) return xml.length; else if(HxOverrides.substr(xml,xml.indexOf(">",pos) - 1,1) == "/") {
+		} else if(HxOverrides.substr(xml,pos + 1,1) == "/") {
+			if(com.wiris.util.xml.MathMLUtils.tagName(xml,pos + 1) == name) depth--;
+		} else if(com.wiris.util.xml.MathMLUtils.tagName(xml,pos) == name) depth++;
+		pos = pos + 1;
+	}
+	pos = xml.indexOf(">",pos) + 1;
+	return pos;
+}
+com.wiris.util.xml.MathMLUtils.tagName = function(xml,n) {
+	var endtag = xml.indexOf(">",n);
+	var tag = HxOverrides.substr(xml,n + 1,endtag - (n + 1));
+	var aux;
+	if((aux = tag.indexOf(" ")) != -1) tag = HxOverrides.substr(tag,0,aux);
+	return tag;
+}
+com.wiris.util.xml.MathMLUtils.ensureRootTag = function(xml,tag) {
+	xml = StringTools.trim(xml);
+	if(!StringTools.startsWith(xml,"<" + tag)) xml = "<" + tag + ">" + xml + "</" + tag + ">";
+	return xml;
+}
 com.wiris.util.xml.MathMLUtils.prototype = {
 	__class__: com.wiris.util.xml.MathMLUtils
 }
@@ -40256,6 +40297,15 @@ com.wiris.util.xml.WCharacterBase.greek2Latin = function(g) {
 		return Std.parseInt(s);
 	}
 	return g;
+}
+com.wiris.util.xml.WCharacterBase.stringToMonospace = function(s) {
+	var it = com.wiris.system.Utf8.getIterator(s);
+	var replacement = "";
+	while(it.hasNext()) replacement += com.wiris.system.Utf8.uchr(com.wiris.util.xml.WCharacterBase.toMonospace(it.next()));
+	return replacement;
+}
+com.wiris.util.xml.WCharacterBase.toMonospace = function(codepoint) {
+	if(codepoint >= com.wiris.util.xml.WCharacterBase.DIGIT_ZERO && codepoint <= com.wiris.util.xml.WCharacterBase.DIGIT_NINE) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_MONOSPACE_DIGIT_ZERO - com.wiris.util.xml.WCharacterBase.DIGIT_ZERO); else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_MONOSPACE_CAPITAL_A - com.wiris.util.xml.WCharacterBase.LATIN_CAPITAL_LETTER_A); else if(codepoint >= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A && codepoint <= com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_Z) return codepoint + (com.wiris.util.xml.WCharacterBase.MATHEMATICAL_MONOSPACE_SMALL_A - com.wiris.util.xml.WCharacterBase.LATIN_SMALL_LETTER_A); else return codepoint;
 }
 com.wiris.util.xml.WCharacterBase.isOp = function(c) {
 	return com.wiris.util.xml.WCharacterBase.isLarge(c) || com.wiris.util.xml.WCharacterBase.isVeryLarge(c) || com.wiris.util.xml.WCharacterBase.isBinaryOp(c) || com.wiris.util.xml.WCharacterBase.isRelation(c) || c == HxOverrides.cca(".",0) || c == HxOverrides.cca(",",0) || c == HxOverrides.cca(":",0);

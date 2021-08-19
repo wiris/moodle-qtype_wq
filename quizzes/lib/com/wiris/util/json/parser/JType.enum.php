@@ -1,19 +1,19 @@
 <?php
 
 class com_wiris_util_json_parser_JType extends Enum {
-	public static $ARRAY;
-	public static $CONSTANT;
-	public static $HEURISTIC;
-	public static $NAME;
-	public static $NUMBER;
-	public static $OBJECT;
-	public static $STRING;
-	public static $__constructors = array(0 => 'ARRAY', 6 => 'CONSTANT', 2 => 'HEURISTIC', 3 => 'NAME', 5 => 'NUMBER', 1 => 'OBJECT', 4 => 'STRING');
+	public static $TYPE_ARRAY;
+	public static $TYPE_CONSTANT;
+	public static $TYPE_HEURISTIC;
+	public static $TYPE_NAME;
+	public static $TYPE_NUMBER;
+	public static $TYPE_OBJECT;
+	public static $TYPE_STRING;
+	public static $__constructors = array(0 => 'TYPE_ARRAY', 6 => 'TYPE_CONSTANT', 2 => 'TYPE_HEURISTIC', 3 => 'TYPE_NAME', 5 => 'TYPE_NUMBER', 1 => 'TYPE_OBJECT', 4 => 'TYPE_STRING');
 	}
-com_wiris_util_json_parser_JType::$ARRAY = new com_wiris_util_json_parser_JType("ARRAY", 0);
-com_wiris_util_json_parser_JType::$CONSTANT = new com_wiris_util_json_parser_JType("CONSTANT", 6);
-com_wiris_util_json_parser_JType::$HEURISTIC = new com_wiris_util_json_parser_JType("HEURISTIC", 2);
-com_wiris_util_json_parser_JType::$NAME = new com_wiris_util_json_parser_JType("NAME", 3);
-com_wiris_util_json_parser_JType::$NUMBER = new com_wiris_util_json_parser_JType("NUMBER", 5);
-com_wiris_util_json_parser_JType::$OBJECT = new com_wiris_util_json_parser_JType("OBJECT", 1);
-com_wiris_util_json_parser_JType::$STRING = new com_wiris_util_json_parser_JType("STRING", 4);
+com_wiris_util_json_parser_JType::$TYPE_ARRAY = new com_wiris_util_json_parser_JType("TYPE_ARRAY", 0);
+com_wiris_util_json_parser_JType::$TYPE_CONSTANT = new com_wiris_util_json_parser_JType("TYPE_CONSTANT", 6);
+com_wiris_util_json_parser_JType::$TYPE_HEURISTIC = new com_wiris_util_json_parser_JType("TYPE_HEURISTIC", 2);
+com_wiris_util_json_parser_JType::$TYPE_NAME = new com_wiris_util_json_parser_JType("TYPE_NAME", 3);
+com_wiris_util_json_parser_JType::$TYPE_NUMBER = new com_wiris_util_json_parser_JType("TYPE_NUMBER", 5);
+com_wiris_util_json_parser_JType::$TYPE_OBJECT = new com_wiris_util_json_parser_JType("TYPE_OBJECT", 1);
+com_wiris_util_json_parser_JType::$TYPE_STRING = new com_wiris_util_json_parser_JType("TYPE_STRING", 4);
