@@ -18,7 +18,7 @@ class com_wiris_util_json_parser_JsonParse {
 		$value = null;
 		$current = null;
 		try {
-			while(com_wiris_util_json_parser_JsonParse::isWhitespace($current = haxe_Utf8::charCodeAt($jsonString, $i))) {
+			while(com_wiris_util_json_parser_JsonParse::isWhitespace($current = com_wiris_system_Utf8::charValueAt($jsonString, $i))) {
 				$i++;
 			}
 		}catch(Exception $»e) {
@@ -59,7 +59,7 @@ class com_wiris_util_json_parser_JsonParse {
 			}
 		}
 		while($i <= $end) {
-			$current = haxe_Utf8::charCodeAt($jsonString, $i);
+			$current = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 			if($currentJType === com_wiris_util_json_parser_JType::$TYPE_NAME) {
 				try {
 					$extracted = com_wiris_util_json_parser_JsonParse::extractString($jsonString, $i, $singleQuoteString);
@@ -112,7 +112,7 @@ class com_wiris_util_json_parser_JsonParse {
 						$withDecimal = false;
 						$withE = false;
 						do {
-							$current = haxe_Utf8::charCodeAt($jsonString, $i);
+							$current = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 							if(!$withDecimal && $current === 46) {
 								$withDecimal = true;
 							} else {
@@ -155,7 +155,7 @@ class com_wiris_util_json_parser_JsonParse {
 					} else {
 						if($currentJType === com_wiris_util_json_parser_JType::$TYPE_CONSTANT) {
 							while(com_wiris_util_json_parser_JsonParse::isLetter($current) && $i++ < $end) {
-								$current = haxe_Utf8::charCodeAt($jsonString, $i);
+								$current = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 							}
 							$valueString = _hx_substr($jsonString, $fieldStart, $i - $fieldStart);
 							if("false" === $valueString) {
@@ -194,7 +194,7 @@ class com_wiris_util_json_parser_JsonParse {
 						} else {
 							if($currentJType === com_wiris_util_json_parser_JType::$TYPE_HEURISTIC) {
 								while(com_wiris_util_json_parser_JsonParse::isWhitespace($current) && $i++ < $end) {
-									$current = haxe_Utf8::charCodeAt($jsonString, $i);
+									$current = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 								}
 								if($current !== 58 && $expectingColon) {
 									$stateStack->push(new com_wiris_util_json_parser_State($propertyName, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_OBJECT));
@@ -244,7 +244,7 @@ class com_wiris_util_json_parser_JsonParse {
 							} else {
 								if($currentJType === com_wiris_util_json_parser_JType::$TYPE_OBJECT) {
 									while(com_wiris_util_json_parser_JsonParse::isWhitespace($current) && $i++ < $end) {
-										$current = haxe_Utf8::charCodeAt($jsonString, $i);
+										$current = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 									}
 									if($current === 44) {
 										if($expectingComma) {
@@ -292,7 +292,7 @@ class com_wiris_util_json_parser_JsonParse {
 								} else {
 									if($currentJType === com_wiris_util_json_parser_JType::$TYPE_ARRAY) {
 										while(com_wiris_util_json_parser_JsonParse::isWhitespace($current) && $i++ < $end) {
-											$current = haxe_Utf8::charCodeAt($jsonString, $i);
+											$current = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 										}
 										if($current !== 44 && $current !== 93 && $current !== 125 && $expectingComma) {
 											$stateStack->push(new com_wiris_util_json_parser_State(null, $currentContainer, com_wiris_util_json_parser_JType::$TYPE_ARRAY));
@@ -375,7 +375,7 @@ class com_wiris_util_json_parser_JsonParse {
 		$ret = null;
 		while(true) {
 			$i = com_wiris_util_json_parser_JsonParse::indexOfSpecial($jsonString, $fieldStart, $singleQuote);
-			$c = haxe_Utf8::charCodeAt($jsonString, $i);
+			$c = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 			if(!$singleQuote && $c === 34 || $singleQuote && $c === 39) {
 				$builder->add(_hx_substr($jsonString, $fieldStart + 1, $i - $fieldStart - 1));
 				$ret = new com_wiris_util_json_parser_ExtractedString($i, $builder->b);
@@ -383,7 +383,7 @@ class com_wiris_util_json_parser_JsonParse {
 			} else {
 				if($c === 92) {
 					$builder->add(_hx_substr($jsonString, $fieldStart + 1, $i - $fieldStart - 1));
-					$c = haxe_Utf8::charCodeAt($jsonString, $i + 1);
+					$c = com_wiris_system_Utf8::charValueAt($jsonString, $i + 1);
 					if($c === 34) {
 						$builder->b .= chr(34);
 					} else {
@@ -425,7 +425,7 @@ class com_wiris_util_json_parser_JsonParse {
 	static function indexOfSpecial($str, $start, $singleQuote) {
 		$i = $start;
 		while(++$i < strlen($str)) {
-			$c = haxe_Utf8::charCodeAt($str, $i);
+			$c = com_wiris_system_Utf8::charValueAt($str, $i);
 			if(!$singleQuote && $c === 34 || com_wiris_util_json_parser_JsonParse::$ALLOW_SINGLE_QUOTES && $singleQuote && $c === 39 || $c === 92) {
 				break;
 			}
