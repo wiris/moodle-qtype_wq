@@ -105,7 +105,7 @@
 		"quizzes_studio_home_initial_graph_content_label": "Contingut inicial",
 		"quizzes_studio_home_correct_graph_answer_label": "Resposta correcta",
 
-		"quizzes_studio_home_input_options_label": "Opciones d'entrada",
+		"quizzes_studio_home_input_options_label": "Opcions d'entrada",
 		"quizzes_studio_home_validation_options_label": "Opcions de validació",
 		"quizzes_studio_home_variables_options_label": "Variables aleatòries i funcions",
 
@@ -472,7 +472,7 @@
 		"quizzes_studio_import_dialog_cancel_button_label": "Cancel·lar",
 
 		"quizzes_studio_relevant_options_dialog_title": "Opcions incompatibles",
-		"quizzes_studio_relevant_options_dialog_label": "Les opcions seleccionades no són compatibles amb les opciones deduïdes de l'anàlisi de la resposta correcta. Si segueix endavant, les opcions incompatibles tornaran a seu valor per defecte. Desitgeu continuar?",
+		"quizzes_studio_relevant_options_dialog_label": "Les opcions seleccionades no són compatibles amb les opcions deduïdes de l'anàlisi de la resposta correcta. Si segueix endavant, les opcions incompatibles tornaran a seu valor per defecte. Desitgeu continuar?",
 		"quizzes_studio_relevant_options_dialog_confirm_button_label": "Sí",
 		"quizzes_studio_relevant_options_dialog_cancel_button_label": "No",
 
