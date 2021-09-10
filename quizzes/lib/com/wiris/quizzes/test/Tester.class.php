@@ -41,7 +41,7 @@ class com_wiris_quizzes_test_Tester {
 		if($qi2->getCompoundAnswerGrade(0, 0, 1, $q) !== 0.0) {
 			throw new HException(new com_wiris_system_Exception("Failed compatibility test!", null));
 		}
-		haxe_Log::trace("Test compatibility OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 2042, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCompatibility")));
+		haxe_Log::trace("Test compatibility OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 2097, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCompatibility")));
 	}
 	public function responseFeedback3($r, $q, $qi) {
 		$qi->update($r);
@@ -106,82 +106,86 @@ class com_wiris_quizzes_test_Tester {
 						if($id === "compound4") {
 							$this->responseCompound4($res, $q, $qi);
 						} else {
-							if($id === "images1") {
-								$this->responseImages1($res, $q, $qi);
+							if($id === "compound5") {
+								$this->responseCompound5($res, $q, $qi);
 							} else {
-								if($id === "images2") {
-									$this->responseImages2($res, $q, $qi);
+								if($id === "images1") {
+									$this->responseImages1($res, $q, $qi);
 								} else {
-									if($id === "lang1") {
-										$this->responseLang1($res, $q, $qi);
+									if($id === "images2") {
+										$this->responseImages2($res, $q, $qi);
 									} else {
-										if($id === "openquestion1") {
-											$this->responseOpenQuestion1($res);
+										if($id === "lang1") {
+											$this->responseLang1($res, $q, $qi);
 										} else {
-											if($id === "tolerance1") {
-												$this->responseTolerance1($res, $q, $qi);
+											if($id === "openquestion1") {
+												$this->responseOpenQuestion1($res);
 											} else {
-												if($id === "randomquestion1") {
-													$this->responseRandomQuestion1($res, $q, $qi);
+												if($id === "tolerance1") {
+													$this->responseTolerance1($res, $q, $qi);
 												} else {
-													if($id === "randomquestion2") {
-														$this->responseRandomQuestion2($res, $q, $qi);
+													if($id === "randomquestion1") {
+														$this->responseRandomQuestion1($res, $q, $qi);
 													} else {
-														if($id === "encodings1") {
-															$this->responseEncodings1($res, $q, $qi);
+														if($id === "randomquestion2") {
+															$this->responseRandomQuestion2($res, $q, $qi);
 														} else {
-															if($id === "encodings2") {
-																$this->responseEncodings2($res, $q, $qi);
+															if($id === "encodings1") {
+																$this->responseEncodings1($res, $q, $qi);
 															} else {
-																if($id === "translation1") {
-																	$this->responseTranslation1($res, $q);
+																if($id === "encodings2") {
+																	$this->responseEncodings2($res, $q, $qi);
 																} else {
-																	if($id === "bugs1") {
-																		$this->responseBugs1($res, $q, $qi);
+																	if($id === "translation1") {
+																		$this->responseTranslation1($res, $q);
 																	} else {
-																		if($id === "multianswer") {
-																			$this->responseMultianswer($res, $q, $qi);
+																		if($id === "bugs1") {
+																			$this->responseBugs1($res, $q, $qi);
 																		} else {
-																			if($id === "multianswer2") {
-																				$this->responseMultianswer2($res, $q, $qi);
+																			if($id === "multianswer") {
+																				$this->responseMultianswer($res, $q, $qi);
 																			} else {
-																				if($id === "anyanswer1") {
-																					$this->responseAnyAnswer1($res, $q, $qi);
+																				if($id === "multianswer2") {
+																					$this->responseMultianswer2($res, $q, $qi);
 																				} else {
-																					if($id === "floateval1") {
-																						$this->responseFloatEval1($res, $q, $qi);
+																					if($id === "anyanswer1") {
+																						$this->responseAnyAnswer1($res, $q, $qi);
 																					} else {
-																						if($id === "handwritingConstraints") {
-																							$this->responseHandwritingConstraints($res, $q, $qi);
+																						if($id === "floateval1") {
+																							$this->responseFloatEval1($res, $q, $qi);
 																						} else {
-																							if($id === "parameters") {
-																								$this->responseParameters($res, $q, $qi);
+																							if($id === "handwritingConstraints") {
+																								$this->responseHandwritingConstraints($res, $q, $qi);
 																							} else {
-																								if($id === "unicode1") {
-																									$this->responseUnicode1($res, $q, $qi);
+																								if($id === "parameters") {
+																									$this->responseParameters($res, $q, $qi);
 																								} else {
-																									if($id === "unicode2") {
-																										$this->responseUnicode2($res, $q, $qi);
+																									if($id === "unicode1") {
+																										$this->responseUnicode1($res, $q, $qi);
 																									} else {
-																										if($id === "floatformat1") {
-																											$this->responseFloatFormat1($res, $q, $qi);
+																										if($id === "unicode2") {
+																											$this->responseUnicode2($res, $q, $qi);
 																										} else {
-																											if($id === "feedback") {
-																												$this->responseFeedback($res, $q, $qi);
+																											if($id === "floatformat1") {
+																												$this->responseFloatFormat1($res, $q, $qi);
 																											} else {
-																												if($id === "feedback2") {
-																													$this->responseFeedback2($res, $q, $qi);
+																												if($id === "feedback") {
+																													$this->responseFeedback($res, $q, $qi);
 																												} else {
-																													if($id === "feedback3") {
-																														$this->responseFeedback3($res, $q, $qi);
+																													if($id === "feedback2") {
+																														$this->responseFeedback2($res, $q, $qi);
 																													} else {
-																														if($id === "userid") {
-																															$this->responseUserId($res, $q, $qi);
+																														if($id === "feedback3") {
+																															$this->responseFeedback3($res, $q, $qi);
 																														} else {
-																															if($id === "compoundVariableLabels") {
-																																$this->responseCompoundVariableLabels($res, $q, $qi);
+																															if($id === "userid") {
+																																$this->responseUserId($res, $q, $qi);
 																															} else {
-																																throw new HException(new com_wiris_system_Exception("Unknown test id.", null));
+																																if($id === "compoundVariableLabels") {
+																																	$this->responseCompoundVariableLabels($res, $q, $qi);
+																																} else {
+																																	throw new HException(new com_wiris_system_Exception("Unknown test id.", null));
+																																}
 																															}
 																														}
 																													}
@@ -211,13 +215,13 @@ class com_wiris_quizzes_test_Tester {
 					}
 				}
 			}
-			haxe_Log::trace("Test " . $id . " OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1945, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
+			haxe_Log::trace("Test " . $id . " OK!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 2000, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
 			$this->endCall();
 		}catch(Exception $ªe) {
 			$_ex_ = ($ªe instanceof HException) ? $ªe->e : $ªe;
 			$e = $_ex_;
 			{
-				haxe_Log::trace("Failed test " . $id . "!!!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1948, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
+				haxe_Log::trace("Failed test " . $id . "!!!", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 2003, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "onServiceResponse")));
 				throw new HException($e);
 			}
 		}
@@ -532,7 +536,7 @@ class com_wiris_quizzes_test_Tester {
 			throw new HException("Failed test");
 		}
 		if($t2 >= $t1) {
-			haxe_Log::trace("WARNING: Uncached question was faster than cached one! time miss: " . _hx_string_rec($t1, "") . "ms, time hit: " . _hx_string_rec($t2, "") . "ms.", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1548, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCache")));
+			haxe_Log::trace("WARNING: Uncached question was faster than cached one! time miss: " . _hx_string_rec($t1, "") . "ms, time hit: " . _hx_string_rec($t2, "") . "ms.", _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1601, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testCache")));
 		}
 	}
 	public function testFilter() {
@@ -556,7 +560,7 @@ class com_wiris_quizzes_test_Tester {
 		$r = $qb->newVariablesRequest($text, $q, $qi);
 		$qi->update($qb->getQuizzesService()->execute($r));
 		$expanded = $qi->expandVariables($text);
-		haxe_Log::trace($expanded, _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1479, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testPerformance")));
+		haxe_Log::trace($expanded, _hx_anonymous(array("fileName" => "Tester.hx", "lineNumber" => 1532, "className" => "com.wiris.quizzes.test.Tester", "methodName" => "testPerformance")));
 	}
 	public function responseTranslation1($s, $q) {
 		$fr = "<session lang=\"fr\" version=\"2.0\"><library closed=\"false\"><mtext style=\"color:#ffc800\">library</mtext><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mi>al√©a</mi><mo>(</mo><mn>1</mn><mo>.</mo><mo>.</mo><mn>10</mn><mo>)</mo></math></input></command></group></library></session>";
@@ -1192,6 +1196,19 @@ class com_wiris_quizzes_test_Tester {
 		$this->numCalls++;
 		$s->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("multianswer", $this, $q, $qi));
 	}
+	public function responseCompound5($s, $q, $qi) {
+		$qi->update($s);
+		if($this->apiVersion === com_wiris_quizzes_test_Tester::$QUIZZES3) {
+			$this->checkEqualFloats($qi->getAnswerGrade(0, 0, $q), 0.0);
+			$this->checkEqualFloats($qi->getAnswerGrade(1, 0, $q), 1.0);
+		} else {
+			$slots = $q->getSlots();
+			$slot = $slots[0];
+			$authorAnswers = $slot->getAuthorAnswers();
+			$this->checkEqualFloats($qi->getGrade($slot, $authorAnswers[0]), 0.0);
+			$this->checkEqualFloats($qi->getGrade($slot, $authorAnswers[1]), 1.0);
+		}
+	}
 	public function responseCompound4($s, $q, $qi) {
 		$qi->update($s);
 		if($this->apiVersion === com_wiris_quizzes_test_Tester::$QUIZZES3) {
@@ -1499,6 +1516,31 @@ class com_wiris_quizzes_test_Tester {
 		}
 		$this->numCalls++;
 		$s->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("compound4", $this, $q2, $i2));
+		$q3 = com_wiris_quizzes_api_Quizzes::getInstance()->newQuestion();
+		$i3 = com_wiris_quizzes_api_Quizzes::getInstance()->newQuestionInstance($q3);
+		$correct = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mn>1</mn><mi mathvariant=\"normal\">m</mi><mspace linebreak=\"newline\"/><mi>b</mi><mo>=</mo><mn>2</mn><mi mathvariant=\"normal\">m</mi></math>";
+		$notSoCorrect = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>a</mi><mo>=</mo><mn>1</mn><mspace linebreak=\"newline\"/><mi>b</mi><mo>=</mo><mn>2</mn></math>";
+		if($this->apiVersion === com_wiris_quizzes_test_Tester::$QUIZZES4) {
+			$q3slot = $q3->addNewSlot();
+			$q3slot->setProperty(com_wiris_quizzes_api_PropertyName::$COMPOUND_ANSWER, "true");
+			$q3slot->getSyntax()->setParameter(com_wiris_quizzes_api_assertion_SyntaxParameterName::$UNITS, "m");
+			$q3aa1 = $q3slot->addNewAuthorAnswer($correct);
+			$q3aa2 = $q3slot->addNewAuthorAnswer($notSoCorrect);
+			$i3->setSlotAnswer($q3slot, $notSoCorrect);
+			$r = com_wiris_quizzes_api_Quizzes::getInstance()->newGradeRequest($i3);
+		} else {
+			$q3->setProperty(com_wiris_quizzes_api_PropertyName::$COMPOUND_ANSWER, "true");
+			$q3->setCorrectAnswer(0, $correct);
+			$q3->setCorrectAnswer(1, $notSoCorrect);
+			$q3->addAssertion(com_wiris_quizzes_impl_Assertion::$SYNTAX_MATH, 0, 0, new _hx_array(array(null, null, null, null, null, null, null, null, null, null, null, null, "m", null, null)));
+			$q3->addAssertion(com_wiris_quizzes_impl_Assertion::$SYNTAX_MATH, 1, 0, new _hx_array(array(null, null, null, null, null, null, null, null, null, null, null, null, "m", null, null)));
+			$q3->addAssertion(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC, 0, 0, null);
+			$q3->addAssertion(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SYMBOLIC, 1, 0, null);
+			$i3->setStudentAnswer(0, $notSoCorrect);
+			$r = com_wiris_quizzes_api_QuizzesBuilder::getInstance()->newEvalRequest(null, null, $q3, $i3);
+		}
+		$this->numCalls++;
+		$s->executeAsync($r, new com_wiris_quizzes_test_TestIdServiceListener("compound5", $this, $q3, $i3));
 	}
 	public function responseCompoundVariableLabels($s, $q, $qi) {
 		$qi->update($s);
@@ -1582,6 +1624,7 @@ class com_wiris_quizzes_test_Tester {
 				$this->testMultiAnswer();
 				$this->testBugs();
 				$this->testUnicode();
+				$this->testCompound();
 				$this->testFeedback();
 				$this->testFeedback3();
 				$this->testOpenQuestionHand();
@@ -1591,7 +1634,6 @@ class com_wiris_quizzes_test_Tester {
 					$this->testFilter();
 				}
 				$this->testEncodings();
-				$this->testCompound();
 				$this->testTranslation();
 				$this->testTolerance();
 				$this->testRandomQuestion();

@@ -117,6 +117,9 @@ class com_wiris_util_geometry_GeometryFile {
 		try {
 			if(com_wiris_util_json_JSon::isJson($str) && _hx_index_of($str, "{", null) !== -1 && _hx_index_of($str, "}", null) !== -1) {
 				$hash = com_wiris_util_json_JSon::getHash(com_wiris_util_json_JSon::decode($str));
+				if($hash === null) {
+					return false;
+				}
 				$geometryTags = new _hx_array(array("elements", "constraints", "displays", "handwriting"));
 				{
 					$_g = 0;

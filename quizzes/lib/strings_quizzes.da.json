@@ -74,7 +74,6 @@
 		"quizzes_studio_variables_options_activity_title": "Definer tilfældige variabler og funktioner",
 		"quizzes_studio_auxiliar_initial_content_activity_title": "Definer den studerendes oprindelige indhold",
 		"quizzes_studio_test_question_activity_title": "Test dette spørgsmål",
-		"quizzes_studio_customize_toolbar_activity_title": "Tilpas værktøjslinjen",
 		"quizzes_studio_graph_validation_options_activity_title": "Valideringsindstillinger",
 		"quizzes_studio_view_source_activity_title": "Se spørgsmålets kilde",
 
@@ -110,6 +109,7 @@
 		"quizzes_studio_home_variables_options_label": "Definer tilfældige variabler og funktioner",
 
 		"quizzes_studio_customize_graph_toolbar_label": "Vælg værktøj, som skal udleveres til den studerende, for at besvare spørgsmålet.",
+		"quizzes_studio_customize_graph_toolbar_header": "Tilpas værktøjslinjen",
 
 		"quizzes_studio_home_test_question_button_tooltip": "Test dette spørgsmål",
 		"quizzes_studio_home_cancel_button_tooltip": "Annuller",
@@ -510,6 +510,7 @@
 
 		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_button_label": "Konverter til CalcMe",
 		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_description_label": "Spørgsmålsalgoritmen vil blive importeret fra Wiris CAS til vores nye algoritme-redaktør, CalcMe. Den resulterende algoritme skal gennemses og testes manuelt. Algoritmer, som importeres i CalcMe, kan ikke længere åbnes med Wiris CAS. Hvis du ønsker at fortryde importen, efter du har accepteret, skal du ikke gemme spørgsmålet: Klik på Annuller i WIRIS Quizzes Studio-vinduet, og åbn det igen.",
+		"quizzes_studio_variables_options_cas_algorithm_convert_to_algorithm_description_label": "Convert as algorithm",
 
 		"answer_field_mathtype_popup_accept_dialog": "Accepter",
 		"answer_field_mathtype_popup_cancel_dialog": "Annuller",
@@ -526,7 +527,10 @@
 		"equivalent_graphic_correct_feedback": "Svaret er geometrisk lig med",
 
 		"parameter": "parameter",
-		"answer": "svar"
+		"answer": "svar",
+
+		"quizzes_studio_home_copy_initial_content_button_text": "Copy initial content",
+		"quizzes_studio_home_copy_correct_answer_button_text": "Copy correct answer"
 	}
 }
 

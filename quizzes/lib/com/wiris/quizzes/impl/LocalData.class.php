@@ -5,12 +5,18 @@ class com_wiris_quizzes_impl_LocalData extends com_wiris_util_xml_SerializableIm
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
 	}}
+	public function replaceDeprecatedNames($name) {
+		if($name !== null && $name === "auxiliarTextInput") {
+			return com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_AUXILIARY_TEXT_INPUT;
+		}
+		return $name;
+	}
 	public function newInstance() {
 		return new com_wiris_quizzes_impl_LocalData();
 	}
 	public function onSerialize($s) {
 		$s->beginTag(com_wiris_quizzes_impl_LocalData::$TAGNAME);
-		$this->name = $s->attributeString("name", $this->name, null);
+		$this->name = $this->replaceDeprecatedNames($s->attributeString("name", $this->name, null));
 		$this->value = $s->textContent($this->value);
 		$s->endTag();
 	}

@@ -74,7 +74,6 @@
 		"quizzes_studio_variables_options_activity_title": "Καθορισμός τυχαίων μεταβλητών και συναρτήσεων",
 		"quizzes_studio_auxiliar_initial_content_activity_title": "Καθορισμός αρχικού περιεχομένου του μαθητή",
 		"quizzes_studio_test_question_activity_title": "Δοκιμή αυτής της ερώτησης",
-		"quizzes_studio_customize_toolbar_activity_title": "Προσαρμογή γραμμής εργαλείων",
 		"quizzes_studio_graph_validation_options_activity_title": "Επιλογές επαλήθευσης",
 		"quizzes_studio_view_source_activity_title": "Προβολή πηγαίου κώδικα ερώτησης",
 
@@ -110,6 +109,7 @@
 		"quizzes_studio_home_variables_options_label": "Καθορισμός τυχαίων μεταβλητών και συναρτήσεων",
 
 		"quizzes_studio_customize_graph_toolbar_label": "Επιλέξτε εργαλεία προς παροχή στον μαθητή για απάντηση της ερώτησης.",
+		"quizzes_studio_customize_graph_toolbar_header": "Προσαρμογή γραμμής εργαλείων",
 
 		"quizzes_studio_home_test_question_button_tooltip": "Δοκιμή αυτής της ερώτησης",
 		"quizzes_studio_home_cancel_button_tooltip": "Ακύρωση",
@@ -510,6 +510,7 @@
 
 		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_button_label": "Μετατροπή σε CalcMe",
 		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_description_label": "Ο αλγόριθμος της ερώτησης θα εισαχθεί από το Wiris CAS στον νέο επεξεργαστή αλγόριθμων, το CalcMe. Ο προκύπτων αλγόριθμος πρέπει να αναθεωρηθεί και να ελεγχθεί. Οι αλγόριθμοι που έχουν εισαχθεί στο CalcMe δεν είναι δυνατό να ανοιχτούν πλέον με το Wiris CAS. Αν επιθυμείτε αναίρεση της εισαγωγής μετά την αποδοχή, μην αποθηκεύσετε την ερώτηση. Κάντε κλικ στην «Ακύρωση» στο παράθυρο του Wiris Quizzes Studio και ανοίξτε την πάλι.",
+		"quizzes_studio_variables_options_cas_algorithm_convert_to_algorithm_description_label": "Convert as algorithm",
 
 		"answer_field_mathtype_popup_accept_dialog": "Αποδοχή",
 		"answer_field_mathtype_popup_cancel_dialog": "Ακύρωση",
@@ -526,7 +527,10 @@
 		"equivalent_graphic_correct_feedback": "Η απάντηση είναι γεωμετρικά ίδια",
 
 		"parameter": "παράμετρος",
-		"answer": "απάντηση"
+		"answer": "απάντηση",
+
+		"quizzes_studio_home_copy_initial_content_button_text": "Copy initial content",
+		"quizzes_studio_home_copy_correct_answer_button_text": "Copy correct answer"
 	}
 }
 

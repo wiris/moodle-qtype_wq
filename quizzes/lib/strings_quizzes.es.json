@@ -74,7 +74,6 @@
 		"quizzes_studio_variables_options_activity_title": "Variables aleatorias y funciones",
 		"quizzes_studio_auxiliar_initial_content_activity_title": "Defina el contenido inicial del estudiante",
 		"quizzes_studio_test_question_activity_title": "Vista previa",
-		"quizzes_studio_customize_toolbar_activity_title": "Personalización de la barra de herramientas",
 		"quizzes_studio_graph_validation_options_activity_title": "Opciones de validación",
 		"quizzes_studio_view_source_activity_title": "Código fuente de la pregunta",
 
@@ -110,6 +109,7 @@
 		"quizzes_studio_home_variables_options_label": "Variables aleatorias y funciones",
 
 		"quizzes_studio_customize_graph_toolbar_label": "Escoja las herramientas que se mostrarán al estudiante para responder la pregunta.",
+		"quizzes_studio_customize_graph_toolbar_header": "Personalización de la barra de herramientas",
 
 		"quizzes_studio_home_test_question_button_tooltip": "Vista previa",
 		"quizzes_studio_home_cancel_button_tooltip": "Cancelar",
@@ -509,7 +509,8 @@
 		"portuguese": "Português (Portugal)",
 
 		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_button_label": "Convertir a CalcMe",
-		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_description_label": "El algoritmo de la pregunta será traducido de Wiris CAS a CalcMe. El algoritmo resultante debe ser probado manualmente después de la importación, y los algoritmos de CalcMe no se pueden volver a abrir con Wiris CAS. Si desea revertir los cambios, salga de Wiris Quizzes Studio sin guardar los cambios y vuelva a entrar.",
+		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_description_label": "El algoritmo de la pregunta será traducido de Wiris CAS a CalcMe. El algoritmo resultante debe ser probado manualmente después de la importación, y los algoritmos de CalcMe no se pueden volver a abrir con Wiris CAS. Si desea revertir los cambios, salga de Wiris Quizzes Studio sin guardar los cambios y vuelva a entrar. Para algoritmos complejos que hagan uso de comandos de programación, utilice la opción \"Convertir como algoritmo\" para un mejor rendimiento de la página.",
+		"quizzes_studio_variables_options_cas_algorithm_convert_to_algorithm_description_label": "Convertir como algoritmo",
 
 		"answer_field_mathtype_popup_accept_dialog": "Aceptar",
 		"answer_field_mathtype_popup_cancel_dialog": "Cancelar",
@@ -526,7 +527,10 @@
 		"equivalent_graphic_correct_feedback": "La respuesta es geométricamente igual a la correcta",
 
 		"parameter": "parámetro",
-		"answer": "respuesta"
+		"answer": "respuesta",
+
+		"quizzes_studio_home_copy_initial_content_button_text": "Copia el contenido inicial",
+		"quizzes_studio_home_copy_correct_answer_button_text": "Copia la respuesta correcta"
 	}
 }
 

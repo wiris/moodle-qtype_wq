@@ -6,7 +6,7 @@ interface com_wiris_quizzes_api_ui_MathViewer {
 	function filter($root);
 	function graph($construction);
 	function thumbnail($construction);
-	function plot($construction);
+	function plot($construction, $width = null, $height = null);
 	function render($mathml);
 	function renderCorrectAnswer($instance, $slot, $authorAnswer);
 }

@@ -9,6 +9,9 @@ class com_wiris_system_Utf8 {
 	static function charCodeAt($s, $i) {
 		return haxe_Utf8::charCodeAt($s, $i);
 	}
+	static function charValueAt($s, $i) {
+		return mb_ord(substr($s, $i, 1));
+	}
 	static function charAt($s, $i) {
 		return com_wiris_system_Utf8_0($i, $s);
 	}

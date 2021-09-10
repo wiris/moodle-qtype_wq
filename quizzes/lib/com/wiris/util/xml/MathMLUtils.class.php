@@ -442,6 +442,75 @@ class com_wiris_util_xml_MathMLUtils {
 		}
 		return false;
 	}
+	static function convertEditor2Newlines($mml) {
+		$head = "<mtable columnalign=\"left\" rowspacing=\"0\">";
+		$start = null;
+		if(($start = _hx_index_of($mml, $head, null)) !== -1) {
+			$start += strlen($head);
+			$end = _hx_last_index_of($mml, "</mtable>", null);
+			$mml = _hx_substr($mml, $start, $end - $start);
+			$start = 0;
+			$sb = new StringBuf();
+			$lines = 0;
+			while(($start = _hx_index_of($mml, "<mtd>", $start)) !== -1) {
+				if($lines !== 0) {
+					$sb->add("<mspace linebreak=\"newline\"/>");
+				}
+				$end = com_wiris_util_xml_MathMLUtils::endTag($mml, $start);
+				$start += 5;
+				$end -= 6;
+				$sb->add(_hx_substr($mml, $start, $end - $start));
+				$start = $end + 6;
+				$lines++;
+			}
+			$mml = $sb->b;
+			$mml = com_wiris_util_xml_MathMLUtils::ensureRootTag($mml, "math");
+		}
+		return $mml;
+	}
+	static function endTag($xml, $n) {
+		$name = com_wiris_util_xml_MathMLUtils::tagName($xml, $n);
+		$depth = 1;
+		$pos = $n + 1;
+		while($depth > 0) {
+			$pos = _hx_index_of($xml, "<", $pos);
+			if($pos === -1) {
+				return strlen($xml);
+			} else {
+				if(_hx_substr($xml, _hx_index_of($xml, ">", $pos) - 1, 1) === "/") {
+				} else {
+					if(_hx_substr($xml, $pos + 1, 1) === "/") {
+						if(com_wiris_util_xml_MathMLUtils::tagName($xml, $pos + 1) === $name) {
+							$depth--;
+						}
+					} else {
+						if(com_wiris_util_xml_MathMLUtils::tagName($xml, $pos) === $name) {
+							$depth++;
+						}
+					}
+				}
+			}
+			$pos = $pos + 1;
+		}
+		$pos = _hx_index_of($xml, ">", $pos) + 1;
+		return $pos;
+	}
+	static function tagName($xml, $n) {
+		$endtag = _hx_index_of($xml, ">", $n);
+		$tag = _hx_substr($xml, $n + 1, $endtag - ($n + 1));
+		$aux = null;
+		if(($aux = _hx_index_of($tag, " ", null)) !== -1) {
+			$tag = _hx_substr($tag, 0, $aux);
+		}
+		return $tag;
+	}
+	static function ensureRootTag($xml, $tag) {
+		$xml = trim($xml);
+		if(!StringTools::startsWith($xml, "<" . $tag)) {
+			$xml = "<" . $tag . ">" . $xml . "</" . $tag . ">";
+		}
+		return $xml;
+	}
 	function __toString() { return 'com.wiris.util.xml.MathMLUtils'; }
 }
 com_wiris_util_xml_MathMLUtils::$strokesAnnotationEncondings = new _hx_array(array(com_wiris_util_net_MimeTypes::$JSON, com_wiris_util_net_MimeTypes::$HAND_STROKES));

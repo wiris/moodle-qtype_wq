@@ -591,9 +591,6 @@
   opacity: 0.54;
   transform: scale(0.75);
 }
-.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_tabbedPanel.wrsUI_correctAnswerTabbedPanel {
-  margin-bottom: 24px;
-}
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_tabbedPanel.wrsUI_correctAnswerTabbedPanel > .wrsUI_aux_tabbedPanelTabContainer > .wrsUI_tabbedPanelTab > .wrsUI_label, .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_tabbedPanel.wrsUI_correctAnswerTabbedPanel > .wrsUI_aux_tabbedPanelTabContainer > .wrsUI_tabbedPanelTab > .wrsUI_iconBox {
   opacity: 0.76;
 }
@@ -788,18 +785,21 @@
   border-color: rgba(7, 118, 128, 0.87);
   background: rgba(7, 118, 128, 0.12);
 }
-.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_quizzesStudioCustomizeToolbar > .wrsUI_panel > .wrsUI_label {
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_quizzesStudioGraphInputOptions > .wrsUI_panel > .wrsUI_label {
   margin-left: 24px;
 }
-.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_quizzesStudioCustomizeToolbar > .wrsUI_panel > .wrsUI_panel.wrsUI_quizzesFullSizePanel {
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_quizzesStudioGraphInputOptions > .wrsUI_panel > .wrsUI_panel.wrsUI_quizzesFullSizePanel.wrsUI_customizeToolbarComponent {
   width: calc(100% - 48px);
-  height: calc(100% - 33px);
   margin: 16px 24px 0 24px;
 }
-.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_quizzesStudioCustomizeToolbar > .wrsUI_panel > .wrsUI_panel.wrsUI_quizzesFullSizePanel .wrsUI_treeSelector {
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_quizzesStudioGraphInputOptions > .wrsUI_panel > .wrsUI_panel.wrsUI_quizzesFullSizePanel.wrsUI_customizeToolbarComponent .wrsUI_treeSelector {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 0;
+  flex: 2;
+}
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_quizzesStudioGraphInputOptions > .wrsUI_panel > .wrsUI_panel.wrsUI_quizzesFullSizePanel.wrsUI_customizeToolbarComponent .wrsUI_graphComponent {
+  flex: 3;
 }
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_studentAnswer {
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -973,3 +973,5 @@ table.wiristable td, table.wiristable th {
   text-align: center;
   vertical-align: baseline;
 }
+
+/*# sourceMappingURL=wirisquizzes_temp.css.map */

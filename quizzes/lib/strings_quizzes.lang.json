@@ -74,7 +74,6 @@
 		"quizzes_studio_variables_options_activity_title": "${quizzes_studio_variables_options_activity_title}",
 		"quizzes_studio_auxiliar_initial_content_activity_title": "${quizzes_studio_auxiliar_initial_content_activity_title}",
 		"quizzes_studio_test_question_activity_title": "${quizzes_studio_test_question_activity_title}",
-		"quizzes_studio_customize_toolbar_activity_title": "${quizzes_studio_customize_toolbar_activity_title}",
 		"quizzes_studio_graph_validation_options_activity_title": "${quizzes_studio_graph_validation_options_activity_title}",
 		"quizzes_studio_view_source_activity_title": "${quizzes_studio_view_source_activity_title}",
 
@@ -110,6 +109,7 @@
 		"quizzes_studio_home_variables_options_label": "${quizzes_studio_home_variables_options_label}",
 
 		"quizzes_studio_customize_graph_toolbar_label": "${quizzes_studio_customize_graph_toolbar_label}",
+		"quizzes_studio_customize_graph_toolbar_header": "${quizzes_studio_customize_toolbar_activity_title}",
 
 		"quizzes_studio_home_test_question_button_tooltip": "${quizzes_studio_home_test_question_button_tooltip}",
 		"quizzes_studio_home_cancel_button_tooltip": "${quizzes_studio_home_cancel_button_tooltip}",
@@ -510,6 +510,7 @@
 
 		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_button_label": "${quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_button_label}",
 		"quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_description_label": "${quizzes_studio_variables_options_cas_algorithm_convert_to_calcme_description_label}",
+		"quizzes_studio_variables_options_cas_algorithm_convert_to_algorithm_description_label": "${quizzes_studio_variables_options_cas_algorithm_convert_to_algorithm_description_label}",
 
 		"answer_field_mathtype_popup_accept_dialog": "${answer_field_mathtype_popup_accept_dialog}",
 		"answer_field_mathtype_popup_cancel_dialog": "${answer_field_mathtype_popup_cancel_dialog}",
@@ -526,7 +527,10 @@
 		"equivalent_graphic_correct_feedback": "${equivalent_graphic_correct_feedback}",
 
 		"parameter": "${parameter}",
-		"answer": "${answer}"
+		"answer": "${answer}",
+
+		"quizzes_studio_home_copy_initial_content_button_text": "${quizzes_studio_home_copy_initial_content_button_text}",
+		"quizzes_studio_home_copy_correct_answer_button_text": "${quizzes_studio_home_copy_correct_answer_button_text}"
 	}
 }
 
