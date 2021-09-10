@@ -308,7 +308,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			while($_g < $answers->length) {
 				$a = $answers[$_g];
 				++$_g;
-				$parts = com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswer($a);
+				$parts = com_wiris_quizzes_impl_CompoundAnswerParser::parseCompoundAnswer($a);
 				$k = null;
 				{
 					$_g2 = 0; $_g1 = $parts->length;
@@ -372,7 +372,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 				if($c === null) {
 					continue;
 				}
-				$parts = com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswer($c);
+				$parts = com_wiris_quizzes_impl_CompoundAnswerParser::parseCompoundAnswer($c);
 				if($aux !== null) {
 					$aux->set($c->id, $parts->length);
 				}
@@ -396,7 +396,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		}
 		return $correctAnswers;
 	}
-	public function breakCompoundCorrectAnswers($qa, $qq, $aux) {
+	public function breakCompoundCorrectAnswers($qa, $qq, $aux, $instance) {
 		if($qq->correctAnswers === null) {
 			return;
 		}
@@ -431,6 +431,24 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 							++$_g1;
 							$qq->correctAnswers->remove($ca);
 							unset($ca);
+						}
+						unset($_g1);
+					}
+					if($instance !== null && $instance->hasVariables()) {
+						$_g1 = 0;
+						while($_g1 < $separated->length) {
+							$sepCA = $separated[$_g1];
+							++$_g1;
+							$isPlainTextField = $s->getAnswerFieldType() == com_wiris_quizzes_api_ui_AnswerFieldType::$TEXT_FIELD;
+							$isStringSyntax = $s->getSyntax()->getName() == com_wiris_quizzes_api_assertion_SyntaxName::$STRING;
+							$value = $sepCA->content;
+							if($isPlainTextField || $isStringSyntax) {
+								$value = $instance->expandVariablesText($value);
+							} else {
+								$value = $instance->expandVariablesMathMLEval($value);
+							}
+							$sepCA->set($value);
+							unset($value,$sepCA,$isStringSyntax,$isPlainTextField);
 						}
 						unset($_g1);
 					}
@@ -831,7 +849,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 				$this->breakCompoundGraphical($qq);
 			} else {
 				$aux = new Hash();
-				$this->breakCompoundCorrectAnswers($qa, $qq, $aux);
+				$this->breakCompoundCorrectAnswers($qa, $qq, $aux, $qi);
 				$this->breakCompoundUserAnswers($qa, $qq, $uu);
 				$this->replicateCompoundAnswerAssertions($qa, $qq, $aux);
 			}
@@ -942,7 +960,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		$aux = new Hash();
 		if($ca !== null) {
 			$qq->correctAnswers = $ca->concat(new _hx_array(array()));
-			$this->breakCompoundCorrectAnswers($qq, $qq, $aux);
+			$this->breakCompoundCorrectAnswers($qq, $qq, $aux, null);
 		}
 		$aa = $q->getImpl()->assertions;
 		if($aa !== null) {
@@ -1191,7 +1209,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			$name = $qq->getOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_STUDENT_ANSWER_PARAMETER_NAME);
 			$defname = $qq->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_STUDENT_ANSWER_PARAMETER_NAME);
 			if($defname === $name) {
-				$lang = com_wiris_quizzes_impl_HTMLTools::casSessionLang($qq->getAlgorithm());
+				$lang = com_wiris_quizzes_impl_CalcDocumentTools::casSessionLang($qq->getAlgorithm());
 				$name = com_wiris_quizzes_impl_QuizzesTranslator::getInstance($lang)->t($name);
 			}
 			$n = 0;
@@ -1207,12 +1225,13 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 							$n++;
 						} else {
 							if($qq->getLocalData(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_COMPOUND_ANSWER) === com_wiris_quizzes_impl_LocalData::$VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE && $q->getCorrectAnswersLength() > 0) {
-								$parts = com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswer($qq->correctAnswers[0]);
+								$correctAnswer = $qq->correctAnswers[0];
+								$parts = com_wiris_quizzes_impl_CompoundAnswerParser::parseCompoundAnswer($correctAnswer);
 								if(com_wiris_util_type_IntegerTools::isInt($after) && Std::parseInt($after) <= $parts->length) {
 									$variables[$i1] = null;
 									$n++;
 								}
-								unset($parts);
+								unset($parts,$correctAnswer);
 							}
 						}
 						unset($after);

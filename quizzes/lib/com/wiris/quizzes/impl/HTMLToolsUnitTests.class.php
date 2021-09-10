@@ -33,7 +33,7 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 			$_g1 = 0; $_g = $inputs->length;
 			while($_g1 < $_g) {
 				$i1 = $_g1++;
-				$result = com_wiris_quizzes_impl_HTMLTools::stripRootTag($inputs[$i1], "math");
+				$result = com_wiris_util_xml_MathMLUtils::stripRootTag($inputs[$i1], "math");
 				if(!($result === $outputs[$i1])) {
 					throw new HException("Failed srtip root tag test: " . _hx_string_rec($i1, "") . "\x0AExpected: " . $outputs[$i1] . "\x0ABut got: " . $result);
 				}
@@ -82,7 +82,7 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 				$i1 = $_g1++;
 				$ans = $inputs[$i1];
 				$answers = $ans->copy();
-				$a = com_wiris_quizzes_impl_HTMLTools::joinCompoundAnswer($answers);
+				$a = com_wiris_quizzes_impl_CompoundAnswerParser::joinCompoundAnswer($answers);
 				if(!($a->content === $outputs[$i1])) {
 					throw new HException("Failed join compound answer: " . _hx_string_rec($i1, "") . "\x0AExpected: " . $outputs[$i1] . "\x0ABut got: " . $a->content);
 				}
@@ -100,7 +100,7 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 				$i1 = $_g1++;
 				$c = new com_wiris_quizzes_impl_MathContent();
 				$c->set($inputs[$i1]);
-				$result = com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswer($c);
+				$result = com_wiris_quizzes_impl_CompoundAnswerParser::parseCompoundAnswer($c);
 				if($result->length !== _hx_array_get($outputs, $i1)->length) {
 					throw new HException("Compound answer " . _hx_string_rec($i1, "") . " length mismatch");
 				}
@@ -380,22 +380,6 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 			}
 		}
 	}
-	public function unitTestConvertEditor2Newlines() {
-		$tests = new _hx_array(array("<mtable columnalign=\"left\" rowspacing=\"0\"><mtr><mtd><mfenced><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mtable><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd></mtr></mtable></mtd><mtd><mn>2</mn></mtd></mtr></mtable></mfenced></mtd></mtr><mtr><mtd><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable></mtd></mtr></mtable>"));
-		$res = new _hx_array(array("<math><mfenced><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mtable><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd></mtr></mtable></mtd><mtd><mn>2</mn></mtd></mtr></mtable></mfenced><mspace linebreak=\"newline\"/><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable></math>"));
-		$i = null;
-		{
-			$_g1 = 0; $_g = $tests->length;
-			while($_g1 < $_g) {
-				$i1 = $_g1++;
-				$u = com_wiris_quizzes_impl_HTMLTools::convertEditor2Newlines($tests[$i1]);
-				if(!($u === $res[$i1])) {
-					throw new HException("Expected: " . $res[$i1] . ". Got: " . $u . ".");
-				}
-				unset($u,$i1);
-			}
-		}
-	}
 	public function unitTestUpdateReservedWords() {
 		$tests = new _hx_array(array("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><msup><mi>x</mi><mn>3</mn></msup><msup><mi>y</mi><mn>2</mn></msup></math>", "<math><semantics><mrow><mn>6</mn><mi>k</mi><mi>m</mi><mo>+</mo><mn>4</mn><mi>k</mi><mi>m</mi></mrow><annotation encoding=\"application/json\">[[[18,9],...,[4,27]]]</annotation></semantics></math>", "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mrow><mn>4</mn><mo>.</mo><mn>1</mn><mo>&#xD7;</mo><mn>1</mn><msup><mn>0</mn><mrow><mo>-</mo><mn>4</mn></mrow></msup></mrow></math>", "<math><mi>s</mi><mi>i</mi><mi>n</mi><mi>s</mi><mi>i</mi><mi>n</mi></math>", "<math><mi>s</mi><mi>i</mi><mi>n</mi><mn>1</mn><mi>s</mi><mi>i</mi><mi>n</mi></math>", "<math><msup><mrow><mi>s</mi><mi>i</mi><msup><mi>n</mi><mi>k</mi></msup></mrow><mi>n</mi></msup></math>", "<math><mi>s</mi><msup><mi>i</mi><mn>1</mn></msup><mi>s</mi><msup><mi>i</mi><mn>1</mn></msup></math>", "<math><mi>s</mi><mrow><mi>i</mi><mi>m</mi><mi>x</mi></mrow></math>", "<math><mi>si</mi><mi>n</mi><mi>x</mi></math>", "<math><mn>2</mn><mi>k</mi><mi>m</mi></math>", "<math><mn>2</mn><mi>k</mi><mo>&nbsp;</mo><mi>m</mi></math>", "<math><mn>5</mn><mi>k</mi><msup><mi>m</mi><mn>2</mn></msup></math>"));
 		$words = new _hx_array(array());
@@ -425,7 +409,6 @@ class com_wiris_quizzes_impl_HTMLToolsUnitTests {
 		$this->unitTestUpdateReservedWords();
 		$this->unitTestReplaceVariablesInHTML();
 		$this->unitTestVariableNames();
-		$this->unitTestConvertEditor2Newlines();
 		$this->unitTestExtractText();
 		$this->unitTestTextToMathML();
 		$this->unitTestPrepareFormulasAlgorithm();

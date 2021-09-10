@@ -99,7 +99,7 @@ class com_wiris_quizzes_impl_EmbeddedAnswersEditorImpl implements com_wiris_quiz
 	public function filterHTML($questionText, $mode) {
 		$q = $this->question->getImpl();
 		$qi = $this->instance;
-		return com_wiris_quizzes_impl_HTMLTools::filterEmbeddedAnswersHTML($questionText, $mode, $q, $qi, true);
+		return com_wiris_quizzes_impl_EmbeddedAnswerFilter::filterHTML($questionText, $mode, $q, $qi);
 	}
 	public function analyzeHTML() {
 		com_wiris_quizzes_impl_QuizzesComponentBuilderImpl::throwNotImplementedInServerTechnology();

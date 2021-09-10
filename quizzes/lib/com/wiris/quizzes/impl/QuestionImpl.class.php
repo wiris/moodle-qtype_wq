@@ -706,9 +706,9 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 		if($session !== $this->wirisCasSession || $session !== null && !($session === $this->wirisCasSession)) {
 			$this->id = null;
-			if(com_wiris_quizzes_impl_HTMLTools::isCalc($session)) {
+			if(com_wiris_quizzes_impl_CalcDocumentTools::isCalc($session)) {
 				$sessionDocument = new com_wiris_quizzes_impl_CalcDocumentTools($session);
-				if(($this->wirisCasSession === null || !com_wiris_quizzes_impl_HTMLTools::isCalc($this->wirisCasSession) || !$this->getCalcDocument()->hasQuizzesQuestionOptions()) && $sessionDocument->hasQuizzesQuestionOptions()) {
+				if(($this->wirisCasSession === null || !com_wiris_quizzes_impl_CalcDocumentTools::isCalc($this->wirisCasSession) || !$this->getCalcDocument()->hasQuizzesQuestionOptions()) && $sessionDocument->hasQuizzesQuestionOptions()) {
 					$this->removeCalcOptions();
 				}
 				$this->calcDocument = $sessionDocument;
@@ -1040,7 +1040,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		} else {
 			$a = new com_wiris_quizzes_impl_MathContent();
 			$a->set($m);
-			$c = com_wiris_quizzes_impl_HTMLTools::parseCompoundAnswer($a);
+			$c = com_wiris_quizzes_impl_CompoundAnswerParser::parseCompoundAnswer($a);
 			$i = null;
 			{
 				$_g1 = 0; $_g = $c->length;
@@ -1050,7 +1050,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 					unset($i1);
 				}
 			}
-			$a = com_wiris_quizzes_impl_HTMLTools::joinCompoundAnswer($c);
+			$a = com_wiris_quizzes_impl_CompoundAnswerParser::joinCompoundAnswer($c);
 			return $a->content;
 		}
 	}
@@ -1230,7 +1230,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		$ca = $this->correctAnswers[$index];
 		$ca->id = "" . _hx_string_rec($index, "");
 		$ca->weight = 1.0;
-		$content = com_wiris_quizzes_impl_HTMLTools::convertEditor2Newlines($content);
+		$content = com_wiris_util_xml_MathMLUtils::convertEditor2Newlines($content);
 		$ca->set($content);
 		$this->updateSlots();
 	}
@@ -1410,7 +1410,7 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 		}
 	}
 	public function hasCalcmeSessionWithOptions() {
-		return com_wiris_quizzes_impl_HTMLTools::isCalc($this->wirisCasSession) && $this->getCalcDocument()->hasQuizzesQuestionOptions();
+		return com_wiris_quizzes_impl_CalcDocumentTools::isCalc($this->wirisCasSession) && $this->getCalcDocument()->hasQuizzesQuestionOptions();
 	}
 	public function setAssertion($name, $correctAnswer, $userAnswer) {
 		$this->setParametrizedAssertion($name, "" . _hx_string_rec($correctAnswer, ""), "" . _hx_string_rec($userAnswer, ""), null);

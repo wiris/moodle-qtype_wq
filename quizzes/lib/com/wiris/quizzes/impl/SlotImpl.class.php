@@ -98,7 +98,7 @@ class com_wiris_quizzes_impl_SlotImpl extends com_wiris_util_xml_SerializableImp
 	}
 	public function addNewAuthorAnswer($value) {
 		$aa = com_wiris_quizzes_impl_AuthorAnswerImpl::newWithQuestionCallback($this->question, $this);
-		$value = com_wiris_quizzes_impl_HTMLTools::convertEditor2Newlines($value);
+		$value = com_wiris_util_xml_MathMLUtils::convertEditor2Newlines($value);
 		$aa->value->set($value);
 		return $this->addAuthorAnswerImpl($aa);
 	}

@@ -508,8 +508,8 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_TOLERANCE, "");
 		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_TOLERANCE_DIGITS, "");
 		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_RELATIVE_TOLERANCE, "");
-		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_USE_CASE, "false");
-		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_USE_SPACES, "false");
+		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_USE_CASE, "true");
+		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_USE_SPACES, "true");
 		com_wiris_quizzes_impl_Assertion::$paramdefault->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_LITERAL, $paramvalues);
 		$paramvalues = new Hash();
 		$paramvalues->set(com_wiris_quizzes_impl_Assertion::$PARAM_NAME, "");
