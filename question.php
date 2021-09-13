@@ -334,6 +334,7 @@ class qtype_wq_question extends question_graded_automatically {
         $isdebugmodeenabled = get_config('qtype_wq', 'debug_mode_enabled') == '1';
 
         if ($isdebugmodeenabled) {
+            // @codingStandardsIgnoreLine
             print_object($request->serialize());
         }
 
@@ -352,6 +353,7 @@ class qtype_wq_question extends question_graded_automatically {
             }
 
             if ($isdebugmodeenabled) {
+                // @codingStandardsIgnoreLine
                 print_object($e);
             }
 
@@ -359,6 +361,7 @@ class qtype_wq_question extends question_graded_automatically {
         }
 
         if ($isdebugmodeenabled) {
+            // @codingStandardsIgnoreLine
             print_object($response->serialize());
         }
         return $response;
