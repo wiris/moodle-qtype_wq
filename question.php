@@ -331,6 +331,12 @@ class qtype_wq_question extends question_graded_automatically {
 
         $service = $builder->getQuizzesService();
 
+        $isdebugmodeenabled = get_config('qtype_wq', 'debug_mode_enabled') == '1';
+
+        if ($isdebugmodeenabled) {
+            print_object($request->serialize());
+        }
+
         try {
             $response = $service->execute($request);
         } catch (Exception $e) {
@@ -345,9 +351,16 @@ class qtype_wq_question extends question_graded_automatically {
                 $link = $CFG->wwwroot . '/mod/quiz/view.php?id=' . $cmid;
             }
 
+            if ($isdebugmodeenabled) {
+                print_object($e);
+            }
+
             throw new moodle_exception('wirisquestionincorrect', 'qtype_wq', $link, $a, '');
         }
 
+        if ($isdebugmodeenabled) {
+            print_object($response->serialize());
+        }
         return $response;
     }
 }

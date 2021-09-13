@@ -90,6 +90,11 @@ $string['quizzeswirislauncherurl_help'] = 'URL where to get the JNLP file for Wi
 $string['quizzeswirisurl'] = 'Wiris CAS applet service URL';
 $string['quizzeswirisurl_help'] = 'URL where to load the Wiris CAS applet.';
 
+$string['troubleshooting_settings'] = 'Troubleshooting';
+$string['troubleshooting_settings_text'] = '';
+$string['debug_mode_enabled'] = 'Debug mode';
+$string['debug_mode_enabled_help'] = 'Enables debug mode, which prints additional information that may help the WIRIS team resolve issues. Do not enable it unless requested by the WIRIS team.';
+
 $string['privacy:metadata:qtype_wq'] = 'Information about user\'s correct answer for a given Wiris Quizzes question type';
 $string['privacy:metadata:qtype_wq:question'] = 'Wiris Quizzes question type id';
 $string['privacy:metadata:qtype_wq:xml'] = 'Wiris Quizzes Question XML';
