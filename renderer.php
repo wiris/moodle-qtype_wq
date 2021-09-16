@@ -73,7 +73,7 @@ class qtype_wq_renderer extends qtype_renderer {
         $xml = $question->filtercodes_compatibility($sq);
         $wirisquestionattributes = array(
             'type' => 'hidden',
-            'value' => $xml, 
+            'value' => $xml,
             'class' => 'wirisquestion',
         );
         return html_writer::empty_tag('input', $wirisquestionattributes);
