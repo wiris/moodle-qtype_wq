@@ -77,6 +77,15 @@ $settings->add(new admin_setting_configcheckbox('qtype_wq/access_provider_enable
                                                             get_string('access_provider_enabled_help', 'qtype_wq'),
                                                             '0'));
 
+$settings->add(new admin_setting_heading('qtype_wq/compatibility_settings',
+                                                            get_string('compatibility_settings', 'qtype_wq'),
+                                                            get_string('compatibility_settings_text', 'qtype_wq')));
+
+$settings->add(new admin_setting_configcheckbox('qtype_wq/filtercodes_compatibility',
+                                                            get_string('filtercodes_compatibility_enabled', 'qtype_wq'),
+                                                            get_string('filtercodes_compatibility_enabled_help', 'qtype_wq'),
+                                                            '0'));
+
 $settings->add(new admin_setting_heading('qtype_wq/troubleshooting_settings',
                                                             get_string('troubleshooting_settings', 'qtype_wq'),
                                                             get_string('troubleshooting_settings_text', 'qtype_wq')));

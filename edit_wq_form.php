@@ -72,6 +72,8 @@ class qtype_wq_edit_form extends question_edit_form {
             }
         }
 
+        $program = $this->question->filtercodes_compatibility($program);
+
         $defaultvalues = array();
         $defaultvalues['wirisquestion'] = $program;
         $mform->setDefaults($defaultvalues);

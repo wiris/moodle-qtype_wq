@@ -178,7 +178,7 @@ class qtype_wq_question extends question_graded_automatically {
         if (isset($this->wirisquestioninstance)) {
             $text = $this->wirisquestioninstance->expandVariables($text);
         }
-        return $text;
+        return $this->filtercodes_compatibility($text);
     }
 
     public function expand_variables_text($text) {
@@ -365,5 +365,14 @@ class qtype_wq_question extends question_graded_automatically {
             print_object($response->serialize());
         }
         return $response;
+    }
+
+    public function filtercodes_compatibility($text) {
+        $configfiltercodes = get_config('qtype_wq', 'filtercodes_compatibility');
+        if (isset($configfiltercodes) && $configfiltercodes == '1') {
+            $text = str_replace('[{', '[[{', $text);
+            $text = str_replace('}]', '}]]', $text);
+        }
+        return $text;
     }
 }
