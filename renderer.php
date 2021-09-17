@@ -17,7 +17,6 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/essay/renderer.php');
 
-
 class qtype_wq_renderer extends qtype_renderer {
 
     protected $base;
@@ -70,10 +69,9 @@ class qtype_wq_renderer extends qtype_renderer {
         $wirisquestion = $question->wirisquestion;
         $studentquestion = $wirisquestion->getStudentQuestion();
         $sq = $studentquestion->serialize();
-        $xml = $question->filtercodes_compatibility($sq);
         $wirisquestionattributes = array(
             'type' => 'hidden',
-            'value' => $xml,
+            'value' => $sq,
             'class' => 'wirisquestion',
         );
         return html_writer::empty_tag('input', $wirisquestionattributes);
@@ -89,7 +87,6 @@ class qtype_wq_renderer extends qtype_renderer {
         }
         $sqi = $question->wirisquestioninstance->getStudentQuestionInstance();
         $xml = $sqi->serialize();
-        $xml = $question->filtercodes_compatibility($xml);
 
         $sqiname = $qa->get_qt_field_name('_sqi');
         $wirisquestioninstanceattributes = array(
