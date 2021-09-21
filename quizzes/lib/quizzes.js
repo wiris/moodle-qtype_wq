@@ -4393,6 +4393,9 @@ com.wiris.system.Utf8.charCodeAt = function(s,i) {
 	var charCode = HxOverrides.cca(s,i8);
 	return charCode < 55296 || charCode > 56319?charCode:(charCode - 55296) * 1024 + HxOverrides.cca(s,i8 + 1) - 56320 + 65536;
 }
+com.wiris.system.Utf8.mbSubstring = function(s,i,len) {
+	return HxOverrides.substr(s,i,len);
+}
 com.wiris.system.Utf8.charValueAt = function(s,i) {
 	return HxOverrides.cca(s,i);
 }
@@ -32392,7 +32395,7 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 				current = com.wiris.system.Utf8.charValueAt(jsonString,i);
 				if(!withDecimal && current == 46) withDecimal = true; else if(!withE && (current == 101 || current == 69)) withE = true; else if(!com.wiris.util.json.parser.JsonParse.isNumberStart(current) && current != 43) break;
 			} while(i++ < end);
-			var valueString = HxOverrides.substr(jsonString,fieldStart,i - fieldStart);
+			var valueString = com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart,i - fieldStart);
 			try {
 				if(withDecimal || withE) value = Std.parseFloat(valueString); else value = Std.parseInt(valueString);
 			} catch( e ) {
@@ -32410,7 +32413,7 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 			}
 		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_CONSTANT) {
 			while(com.wiris.util.json.parser.JsonParse.isLetter(current) && i++ < end) current = com.wiris.system.Utf8.charValueAt(jsonString,i);
-			var valueString = HxOverrides.substr(jsonString,fieldStart,i - fieldStart);
+			var valueString = com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart,i - fieldStart);
 			if("false" == valueString) value = false; else if("true" == valueString) value = true; else if("null" == valueString) value = null; else {
 				if(com.wiris.system.TypeTools.isHash(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT)); else if(com.wiris.system.TypeTools.isArray(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
 				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"\"" + valueString + "\" is not a valid constant. Missing quotes?"));
@@ -32550,14 +32553,14 @@ com.wiris.util.json.parser.JsonParse.extractString = function(jsonString,fieldSt
 		var i = com.wiris.util.json.parser.JsonParse.indexOfSpecial(jsonString,fieldStart,singleQuote);
 		var c = com.wiris.system.Utf8.charValueAt(jsonString,i);
 		if(!singleQuote && c == 34 || singleQuote && c == 39) {
-			builder.b += Std.string(HxOverrides.substr(jsonString,fieldStart + 1,i - fieldStart - 1));
+			builder.b += Std.string(com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart + 1,i - fieldStart - 1));
 			ret = new com.wiris.util.json.parser.ExtractedString(i,builder.b);
 			break;
 		} else if(c == 92) {
-			builder.b += Std.string(HxOverrides.substr(jsonString,fieldStart + 1,i - fieldStart - 1));
+			builder.b += Std.string(com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart + 1,i - fieldStart - 1));
 			c = com.wiris.system.Utf8.charValueAt(jsonString,i + 1);
 			if(c == 34) builder.b += String.fromCharCode(34); else if(c == 92) builder.b += String.fromCharCode(92); else if(c == 47) builder.b += String.fromCharCode(47); else if(c == 110) builder.b += String.fromCharCode(10); else if(c == 114) builder.b += String.fromCharCode(13); else if(c == 116) builder.b += String.fromCharCode(9); else if(c == 117) {
-				builder.b += Std.string(com.wiris.system.Utf8.uchr(Std.parseInt("0x" + HxOverrides.substr(jsonString,i + 2,4))));
+				builder.b += Std.string(com.wiris.system.Utf8.uchr(Std.parseInt("0x" + com.wiris.system.Utf8.mbSubstring(jsonString,i + 2,4))));
 				fieldStart = i + 5;
 				continue;
 			}
