@@ -124,7 +124,7 @@
 		"downloadText": "Seleccione un tamaño para descargar el tablero gráfico como una imagen cuadrada PNG",
 		"downloadHelperText": "Imagen cuadrada (1:1)",
 		"downloadErrorText": "El tamaño debe ser un número entero positivo.",
-		"confirm": "confirmar",
+		"confirm": "Confirmar",
 		"cancel": "cancelar",
 		"sizeInPixels": "Tamaño en píxeles",
 		"insertANumber": "Inserte un número",
