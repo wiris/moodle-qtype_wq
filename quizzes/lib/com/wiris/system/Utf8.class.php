@@ -9,6 +9,9 @@ class com_wiris_system_Utf8 {
 	static function charCodeAt($s, $i) {
 		return haxe_Utf8::charCodeAt($s, $i);
 	}
+	static function mbSubstring($s, $i, $len) {
+		return mb_substr($s, $i, $len);
+	}
 	static function charValueAt($s, $i) {
 		$ret = 0;
 		$charUCS4 = mb_convert_encoding(mb_substr($s, $i, 1), 'UCS-4BE', 'UTF-8');

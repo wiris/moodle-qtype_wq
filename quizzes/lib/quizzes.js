@@ -4393,6 +4393,9 @@ com.wiris.system.Utf8.charCodeAt = function(s,i) {
 	var charCode = HxOverrides.cca(s,i8);
 	return charCode < 55296 || charCode > 56319?charCode:(charCode - 55296) * 1024 + HxOverrides.cca(s,i8 + 1) - 56320 + 65536;
 }
+com.wiris.system.Utf8.mbSubstring = function(s,i,len) {
+	return HxOverrides.substr(s,i,len);
+}
 com.wiris.system.Utf8.charValueAt = function(s,i) {
 	return HxOverrides.cca(s,i);
 }
@@ -10405,7 +10408,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		return this.handConstraints;
 	}
 	,serializeHandConstraints: function() {
-		if(this.handConstraints != null) this.setLocalData(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS,this.handConstraints.toJSON());
+		if(this.handConstraints != null) this.setLocalDataImpl(com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS,this.handConstraints.toJSON(),false);
 	}
 	,areVariablesReady: function() {
 		if(this.variables != null) {
@@ -11286,7 +11289,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		}
 		return this.getLocalDataImpl(name);
 	}
-	,setLocalData: function(name,value) {
+	,setLocalDataImpl: function(name,value,parseHandwritingConstraints) {
 		if(this.localData == null) this.localData = new Array();
 		var data = new com.wiris.quizzes.impl.LocalData();
 		data.name = name;
@@ -11302,7 +11305,10 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 			}
 		}
 		if(!found) this.localData.push(data);
-		if(name == com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) this.handConstraints = com.wiris.quizzes.impl.HandwritingConstraints.readHandwritingConstraints(value);
+		if(parseHandwritingConstraints && name == com.wiris.quizzes.impl.LocalData.KEY_OPENANSWER_HANDWRITING_CONSTRAINTS) this.handConstraints = com.wiris.quizzes.impl.HandwritingConstraints.readHandwritingConstraints(value);
+	}
+	,setLocalData: function(name,value) {
+		this.setLocalDataImpl(name,value,true);
 	}
 	,newInstance: function() {
 		return new com.wiris.quizzes.impl.QuestionInstanceImpl();
@@ -15887,7 +15893,7 @@ com.wiris.util.geometry.GeometryFile.isGeometryFile = function(str) {
 	try {
 		if(com.wiris.util.json.JSon.isJson(str) && str.indexOf("{") != -1 && str.indexOf("}") != -1) {
 			var hash = com.wiris.util.json.JSon.getHash(com.wiris.util.json.JSon.decode(str));
-			if(hash == null) return false;
+			if(hash == null || !com.wiris.system.TypeTools.isHash(hash)) return false;
 			var geometryTags = ["elements","constraints","displays","handwriting"];
 			var _g = 0;
 			while(_g < geometryTags.length) {
@@ -19414,9 +19420,13 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 			var pointSeparator = "nothing";
 			var commaSeparator = "nothing";
 			var spaceSeparator = "nothing";
-			if(com.wiris.system.ArrayEx.contains(decimalPlacesSeparators,".")) pointSeparator = "decimalPlaces"; else if(com.wiris.system.ArrayEx.contains(decimalPlacesSeparators,"\\,")) commaSeparator = "decimalPlaces";
-			if(com.wiris.system.ArrayEx.contains(digitGroupsSeparators,".")) pointSeparator = "digitGroups"; else if(com.wiris.system.ArrayEx.contains(digitGroupsSeparators,"\\,")) commaSeparator = "digitGroups"; else if(com.wiris.system.ArrayEx.contains(digitGroupsSeparators,"\\s")) spaceSeparator = "digitGroups";
-			if(com.wiris.system.ArrayEx.contains(listItemsSeparators,"\\,")) commaSeparator = "listItems"; else if(com.wiris.system.ArrayEx.contains(listItemsSeparators,"\\s")) spaceSeparator = "listItems";
+			if(com.wiris.system.ArrayEx.contains(decimalPlacesSeparators,".")) pointSeparator = "decimalPlaces";
+			if(com.wiris.system.ArrayEx.contains(decimalPlacesSeparators,"\\,")) commaSeparator = "decimalPlaces";
+			if(com.wiris.system.ArrayEx.contains(digitGroupsSeparators,".")) pointSeparator = "digitGroups";
+			if(com.wiris.system.ArrayEx.contains(digitGroupsSeparators,"\\,")) commaSeparator = "digitGroups";
+			if(com.wiris.system.ArrayEx.contains(digitGroupsSeparators,"\\s")) spaceSeparator = "digitGroups";
+			if(com.wiris.system.ArrayEx.contains(listItemsSeparators,"\\,")) commaSeparator = "listItems";
+			if(com.wiris.system.ArrayEx.contains(listItemsSeparators,"\\s")) spaceSeparator = "listItems";
 			this.inputOptions.setPointSeparator(pointSeparator);
 			this.inputOptions.setCommaSeparator(commaSeparator);
 			this.inputOptions.setSpaceSeparator(spaceSeparator);
@@ -32389,7 +32399,7 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 				current = com.wiris.system.Utf8.charValueAt(jsonString,i);
 				if(!withDecimal && current == 46) withDecimal = true; else if(!withE && (current == 101 || current == 69)) withE = true; else if(!com.wiris.util.json.parser.JsonParse.isNumberStart(current) && current != 43) break;
 			} while(i++ < end);
-			var valueString = HxOverrides.substr(jsonString,fieldStart,i - fieldStart);
+			var valueString = com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart,i - fieldStart);
 			try {
 				if(withDecimal || withE) value = Std.parseFloat(valueString); else value = Std.parseInt(valueString);
 			} catch( e ) {
@@ -32407,7 +32417,7 @@ com.wiris.util.json.parser.JsonParse.parse = function(jsonString) {
 			}
 		} else if(currentJType == com.wiris.util.json.parser.JType.TYPE_CONSTANT) {
 			while(com.wiris.util.json.parser.JsonParse.isLetter(current) && i++ < end) current = com.wiris.system.Utf8.charValueAt(jsonString,i);
-			var valueString = HxOverrides.substr(jsonString,fieldStart,i - fieldStart);
+			var valueString = com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart,i - fieldStart);
 			if("false" == valueString) value = false; else if("true" == valueString) value = true; else if("null" == valueString) value = null; else {
 				if(com.wiris.system.TypeTools.isHash(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_OBJECT)); else if(com.wiris.system.TypeTools.isArray(currentContainer)) stateStack.push(new com.wiris.util.json.parser.State(propertyName,currentContainer,com.wiris.util.json.parser.JType.TYPE_ARRAY));
 				throw new com.wiris.system.Exception(com.wiris.util.json.parser.JsonParse.buildErrorMessage(stateStack,"\"" + valueString + "\" is not a valid constant. Missing quotes?"));
@@ -32547,14 +32557,14 @@ com.wiris.util.json.parser.JsonParse.extractString = function(jsonString,fieldSt
 		var i = com.wiris.util.json.parser.JsonParse.indexOfSpecial(jsonString,fieldStart,singleQuote);
 		var c = com.wiris.system.Utf8.charValueAt(jsonString,i);
 		if(!singleQuote && c == 34 || singleQuote && c == 39) {
-			builder.b += Std.string(HxOverrides.substr(jsonString,fieldStart + 1,i - fieldStart - 1));
+			builder.b += Std.string(com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart + 1,i - fieldStart - 1));
 			ret = new com.wiris.util.json.parser.ExtractedString(i,builder.b);
 			break;
 		} else if(c == 92) {
-			builder.b += Std.string(HxOverrides.substr(jsonString,fieldStart + 1,i - fieldStart - 1));
+			builder.b += Std.string(com.wiris.system.Utf8.mbSubstring(jsonString,fieldStart + 1,i - fieldStart - 1));
 			c = com.wiris.system.Utf8.charValueAt(jsonString,i + 1);
 			if(c == 34) builder.b += String.fromCharCode(34); else if(c == 92) builder.b += String.fromCharCode(92); else if(c == 47) builder.b += String.fromCharCode(47); else if(c == 110) builder.b += String.fromCharCode(10); else if(c == 114) builder.b += String.fromCharCode(13); else if(c == 116) builder.b += String.fromCharCode(9); else if(c == 117) {
-				builder.b += Std.string(com.wiris.system.Utf8.uchr(Std.parseInt("0x" + HxOverrides.substr(jsonString,i + 2,4))));
+				builder.b += Std.string(com.wiris.system.Utf8.uchr(Std.parseInt("0x" + com.wiris.system.Utf8.mbSubstring(jsonString,i + 2,4))));
 				fieldStart = i + 5;
 				continue;
 			}

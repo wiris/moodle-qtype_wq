@@ -125,7 +125,7 @@ class com_wiris_util_json_parser_JsonParse {
 								}
 							}
 						} while($i++ < $end);
-						$valueString = _hx_substr($jsonString, $fieldStart, $i - $fieldStart);
+						$valueString = com_wiris_system_Utf8::mbSubstring($jsonString, $fieldStart, $i - $fieldStart);
 						try {
 							if($withDecimal || $withE) {
 								$value = Std::parseFloat($valueString);
@@ -157,7 +157,7 @@ class com_wiris_util_json_parser_JsonParse {
 							while(com_wiris_util_json_parser_JsonParse::isLetter($current) && $i++ < $end) {
 								$current = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 							}
-							$valueString = _hx_substr($jsonString, $fieldStart, $i - $fieldStart);
+							$valueString = com_wiris_system_Utf8::mbSubstring($jsonString, $fieldStart, $i - $fieldStart);
 							if("false" === $valueString) {
 								$value = false;
 							} else {
@@ -377,12 +377,12 @@ class com_wiris_util_json_parser_JsonParse {
 			$i = com_wiris_util_json_parser_JsonParse::indexOfSpecial($jsonString, $fieldStart, $singleQuote);
 			$c = com_wiris_system_Utf8::charValueAt($jsonString, $i);
 			if(!$singleQuote && $c === 34 || $singleQuote && $c === 39) {
-				$builder->add(_hx_substr($jsonString, $fieldStart + 1, $i - $fieldStart - 1));
+				$builder->add(com_wiris_system_Utf8::mbSubstring($jsonString, $fieldStart + 1, $i - $fieldStart - 1));
 				$ret = new com_wiris_util_json_parser_ExtractedString($i, $builder->b);
 				break;
 			} else {
 				if($c === 92) {
-					$builder->add(_hx_substr($jsonString, $fieldStart + 1, $i - $fieldStart - 1));
+					$builder->add(com_wiris_system_Utf8::mbSubstring($jsonString, $fieldStart + 1, $i - $fieldStart - 1));
 					$c = com_wiris_system_Utf8::charValueAt($jsonString, $i + 1);
 					if($c === 34) {
 						$builder->b .= chr(34);
@@ -467,7 +467,7 @@ class com_wiris_util_json_parser_JsonParse {
 function com_wiris_util_json_parser_JsonParse_0(&$builder, &$c, &$fieldStart, &$i, &$jsonString, &$ret, &$singleQuote) {
 	{
 		$s = new haxe_Utf8(null);
-		$s->addChar(Std::parseInt("0x" . _hx_substr($jsonString, $i + 2, 4)));
+		$s->addChar(Std::parseInt("0x" . com_wiris_system_Utf8::mbSubstring($jsonString, $i + 2, 4)));
 		return $s->toString();
 	}
 }

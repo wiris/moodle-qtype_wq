@@ -95,7 +95,12 @@ $string['troubleshooting_settings_text'] = '';
 $string['debug_mode_enabled'] = 'Debug mode';
 $string['debug_mode_enabled_help'] = 'Enables debug mode, which prints additional information that may help the WIRIS team resolve issues. Do not enable it unless requested by the WIRIS team.';
 
-$string['privacy:metadata:qtype_wq'] = 'Information about user\'s correct answer for a given Wiris Quizzes question type';
+$string['compatibility_settings'] = 'Compatibility settings';
+$string['compatibility_settings_text'] = '';
+$string['filtercodes_compatibility_enabled'] = 'Compatibility with Filter Codes filter';
+$string['filtercodes_compatibility_enabled_help'] = 'The Filter Codes filter is not compatible with certain WirisQuizzes features if the option "Escape tags" is selected. Enabling this option solves the compatibility problem. Do not enable it in any other situation.';
+
+$string['privacy:metadata:qtype_wq'] = 'Information about user\'s correct answer for a given WirisQuizzes question type';
 $string['privacy:metadata:qtype_wq:question'] = 'Wiris Quizzes question type id';
 $string['privacy:metadata:qtype_wq:xml'] = 'Wiris Quizzes Question XML';
 
