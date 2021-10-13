@@ -26,10 +26,43 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        php: ['7.3','7.4']
-        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_310_STABLE', 'MOODLE_311_STABLE']
+      mmatrix:
+        php: ['7.1', '7.2', '7.3', '7.4']
+        moodle-branch: ['MOODLE_35_STABLE', 'MOODLE_36_STABLE', 'MOODLE_37_STABLE', 'MOODLE_38_STABLE', 'MOODLE_39_STABLE', 'MOODLE_310_STABLE', 'MOODLE_311_STABLE']
         database: [pgsql]
+        exclude:
+          # Exclude Moodle+PHP incompatible versions
+          # See: https://docs.moodle.org/dev/Moodle_and_PHP
+          - moodle-branch: 'MOODLE_36_STABLE'
+            php: '7.1'
+          - moodle-branch: 'MOODLE_37_STABLE'
+            php: '7.1'
+          - moodle-branch: 'MOODLE_38_STABLE'
+            php: '7.1'
+          - moodle-branch: 'MOODLE_39_STABLE'
+            php: '7.1'
+          - moodle-branch: 'MOODLE_310_STABLE'
+            php: '7.1'
+          - moodle-branch: 'MOODLE_311_STABLE'
+            php: '7.1'
+          - moodle-branch: 'MOODLE_36_STABLE'
+            php: '7.2'
+          - moodle-branch: 'MOODLE_37_STABLE'
+            php: '7.2'
+          - moodle-branch: 'MOODLE_311_STABLE'
+            php: '7.2'
+          - moodle-branch: 'MOODLE_35_STABLE'
+            php: '7.3'
+          - moodle-branch: 'MOODLE_36_STABLE'
+            php: '7.3'
+          - moodle-branch: 'MOODLE_37_STABLE'
+            php: '7.3'
+          - moodle-branch: 'MOODLE_35_STABLE'
+            php: '7.4'
+          - moodle-branch: 'MOODLE_36_STABLE'
+            php: '7.4'
+          - moodle-branch: 'MOODLE_37_STABLE'
+            php: '7.4'
 
     steps:
       - name: Check out repository code
