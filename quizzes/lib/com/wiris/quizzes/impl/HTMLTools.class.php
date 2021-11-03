@@ -1255,7 +1255,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		}
 		$positionToBeWritten = $this->position($formula, $pos);
 		if($positionToBeWritten[0] === -1) {
-			return $value;
+			throw new HException("Positions are not integers!");
 		}
 		if($itemSelector === com_wiris_quizzes_impl_HTMLTools::$SELECTOR_2D) {
 			if($this->isPosition($formula, $pos)) {
@@ -1312,7 +1312,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 			$endWant += strlen($rowFinish);
 		}
 		$blockFromStartToEndWant = _hx_substr($value, 0, $endWant);
-		$isVector = ((_hx_last_index_of($blockFromStartToEndWant, "]", null) !== -1 && _hx_last_index_of($blockFromStartToEndWant, "]", null) === $this->maxValue(_hx_last_index_of($blockFromStartToEndWant, "]", null), _hx_last_index_of($blockFromStartToEndWant, "}", null))) ? true : false);
+		$isVector = _hx_last_index_of($blockFromStartToEndWant, "]", null) !== -1 && _hx_last_index_of($blockFromStartToEndWant, "]", null) === $this->maxValue(_hx_last_index_of($blockFromStartToEndWant, "]", null), _hx_last_index_of($blockFromStartToEndWant, "}", null));
 		$block = _hx_substr($value, $iniWant, $endWant - $iniWant);
 		return com_wiris_quizzes_impl_HTMLTools_14($this, $block, $blockFromStartToEndWant, $endWant, $iniWant, $isVector, $itemSelector, $k, $outOfBounds, $positionToBeWritten, $rowFinish, $rowStart, $value);
 	}

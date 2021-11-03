@@ -515,7 +515,8 @@
 }
 .wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > input + div {
   width: calc(100% - 88px);
-  margin-right: 64px;
+  margin-right: 90px;
+  display: inline-block;
 }
 .wrsUI_app .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField > .wrsUI_button.wrsUI_buttonIcon {
   position: absolute;

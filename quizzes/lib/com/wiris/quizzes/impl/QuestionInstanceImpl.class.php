@@ -10,6 +10,55 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		$this->checks = null;
 		$this->compoundChecks = null;
 	}}
+	public function cloneCheckStructureIntoQuestion($question) {
+		if(!$this->hasEvaluation()) {
+			return;
+		}
+		$q = $question->getImpl();
+		if($q->correctAnswers === null) {
+			$q->correctAnswers = new _hx_array(array());
+		}
+		if($q->assertions === null) {
+			$q->assertions = new _hx_array(array());
+		}
+		$studentAnswers = $this->checks->keys();
+		while($studentAnswers->hasNext()) {
+			$studentAnswer = $studentAnswers->next();
+			$assertionChecks = $this->checks->get($studentAnswer);
+			{
+				$_g = 0;
+				while($_g < $assertionChecks->length) {
+					$check = $assertionChecks[$_g];
+					++$_g;
+					$name = $check->getAssertionName();
+					if(!com_wiris_quizzes_impl_Assertion::isSyntacticName($name)) {
+						$ca = $check->getCorrectAnswer();
+						$cai = Std::parseInt($ca);
+						while($cai >= $q->correctAnswers->length) {
+							$newCA = new com_wiris_quizzes_impl_CorrectAnswer();
+							$newCA->id = _hx_string_rec($q->correctAnswers->length, "") . "";
+							$newCA->set("");
+							$q->correctAnswers->push($newCA);
+							unset($newCA);
+						}
+						if($q->getAssertionIndex($check->getAssertionName(), $check->getCorrectAnswer(), $check->getAnswer()) === -1) {
+							$a = new com_wiris_quizzes_impl_Assertion();
+							$a->name = $check->getAssertionName();
+							$a->answer = $check->getAnswers();
+							$a->correctAnswer = $check->getCorrectAnswers();
+							$q->assertions->push($a);
+							unset($a);
+						}
+						unset($cai,$ca);
+					}
+					unset($name,$check);
+				}
+				unset($_g);
+			}
+			unset($studentAnswer,$assertionChecks);
+		}
+		$q->updateSlots();
+	}
 	public function getChecks($slot, $authorAnswer) {
 		$slotIndex = Std::parseInt($slot->id);
 		$authorAnswerIndex = Std::parseInt($authorAnswer->id);

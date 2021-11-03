@@ -79,8 +79,12 @@ class com_wiris_quizzes_impl_Assertion extends com_wiris_util_xml_SerializableIm
 	public function copy() {
 		$a = new com_wiris_quizzes_impl_Assertion();
 		$a->name = $this->name;
-		$a->correctAnswer = $this->copyArrayString($this->correctAnswer);
-		$a->answer = $this->copyArrayString($this->answer);
+		if($this->correctAnswer !== null) {
+			$a->correctAnswer = $this->copyArrayString($this->correctAnswer);
+		}
+		if($this->answer !== null) {
+			$a->answer = $this->copyArrayString($this->answer);
+		}
 		if($this->parameters !== null) {
 			$a->parameters = new _hx_array(array());
 			$i = null;
