@@ -13251,7 +13251,7 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 	,setEmbeddedAnswerFieldStyle: function(embedded) {
 		if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD || this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
 			if(embedded) {
-				this.addClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_EMBEDDED_ANSWER_FIELD).getStyle().setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
+				this.addClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_EMBEDDED_ANSWER_FIELD).getStyle().setWidth(com.wiris.util.ui.Style.SIZE_AUTO).setMinWidth(com.wiris.util.ui.Style.SIZE_AUTO);
 				var component = this.getComponent();
 				component.addClass(com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_OUTLINED).getStyle().setMinWidth(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD?50:75).setMinHeight(20).setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
 				if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
@@ -19158,7 +19158,10 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__name__ = ["com","wi
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__interfaces__ = [com.wiris.quizzes.impl.ui.component.AuthoringFieldComponent,com.wiris.util.ui.interaction.KeyListener];
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.__super__ = com.wiris.util.ui.component.BorderPanel;
 com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(com.wiris.util.ui.component.BorderPanel.prototype,{
-	getCorrectAnswerGraph: function() {
+	setCasAlgorithmLang: function(lang) {
+		this.variableOptions.setCasAlgorithmLang(lang);
+	}
+	,getCorrectAnswerGraph: function() {
 		return this.home.getCorrectAnswerGraph();
 	}
 	,innerContentChanged: function() {
@@ -20964,7 +20967,10 @@ com.wiris.quizzes.impl.ui.component.VariableOptionsActivity = $hxClasses["com.wi
 com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.__name__ = ["com","wiris","quizzes","impl","ui","component","VariableOptionsActivity"];
 com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.__super__ = com.wiris.util.ui.component.ActivityPanel;
 com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.prototype = $extend(com.wiris.util.ui.component.ActivityPanel.prototype,{
-	setCasOutputOptions: function(questionImpl,slot) {
+	setCasAlgorithmLang: function(lang) {
+		this.wirisCas.setLanguage(lang);
+	}
+	,setCasOutputOptions: function(questionImpl,slot) {
 		this.wirisCas.setCasOutputOptions(questionImpl,slot);
 	}
 	,algorithmEditorActionWithParams: function(name,parameters) {
@@ -21146,7 +21152,7 @@ com.wiris.quizzes.impl.ui.component.WirisCasInputComponent.prototype = $extend(c
 			this.launchButton.setEnabled(true);
 			this.currentStatus.setVisible(true);
 			this.currentStatus.setText(this.controller.t("error"));
-			haxe.Log.trace(session.get("error"),{ fileName : "WirisCasInputComponent.hx", lineNumber : 336, className : "com.wiris.quizzes.impl.ui.component.WirisCasInputComponent", methodName : "sessionReceived"});
+			haxe.Log.trace(session.get("error"),{ fileName : "WirisCasInputComponent.hx", lineNumber : 344, className : "com.wiris.quizzes.impl.ui.component.WirisCasInputComponent", methodName : "sessionReceived"});
 		}
 	}
 	,pollService: function() {
@@ -21194,7 +21200,7 @@ com.wiris.quizzes.impl.ui.component.WirisCasInputComponent.prototype = $extend(c
 		this.callService("set",parameters,new com.wiris.quizzes.impl.ui.controller.SendInitialWirisCasSessionRequestController(this));
 	}
 	,updateSessionImage: function() {
-		this.image.setSource(com.wiris.quizzes.api.Quizzes.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL) + "/image.png?session_id=" + this.sessionId + "&revision=" + this.revision);
+		this.image.setSource(com.wiris.quizzes.api.Quizzes.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.WIRISLAUNCHER_URL) + "/image.png?session_id=" + this.sessionId + "&revision=" + this.revision + "&t=" + HxOverrides.dateStr(new Date()));
 		this.image.setVisible(true);
 	}
 	,callServiceForImageUpdate: function() {
@@ -21238,7 +21244,7 @@ com.wiris.quizzes.impl.ui.component.WirisCasInputComponent.prototype = $extend(c
 		if(!(this.language == language)) {
 			this.language = language;
 			if(!this.isEmpty()) this.setValue(com.wiris.quizzes.impl.ui.component.WirisCasInputComponent.translateSession(this.getValue(),this.language));
-			this.updateSessionImage();
+			this.callServiceForImageUpdate();
 		}
 	}
 	,getLanguage: function() {
@@ -21253,6 +21259,8 @@ com.wiris.quizzes.impl.ui.component.WirisCasInputComponent.prototype = $extend(c
 	,setValue: function(value) {
 		if(!(this.value == value)) {
 			this.value = value;
+			var lang = com.wiris.quizzes.impl.CalcDocumentTools.casSessionLang(value);
+			if(lang != null) this.language = lang;
 			if(this.changeAction != null) this.performAction(this.changeAction);
 		}
 	}
@@ -21317,7 +21325,7 @@ com.wiris.quizzes.impl.ui.component.WirisCasInputWrapperComponent = $hxClasses["
 	var it = languages.keys();
 	while(it.hasNext()) {
 		var key = it.next();
-		this.algorithmLanguageDropdown.addOption(key,languages.get(key),new com.wiris.util.ui.Action("wirisCasLanguageChanged",key));
+		this.algorithmLanguageDropdown.addValue(key,languages.get(key));
 	}
 	this.algorithmLanguageDropdown.pickValue(this.getCasLang(this.controller.getLanguage(),languages));
 	this.algorithmLanguageDropdown.setChangeValueAction(new com.wiris.util.ui.Action("algorithmLanguageChanged",null));
@@ -21366,8 +21374,14 @@ com.wiris.quizzes.impl.ui.component.WirisCasInputWrapperComponent.prototype = $e
 		this.outputOptions.setCasOutputOptions(questionImpl,slot);
 	}
 	,setValue: function(value) {
+		var lang = com.wiris.quizzes.impl.CalcDocumentTools.casSessionLang(value);
+		if(lang != null) this.algorithmLanguageDropdown.pickValue(this.getCasLang(lang,this.getCasLangs()));
 		this.wirisCas.setValue(value);
 		this.wirisCas.callServiceForImageUpdate();
+	}
+	,setLanguage: function(lang) {
+		this.algorithmLanguageDropdown.pickValue(lang);
+		this.wirisCas.setLanguage(lang);
 	}
 	,controller: null
 	,outputOptions: null
@@ -21500,7 +21514,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		if(com.wiris.quizzes.impl.HTMLTools.hasCasSessionParameter(session,parameter,name)) this.context.getQuestion().setProperty(com.wiris.quizzes.api.PropertyName.STUDENT_ANSWER_PARAMETER,"true"); else this.context.getQuestion().setProperty(com.wiris.quizzes.api.PropertyName.STUDENT_ANSWER_PARAMETER,"false");
 	}
 	,onError: function(error) {
-		haxe.Log.trace("Conversion to algorithm failed with error: " + error,{ fileName : "QuizzesStudioController.hx", lineNumber : 2614, className : "com.wiris.quizzes.impl.ui.controller.QuizzesStudioController", methodName : "onError"});
+		haxe.Log.trace("Conversion to algorithm failed with error: " + error,{ fileName : "QuizzesStudioController.hx", lineNumber : 2618, className : "com.wiris.quizzes.impl.ui.controller.QuizzesStudioController", methodName : "onError"});
 	}
 	,wrapAlgorithmWithCalcSession: function(algorithm) {
 		var lang = this.importCasSessionLang != null?this.importCasSessionLang:"en";
@@ -22517,6 +22531,9 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 			var correctAnswer = this.context.getAuthorAnswer().getValue();
 			this.context.getSlot().setInitialContent(correctAnswer);
 			this.updateCurrentActivity();
+		} else if("algorithmLanguageChanged" == actionId) {
+			var lang = source.getValue();
+			this.quizzesStudio.setCasAlgorithmLang(lang);
 		}
 		if(this.context.getAuthoringField() != null) this.context.getAuthoringField().innerContentChanged();
 	}
