@@ -13356,7 +13356,7 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 				this.component.getStyle().setMinWidth(280);
 			} else if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD) {
 				this.component = new com.wiris.util.ui.component.TextField();
-				this.component.getStyle().setMinWidth(280);
+				this.component.getStyle().setMinWidth(280).setWidth(com.wiris.util.ui.Style.SIZE_AUTO);
 				this.component.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID,null));
 				this.component.setReadOnly(this.readOnly);
 			} else if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
