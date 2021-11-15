@@ -30,7 +30,7 @@
 		"tt_measures": "Mesures",
 		"tt_area": "Zone",
 		"tt_angle": "Angle",
-		"tt_length": "Longueur",
+		"tt_length": "Longitud",
 		"tt_labels": "Étiquette",
 		"tt_elementMML": "Expression",
 
@@ -43,7 +43,7 @@
 		"tt_squareRoot": "racine carrée",
 		"tt_nRoot": "racine",
 		"tt_numbers": "nombre",
-		"tt_numberE": "nombre e",
+		"tt_numberE": "nombre e",
 		"tt_numberPi": "nombre pi",
 		"tt_functions": "fonctions",
 		"tt_sinus": "sinus",
@@ -125,7 +125,7 @@
 		"downloadHelperText": "Square Image (1:1)",
 		"downloadErrorText": "Size must be a whole number.",
 		"confirm": "confirmer",
-		"cancel": "annuler ",
+		"cancel": "annuler",
 		"sizeInPixels": "Size in pixels",
 		"insertANumber": "Insert a number",
 
