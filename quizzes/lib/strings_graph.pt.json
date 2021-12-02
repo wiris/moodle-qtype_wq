@@ -33,10 +33,37 @@
 		"tt_length": "Comprimento",
 		"tt_labels": "Rótulo",
 		"tt_elementMML": "Expression",
+		"tt_image": "Imagem",
 
 		"tt_bold": "negrito",
 		"tt_italic": "itálico",
 		"tt_color": "cor",
+
+		"tt_barChart": "Select",
+		"tt_newPackBars": "Pack of bars",
+		"tt_newSideBars": "Group of bars",
+		"tt_deletePackBars": "Delete pack",
+		"tt_deleteSideBars": "Delete group",
+		"tt_changeBarsPositioning": "Positioning",
+
+		"tt_pieChart": "Select",
+		"tt_newPie": "New piece",
+		"tt_deletePie": "Delete piece",
+		"tt_newPieClockwise": "Clockwise",
+		"tt_newPieCounterclockwise": "Counterclockwise",
+		"tt_pie2D3D": "2D/3D",
+
+		"tt_lineChart": "Select",
+		"tt_newLineLineChart": "Line",
+		"tt_newPointsLineChart": "Grup of points",
+		"tt_deleteLineLineChart": "Delete line",
+		"tt_deletePointsLineChart": "Delete points",
+		"tt_addPointsLeft": "Points left",
+		"tt_addPointsRight": "Points right",
+
+		"tt_fitPlotterToStats": "Fit",
+		"tt_changeOrientation": "Orientation",
+		"tt_pointDiameter": "Diameter",
 
 		"tt_fraction": "fração grande",
 		"tt_superscript": "expoente",
@@ -129,6 +156,9 @@
 		"sizeInPixels": "Size in pixels",
 		"insertANumber": "Insert a number",
 
+		"uploadImageErrorTitle": "Ups, something went wrong!",
+		"uploadImageErrorText": "Ensure that the upload is a valid PNG image and try again",
+
 		"type_point": "Point",
 		"type_line": "Line",
 		"type_line_segment": "Line Segment",
@@ -157,6 +187,12 @@
 		"type_length": "Length",
 		"type_distance": "Distance",
 		"type_label": "Label",
+		
+		"type_bar_chart": "Bar Chart",
+		"type_line_chart": "Line Chart",
+		"type_pie_chart": "Pie Chart",
+		"type_box_plot": "Box Plot",
+		"type_histogram": "Histogram",
 
 		"equation": "Equation"
 	}
