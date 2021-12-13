@@ -57,9 +57,9 @@
   },
   {
     "id": "changeBarsPositioning",
-    "title": "tt_changeBarsPositioning",
+    "title": "tt_unpackBars",
     "icon": {
-      "name": "bars_group",
+      "name": "bars_pack",
       "type": "svg"
     }
   },
@@ -105,9 +105,9 @@
   },
   {
     "id": "pie2D3D",
-    "title": "tt_pie2D3D",
+    "title": "tt_pie3D",
     "icon": {
-      "name": "pie_3d",
+      "name": "pie3d",
       "type": "svg"
     }
   },
@@ -177,7 +177,7 @@
   },
   {
     "id": "changeOrientation",
-    "title": "tt_changeOrientation",
+    "title": "tt_horizontal",
     "icon": {
       "name": "bars_horizontal",
       "type": "svg"

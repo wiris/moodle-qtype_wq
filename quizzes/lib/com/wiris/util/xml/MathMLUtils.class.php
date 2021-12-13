@@ -174,7 +174,7 @@ class com_wiris_util_xml_MathMLUtils {
 		return true;
 	}
 	static function isKeyboardChar($c) {
-		return $c >= 32 && $c <= 126;
+		return $c >= 32 && $c <= 126 || $c >= 161 && $c <= 191 || $c === 8364;
 	}
 	static function stripRootTag($xml, $tag) {
 		$s = com_wiris_util_xml_MathMLUtils::splitRootTag($xml, $tag);
