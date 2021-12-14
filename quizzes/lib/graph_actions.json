@@ -57,9 +57,9 @@
   },
   {
     "id": "changeBarsPositioning",
-    "title": "tt_unpackBars",
+    "title": "tt_stackBars",
     "icon": {
-      "name": "bars_pack",
+      "name": "bars_stack",
       "type": "svg"
     }
   },
