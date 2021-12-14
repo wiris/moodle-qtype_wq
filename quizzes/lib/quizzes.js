@@ -15815,10 +15815,10 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.__interfaces__ = [com
 com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.__super__ = com.wiris.util.ui.component.FlowPanel;
 com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.prototype = $extend(com.wiris.util.ui.component.FlowPanel.prototype,{
 	getCorrectAnswerPieChart: function() {
-		return this.correctAnswerGraph;
+		return this.correctAnswerPieChart;
 	}
 	,getCorrectAnswerLineChart: function() {
-		return this.correctAnswerGraph;
+		return this.correctAnswerLineChart;
 	}
 	,getCorrectAnswerBarChart: function() {
 		return this.correctAnswerBarChart;
@@ -16117,7 +16117,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent = $hxClasses["com.wiris.
 		defaultConfig.set(com.wiris.util.graphics.DisplaySettings.DISPLAY_ELEMENT_VALUES,com.wiris.util.graphics.DisplaySettings.FOCUS);
 		this.parameters.set(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_DEFAULT_DISPLAY_SETTINGS,com.wiris.util.json.JSon.encode(defaultConfig));
 	}
-	if(this.parameters.exists(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_TOOLBAR_DEFINITION)) this.pendingToolbar = com.wiris.util.ui.controller.ToolbarDefinition.deserialize(this.parameters.get(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_TOOLBAR_DEFINITION));
+	if(this.parameters.exists(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_TOOLBAR_DEFINITION)) this.toolbarDefinition = com.wiris.util.ui.controller.ToolbarDefinition.deserialize(this.parameters.get(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_TOOLBAR_DEFINITION));
 };
 com.wiris.quizzes.impl.ui.component.GraphInputComponent.__name__ = ["com","wiris","quizzes","impl","ui","component","GraphInputComponent"];
 com.wiris.quizzes.impl.ui.component.GraphInputComponent.__interfaces__ = [com.wiris.util.graphics.DisplayListener,com.wiris.util.ui.component.Field];
@@ -16156,6 +16156,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 		} catch( e ) {
 			throw "Error loading the geometry file " + value + ". \n Error description: " + Std.string(e.toString());
 		}
+		if(this.toolbarDefinition != null) this.graph.getGraphModel().updateGraphToolbar(this.toolbarDefinition);
 	}
 	,contentChanged: function() {
 		var changed = true;
@@ -16195,14 +16196,12 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 		this.graph = graph;
 		this.graph.getGraphModel().getDisplay().addDisplayListener(this);
 		this.setGraphValue(this.value);
-		if(this.pendingToolbar != null) {
-			this.graph.getGraphModel().updateGraphToolbar(this.pendingToolbar);
-			this.pendingToolbar = null;
-		}
+		if(this.toolbarDefinition != null) this.graph.getGraphModel().updateGraphToolbar(this.toolbarDefinition);
 		this.componentSet();
 	}
 	,updateGraphToolbar: function(definition) {
-		if(this.graph != null) this.graph.getGraphModel().updateGraphToolbar(definition); else this.pendingToolbar = definition;
+		this.toolbarDefinition = definition;
+		if(this.graph != null) this.graph.getGraphModel().updateGraphToolbar(definition);
 	}
 	,getGraph: function() {
 		return this.graph;
@@ -16216,7 +16215,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 		this.setGraphValue(this.value);
 	}
 	,graphMode: null
-	,pendingToolbar: null
+	,toolbarDefinition: null
 	,value: null
 	,parameters: null
 	,changeAction: null
