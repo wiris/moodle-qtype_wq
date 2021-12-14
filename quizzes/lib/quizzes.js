@@ -16858,7 +16858,7 @@ com.wiris.quizzes.impl.ui.component.InputMethodComponent.prototype = $extend(com
 		this.plainTextRadioButton.setVisible(this.controller.getContext().isOptAnswerFieldPlainText());
 		var displayVisible = this.controller.getConfigurationKey("inputOptions/answerInputMethod/auxiliaryInput/auxiliaryInputDisplay");
 		var replaceVisible = this.controller.getConfigurationKey("inputOptions/answerInputMethod/auxiliaryInput/auxiliaryInputReplace");
-		replaceVisible = replaceVisible && (context.getSlot().getSyntax().getName() != com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC || context.getSlot().getSyntax().getParameter(com.wiris.quizzes.api.assertion.SyntaxParameterName.GRAPH_MODE) == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_STANDARD);
+		replaceVisible = replaceVisible && context.getSlot().getSyntax().getName() != com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC;
 		var textVisible = this.controller.getConfigurationKey("inputOptions/answerInputMethod/auxiliaryInput/auxiliaryTextInput");
 		this.displayAuxiliaryInputPanel.setVisible(displayVisible);
 		this.replaceAuxiliaryInputPanel.setVisible(replaceVisible);
