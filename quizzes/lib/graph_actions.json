@@ -176,10 +176,18 @@
     }
   },
   {
-    "id": "changeOrientation",
+    "id": "changeOrientationBars",
     "title": "tt_horizontal",
     "icon": {
       "name": "bars_horizontal",
+      "type": "svg"
+    }
+  },
+  {
+    "id": "changeOrientationLines",
+    "title": "tt_horizontal",
+    "icon": {
+      "name": "lines_horizontal",
       "type": "svg"
     }
   },
