@@ -1,44 +1,45 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Privacy provider tests.
- *
- * @package    qtype_wq
- * @copyright  WIRIS Europe (Maths for more S.L)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-// This package is manteined from Moodle 2.4 but the privacy API only applies
-// from Moodle 3.3 version.
-if ($CFG->version < 2017051500) {
-    exit;
-}
-
-use core_privacy\local\metadata\collection;
-use core_privacy\local\request\deletion_criteria;
-use qtype_wq\privacy\provider;
-
-
-require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-
 namespace qtype_wq {
+
+    // This file is part of Moodle - http://moodle.org/
+    //
+    // Moodle is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU General Public License as published by
+    // the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // Moodle is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY; without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU General Public License for more details.
+    //
+    // You should have received a copy of the GNU General Public License
+    // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    /**
+     * Privacy provider tests.
+     *
+     * @package    qtype_wq
+     * @copyright  WIRIS Europe (Maths for more S.L)
+     * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+     */
+
+    defined('MOODLE_INTERNAL') || die();
+
+    global $CFG;
+    // This package is manteined from Moodle 2.4 but the privacy API only applies
+    // from Moodle 3.3 version.
+    if ($CFG->version < 2017051500) {
+        exit;
+    }
+
+    use core_privacy\local\metadata\collection;
+    use core_privacy\local\request\deletion_criteria;
+    use qtype_wq\privacy\provider;
+
+
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
     /**
      * Wiris Quizzes Common question type privacy tests class.
      *
