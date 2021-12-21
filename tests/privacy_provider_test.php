@@ -38,246 +38,248 @@ use qtype_wq\privacy\provider;
 
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
-/**
- * Wiris Quizzes Common question type privacy tests class.
- *
- * @package    qtype_wq
- * @copyright  2018 Jun Pataleta
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class privacy_provider_test extends \core_privacy\tests\provider_testcase {
-    /** @var stdClass The teacher object. */
-    protected $teacher;
-
-    /** @var stdClass The course object. */
-    protected $course;
-
-
+namespace qtype_wq {
     /**
-     * {@inheritdoc}
+     * Wiris Quizzes Common question type privacy tests class.
+     *
+     * @package    qtype_wq
+     * @copyright  2018 Jun Pataleta
+     * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
      */
-    protected function setUp(): void {
-        $this->resetAfterTest();
+    class privacy_provider_test extends \core_privacy\tests\provider_testcase {
+        /** @var stdClass The teacher object. */
+        protected $teacher;
 
-        global $DB;
-        $generator = $this->getDataGenerator();
-        $course = $generator->create_course();
+        /** @var stdClass The course object. */
+        protected $course;
 
-        // Create a teacher which make a question.
-        $teacher = $generator->create_user();
-        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
-        $generator->enrol_user($teacher->id,  $course->id, $teacherrole->id);
-        $this->teacher = $teacher;
 
-        // Add one question.
-        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $questiongenerator->create_question_category();
-        $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
+        /**
+         * {@inheritdoc}
+         */
+        protected function setUp(): void {
+            $this->resetAfterTest();
 
-        // Here we need to transform this question into a Wiris Quizzes question type.
-        // Fetch the original record.
-        $qrecord = $DB->get_record('question', ['id' => $q->id]);
-        $qrecord->qtype = 'essaywiris';
-        $qrecord->createdby = $teacher->id;
+            global $DB;
+            $generator = $this->getDataGenerator();
+            $course = $generator->create_course();
 
-        // Update the original record.
-        $DB->update_record('question', $qrecord);
-        // Update the question object.
-        $q->qtype = 'essaywiris';
-        $q->createdby = $teacher->id;
-        // Creating Wiris Question object.
-        $wq = new StdClass();
-        $wq->question = $q->id;
-        $wq->xml = 'xml';
-        $DB->insert_record('qtype_wq', $wq);
-    }
+            // Create a teacher which make a question.
+            $teacher = $generator->create_user();
+            $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
+            $generator->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+            $this->teacher = $teacher;
 
-    /**
-     * Test for provider::get_metadata().
-     */
-    public function test_get_metadata() {
-        $collection = new collection('qtype_wq');
-        $newcollection = provider::get_metadata($collection);
-        $itemcollection = $newcollection->get_collection();
-        $this->assertCount(1, $itemcollection);
+            // Add one question.
+            $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+            $cat = $questiongenerator->create_question_category();
+            $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
 
-        $table = reset($itemcollection);
-        $this->assertEquals('qtype_wq', $table->get_name());
+            // Here we need to transform this question into a Wiris Quizzes question type.
+            // Fetch the original record.
+            $qrecord = $DB->get_record('question', ['id' => $q->id]);
+            $qrecord->qtype = 'essaywiris';
+            $qrecord->createdby = $teacher->id;
 
-        $privacyfields = $table->get_privacy_fields();
-        $this->assertArrayHasKey('question', $privacyfields);
-        $this->assertArrayHasKey('xml', $privacyfields);
+            // Update the original record.
+            $DB->update_record('question', $qrecord);
+            // Update the question object.
+            $q->qtype = 'essaywiris';
+            $q->createdby = $teacher->id;
+            // Creating Wiris Question object.
+            $wq = new StdClass();
+            $wq->question = $q->id;
+            $wq->xml = 'xml';
+            $DB->insert_record('qtype_wq', $wq);
+        }
 
-        $this->assertEquals('privacy:metadata:qtype_wq', $table->get_summary());
-    }
+        /**
+         * Test for provider::get_metadata().
+         */
+        public function test_get_metadata() {
+            $collection = new collection('qtype_wq');
+            $newcollection = provider::get_metadata($collection);
+            $itemcollection = $newcollection->get_collection();
+            $this->assertCount(1, $itemcollection);
 
-    /**
-     * Test for provider::get_contexts_for_userid().
-     */
-    public function test_get_contexts_for_userid() {
-        global $DB;
+            $table = reset($itemcollection);
+            $this->assertEquals('qtype_wq', $table->get_name());
 
-        $contextlist = provider::get_contexts_for_userid($this->teacher->id);
+            $privacyfields = $table->get_privacy_fields();
+            $this->assertArrayHasKey('question', $privacyfields);
+            $this->assertArrayHasKey('xml', $privacyfields);
 
-        $this->assertCount(1, $contextlist);
-    }
+            $this->assertEquals('privacy:metadata:qtype_wq', $table->get_summary());
+        }
 
-    /**
-     * Test for provider::export_user_data().
-     */
-    public function test_export_for_context() {
-        global $DB;
-         // A new question is created here associated to the original teacher.
-        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $questiongenerator->create_question_category();
-        $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
-        // Here we need to transform this question into a Wiris Quizzes question type.
-        // Fetch the original record.
-        $qrecord = $DB->get_record('question', ['id' => $q->id]);
-        $qrecord->qtype = 'essaywiris';
-        $qrecord->createdby = $this->teacher->id;
+        /**
+         * Test for provider::get_contexts_for_userid().
+         */
+        public function test_get_contexts_for_userid() {
+            global $DB;
 
-        // Update the original record.
-        $DB->update_record('question', $qrecord);
-        // Update the question object.
-        $q->qtype = 'essaywiris';
-        $q->createdby = $this->teacher->id;
-        // Creating Wiris Question object.
-        $wq = new StdClass();
-        $wq->question = $q->id;
-        $wq->xml = 'xml';
-        $DB->insert_record('qtype_wq', $wq);
-        // Question is at system context level.
-        $systemcontext = context_system::instance();
+            $contextlist = provider::get_contexts_for_userid($this->teacher->id);
 
-        // Export all the data for the system context.
-        $this->export_context_data_for_user($this->teacher->id, $systemcontext, 'qtype_wq');
-        $writer = \core_privacy\local\request\writer::with_context($systemcontext);
+            $this->assertCount(1, $contextlist);
+        }
 
-        $this->assertTrue($writer->has_any_data());
-    }
+        /**
+         * Test for provider::export_user_data().
+         */
+        public function test_export_for_context() {
+            global $DB;
+            // A new question is created here associated to the original teacher.
+            $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+            $cat = $questiongenerator->create_question_category();
+            $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
+            // Here we need to transform this question into a Wiris Quizzes question type.
+            // Fetch the original record.
+            $qrecord = $DB->get_record('question', ['id' => $q->id]);
+            $qrecord->qtype = 'essaywiris';
+            $qrecord->createdby = $this->teacher->id;
 
-    /**
-     * Test for provider::delete_data_for_all_users_in_context().
-     */
-    public function test_delete_data_for_all_users_in_context() {
-        global $DB;
+            // Update the original record.
+            $DB->update_record('question', $qrecord);
+            // Update the question object.
+            $q->qtype = 'essaywiris';
+            $q->createdby = $this->teacher->id;
+            // Creating Wiris Question object.
+            $wq = new StdClass();
+            $wq->question = $q->id;
+            $wq->xml = 'xml';
+            $DB->insert_record('qtype_wq', $wq);
+            // Question is at system context level.
+            $systemcontext = context_system::instance();
 
-        // A new question is created here for another teacher
-        // The context is the same (context_system) for both questions.
-        $generator = $this->getDataGenerator();
-        $course = $generator->create_course();
-        $teacher = $generator->create_user();
-        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
-        $generator->enrol_user($teacher->id,  $course->id, $teacherrole->id);
+            // Export all the data for the system context.
+            $this->export_context_data_for_user($this->teacher->id, $systemcontext, 'qtype_wq');
+            $writer = \core_privacy\local\request\writer::with_context($systemcontext);
 
-        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $questiongenerator->create_question_category();
-        $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
-        // Here we need to transform this question into a Wiris Quizzes question type.
+            $this->assertTrue($writer->has_any_data());
+        }
 
-        // Fetch the original record.
-        $qrecord = $DB->get_record('question', ['id' => $q->id]);
-        $qrecord->qtype = 'essaywiris';
-        $qrecord->createdby = $teacher->id;
+        /**
+         * Test for provider::delete_data_for_all_users_in_context().
+         */
+        public function test_delete_data_for_all_users_in_context() {
+            global $DB;
 
-        // Update the original record.
-        $DB->update_record('question', $qrecord);
-        // Update the question object.
-        $q->qtype = 'essaywiris';
-        $q->createdby = $teacher->id;
-        // Creating Wiris Question object.
-        $wq = new StdClass();
-        $wq->question = $q->id;
-        $wq->xml = 'xml';
-        $DB->insert_record('qtype_wq', $wq);
+            // A new question is created here for another teacher
+            // The context is the same (context_system) for both questions.
+            $generator = $this->getDataGenerator();
+            $course = $generator->create_course();
+            $teacher = $generator->create_user();
+            $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
+            $generator->enrol_user($teacher->id,  $course->id, $teacherrole->id);
 
-        // Before deletion, we should have 2 responses.
-        $count = $DB->count_records('qtype_wq', []);
-        $this->assertEquals(2, $count);
+            $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+            $cat = $questiongenerator->create_question_category();
+            $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
+            // Here we need to transform this question into a Wiris Quizzes question type.
 
-        // Delete data based on context.
-        $syscontext = context_system::instance();
-        provider::delete_data_for_all_users_in_context($syscontext);
+            // Fetch the original record.
+            $qrecord = $DB->get_record('question', ['id' => $q->id]);
+            $qrecord->qtype = 'essaywiris';
+            $qrecord->createdby = $teacher->id;
 
-        // After deletion, the Wiris Quizzes questiosn should have been deleted.
-        $count = $DB->count_records('qtype_wq', []);
-        $this->assertEquals(0, $count);
-    }
+            // Update the original record.
+            $DB->update_record('question', $qrecord);
+            // Update the question object.
+            $q->qtype = 'essaywiris';
+            $q->createdby = $teacher->id;
+            // Creating Wiris Question object.
+            $wq = new StdClass();
+            $wq->question = $q->id;
+            $wq->xml = 'xml';
+            $DB->insert_record('qtype_wq', $wq);
 
-    /**
-     * Test for provider::delete_data_for_user().
-     */
-    public function test_delete_data_for_user_() {
-        global $DB;
+            // Before deletion, we should have 2 responses.
+            $count = $DB->count_records('qtype_wq', []);
+            $this->assertEquals(2, $count);
 
-        // Create a new question associated to a new teacher.
-        $generator = $this->getDataGenerator();
-        $course = $generator->create_course();
-        $anotherteacher = $generator->create_user();
-        $anotherteacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
-        $generator->enrol_user($anotherteacher->id,  $course->id, $anotherteacherrole->id);
+            // Delete data based on context.
+            $syscontext = context_system::instance();
+            provider::delete_data_for_all_users_in_context($syscontext);
 
-        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $questiongenerator->create_question_category();
-        $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
-        // Here we need to transform this question into a Wiris Quizzes question type.
-        // Fetching the original record.
-        $qrecord = $DB->get_record('question', ['id' => $q->id]);
-        $qrecord->qtype = 'essaywiris';
-        $qrecord->createdby = $anotherteacher->id;
+            // After deletion, the Wiris Quizzes questiosn should have been deleted.
+            $count = $DB->count_records('qtype_wq', []);
+            $this->assertEquals(0, $count);
+        }
 
-        // Update the original record.
-        $DB->update_record('question', $qrecord);
-        // Update the question object.
-        $q->qtype = 'essaywiris';
-        $q->createdby = $anotherteacher->id;
-        // Creating Wiris Question object.
-        $wq = new StdClass();
-        $wq->question = $q->id;
-        $wq->xml = 'xml';
-        $DB->insert_record('qtype_wq', $wq);
+        /**
+         * Test for provider::delete_data_for_user().
+         */
+        public function test_delete_data_for_user_() {
+            global $DB;
 
-        // A new question is created here associated to the original teacher.
-        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $questiongenerator->create_question_category();
-        $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
-        // Here we need to transform this question into a Wiris Quizzes question type.
-        // Fetch the original record.
-        $qrecord = $DB->get_record('question', ['id' => $q->id]);
-        $qrecord->qtype = 'essaywiris';
-        $qrecord->createdby = $this->teacher->id;
+            // Create a new question associated to a new teacher.
+            $generator = $this->getDataGenerator();
+            $course = $generator->create_course();
+            $anotherteacher = $generator->create_user();
+            $anotherteacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
+            $generator->enrol_user($anotherteacher->id,  $course->id, $anotherteacherrole->id);
 
-        // Update the original record.
-        $DB->update_record('question', $qrecord);
-        // Update the question object.
-        $q->qtype = 'essaywiris';
-        $q->createdby = $this->teacher->id;
-        // Creating Wiris Question object.
-        $wq = new StdClass();
-        $wq->question = $q->id;
-        $wq->xml = 'xml';
-        $DB->insert_record('qtype_wq', $wq);
+            $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+            $cat = $questiongenerator->create_question_category();
+            $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
+            // Here we need to transform this question into a Wiris Quizzes question type.
+            // Fetching the original record.
+            $qrecord = $DB->get_record('question', ['id' => $q->id]);
+            $qrecord->qtype = 'essaywiris';
+            $qrecord->createdby = $anotherteacher->id;
 
-        // Before deletion, we should have 3 Wiris Quizzes questions.
-        $count = $DB->count_records('qtype_wq', []);
-        $this->assertEquals(3, $count);
-        $contextlist = new \core_privacy\local\request\approved_contextlist($this->teacher, 'qtype_wq',
-                                                                            [context_system::instance()->id]);
+            // Update the original record.
+            $DB->update_record('question', $qrecord);
+            // Update the question object.
+            $q->qtype = 'essaywiris';
+            $q->createdby = $anotherteacher->id;
+            // Creating Wiris Question object.
+            $wq = new StdClass();
+            $wq->question = $q->id;
+            $wq->xml = 'xml';
+            $DB->insert_record('qtype_wq', $wq);
 
-        provider::delete_data_for_user($contextlist);
+            // A new question is created here associated to the original teacher.
+            $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+            $cat = $questiongenerator->create_question_category();
+            $q = $questiongenerator->create_question('essay', 'plain', ['category' => $cat->id]);
+            // Here we need to transform this question into a Wiris Quizzes question type.
+            // Fetch the original record.
+            $qrecord = $DB->get_record('question', ['id' => $q->id]);
+            $qrecord->qtype = 'essaywiris';
+            $qrecord->createdby = $this->teacher->id;
 
-        // After deletion, only the question for the new teacher must exist.
-        $count = $DB->count_records('qtype_wq', []);
-        $this->assertEquals(1, $count);
+            // Update the original record.
+            $DB->update_record('question', $qrecord);
+            // Update the question object.
+            $q->qtype = 'essaywiris';
+            $q->createdby = $this->teacher->id;
+            // Creating Wiris Question object.
+            $wq = new StdClass();
+            $wq->question = $q->id;
+            $wq->xml = 'xml';
+            $DB->insert_record('qtype_wq', $wq);
 
-        // Confirm that the existing question belongs to the new teacher.
+            // Before deletion, we should have 3 Wiris Quizzes questions.
+            $count = $DB->count_records('qtype_wq', []);
+            $this->assertEquals(3, $count);
+            $contextlist = new \core_privacy\local\request\approved_contextlist($this->teacher, 'qtype_wq',
+                                                                                [context_system::instance()->id]);
 
-        // The existence of a single record is verified before so at this point we can
-        // call get_record() instead of get_records() method.
-        $record = $DB->get_record('qtype_wq', []);
-        $question = $DB->get_record('question', ['id' => $record->question]);
-        // The remaining question belongs to the new teacher.
-        $this->assertEquals($question->createdby, $anotherteacher->id);
+            provider::delete_data_for_user($contextlist);
+
+            // After deletion, only the question for the new teacher must exist.
+            $count = $DB->count_records('qtype_wq', []);
+            $this->assertEquals(1, $count);
+
+            // Confirm that the existing question belongs to the new teacher.
+
+            // The existence of a single record is verified before so at this point we can
+            // call get_record() instead of get_records() method.
+            $record = $DB->get_record('qtype_wq', []);
+            $question = $DB->get_record('question', ['id' => $record->question]);
+            // The remaining question belongs to the new teacher.
+            $this->assertEquals($question->createdby, $anotherteacher->id);
+        }
     }
 }
