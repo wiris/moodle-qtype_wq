@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/mod/quiz/locallib.php');
  * @copyright  2018 Jun Pataleta
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privacy_provider_testcase extends \core_privacy\tests\provider_test {
+class privacy_provider_test extends \core_privacy\tests\provider_testcase {
     /** @var stdClass The teacher object. */
     protected $teacher;
 
