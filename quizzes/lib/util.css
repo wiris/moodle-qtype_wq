@@ -1427,10 +1427,10 @@ md-elevation-transition {
 }
 
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer {
-  background: url("decoration/drawing_panel_empty.svg?v=4.3.3") center center no-repeat;
+  background: url("decoration/drawing_panel_empty.svg?v=4.4.0") center center no-repeat;
 }
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer canvas {
-  background: url("decoration/drawing_panel_grid.png?v=4.3.3");
+  background: url("decoration/drawing_panel_grid.png?v=4.4.0");
 }
 .wrsUI_app .wrsUI_drawingPanel .wrsUI_aux_canvasContainer {
   position: absolute;
