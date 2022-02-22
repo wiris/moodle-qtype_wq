@@ -279,8 +279,14 @@ class com_wiris_util_geometry_GeometryElement {
 	static $BIN_LIMITS = "bin_limits";
 	static $CLOSED_LEFT = "closed_left";
 	static $WHISKER_RANGE = "whisker_range";
-	static $TEXT_BOX_VERTICAL_POSITION = "text_box_vertical_position";
-	static $TEXT_BOX_HORIZONTAL_POSITION = "text_box_horizontal_position";
+	static $LABEL_VERTICAL_POSITION = "text_box_vertical_position";
+	static $LABEL_HORIZONTAL_POSITION = "text_box_horizontal_position";
+	static $LABEL_POSITION_RIGHT = "right";
+	static $LABEL_POSITION_LEFT = "left";
+	static $LABEL_POSITION_CENTER = "centered";
+	static $LABEL_POSITION_BASELINE = "baseline";
+	static $LABEL_POSITION_TOP = "top";
+	static $LABEL_POSITION_BOTTOM = "bottom";
 	static $DELETE_FROM_CONSTRUCTION = "deleteFromConstruction";
 	static $FROM_CAS_KERNEL = "wiris_cas_kernel_computed";
 	static function newGeometryElement() {
