@@ -19452,7 +19452,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 	}
 	,updateGraphValidationOptions: function(context) {
 		this.graphValidationOptions.updateContent(context);
-		this.updateLayout(context,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_TITLE,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_VALIDATION_OPTIONS_HELP_URL,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_ID);
+		this.updateLayout(context,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_TITLE,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_HELP_URL,com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_GRAPH_VALIDATION_OPTIONS_ID);
 	}
 	,updateGraphInputOptions: function(context) {
 		this.graphInputOptions.updateVisibility(context);
@@ -19632,7 +19632,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.prototype = $extend(c
 		var hasBackButton = !(activityId == com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_HOME_ID);
 		var testQuestionVisible = !(activityId == com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.QUIZZES_STUDIO_TEST_QUESTION_ID);
 		var tToolbarTitle = toolbarTitle != null?context.t(toolbarTitle):null;
-		var tHelpUrl = this.localizeHelpUrl(toolbarHelpUrl,context.getLanguage());
+		var tHelpUrl = toolbarHelpUrl != null?this.localizeHelpUrl(toolbarHelpUrl,context.getLanguage()):null;
 		this.quizzesStudioToolbar.updateToolbarVisibility(tToolbarTitle,hasBackButton,tHelpUrl);
 		this.quizzesStudioBottomBar.updateVisibility(context,testQuestionVisible);
 		if(context.isInlineQuizzesStudio()) this.activityContainer.getStyle().setCSSVariable("grid-area","2 / 1 / 4 / 4"); else this.activityContainer.getStyle().removeCSSVariable("grid-area");
@@ -21081,7 +21081,6 @@ com.wiris.quizzes.impl.ui.component.VariableOptionsActivity = $hxClasses["com.wi
 	com.wiris.util.ui.component.ActivityPanel.call(this);
 	this.addClass(com.wiris.util.ui.component.Panel.CLASS_PANEL_SOLID).addClass(com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.CLASS_QUIZZES_STUDIO_VARIABLE_OPTIONS);
 	this.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHeightWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT);
-	this.controller = controller;
 	this.useCas = false;
 	this.headerLabel = com.wiris.util.ui.component.Label.newWithText(controller.t(com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.VARIABLE_OPTIONS_LABEL));
 	this.headerLabel.addClass(com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.CLASS_CALC_ME_LABEL);
@@ -21104,6 +21103,7 @@ com.wiris.quizzes.impl.ui.component.VariableOptionsActivity = $hxClasses["com.wi
 	content.addComponent(this.calcMe);
 	content.addComponent(this.wirisCas);
 	this.addComponent(content);
+	this.addActionListener(controller);
 };
 com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.__name__ = ["com","wiris","quizzes","impl","ui","component","VariableOptionsActivity"];
 com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.__super__ = com.wiris.util.ui.component.ActivityPanel;
@@ -21158,7 +21158,6 @@ com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.prototype = $extend(
 	,wirisCas: null
 	,calcMe: null
 	,headerLabel: null
-	,controller: null
 	,__class__: com.wiris.quizzes.impl.ui.component.VariableOptionsActivity
 });
 com.wiris.quizzes.impl.ui.component.ViewSourceActivity = $hxClasses["com.wiris.quizzes.impl.ui.component.ViewSourceActivity"] = function(controller) {
