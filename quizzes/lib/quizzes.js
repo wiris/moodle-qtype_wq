@@ -15468,20 +15468,21 @@ com.wiris.quizzes.impl.ui.component.CalcMeInputComponent.prototype = $extend(com
 				this.calcMe.reset();
 				this.updating = false;
 				this.algorithm = this.calcMe.getXml();
+				if(this.changeAction != null) this.performAction(this.changeAction);
 			}
 		} else if(!(this.algorithm == algorithm)) {
 			this.algorithm = algorithm;
-			if(this.calcMe != null) {
+			if(this.calcMe != null && !(algorithm == this.calcMe.getXml())) {
 				this.updating = true;
 				this.calcMe.setXml(algorithm);
 				this.updating = false;
 			}
+			if(this.changeAction != null) this.performAction(this.changeAction);
 		}
 	}
 	,contentChanged: function(calc) {
 		if(this.isUpdating()) return;
-		this.algorithm = calc.getXml();
-		if(this.changeAction != null) this.performAction(this.changeAction);
+		this.setAlgorithm(calc.getXml());
 	}
 	,executePendingActions: function() {
 		while(this.pendingActions.length > 0) {
@@ -21103,7 +21104,6 @@ com.wiris.quizzes.impl.ui.component.VariableOptionsActivity = $hxClasses["com.wi
 	content.addComponent(this.calcMe);
 	content.addComponent(this.wirisCas);
 	this.addComponent(content);
-	this.addActionListener(controller);
 };
 com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.__name__ = ["com","wiris","quizzes","impl","ui","component","VariableOptionsActivity"];
 com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.__super__ = com.wiris.util.ui.component.ActivityPanel;
@@ -21143,7 +21143,6 @@ com.wiris.quizzes.impl.ui.component.VariableOptionsActivity.prototype = $extend(
 	,convertAlgorithm: function(algorithm) {
 		this.calcMe.setAlgorithm(algorithm);
 		this.setUseCas(false);
-		this.performAction(new com.wiris.util.ui.Action("algorithmChanged","algorithmChanged"));
 	}
 	,setAlgorithm: function(algorithm) {
 		if(algorithm == null || com.wiris.quizzes.impl.CalcDocumentTools.isCalc(algorithm)) {
