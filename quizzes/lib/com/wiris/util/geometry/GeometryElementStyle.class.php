@@ -38,6 +38,7 @@ class com_wiris_util_geometry_GeometryElementStyle {
 	static $LABEL_COLOR = "label_color";
 	static $LABEL_BOLD = "label_bold";
 	static $LABEL_ITALIC = "label_italic";
+	static $LABEL_POSITION_LOGIC = "label_position_logic";
 	static $VISIBLE = "visible";
 	static $FIXED = "fixed";
 	static $COLOR = "color";

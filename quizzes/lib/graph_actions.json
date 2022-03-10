@@ -670,9 +670,10 @@
     "value": "arctan"
   },
   {
-    "id": "log",
-    "title": "log",
-    "value": "log"
+    "id": "logBase",
+    "title": "log<sub style=\"font-size: 7pt; vertical-align: sub; line-height: 0px;\">&#9647;</sub>",
+    "value": "log",
+    "titleHtml": true
   },
   {
     "id": "ln",
