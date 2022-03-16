@@ -1,3 +1,3 @@
 # Changelog
 
-Check out [release notes](https://docs.wiris.com/quizzes/en/release-notes/wirisquizzes-release-notes.html)!
+Check out our [release notes](https://docs.wiris.com/quizzes/en/release-notes/wirisquizzes-release-notes.html)!
