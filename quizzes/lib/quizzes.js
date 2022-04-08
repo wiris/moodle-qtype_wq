@@ -13981,12 +13981,10 @@ com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.prototype = $extend(com.wiris.u
 	,__class__: com.wiris.quizzes.impl.ui.EmbeddedAuthoringField
 });
 com.wiris.quizzes.impl.ui.QuizzesContext = $hxClasses["com.wiris.quizzes.impl.ui.QuizzesContext"] = function() {
-	var available = com.wiris.quizzes.impl.ui.QuizzesContext.AVAILABLE_LANGS.split(",").slice();
-	var i = 0;
-	while(i < available.length) available[i] = com.wiris.util.lang.WordsTranslatorContainer.normalizeLangString(available[i++]);
 	this.language = com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG;
-	this.translatorContainer = com.wiris.util.lang.WordsTranslatorContainer.newTranslatorContainerFromWords(new com.wiris.util.lang.Words("strings_quizzes",available),com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG);
-	this.graphTranslatorContainer = com.wiris.util.lang.WordsTranslatorContainer.newTranslatorContainerFromWords(new com.wiris.util.lang.Words("strings_graph",available),com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG);
+	this.graphLanguage = com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG;
+	this.translatorContainer = com.wiris.util.lang.WordsTranslatorContainer.newTranslatorContainerFromWords(new com.wiris.util.lang.Words("strings_quizzes",this.getAvailableLanguagesFromList(com.wiris.quizzes.impl.ui.QuizzesContext.AVAILABLE_LANGS)),com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG);
+	this.graphTranslatorContainer = com.wiris.util.lang.WordsTranslatorContainer.newTranslatorContainerFromWords(new com.wiris.util.lang.Words("strings_graph",this.getAvailableLanguagesFromList(com.wiris.quizzes.impl.ui.QuizzesContext.GRAPH_AVAILABLE_LANGS)),com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG);
 };
 com.wiris.quizzes.impl.ui.QuizzesContext.__name__ = ["com","wiris","quizzes","impl","ui","QuizzesContext"];
 com.wiris.quizzes.impl.ui.QuizzesContext.instance = null;
@@ -14000,13 +13998,14 @@ com.wiris.quizzes.impl.ui.QuizzesContext.prototype = {
 		return this.translatorContainer.getTranslator(com.wiris.util.lang.WordsTranslatorContainer.normalizeLangString(com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG));
 	}
 	,getGraphTranslator: function() {
-		return this.graphTranslatorContainer.getTranslator(this.language);
+		return this.graphTranslatorContainer.getTranslator(this.graphLanguage);
 	}
 	,getTranslator: function() {
 		return this.translatorContainer.getTranslator(this.language);
 	}
 	,setLanguage: function(language) {
 		this.language = this.translatorContainer.getAvailableLang(language);
+		this.graphLanguage = this.graphTranslatorContainer.getAvailableLang(language);
 	}
 	,getLanguage: function() {
 		return this.language;
@@ -14020,8 +14019,15 @@ com.wiris.quizzes.impl.ui.QuizzesContext.prototype = {
 	,t: function(code) {
 		return this.getTranslator().t(code);
 	}
+	,getAvailableLanguagesFromList: function(list) {
+		var available = list.split(",").slice();
+		var i = 0;
+		while(i < available.length) available[i] = com.wiris.util.lang.WordsTranslatorContainer.normalizeLangString(available[i++]);
+		return available;
+	}
 	,graphTranslatorContainer: null
 	,translatorContainer: null
+	,graphLanguage: null
 	,language: null
 	,__class__: com.wiris.quizzes.impl.ui.QuizzesContext
 }
@@ -44362,6 +44368,7 @@ com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.__meta__ = { fields : { showAux
 com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.CLASS_QUIZZES_EMBEDDED_AUTHORING_FIELD = "quizzesEmbeddedAuthoringField";
 com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG = "en";
 com.wiris.quizzes.impl.ui.QuizzesContext.AVAILABLE_LANGS = "ca,da,de,el,en,es,fr,it,no,nn,pt,pt_br";
+com.wiris.quizzes.impl.ui.QuizzesContext.GRAPH_AVAILABLE_LANGS = "ca,da,de,el,en,es,fr,it,nl,no,pt";
 com.wiris.quizzes.impl.ui.QuizzesStudioContext.GRAPHICAL_ELEMENT_NOT_ACTIVE = -1.0;
 com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent.STUDENT_ANSWER_FEEDBACK_LABEL_INDETERMINATE = "quizzes_studio_test_question_student_answer_feedback_label";
 com.wiris.quizzes.impl.ui.component.AnswerFeedbackComponent.STUDENT_ANSWER_FEEDBACK_LABEL_CORRECT = "quizzes_studio_test_question_student_answer_feedback_correct_label";
