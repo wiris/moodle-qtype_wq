@@ -57,8 +57,8 @@ class qtype_wq_edit_form extends question_edit_form {
         $mform->setType('wirislang', PARAM_TEXT);
 
         // TODO: Delete this if when all questions are wq!
-        if (isset($this->question->wirisquestion)) {
-            $program = $this->question->wirisquestion->serialize();
+        if (isset($this->question->wirisquestionxml)) {
+            $program = $this->question->wirisquestionxml;
         } else {
             if (!empty($this->question->id)) {
                 $wiris = $DB->get_record('qtype_wq', array('question' => $this->question->id));

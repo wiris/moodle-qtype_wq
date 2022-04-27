@@ -24,11 +24,3 @@ function decode_html_entities($xml) {
     $xml = str_replace(array_keys($decodetable), array_values($decodetable), $xml);
     return $xml;
 }
-
-function wrsqz_mathml_decode($input) {
-    // @codingStandardsIgnoreLine
-    $from = array('«', '»', '¨', '§', '`');
-    $to = array('<', '>', '"', '&', '\'');
-    $r = str_replace($from, $to, $input);
-    return decode_html_entities($r);
-}
