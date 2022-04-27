@@ -48,7 +48,7 @@ $settings->add(new admin_setting_configtext('qtype_wq/quizzesserviceurl',
                                                             PARAM_URL));
 
 $settings->add(new admin_setting_configtext('qtype_wq/quizzesapiurl',
-                                                            get_string('quizzesapieurl', 'qtype_wq'),
+                                                            get_string('quizzesapiurl', 'qtype_wq'),
                                                             get_string('quizzesapiurl_help', 'qtype_wq'),
                                                             'http://www.wiris.net/demo/quizzes-api',
                                                             PARAM_URL));
