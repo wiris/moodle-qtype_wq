@@ -47,6 +47,13 @@ $settings->add(new admin_setting_configtext('qtype_wq/quizzesserviceurl',
                                                             'http://www.wiris.net/demo/quizzes',
                                                             PARAM_URL));
 
+$settings->add(new admin_setting_configtext('qtype_wq/quizzesapiurl',
+                                                            get_string('quizzesapieurl', 'qtype_wq'),
+                                                            get_string('quizzesapiurl_help', 'qtype_wq'),
+                                                            'http://www.wiris.net/demo/quizzes-api',
+                                                            PARAM_URL));
+
+
 $settings->add(new admin_setting_configtext('qtype_wq/quizzeseditorurl',
                                                             get_string('quizzeseditorurl', 'qtype_wq'),
                                                             get_string('quizzeseditorurl_help', 'qtype_wq'),
@@ -70,6 +77,19 @@ $settings->add(new admin_setting_configtext('qtype_wq/quizzeswirisurl',
                                                             get_string('quizzeswirisurl_help', 'qtype_wq'),
                                                             'http://www.wiris.net/demo/wiris',
                                                             PARAM_URL));
+
+$settings->add(new admin_setting_configtext('qtype_wq/quizzescalcmeurl',
+                                                            get_string('quizzescalcmeurl', 'qtype_wq'),
+                                                            get_string('quizzescalcmeurl_help', 'qtype_wq'),
+                                                            'https://calcme.com',
+                                                            PARAM_URL));
+
+$settings->add(new admin_setting_configtext('qtype_wq/quizzesgraphurl',
+                                                            get_string('quizzesgraphurl', 'qtype_wq'),
+                                                            get_string('quizzesgraphurl_help', 'qtype_wq'),
+                                                            'http://www.wiris.net/demo/graph',
+                                                            PARAM_URL));
+
 
 // Access provider option. If enabled only loged users can access to Wiris Quizzes services.
 $settings->add(new admin_setting_configcheckbox('qtype_wq/access_provider_enabled',

@@ -21,6 +21,9 @@ class qtype_wq_renderer extends qtype_renderer {
 
     protected $base;
 
+    const LOCALDATA_NAME_AUXILIARY_TEXT_INPUT = "auxiliaryTextInput";
+    const LOCALDATA_VALUE_AUXILIARY_TEXT_INPUT_TRUE = "true";
+
     public function __construct(qtype_renderer $base = null, moodle_page $page, $target) {
         parent::__construct($page, $target);
         $this->base = $base;
@@ -29,18 +32,8 @@ class qtype_wq_renderer extends qtype_renderer {
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
         $result = $this->base->formulation_and_controls($qa, $options);
 
-        // Auxiliar text.
-        $slots = $qa->get_question()->wirisquestion->question->getSlots();
-        if (isset($slots[0])) {
-            $showauxiliartextinput = $slots[0]->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
-        } else {
-            $showauxiliartextinput = $qa->get_question()->wirisquestion->question->getProperty(com_wiris_quizzes_api_PropertyName::$SHOW_AUXILIARY_TEXT_INPUT); // @codingStandardsIgnoreLine
-        }
-
-        if ($showauxiliartextinput == "true") {
-            $result .= $this->auxiliar_text($qa, $options);
-        }
-
+        // Auxiliary text.
+        $result .= $this->add_auxiliary_text($qa, $options);
         $this->add_javascript();
         $result .= html_writer::start_tag('div', array('class' => 'ablock'));
         $result .= $this->lang();
@@ -49,6 +42,15 @@ class qtype_wq_renderer extends qtype_renderer {
         $result .= $this->question_instance($qa);
         $result .= html_writer::end_tag('div');
         return $result;
+    }
+
+    protected function add_auxiliary_text(question_attempt $qa, question_display_options $options) {
+        $showauxiliartextinput = $qa->get_question()->get_local_data_from_question(self::LOCALDATA_NAME_AUXILIARY_TEXT_INPUT);
+
+        if ($showauxiliartextinput == self::LOCALDATA_VALUE_AUXILIARY_TEXT_INPUT_TRUE) {
+            return $this->auxiliar_text($qa, $options);
+        }
+        return "";
     }
 
     public function specific_feedback(question_attempt $qa) {
@@ -65,10 +67,8 @@ class qtype_wq_renderer extends qtype_renderer {
     }
     protected function question(question_attempt $qa) {
         // Add question definition.
-        $question = $qa->get_question();
-        $wirisquestion = $question->wirisquestion;
-        $studentquestion = $wirisquestion->getStudentQuestion();
-        $sq = $studentquestion->serialize();
+        $sq = $qa->get_last_qt_var('_sq');
+
         $wirisquestionattributes = array(
             'type' => 'hidden',
             'value' => $sq,
@@ -79,14 +79,7 @@ class qtype_wq_renderer extends qtype_renderer {
     protected function question_instance(question_attempt $qa) {
         // Add question instance.
         $question = $qa->get_question();
-        $xml = $qa->get_last_qt_var('_sqi');
-        if (!empty($xml)) {
-            $builder = com_wiris_quizzes_api_Quizzes::getInstance();
-            $sqi = $builder->readQuestionInstance($xml, $question->wirisquestion);
-            $question->wirisquestioninstance->updateFromStudentQuestionInstance($sqi);
-        }
-        $sqi = $question->wirisquestioninstance->getStudentQuestionInstance();
-        $xml = $sqi->serialize();
+        $xml = $qa->get_last_qt_var('_qi');
 
         $sqiname = $qa->get_qt_field_name('_sqi');
         $wirisquestioninstanceattributes = array(

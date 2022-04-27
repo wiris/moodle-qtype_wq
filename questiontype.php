@@ -16,10 +16,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// @codingStandardsIgnoreLine
-require_once($CFG->dirroot . '/question/type/wq/config.php');
-require_once($CFG->dirroot . '/question/type/wq/quizzes/quizzes.php');
-
 class qtype_wq extends question_type {
 
     protected $base;
@@ -130,6 +126,7 @@ class qtype_wq extends question_type {
         if (empty($question->parent)) {
             $builder = com_wiris_quizzes_api_Quizzes::getInstance();
             $question->wirisquestion = $builder->readQuestion($questiondata->options->wirisquestion);
+            $question->wirisquestionxml = $questiondata->options->wirisquestion;
         }
     }
 
@@ -178,81 +175,9 @@ class qtype_wq extends question_type {
         return array();
     }
 
-    public function wrsqz_mathml_decode($input) {
-        // @codingStandardsIgnoreLine
-        $from = array('«', '»', '¨', '§', '`');
-        $to = array('<', '>', '"', '&', '\'');
-        $r = str_replace($from, $to, $input);
-        return $this->decode_html_entities($r);
-    }
-
-    protected function wrsqz_adapttext($text) {
-        $n0 = 0;
-        $n1 = stripos($text, '«math');
-        if ($n1 === false) {
-            return $text;
-        }
-        $output = '';
-        while ($n1 !== false) {
-            $output .= substr($text, $n0, $n1 - $n0);
-            $n0 = $n1;
-            $n1 = stripos($text, '«/math»', $n0) + 8;
-            $innertext = substr($text, $n0, $n1 - $n0);
-            $innertext = str_replace('&quot;', '¨', $innertext);
-            $output .= $innertext;
-            $n0 = $n1;
-            $n1 = stripos($text, '«math', $n0);
-        }
-        $output .= substr($text, $n0);
-        return $output;
-    }
-
-    protected function wrsqz_get_cas_for_computations($data) {
-
-        $wrap = com_wiris_system_CallWrapper::getInstance();
-
-        $wirisquestion = '';
-        if (isset($data['#']['wirisoptions'][0]['#']['wirisCASForComputations'])) {
-            if ($data['#']['wirisoptions'][0]['#']['wirisCASForComputations'][0]['#'] == 1) {
-                // @codingStandardsIgnoreStart
-                $wirisquestion .= '<data name="' . com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS . '">';
-                $wirisquestion .= com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_SHOW_CAS_ADD;
-                // @codingStandardsIgnoreEnd
-                $wirisquestion .= '</data>';
-            } else if ($data['#']['wirisoptions'][0]['#']['wirisCASForComputations'][0]['#'] == 2) {
-                // @codingStandardsIgnoreStart
-                $wirisquestion .= '<data name="' . com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS . '">';
-                $wirisquestion .= com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_SHOW_CAS_REPLACE;
-                // @codingStandardsIgnoreEnd
-                $wirisquestion .= '</data>';
-            }
-        } else {
-            // @codingStandardsIgnoreStart
-            $wirisquestion .= '<data name="' . com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_SHOW_CAS . '">';
-            $wirisquestion .= com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_VALUE_SHOW_CAS_FALSE;
-            // @codingStandardsIgnoreEnd
-            $wirisquestion .= '</data>';
-        }
-        return $wirisquestion;
-    }
-
-    protected function wrsqz_hidden_initial_cas_value($data) {
-
-        $wrap = com_wiris_system_CallWrapper::getInstance();
-
-        $wirisquestion = '';
-        if (isset($data['#']['wirisoptions'][0]['#']['hiddenInitialCASValue'])) {
-            // @codingStandardsIgnoreLine
-            $wirisquestion .= '<data name="' . com_wiris_quizzes_api_QuizzesConstants::$PROPERTY_CAS_INITIAL_SESSION . '">';
-            $initialcasvalue = $data['#']['wirisoptions'][0]['#']['hiddenInitialCASValue'][0]['#'];
-            $wirisquestion .= htmlspecialchars($this->wrsqz_mathml_decode(trim($initialcasvalue)), ENT_COMPAT, "utf-8");
-            $wirisquestion .= '</data>';
-        }
-
-        return $wirisquestion;
-    }
-
     protected function decode_html_entities($xml) {
+        // This function is duplicated in a lot of places. Doesn't look very good, but I cannot remove it yet 
+        // as it is quite widely used
         $htmlentitiestable = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, 'UTF-8');
         $xmlentitiestable = get_html_translation_table(HTML_SPECIALCHARS , ENT_COMPAT, 'UTF-8');
         $entitiestable = array_diff($htmlentitiestable, $xmlentitiestable);
