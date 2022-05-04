@@ -205,7 +205,7 @@ class qtype_wq_question extends question_graded_automatically {
 
         $error = null;
         if ($response === false) {
-            $error = "" . curl_error($ch) . curl_errno($ch);
+            $error = "Error reaching Quizzes API: " . curl_error($ch) . curl_errno($ch);
         } else {
             $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($httpcode > 399) {
@@ -214,7 +214,23 @@ class qtype_wq_question extends question_graded_automatically {
         }
 
         if ($error != null) {
-            // Handle error.
+            global $CFG;
+
+            $a = new stdClass();
+            $a->questionname = $this->name;
+
+            $link = null;
+            $cmid = optional_param('cmid', null, PARAM_RAW);
+            if ($cmid != null) {
+                $link = $CFG->wwwroot . '/mod/quiz/view.php?id=' . $cmid;
+            }
+
+            if (get_config('qtype_wq', 'debug_mode_enabled')) {
+                // @codingStandardsIgnoreLine
+                print_object($error);
+            }
+
+            throw new moodle_exception('wirisquestionincorrect', 'qtype_wq', $link, $a, '');
         }
 
         curl_close($ch);
@@ -394,9 +410,9 @@ class qtype_wq_question extends question_graded_automatically {
      * @return String Return all the question text without feedback texts.
      */
     public function join_question_text() {
-        $text = $this->questiontext;﻿
+        $text = $this->questiontext;
         foreach ($this->hints as $hint) {
-            $tet .= ' ' . $hint->hint;
+            $text .= ' ' . $hint->hint;
         }
         return $text;
     }
