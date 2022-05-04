@@ -124,8 +124,6 @@ class qtype_wq extends question_type {
 
         // Load question xml into Wiris Quizzes API question object.
         if (empty($question->parent)) {
-            $builder = com_wiris_quizzes_api_Quizzes::getInstance();
-            $question->wirisquestion = $builder->readQuestion($questiondata->options->wirisquestion);
             $question->wirisquestionxml = $questiondata->options->wirisquestion;
         }
     }

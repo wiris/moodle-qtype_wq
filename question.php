@@ -60,7 +60,6 @@ class qtype_wq_question extends question_graded_automatically {
         $this->base->start_attempt($step, $variant);
 
         // Get variables from Wiris Quizzes service.
-        $builder = com_wiris_quizzes_api_Quizzes::getInstance();
         $this->wirisquestioninstancexml = $this->create_question_instance($variant);
 
         $text = $this->all_text_array();
@@ -199,8 +198,23 @@ class qtype_wq_question extends question_graded_automatically {
 
         $response = curl_exec($ch);
 
+        if (get_config('qtype_wq', 'debug_mode_enabled')) {
+            print_object($payload);
+            print_object($response);
+        }
+
+        $error = null;
         if ($response === false) {
-            print_object("" . curl_error($ch) . curl_errno($ch));
+            $error = "" . curl_error($ch) . curl_errno($ch);
+        } else {
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpcode > 399) {
+                $error = "Error with code " . $httpcode . ":\n" . $response;
+            }
+        }
+
+        if ($error != null) {
+            // Handle error.
         }
 
         curl_close($ch);
@@ -209,7 +223,7 @@ class qtype_wq_question extends question_graded_automatically {
     }
 
     private function get_referer() {
-        global $COURSE;
+        global $COURSE, $CFG;
         $query = '';
         if (isset($COURSE->id)) {
             $query .= '?course=' . $COURSE->id;
@@ -380,7 +394,7 @@ class qtype_wq_question extends question_graded_automatically {
      * @return String Return all the question text without feedback texts.
      */
     public function join_question_text() {
-        $text = $this->questiontext;
+        $text = $this->questiontext;﻿
         foreach ($this->hints as $hint) {
             $tet .= ' ' . $hint->hint;
         }

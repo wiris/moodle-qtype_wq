@@ -107,7 +107,7 @@ $string['privacy:metadata:qtype_wq:xml'] = 'Wiris Quizzes Question XML';
 $string['auxiliar_text'] = 'Write an optional reasoning for your answer:';
 
 $string['quizzesapiurl'] = 'WirisQuizzes API URL';
-$string['quizzesserviceurl_help'] = 'URL to connect to WirisQuizzes API.';
+$string['quizzesapiurl_help'] = 'URL to connect to WirisQuizzes API.';
 
 $string['quizzescalcmeurl'] = 'CalcMe URL';
 $string['quizzescalcmeurl_help'] = 'URL to connect to CalcmMe.';
