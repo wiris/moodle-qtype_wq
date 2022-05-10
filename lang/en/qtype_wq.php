@@ -110,7 +110,7 @@ $string['quizzesapiurl'] = 'WirisQuizzes API URL';
 $string['quizzesapiurl_help'] = 'URL to connect to WirisQuizzes API.';
 
 $string['quizzescalcmeurl'] = 'CalcMe URL';
-$string['quizzescalcmeurl_help'] = 'URL to connect to CalcmMe.';
+$string['quizzescalcmeurl_help'] = 'URL to connect to CalcMe.';
 
 $string['quizzesgraphurl'] = 'WirisGraph URL';
 $string['quizzesgraphurl_help'] = 'URL to connect to WirisGraph (plotter services).';
