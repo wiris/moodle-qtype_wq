@@ -24,27 +24,22 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace qtype_wq;
+
+$bootfile = dirname(__FILE__) . '/../bootstrap.php';
+if (@is_readable($bootfile)) require_once($bootfile);
 
 global $CFG;
-
 require_once($CFG->dirroot . '/lib/moodlelib.php');
 
-// Avoid redeclareding or AccessProvider interface.
-if (!interface_exists('com_wiris_util_sys_AccessProvider')) {
-    require_once($CFG->dirroot . '/question/type/wq/quizzes/lib/com/wiris/util/sys/AccessProvider.interface.php');
-}
-
-class accessprovider  implements com_wiris_util_sys_AccessProvider{
+class access_provider {
 
     /**
      * This method is called before all service. We use it as a wrapper to call
      * Moodle require_login() method. Any Wiris service can't be called without a
      * login.
      */
-    // @codingStandardsIgnoreStart
-    function requireAccess() {
-    // @codingStandardsIgnoreEnd
+    function require_access() {
         // Moodle require_login() method.
         require_login();
         // Not logged in: require_login throws and exception or exit so if we reach this point
@@ -55,9 +50,7 @@ class accessprovider  implements com_wiris_util_sys_AccessProvider{
     /**
      * Access Provider is enabled if 'access_provider_enabled' setting is enabled (wq/settings.php)
      */
-    // @codingStandardsIgnoreStart
-    function isEnabled() {
-    // @codingStandardsIgnoreEnd
+    function is_enabled() {
         return get_config('qtype_wq', 'access_provider_enabled');
     }
 }

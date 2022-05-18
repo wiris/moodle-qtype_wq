@@ -79,8 +79,8 @@ $string['wirisquizzeserror'] = 'Sorry! There was an error in Wiris Quizzes.';
 $string['failedtoloadwirisquizzesfromxml'] = 'Failed to load Wiris Quizzes XML definition for question id';
 $string['connectionsettings'] = 'Connection settings';
 $string['connectionsettings_text'] = '';
-$string['quizzesserviceurl'] = 'Wiris Quizzes service URL';
-$string['quizzesserviceurl_help'] = 'URL to connect to Wiris Quizzes service.';
+$string['quizzesserviceurl'] = 'WirisQuizzes service URL';
+$string['quizzesserviceurl_help'] = 'URL to connect to WirisQuizzes service.';
 $string['quizzeseditorurl'] = 'MathType service URL';
 $string['quizzeseditorurl_help'] = 'URL where to load MathType.';
 $string['quizzeshandurl'] = 'MathType Hand service URL';
@@ -105,3 +105,12 @@ $string['privacy:metadata:qtype_wq:question'] = 'Wiris Quizzes question type id'
 $string['privacy:metadata:qtype_wq:xml'] = 'Wiris Quizzes Question XML';
 
 $string['auxiliar_text'] = 'Write an optional reasoning for your answer:';
+
+$string['quizzesapiurl'] = 'WirisQuizzes API URL';
+$string['quizzesapiurl_help'] = 'URL to connect to WirisQuizzes API.';
+
+$string['quizzescalcmeurl'] = 'CalcMe URL';
+$string['quizzescalcmeurl_help'] = 'URL to connect to CalcMe.';
+
+$string['quizzesgraphurl'] = 'WirisGraph URL';
+$string['quizzesgraphurl_help'] = 'URL to connect to WirisGraph (plotter services).';
