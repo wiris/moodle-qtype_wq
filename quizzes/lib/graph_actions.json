@@ -395,8 +395,8 @@
     "id": "newElementByLabel",
     "title": "tt_elementMML",
     "icon": {
-      "name": "functions",
-      "type": "material"
+      "name": "function",
+      "type": "svg"
     }
   },
   {
