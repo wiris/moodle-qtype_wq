@@ -149,7 +149,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $wq->xml = 'xml';
         $DB->insert_record('qtype_wq', $wq);
         // Question is at system context level.
-        $systemcontext = context_system::instance();
+        $systemcontext = \context_system::instance();
 
         // Export all the data for the system context.
         $this->export_context_data_for_user($this->teacher->id, $systemcontext, 'qtype_wq');
@@ -198,7 +198,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $this->assertEquals(2, $count);
 
         // Delete data based on context.
-        $syscontext = context_system::instance();
+        $syscontext = \context_system::instance();
         provider::delete_data_for_all_users_in_context($syscontext);
 
         // After deletion, the Wiris Quizzes questiosn should have been deleted.
@@ -264,7 +264,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $count = $DB->count_records('qtype_wq', []);
         $this->assertEquals(3, $count);
         $contextlist = new \core_privacy\local\request\approved_contextlist($this->teacher, 'qtype_wq',
-                                                                            [context_system::instance()->id]);
+                                                                            [\context_system::instance()->id]);
 
         provider::delete_data_for_user($contextlist);
 
