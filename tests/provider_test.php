@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_wq\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -35,7 +37,6 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\deletion_criteria;
 use qtype_wq\privacy\provider;
 
-
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
 /**
@@ -45,7 +46,7 @@ require_once($CFG->dirroot . '/mod/quiz/locallib.php');
  * @copyright  2018 Jun Pataleta
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_qtype_wq_provider_testcase extends \core_privacy\tests\provider_testcase {
+class provider_testcase extends \core_privacy\tests\provider_testcase {
     /** @var stdClass The teacher object. */
     protected $teacher;
 

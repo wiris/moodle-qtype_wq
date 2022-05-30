@@ -73,7 +73,7 @@ class qtype_wq_edit_form extends question_edit_form {
         }
 
         if (isset($this->customfieldpluginenabled)) {
-            // Reference: https://docs.moodle.org/dev/Custom_fields_API
+            // Reference: https://docs.moodle.org/dev/Custom_fields_API .
             if ($this->customfieldpluginenabled) {
                 // Add custom fields to the form.
                 $this->customfieldhandler = qbank_customfields\customfield\question_handler::create();
