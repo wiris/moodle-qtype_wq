@@ -14952,6 +14952,7 @@ com.wiris.quizzes.impl.ui.component.MathTypeInputComponent = $hxClasses["com.wir
 	if(this.parameters.get("toolbar") == null) this.parameters.set("toolbar","quizzes");
 	if(this.parameters.get("forceReservedWords") == null) this.parameters.set("forceReservedWords","true");
 	if(this.parameters.get("autoformat") == null) this.parameters.set("autoformat","true");
+	if(this.parameters.get("nudging") == null) this.parameters.set("nudging","false");
 	if(this.parameters.get("notifyContainer") == null) this.parameters.set("notifyContainer","true");
 	if(this.parameters.get("hand") == null) {
 		var hand = com.wiris.quizzes.api.Quizzes.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.HAND_ENABLED);
@@ -15738,16 +15739,16 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent = $hxClasses["com.wir
 	this.copyInitialContentButton = com.wiris.util.ui.component.Button.newWithTextAndIcon(controller.t(com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.HOME_COPY_INITIAL_CONTENT_BUTTON_TEXT),new com.wiris.util.ui.MaterialIcon("redo"),new com.wiris.util.ui.Action("copyInitialContent",null),controller);
 	this.copyInitialContentButton.addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_QUIZZES_BUTTON);
 	this.copyInitialContentButton.setId("copyInitialContentButton");
-	var fieldAndCopyButton = new com.wiris.util.ui.component.FlowPanel(com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
-	fieldAndCopyButton.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHorizontalAlignment(com.wiris.util.ui.Style.HORIZONTAL_ALIGNMENT_RIGHT);
-	fieldAndCopyButton.addComponent(this.compoundMathtype);
-	fieldAndCopyButton.addComponent(this.compoundTextField);
-	fieldAndCopyButton.addComponent(this.mathtype);
-	fieldAndCopyButton.addComponent(this.graph);
-	fieldAndCopyButton.addComponent(this.textField);
-	fieldAndCopyButton.addComponent(this.copyCorrectAnswerButton);
-	fieldAndCopyButton.addComponent(this.copyInitialContentButton);
-	this.addComponent(fieldAndCopyButton);
+	this.mainfieldAndCopyButton = new com.wiris.util.ui.component.FlowPanel(com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
+	this.mainfieldAndCopyButton.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setHorizontalAlignment(com.wiris.util.ui.Style.HORIZONTAL_ALIGNMENT_RIGHT);
+	this.mainfieldAndCopyButton.addComponent(this.compoundMathtype);
+	this.mainfieldAndCopyButton.addComponent(this.compoundTextField);
+	this.mainfieldAndCopyButton.addComponent(this.mathtype);
+	this.mainfieldAndCopyButton.addComponent(this.graph);
+	this.mainfieldAndCopyButton.addComponent(this.textField);
+	this.mainfieldAndCopyButton.addComponent(this.copyCorrectAnswerButton);
+	this.mainfieldAndCopyButton.addComponent(this.copyInitialContentButton);
+	this.addComponent(this.mainfieldAndCopyButton);
 	this.productMessagePanel = new com.wiris.quizzes.impl.ui.component.ProductMessagePanel(controller);
 	this.addComponent(this.productMessagePanel);
 };
@@ -15797,8 +15798,9 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.prototype = $extend(c
 	}
 	,updateVisibility: function(context) {
 		var show = context.isOptOpenAnswer();
-		this.setVisible(show);
-		if(!show) return;
+		this.correctAnswerInitialContent.setVisible(show);
+		this.description.setVisible(show);
+		this.mainfieldAndCopyButton.setVisible(show);
 		var slot = context.getSlot();
 		var syntaxName = slot.getSyntax().getName();
 		var homePageStatus = context.getHomePageStatus();
@@ -15859,6 +15861,7 @@ com.wiris.quizzes.impl.ui.component.CorrectAnswerComponent.prototype = $extend(c
 	}
 	,correctAnswerInitialContent: null
 	,productMessagePanel: null
+	,mainfieldAndCopyButton: null
 	,copyCorrectAnswerButton: null
 	,copyInitialContentButton: null
 	,description: null
@@ -19737,9 +19740,16 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeAnswerTypeList.prototype = 
 		this.fireEvent(e);
 	}
 	,updateVisibility: function(context) {
+		this.setVisible(context.isOptAnswerType());
 		var slot = context.getSlot();
 		var syntax = slot.getSyntax().getName();
 		var graphMode = slot.getSyntax().getParameter(com.wiris.quizzes.api.assertion.SyntaxParameterName.GRAPH_MODE);
+		var isGraphicSyntax = context.isOptGraphicSyntax();
+		this.graphicGeometry.setVisible(isGraphicSyntax);
+		this.statisticalChartsType.setVisible(isGraphicSyntax);
+		this.graphicLinechartType.setVisible(isGraphicSyntax);
+		this.graphicPiechartType.setVisible(isGraphicSyntax);
+		this.graphicBarchartType.setVisible(isGraphicSyntax);
 		if(syntax == com.wiris.quizzes.api.assertion.SyntaxName.MATH && !this.equationType.isSelected()) this.selectionController.setSelected(com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeAnswerTypeList.HOME_ANSWER_TYPE_ID_EQUATION,true); else if(syntax == com.wiris.quizzes.api.assertion.SyntaxName.STRING && !this.textType.isSelected()) this.selectionController.setSelected(com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeAnswerTypeList.HOME_ANSWER_TYPE_ID_TEXT,true); else if(syntax == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC && graphMode != null) {
 			if(graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_STANDARD && !this.graphicGeometry.isSelected()) this.selectionController.setSelected(com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeAnswerTypeList.HOME_ANSWER_TYPE_ID_GEOMETRY,true); else if(graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_BAR_CHART && !this.graphicBarchartType.isSelected()) this.selectionController.setSelected(com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeAnswerTypeList.HOME_ANSWER_TYPE_ID_BAR_CHART,true); else if(graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_PIE_CHART && !this.graphicPiechartType.isSelected()) this.selectionController.setSelected(com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeAnswerTypeList.HOME_ANSWER_TYPE_ID_PIE_CHART,true); else if(graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_LINE_CHART && !this.graphicLinechartType.isSelected()) this.selectionController.setSelected(com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeAnswerTypeList.HOME_ANSWER_TYPE_ID_LINE_CHART,true);
 		}
