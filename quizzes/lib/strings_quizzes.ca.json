@@ -81,9 +81,9 @@
 		"quizzes_studio_toolbar_test_question_button_tooltip": "Previsualització",
 		"quizzes_studio_toolbar_help_button_tooltip": "Ajuda",
 		"quizzes_studio_send_feedback_label": "Doneu la vostra opinió",
-		"quizzes_studio_training_label": "Enroll in our training course",
-		"quizzes_studio_website_label": "Visit our website",
-		"quizzes_studio_report_issue_label": "Report an issue",
+		"quizzes_studio_training_label": "Apunteu-vos a la nostra formació",
+		"quizzes_studio_website_label": "Visiteu el nostre web",
+		"quizzes_studio_report_issue_label": "Aviseu d'un error",
 
 		"quizzes_studio_toolbar_more_options_dropdown_tooltip": "Més opcions",
 		"quizzes_studio_toolbar_more_options_dropdown_import_label": "Importar",
@@ -92,7 +92,7 @@
 		"quizzes_studio_toolbar_more_options_dropdown_help_label": "Ajuda",
 		"quizzes_studio_toolbar_more_options_dropdown_about_label": "Sobre Wiris Quizzes",
 
-		"quizzes_studio_home_answer_type_label": "Esculli el tipus de resposta",
+		"quizzes_studio_home_answer_type_label": "Tipus de resposta",
 		"quizzes_studio_home_answer_type_equation_label": "Equació",
 		"quizzes_studio_home_answer_type_graphic_label": "Gràfica",
 		"quizzes_studio_home_answer_type_text_label": "Text",
@@ -114,7 +114,7 @@
 		"quizzes_studio_home_activity_list_label": "Settings",
 		"quizzes_studio_home_input_options_label": "Opcions d'entrada",
 		"quizzes_studio_home_validation_options_label": "Opcions de validació",
-		"quizzes_studio_home_variables_options_label": "Variables aleatòries i funcions",
+		"quizzes_studio_home_variables_options_label": "Variables aleatòries",
 
 		"quizzes_studio_customize_graph_toolbar_label": "Escolliu les eines que es mostraran a l'estudiant per a respondre la pregunta.",
 		"quizzes_studio_customize_graph_toolbar_header": "Personalizació de la barra d'eines",
@@ -458,7 +458,7 @@
 		"quizzes_studio_view_source_reserved_words_label": "Paraules reservades",
 
 		"quizzes_studio_summary_title": "Validació i variables",
-		"quizzes_studio_summary_input_method_title": "Tipus de entrada",
+		"quizzes_studio_summary_input_method_title": "Tipus d'entrada",
 		"quizzes_studio_summary_allowed_input_title": "Entrada permesa",
 		"quizzes_studio_summary_comparison_title": "Comparació",
 		"quizzes_studio_summary_properties_title": "Propietats",
@@ -539,23 +539,23 @@
 
 		"quizzes_studio_home_copy_initial_content_button_text": "Copia el contingut inicial",
 		"quizzes_studio_home_copy_correct_answer_button_text": "Copia la resposta correcta",
-		"quizzes_studio_home_answer_type_geometry_label": "Geometry graph",
-		"quizzes_studio_home_answer_type_statistical_charts_label": "Statistics graph",
+		"quizzes_studio_home_answer_type_geometry_label": "Tauler gràfic",
+		"quizzes_studio_home_answer_type_statistical_charts_label": "Gràfics d'estadística",
 		
-		"quizzes_studio_home_correct_answer_description_math": "Enter the correct answer for this question. You can modify how it is compared to your students' answer using the settings menu.",
-		"quizzes_studio_home_correct_answer_description_graphic": "Enter the correct answer for this question. You can modify how it is compared to your students' answer and which elements are graded using the settings menu.",
-		"quizzes_studio_home_correct_answer_description_text": "Enter the correct answer for this question. You can modify how it is compared to your students' answer using the settings menu.",
-		"quizzes_studio_home_initial_content_description_math": "This is the initial state of the math editor your students will see when attempting the question.",
-		"quizzes_studio_home_initial_content_description_graphic": "This is the initial state of the graph editor your students will see when attempting the question.",
-		"quizzes_studio_home_initial_content_description_text": "This is the initial state of the text editor your students will see when attempting the question.",
+		"quizzes_studio_home_correct_answer_description_math": "Inseriu la resposta correcta per a aquesta pregunta. Podeu modificar com es compara amb la resposta de l'estudiant fent servir el menú de configuració.",
+		"quizzes_studio_home_correct_answer_description_graphic": "Inseriu la resposta correcta per a aquesta pregunta. Podeu modificar com es compara amb la resposta de l'estudiant i quins elements del tauler gràfic s'avaluaran fent servir el menú de configuració.",
+		"quizzes_studio_home_correct_answer_description_text": "Inseriu la resposta correcta per a aquesta pregunta. Podeu modificar com es compara amb la resposta de l'estudiant fent servir el menú de configuració.",
+		"quizzes_studio_home_initial_content_description_math": "Aquest és l'estat inicial de l'editor d'equacions que els vostres estudiants veuran quan intentin la pregunta. Podeu bloquejar el text fora dels espais en blanc a les opcions d'entrada.",
+		"quizzes_studio_home_initial_content_description_graphic": "Aquest és l'estat inicial de l'editor gràfic que els vostres estudiants veuran quan intentin la pregunta. Podeu modificar la barra d'eines que veuran a les opcions d'entrada.",
+		"quizzes_studio_home_initial_content_description_text": "Aquest és l'estat inicial de la capsa de text que els vostres estudiants veuran quan intentin la pregunta. Aquest tipus de resposta no s'avalua matemàticament.",
 				
-		"quizzes_studio_home_product_message_header_label": "You are using WirisQuizzes 4.5!",
-		"quizzes_studio_home_product_message_text_label": "This version features a redesigned home page and performance improvements!",
-		"quizzes_studio_home_product_message_release_notes_link": "Check out our release notes.",		
+		"quizzes_studio_home_product_message_header_label": "Esteu fent servir WirisQuizzes 4.5!",
+		"quizzes_studio_home_product_message_text_label": "Aquesta versió inclou una pàgina d'inici redissenyada i millores en el rendiment!",
+		"quizzes_studio_home_product_message_release_notes_link": "Visiteu la llista dels canvis i millores.",		
 
-		"quizzes_studio_input_options_answer_input_method_initial_content_label": "Initial content",
-		"quizzes_studio_input_options_answer_input_method_lock_initial_content_label": "Lock initial content",
-		"quizzes_studio_input_options_answer_input_method_lock_initial_content_helper_text": "Do not allow the student to modify the answer outside of the empty placeholders left in the initial content. If this setting is enabled the student will only be able to fill in the boxes of the initial content."
+		"quizzes_studio_input_options_answer_input_method_initial_content_label": "Contingut inicial",
+		"quizzes_studio_input_options_answer_input_method_lock_initial_content_label": "Bloqueja el contingut initial",
+		"quizzes_studio_input_options_answer_input_method_lock_initial_content_helper_text": "No permetis que l'estudiant modifiqui el contingut inicial fora de les caixes blanques d'aquest. Si aquesta opció està activada, l'estudiant només podrar entrar text i fórmules als blancs que hi hagi al contingut inicial. "
 	}
 }
 

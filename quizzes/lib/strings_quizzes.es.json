@@ -81,9 +81,9 @@
 		"quizzes_studio_toolbar_test_question_button_tooltip": "Vista previa",
 		"quizzes_studio_toolbar_help_button_tooltip": "Ayuda",
 		"quizzes_studio_send_feedback_label": "Dé su opinión",
-		"quizzes_studio_training_label": "Enroll in our training course",
-		"quizzes_studio_website_label": "Visit our website",
-		"quizzes_studio_report_issue_label": "Report an issue",
+		"quizzes_studio_training_label": "Apúntese a nuestra formación",
+		"quizzes_studio_website_label": "Visite nuestra web",
+		"quizzes_studio_report_issue_label": "Avise de un error",
 
 		"quizzes_studio_toolbar_more_options_dropdown_tooltip": "Más opciones",
 		"quizzes_studio_toolbar_more_options_dropdown_import_label": "Importar",
@@ -92,7 +92,7 @@
 		"quizzes_studio_toolbar_more_options_dropdown_help_label": "Ayuda",
 		"quizzes_studio_toolbar_more_options_dropdown_about_label": "Acerca de",
 
-		"quizzes_studio_home_answer_type_label": "Escoja el tipo de respuesta",
+		"quizzes_studio_home_answer_type_label": "Tipo de respuesta",
 		"quizzes_studio_home_answer_type_equation_label": "Ecuación",
 		"quizzes_studio_home_answer_type_graphic_label": "Gráfico",
 		"quizzes_studio_home_answer_type_text_label": "Texto",
@@ -114,7 +114,7 @@
 		"quizzes_studio_home_activity_list_label": "Settings",
 		"quizzes_studio_home_input_options_label": "Opciones de entrada",
 		"quizzes_studio_home_validation_options_label": "Opciones de validación",
-		"quizzes_studio_home_variables_options_label": "Variables aleatorias y funciones",
+		"quizzes_studio_home_variables_options_label": "Variables aleatorias",
 
 		"quizzes_studio_customize_graph_toolbar_label": "Escoja las herramientas que se mostrarán al estudiante para responder la pregunta.",
 		"quizzes_studio_customize_graph_toolbar_header": "Personalización de la barra de herramientas",
@@ -539,23 +539,23 @@
 
 		"quizzes_studio_home_copy_initial_content_button_text": "Copia el contenido inicial",
 		"quizzes_studio_home_copy_correct_answer_button_text": "Copia la respuesta correcta",
-		"quizzes_studio_home_answer_type_geometry_label": "Geometry graph",
-		"quizzes_studio_home_answer_type_statistical_charts_label": "Statistics graph",
+		"quizzes_studio_home_answer_type_geometry_label": "Tablero gráfico",
+		"quizzes_studio_home_answer_type_statistical_charts_label": "Gráficos estadísticos",
 		
-		"quizzes_studio_home_correct_answer_description_math": "Enter the correct answer for this question. You can modify how it is compared to your students' answer using the settings menu.",
-		"quizzes_studio_home_correct_answer_description_graphic": "Enter the correct answer for this question. You can modify how it is compared to your students' answer and which elements are graded using the settings menu.",
-		"quizzes_studio_home_correct_answer_description_text": "Enter the correct answer for this question. You can modify how it is compared to your students' answer using the settings menu.",
-		"quizzes_studio_home_initial_content_description_math": "This is the initial state of the math editor your students will see when attempting the question.",
-		"quizzes_studio_home_initial_content_description_graphic": "This is the initial state of the graph editor your students will see when attempting the question.",
-		"quizzes_studio_home_initial_content_description_text": "This is the initial state of the text editor your students will see when attempting the question.",
+		"quizzes_studio_home_correct_answer_description_math": "Inserte la respuesta correcta para esta pregunta. Puede modificar cómo se compara con la respuesta de los estudiantes usando las opciones de validación.",
+		"quizzes_studio_home_correct_answer_description_graphic": "Inserte la respuesta correcta para esta pregunta. Puede modificar cómo se compara con la respuesta de los estudiantes y qué elementos se evalúan usando las opciones de validación",
+		"quizzes_studio_home_correct_answer_description_text": "Inserte la respuesta correcta para esta pregunta. Puede modificar cómo se compara con la respuesta de los estudiantes usando las opciones de validación.",
+		"quizzes_studio_home_initial_content_description_math": "Este es el estado inicial del editor de fórmulas que verán los estudiantes cuando intenten la pregunta. Puede bloquear el conteido inicial fuera de los blancos establecidos en las opciones de entrada.",
+		"quizzes_studio_home_initial_content_description_graphic": "Este es el estado inicial del editor gráfico que verán los estudiantes cuando intenten la pregunta. Puede personalizar la barra de herramientas que verá el estudiante en las opciones de entrada.",
+		"quizzes_studio_home_initial_content_description_text": "Este es el estado inicial de la caja de texto que verán los estudiantes cuando intenten la pregunta. Este tipo de respuesta no se evalúa matemáticamente.",
 				
-		"quizzes_studio_home_product_message_header_label": "You are using WirisQuizzes 4.5!",
-		"quizzes_studio_home_product_message_text_label": "This version features a redesigned home page and performance improvements!",
-		"quizzes_studio_home_product_message_release_notes_link": "Check out our release notes.",		
+		"quizzes_studio_home_product_message_header_label": "¡Está usando WirisQuizzes 4.5!",
+		"quizzes_studio_home_product_message_text_label": "¡Esta versión incluye una página inicial rediseñada y mejoras de rendimiento!",
+		"quizzes_studio_home_product_message_release_notes_link": "Visite la lista completa de mejoras.",		
 
-		"quizzes_studio_input_options_answer_input_method_initial_content_label": "Initial content",
-		"quizzes_studio_input_options_answer_input_method_lock_initial_content_label": "Lock initial content",
-		"quizzes_studio_input_options_answer_input_method_lock_initial_content_helper_text": "Do not allow the student to modify the answer outside of the empty placeholders left in the initial content. If this setting is enabled the student will only be able to fill in the boxes of the initial content."
+		"quizzes_studio_input_options_answer_input_method_initial_content_label": "Contenido inicial",
+		"quizzes_studio_input_options_answer_input_method_lock_initial_content_label": "Bloquear contenido inicial",
+		"quizzes_studio_input_options_answer_input_method_lock_initial_content_helper_text": "No permitir al estudiante modificar la respuesta fuera de las cajas en blanco del contenido inicial. Si esta configuración está activa, el estudiante solamente podrá escribir en los blancos del contenido inicial."
 	}
 }
 
