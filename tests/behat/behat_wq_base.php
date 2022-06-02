@@ -52,7 +52,7 @@ class behat_wq_base extends behat_base {
 
     /**
      * Goes back in the Wiris Quizzes Studio interface.
-     * 
+     *
      * @When I go back in Wiris Quizzes Studio.
      */
     public function i_go_back_in_wiris_quizzes_studio() {
@@ -66,7 +66,7 @@ class behat_wq_base extends behat_base {
 
     /**
      * Saves Wiris Quizzes Studio.
-     * 
+     *
      * @When I save Wiris Quizzes Studio.
      */
     public function i_save_wiris_quizzes_studio() {
