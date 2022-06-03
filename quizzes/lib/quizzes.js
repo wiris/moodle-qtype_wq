@@ -16724,7 +16724,7 @@ com.wiris.quizzes.impl.ui.component.InputMethodComponent.prototype = $extend(com
 		this.textAuxiliaryInputRadioButton.setVisible(textVisible);
 		var auxiliaryVisible = this.controller.getConfigurationKey("inputOptions/answerInputMethod/auxiliaryInput") && (displayVisible || replaceVisible || textVisible);
 		this.auxiliaryInputContainer.setVisible(auxiliaryVisible);
-		this.lockContainer.setVisible(answerInputFieldVisible && (slot.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR || slot.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR));
+		this.lockContainer.setVisible(answerInputFieldVisible && context.isOptOpenAnswer() && (slot.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR || slot.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR));
 		this.setInputMethod(com.wiris.quizzes.impl.QuizzesEnumUtils.string2answerFieldType(slot.getProperty(com.wiris.quizzes.api.PropertyName.ANSWER_FIELD_TYPE)));
 		this.setAuxiliaryInput(slot.getProperty(com.wiris.quizzes.api.PropertyName.SHOW_CAS),slot.getProperty(com.wiris.quizzes.api.PropertyName.SHOW_AUXILIARY_TEXT_INPUT),slot.getProperty(com.wiris.quizzes.api.PropertyName.AUXILIARY_CAS_HIDE_FILE_MENU));
 		this.lockCheckbox.setSelected(context.isInitialContentLocked());
@@ -24825,12 +24825,10 @@ com.wiris.quizzes.ui.JsQuizzesStudioPopupTextField.prototype = $extend(com.wiris
 	,buildElement: function() {
 		com.wiris.quizzes.ui.JsPopupTextField.prototype.buildElement.call(this);
 		var element = this.getElement();
-		element.style.display = "none";
 		var self = this;
 		setTimeout(function() {
-			element.style.display = "";
 			self.updateContent();
-		},500);
+		},200);
 	}
 	,summary: null
 	,quizzesStudioPopupTextField: null
