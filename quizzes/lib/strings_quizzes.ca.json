@@ -545,12 +545,12 @@
 		"quizzes_studio_home_correct_answer_description_math": "Inseriu la resposta correcta per a aquesta pregunta. Podeu modificar com es compara amb la resposta de l'estudiant fent servir el menú de configuració.",
 		"quizzes_studio_home_correct_answer_description_graphic": "Inseriu la resposta correcta per a aquesta pregunta. Podeu modificar com es compara amb la resposta de l'estudiant i quins elements del tauler gràfic s'avaluaran fent servir el menú de configuració.",
 		"quizzes_studio_home_correct_answer_description_text": "Inseriu la resposta correcta per a aquesta pregunta. Podeu modificar com es compara amb la resposta de l'estudiant fent servir el menú de configuració.",
-		"quizzes_studio_home_initial_content_description_math": "Aquest és l'estat inicial de l'editor d'equacions que els vostres estudiants veuran quan intentin la pregunta. Podeu bloquejar el text fora dels espais en blanc a les opcions d'entrada.",
+		"quizzes_studio_home_initial_content_description_math": "Aquest és l'estat inicial de l'editor d'equacions que els vostres estudiants veuran quan intentin la pregunta. Podeu fer-ho servir crear una expressió amb capses en blanc que l'estudiant ha d'omplir.",
 		"quizzes_studio_home_initial_content_description_graphic": "Aquest és l'estat inicial de l'editor gràfic que els vostres estudiants veuran quan intentin la pregunta. Podeu modificar la barra d'eines que veuran a les opcions d'entrada.",
 		"quizzes_studio_home_initial_content_description_text": "Aquest és l'estat inicial de la capsa de text que els vostres estudiants veuran quan intentin la pregunta. Aquest tipus de resposta no s'avalua matemàticament.",
 				
 		"quizzes_studio_home_product_message_header_label": "Esteu fent servir WirisQuizzes 4.5!",
-		"quizzes_studio_home_product_message_text_label": "Aquesta versió inclou una pàgina d'inici redissenyada i millores en el rendiment!",
+		"quizzes_studio_home_product_message_text_label": "Aquesta versió inclou una renovació del WirisQuizzes Studio i millores de rendiment. També hem afegit una nova opció d'entrada - ara pots fixar el contingut inicial perquè l'estudiant només pugui editar els espais en blanc!",
 		"quizzes_studio_home_product_message_release_notes_link": "Visiteu la llista dels canvis i millores.",		
 
 		"quizzes_studio_input_options_answer_input_method_initial_content_label": "Contingut inicial",
