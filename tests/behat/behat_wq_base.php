@@ -109,6 +109,7 @@ class behat_wq_base extends behat_base {
      * @When I add the variable :varname with value :value
      */
     public function i_add_the_variable_with_value($varname, $value) {
+        $this->execute('behat_general::i_wait_seconds', 2);
         $this->execute('behat_general::i_type', $varname);
         $this->execute('behat_general::i_type', " = ");
         $this->execute('behat_general::i_type', $value);
