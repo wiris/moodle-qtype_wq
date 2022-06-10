@@ -99,7 +99,7 @@ class behat_wq_base extends behat_base {
      */
     public function i_should_have_a_readonly_input() {
         $session = $this->getSession();
-        $readonly = $session->getPage()->find('css', '.wrs_readOnly');
+        $readonly = $session->getPage()->find('css', '.wrsUI_readOnly');
         if (empty($readonly)) {
             throw new Exception('Readonly field not found.');
         }

@@ -13482,6 +13482,7 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 				if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD) this.component.setReadOnly(readOnly); else this.component.setReadOnly(readOnly);
 			} else if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD) this.component.setReadOnly(readOnly); else if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) this.component.setReadOnly(readOnly); else if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR) this.component.setReadOnly(readOnly);
 		}
+		if(this.readOnly) this.addClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_READ_ONLY); else this.removeClass(com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_READ_ONLY);
 	}
 	,setGraphCustomToolbar: function(toolbar) {
 		if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_GRAPH_EDITOR) this.component.updateGraphToolbar(com.wiris.util.ui.controller.ToolbarDefinition.deserialize(toolbar));
@@ -44354,6 +44355,7 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_ANSWER_FIELD = "quizzesA
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_ANSWER_FIELD_DIALOG = "quizzesAnswerFieldDialog";
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_QUIZZES_EMBEDDED_ANSWER_FIELD = "quizzesEmbeddedAnswerField";
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID = "studentAnswerChanged";
+com.wiris.quizzes.impl.ui.AnswerFieldImpl.CLASS_READ_ONLY = "readOnly";
 com.wiris.quizzes.impl.ui.AnswerFieldImpl.MAX_ATTEMPTS_TO_EXPAND_INITIAL_CONTENT_VARIABLES = 5;
 com.wiris.quizzes.impl.ui.AuthoringFieldImpl.__meta__ = { fields : { showAuxiliarTextInput : { Deprecated : null}, showAuxiliarCasReplaceEditor : { Deprecated : null}, showAuxiliarCas : { Deprecated : null}, showPreviewTab : { Deprecated : null}, showVariablesTab : { Deprecated : null}, showValidationTab : { Deprecated : null}, showCorrectAnswerTab : { Deprecated : null}}};
 com.wiris.quizzes.impl.ui.AuthoringFieldImpl.CLASS_QUIZZES_AUTHORING_FIELD = "quizzesAuthoringField";
