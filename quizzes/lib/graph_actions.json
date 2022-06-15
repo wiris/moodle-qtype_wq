@@ -676,6 +676,12 @@
     "titleHtml": true
   },
   {
+    "id": "log",
+    "title": "log",
+    "value": "log",
+    "titleHtml": true
+  },
+  {
     "id": "ln",
     "title": "ln",
     "value": "ln"
