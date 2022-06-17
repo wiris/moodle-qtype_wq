@@ -40,7 +40,7 @@ use qtype_wq\privacy\provider;
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
 /**
- * @covers qtype_wq\privacy\provider
+ * @covers \qtype_wq\privacy\provider
  */
 class provider_test extends \core_privacy\tests\provider_testcase {
     /** @var \stdClass The teacher object. */
