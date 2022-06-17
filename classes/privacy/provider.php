@@ -71,7 +71,7 @@ class provider implements
         $sql = "SELECT c.id
                         FROM {context} c
             INNER JOIN {question_categories} qc ON qc.contextid = c.id
-            INNER JOIN {question_bank_entry} q ON qc.id = q.questioncategoryid
+            INNER JOIN {question} q ON qc.id = q.questioncategoryid
             INNER JOIN {qtype_wq} wq ON q.id = wq.question
                     WHERE q.createdby = :userid";
 
