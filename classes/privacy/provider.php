@@ -71,19 +71,19 @@ class provider implements
 
         // Fetch all Wiris Quizzes question types.
         $sql = "SELECT c.id
-                        FROM {context} c
-            INNER JOIN {question_categories} qc ON qc.contextid = c.id";
-        
-        if($CFG->release > '2022041900') {
+                FROM {context} c
+                INNER JOIN {question_categories} qc ON qc.contextid = c.id";
+
+        if ($CFG->release >= '2022041900') {
             $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
             INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
             INNER JOIN {question} q ON q.id = qv.questionid";
         } else {
-            $sql."INNER JOIN {question} q ON qc.id = q.category"; 
+            $sql."INNER JOIN {question} q ON qc.id = q.category";
         }
 
-            $sql."INNER JOIN {qtype_wq} wq ON q.id = wq.question
-                    WHERE q.createdby = :userid";
+        $sql."INNER JOIN {qtype_wq} wq ON q.id = wq.question
+        WHERE q.createdby = :userid";
 
         $params = [
             'userid' => $userid
@@ -101,6 +101,7 @@ class provider implements
      */
     public static function _export_user_data(approved_contextlist $contextlist) { // @codingStandardsIgnoreLine
         global $DB;
+        global $CFG;
 
         if (empty($contextlist->count())) {
             return;
@@ -114,12 +115,20 @@ class provider implements
                        c.contextlevel contextlevel,
                        wq.question AS question,
                        wq.xml AS xml
-                FROM {context} c
-            INNER JOIN {question_categories} qc ON qc.contextid = c.id
-            INNER JOIN {question} q ON qc.id = q.category
-            INNER JOIN {qtype_wq} wq ON q.id = wq.question
-                WHERE c.id {$contextsql}
-                    AND q.createdby = :userid";
+                FROM {context} c INNER JOIN {qtype_wq} wq
+                INNER JOIN {question_categories} qc ON qc.contextid = c.id";
+
+            if ($CFG->release >= '2022041900') {
+                $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                INNER JOIN {question} q ON q.id = qv.questionid";
+            } else {
+                $sql."INNER JOIN {question} q ON qc.id = q.category";
+            }
+
+            $sql."INNER JOIN {qtype_wq} wq ON q.id = wq.question
+            WHERE c.id  {$contextsql}
+            AND q.createdby = :userid";
 
         $params = ['userid' => $user->id] + $contextparams;
 
@@ -163,16 +172,25 @@ class provider implements
      */
     public static function _delete_data_for_all_users_in_context(\context $context) { // @codingStandardsIgnoreLine
         global $DB;
+        global $CFG;
 
         if (empty($context)) {
             return;
         }
 
         $sql = "SELECT wq.id
-                        FROM {question_categories} qc
-                INNER JOIN {question} q ON q.category = qc.id
-                INNER JOIN {qtype_wq} wq ON q.id = wq.question
-                    WHERE qc.contextid = :contextid";
+                FROM {question_categories} qc INNER JOIN {qtype_wq} wq";
+                
+                if ($CFG->release >= '2022041900') {
+                    $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                    INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                    INNER JOIN {question} q ON q.id = qv.questionid";
+                } else {
+                    $sql."INNER JOIN {question} q ON qc.id = q.category";
+                }
+
+            $sql."INNER JOIN {qtype_wq} wq ON q.id = wq.question
+            WHERE qc.contextid = :contextid";
 
         $params = ['contextid' => $context->id];
 
@@ -193,6 +211,7 @@ class provider implements
      */
     public static function _delete_data_for_user(approved_contextlist $contextlist) { // @codingStandardsIgnoreLine
         global $DB;
+        global $CFG;
 
         if (empty($contextlist->count())) {
             return;
@@ -202,10 +221,18 @@ class provider implements
 
         foreach ($contextlist->get_contexts() as $context) {
             $sql = "SELECT wq.id
-                        FROM {question_categories} qc
-                INNER JOIN {question} q ON q.category = qc.id
-                INNER JOIN {qtype_wq} wq ON q.id = wq.question
-                    WHERE qc.contextid = :contextid and q.createdby = :userid";
+                    FROM {question_categories} qc INNER JOIN {qtype_wq} wq";
+
+            if ($CFG->release >= '2022041900') {
+                $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                INNER JOIN {question} q ON q.id = qv.questionid";
+            } else {
+                $sql."INNER JOIN {question} q ON qc.id = q.category";
+            }
+
+            $sql."INNER JOIN {qtype_wq} wq ON q.id = wq.question
+            WHERE qc.contextid = :contextid and q.createdby = :userid";
 
             $params = ['contextid' => $context->id, 'userid' => $userid];
 
