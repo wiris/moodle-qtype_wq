@@ -67,12 +67,22 @@ class provider implements
      * @return contextlist the list of contexts containing user info for the user.
      */
     public static function _get_contexts_for_userid($userid) { // @codingStandardsIgnoreLine
+        global $CFG;
+
         // Fetch all Wiris Quizzes question types.
         $sql = "SELECT c.id
                         FROM {context} c
-            INNER JOIN {question_categories} qc ON qc.contextid = c.id
-            INNER JOIN {question} q ON qc.id = q.questioncategoryid
-            INNER JOIN {qtype_wq} wq ON q.id = wq.question
+            INNER JOIN {question_categories} qc ON qc.contextid = c.id";
+        
+        if($CFG->release > '2022041900') {
+            $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+            INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+            INNER JOIN {question} q ON q.id = qv.questionid";
+        } else {
+            $sql."INNER JOIN {question} q ON qc.id = q.category"; 
+        }
+
+            $sql."INNER JOIN {qtype_wq} wq ON q.id = wq.question
                     WHERE q.createdby = :userid";
 
         $params = [
