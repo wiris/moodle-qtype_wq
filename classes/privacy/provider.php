@@ -116,24 +116,24 @@ class provider implements
                                c.contextlevel contextlevel,
                                wq.question AS question,
                                wq.xml AS xml
-                FROM {context} c INNER JOIN {qtype_wq} wq
-                INNER JOIN {question_categories} qc ON qc.contextid = c.id
-                INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
-                INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
-                INNER JOIN {question} q ON q.id = qv.questionid
-                INNER JOIN {qtype_wq} wq ON q.id = wq.question
-                WHERE c.id  {$contextsql}
-                AND q.createdby = :userid";
+                        FROM {context} c INNER JOIN {qtype_wq} wq
+                    INNER JOIN {question_categories} qc ON qc.contextid = c.id
+                    INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                    INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                    INNER JOIN {question} q ON q.id = qv.questionid
+                    INNER JOIN {qtype_wq} wq ON q.id = wq.question
+                        WHERE c.id  {$contextsql}
+                            AND q.createdby = :userid";
             } else {
                 $sql = "SELECT c.instanceid instanceid,
                                c.contextlevel contextlevel,
                                wq.question AS question,
                                wq.xml AS xml
-                FROM {context} c INNER JOIN {qtype_wq} wq
-                INNER JOIN {question} q ON qc.id = q.category
-                INNER JOIN {qtype_wq} wq ON q.id = wq.question
-                WHERE c.id  {$contextsql}
-                AND q.createdby = :userid";
+                        FROM {context} c INNER JOIN {qtype_wq} wq
+                    INNER JOIN {question} q ON qc.id = q.category
+                    INNER JOIN {qtype_wq} wq ON q.id = wq.question
+                        WHERE c.id  {$contextsql}
+                            AND q.createdby = :userid";
             }
 
         $params = ['userid' => $user->id] + $contextparams;
