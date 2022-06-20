@@ -111,20 +111,27 @@ class provider implements
 
         list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
-        $sql = "SELECT c.instanceid instanceid,
-                       c.contextlevel contextlevel,
-                       wq.question AS question,
-                       wq.xml AS xml
-                        FROM {context} c INNER JOIN {qtype_wq} wq
-                        INNER JOIN {question_categories} qc ON qc.contextid = c.id";
+        $sql = "";
 
         if ($CFG->release >= '2022041900') {
-            $sql."INNER JOIN {question_categories} qc ON qc.contextid = c.id
+            $sql = "SELECT c.instanceid instanceid,
+                        c.contextlevel contextlevel,
+                        wq.question AS question,
+                        wq.xml AS xml
+                    FROM {context} c INNER JOIN {qtype_wq} wq
+                INNER JOIN {question_categories} qc ON qc.contextid = c.id
+                INNER JOIN {question_categories} qc ON qc.contextid = c.id
                 INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
                 INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
                 INNER JOIN {question} q ON q.id = qv.questionid";
         } else {
-            $sql."INNER JOIN {question} q ON qc.id = q.category";
+            $sql = "SELECT c.instanceid instanceid,
+                        c.contextlevel contextlevel,
+                        wq.question AS question,
+                        wq.xml AS xml
+                    FROM {context} c INNER JOIN {qtype_wq} wq
+                INNER JOIN {question_categories} qc ON qc.contextid = c.id 
+                INNER JOIN {question} q ON qc.id = q.category";
         }
 
         $sql."
