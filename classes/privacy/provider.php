@@ -140,9 +140,13 @@ class provider implements
                     AND q.createdby = :userid";
         }
 
-        echo $sql;
 
         $params = ['userid' => $user->id] + $contextparams;
+        echo $sql;
+
+        foreach ($params as $p){
+            echo $p.",";
+        }
 
         $wirisquestions = $DB->get_recordset_sql($sql, $params);
 
