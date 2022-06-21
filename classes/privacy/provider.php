@@ -181,7 +181,7 @@ class provider implements
 
         $sql = "SELECT wq.id
                 FROM {question_categories} qc";
-                
+
         if ($CFG->version >= 2022041900) {
             $sql .= " INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
                       INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
@@ -192,7 +192,7 @@ class provider implements
                       INNER JOIN {qtype_wq} wq ON q.id = wq.question";
         }
 
-        $sql.=" WHERE qc.contextid = :contextid";
+        $sql .= " WHERE qc.contextid = :contextid";
 
         $params = ['contextid' => $context->id];
 
