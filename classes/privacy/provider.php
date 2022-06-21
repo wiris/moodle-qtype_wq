@@ -135,7 +135,7 @@ class provider implements
                     FROM {context} c INNER JOIN {qtype_wq} wq
                 INNER JOIN {question_categories} qc ON qc.contextid = c.id 
                 INNER JOIN {question} q ON qc.id = q.category  
-                WHERE = " .$contextsql. " 
+                WHERE c.id = " .$contextsql. " 
                     AND  q.id = wq.question
                     AND q.createdby = :userid";
         }
