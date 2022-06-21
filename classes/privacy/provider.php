@@ -75,14 +75,14 @@ class provider implements
                 INNER JOIN {question_categories} qc ON qc.contextid = c.id";
 
         if ($CFG->release >= '2022041900') {
-            $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+            $sql.="INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
             INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
             INNER JOIN {question} q ON q.id = qv.questionid";
         } else {
-            $sql."INNER JOIN {question} q ON qc.id = q.category";
+            $sql.="INNER JOIN {question} q ON qc.id = q.category";
         }
 
-        $sql."INNER JOIN {qtype_wq} wq ON q.id = wq.question
+        $sql.="INNER JOIN {qtype_wq} wq ON q.id = wq.question
         WHERE q.createdby = :userid";
 
         $params = [
@@ -178,12 +178,10 @@ class provider implements
         }
 
         $sql = "SELECT wq.id
-                FROM {question_categories} qc INNER JOIN {qtype_wq} wq";
+                FROM {question_categories} qc INNER JOIN {qtype_wq} wq ";
                 
                 if ($CFG->release >= '2022041900') {
-                    $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id 
-                    INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id 
-                    INNER JOIN {question} q ON q.id = qv.questionid";
+                    $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id INNER JOIN {question} q ON q.id = qv.questionid";
                 } else {
                     $sql.=" INNER JOIN {question} q ON qc.id = q.category";
                 }
