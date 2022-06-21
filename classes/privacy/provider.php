@@ -114,19 +114,7 @@ class provider implements
         $sql = "";
 
         if ($CFG->release >= '2022041900') {
-            $sql = "SELECT c.instanceid instanceid,
-                        c.contextlevel contextlevel,
-                        wq.question AS question,
-                        wq.xml AS xml
-                    FROM {context} c INNER JOIN {qtype_wq} wq
-                INNER JOIN {question_categories} qc ON qc.contextid = c.id
-                INNER JOIN {question_categories} qc ON qc.contextid = c.id
-                INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
-                INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
-                INNER JOIN {question} q ON q.id = qv.questionid
-                WHERE c.id  {$contextsql}
-                    AND  q.id = wq.question
-                    AND q.createdby = :userid";
+            $sql = "SELECT c.instanceid instanceid, c.contextlevel contextlevel, wq.question AS question, wq.xml AS xml FROM {context} c INNER JOIN {qtype_wq} wq INNER JOIN {question_categories} qc ON qc.contextid = c.id INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id INNER JOIN {question} q ON q.id = qv.questionid WHERE c.id {$contextsql} AND q.id = wq.question AND q.createdby = :userid";
         } else {
             $sql = "SELECT c.instanceid instanceid,
                         c.contextlevel contextlevel,
@@ -142,11 +130,6 @@ class provider implements
 
 
         $params = ['userid' => $user->id] + $contextparams;
-        echo $sql;
-
-        foreach ($params as $p){
-            echo $p.",";
-        }
 
         $wirisquestions = $DB->get_recordset_sql($sql, $params);
 
@@ -198,15 +181,14 @@ class provider implements
                 FROM {question_categories} qc INNER JOIN {qtype_wq} wq";
                 
                 if ($CFG->release >= '2022041900') {
-                    $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
-                    INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                    $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id 
+                    INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id 
                     INNER JOIN {question} q ON q.id = qv.questionid";
                 } else {
-                    $sql."INNER JOIN {question} q ON qc.id = q.category";
+                    $sql.=" INNER JOIN {question} q ON qc.id = q.category";
                 }
 
-            $sql."INNER JOIN q.id = wq.question
-                WHERE qc.contextid = :contextid";
+            $sql.=" WHERE qc.contextid = :contextid AND q.id = wq.question ";
 
         $params = ['contextid' => $context->id];
 
@@ -237,18 +219,19 @@ class provider implements
 
         foreach ($contextlist->get_contexts() as $context) {
             $sql = "SELECT wq.id
-                    FROM {question_categories} qc INNER JOIN {qtype_wq} wq";
+                    FROM {question_categories} qc 
+                    INNER JOIN {qtype_wq} wq";
 
             if ($CFG->release >= '2022041900') {
-                $sql."INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
                 INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
                 INNER JOIN {question} q ON q.id = qv.questionid";
             } else {
-                $sql."INNER JOIN {question} q ON qc.id = q.category";
+                $sql.=" INNER JOIN {question} q ON qc.id = q.category";
             }
 
-            $sql."INNER JOIN q.id = wq.question
-            WHERE qc.contextid = :contextid and q.createdby = :userid";
+            $sql.=" INNER JOIN q.id = wq.question 
+            WHERE qc.contextid = :contextid AND q.createdby = :userid";
 
             $params = ['contextid' => $context->id, 'userid' => $userid];
 
@@ -260,3 +243,11 @@ class provider implements
         }
     }
 }
+// SELECT wq.id, q.createdby
+//     FROM t_question_categories qc INNER JOIN t_qtype_wq wq
+//     INNER JOIN t_question_bank_entries qbe ON qbe.questioncategoryid = qc.id 
+//     INNER JOIN t_question_versions qv ON qv.questionbankentryid = qbe.id
+//     INNER JOIN t_question q ON q.id = qv.questionid
+//     WHERE qc.contextid = 1 AND q.createdby = 125000 AND q.id = wq.question;
+
+// SELECT * FROM t_qtype_wq
