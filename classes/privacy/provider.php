@@ -113,8 +113,6 @@ class provider implements
 
         $sql = "";
 
-        $contextsql = str_replace("= ", "", $contextsql);
-
         if ($CFG->version >= 2022041900) {
             $sql = "SELECT c.instanceid instanceid, 
                            c.contextlevel contextlevel, 
