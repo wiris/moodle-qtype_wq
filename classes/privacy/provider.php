@@ -189,17 +189,19 @@ class provider implements
         }
 
         $sql = "SELECT wq.id
-                FROM {question_categories} qc INNER JOIN {qtype_wq} wq";
+                FROM {question_categories} qc";
                 
                 if ($CFG->version >= 2022041900) {
                     $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id 
                     INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id 
-                    INNER JOIN {question} q ON q.id = qv.questionid";
+                    INNER JOIN {question} q ON q.id = qv.questionid
+                    INNER JOIN {qtype_wq} wq ON q.id = wq.question";
                 } else {
-                    $sql.=" INNER JOIN {question} q ON qc.id = q.category";
+                    $sql.=" INNER JOIN {qtype_wq} wq ON q.id = wq.question
+                    INNER JOIN {question} q ON qc.id = q.category";
                 }
 
-            $sql.=" WHERE qc.contextid = :contextid AND q.id = wq.question ";
+            $sql.=" WHERE qc.contextid = :contextid";
 
         $params = ['contextid' => $context->id];
 
@@ -230,19 +232,18 @@ class provider implements
 
         foreach ($contextlist->get_contexts() as $context) {
             $sql = "SELECT wq.id
-                    FROM {question_categories} qc 
-                    INNER JOIN {qtype_wq} wq";
+                    FROM {question_categories} qc";
 
             if ($CFG->version >= 2022041900) {
                 $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
                 INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
-                INNER JOIN {question} q ON q.id = qv.questionid";
+                INNER JOIN {question} q ON q.id = qv.questionid
+                INNER JOIN {qtype_wq} wq ON q.id = wq.question";
             } else {
                 $sql.=" INNER JOIN {question} q ON qc.id = q.category";
             }
 
-            $sql.=" INNER JOIN q.id = wq.question 
-            WHERE qc.contextid = :contextid AND q.createdby = :userid";
+            $sql.=" WHERE qc.contextid = :contextid AND q.createdby = :userid";
 
             $params = ['contextid' => $context->id, 'userid' => $userid];
 
@@ -254,23 +255,3 @@ class provider implements
         }
     }
 }
-// SELECT wq.id, q.createdby
-//     FROM t_question_categories qc INNER JOIN t_qtype_wq wq
-//     INNER JOIN t_question_bank_entries qbe ON qbe.questioncategoryid = qc.id 
-//     INNER JOIN t_question_versions qv ON qv.questionbankentryid = qbe.id
-//     INNER JOIN t_question q ON q.id = qv.questionid
-//     WHERE qc.contextid = 1 AND q.createdby = 125000 AND q.id = wq.question;
-
-// SELECT * FROM t_qtype_wq
-
-// DECLARE crs2 NO SCROLL CURSOR WITH HOLD FOR SELECT c.instanceid instanceid, 
-//                            c.contextlevel contextlevel, 
-//                            wq.question AS question, 
-//                            wq.xml AS xml 
-//                         FROM t_context c 
-//                            INNER JOIN t_qtype_wq wq 
-//                            INNER JOIN t_question_categories qc ON qc.contextid = c.id 
-//                            INNER JOIN t_question_bank_entries qbe ON qbe.questioncategoryid = qc.id 
-//                            INNER JOIN t_question_versions qv ON qv.questionbankentryid = qbe.id 
-//                            INNER JOIN t_question q ON q.id = qv.questionid 
-//                         WHERE c.id = 1 AND q.id = wq.question AND q.createdby = 125000;
