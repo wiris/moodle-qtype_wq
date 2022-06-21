@@ -27,7 +27,7 @@ jobs:
             'MOODLE_311_STABLE',
             'MOODLE_400_STABLE',
           ]
-        database: [mysql]
+        database: [pgsql]
 
     steps:
       - name: Check out repository code

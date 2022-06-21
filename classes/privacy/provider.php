@@ -74,7 +74,7 @@ class provider implements
                 FROM {context} c
                 INNER JOIN {question_categories} qc ON qc.contextid = c.id";
 
-        if ($CFG->release >= '2022041900') {
+        if ($CFG->version >= 2022041900) {
             $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
             INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
             INNER JOIN {question} q ON q.id = qv.questionid";
@@ -113,7 +113,7 @@ class provider implements
 
         $sql = "";
 
-        if ($CFG->release >= '2022041900') {
+        if ($CFG->version >= 2022041900) {
             $sql = "SELECT c.instanceid instanceid, 
                            c.contextlevel contextlevel, 
                            wq.question AS question, 
@@ -190,7 +190,7 @@ class provider implements
         $sql = "SELECT wq.id
                 FROM {question_categories} qc INNER JOIN {qtype_wq} wq";
                 
-                if ($CFG->release >= '2022041900') {
+                if ($CFG->version >= 2022041900) {
                     $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id 
                     INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id 
                     INNER JOIN {question} q ON q.id = qv.questionid";
@@ -232,7 +232,7 @@ class provider implements
                     FROM {question_categories} qc 
                     INNER JOIN {qtype_wq} wq";
 
-            if ($CFG->release >= '2022041900') {
+            if ($CFG->version >= 2022041900) {
                 $sql.=" INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
                 INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
                 INNER JOIN {question} q ON q.id = qv.questionid";
@@ -261,3 +261,15 @@ class provider implements
 //     WHERE qc.contextid = 1 AND q.createdby = 125000 AND q.id = wq.question;
 
 // SELECT * FROM t_qtype_wq
+
+// DECLARE crs2 NO SCROLL CURSOR WITH HOLD FOR SELECT c.instanceid instanceid, 
+//                            c.contextlevel contextlevel, 
+//                            wq.question AS question, 
+//                            wq.xml AS xml 
+//                         FROM t_context c 
+//                            INNER JOIN t_qtype_wq wq 
+//                            INNER JOIN t_question_categories qc ON qc.contextid = c.id 
+//                            INNER JOIN t_question_bank_entries qbe ON qbe.questioncategoryid = qc.id 
+//                            INNER JOIN t_question_versions qv ON qv.questionbankentryid = qbe.id 
+//                            INNER JOIN t_question q ON q.id = qv.questionid 
+//                         WHERE c.id = 1 AND q.id = wq.question AND q.createdby = 125000;
