@@ -1,0 +1,8 @@
+{
+  "name": "moodle-qtype_wq-qbank_editquestion-chooser",
+  "builds": {
+    "moodle-qtype_wq-qbank_editquestion-chooser": {
+      "jsfiles": ["chooser.js"]
+    }
+  }
+}

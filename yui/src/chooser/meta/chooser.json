@@ -1,0 +1,5 @@
+{
+  "moodle-qtype_wq-qbank_editquestion-chooser": {
+    "requires": ["moodle-qbank_editquestion-chooser"]
+  }
+}
