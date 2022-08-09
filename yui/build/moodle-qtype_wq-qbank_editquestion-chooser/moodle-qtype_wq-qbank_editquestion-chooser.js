@@ -17,10 +17,9 @@ M.qbankQtypeWq.questionChooser = {
   /**
    * Moves all Wiris Quizzes questions under node_before and populates the array
    * this.wirisquestions.
-   * @param nodeBefore - Previous node.
+   * @param {node} nodeBefore - Previous node.
    */
   moveWirisQuestions: function(nodeBefore) {
-
     var wirisdivs = [];
     Y.all('div.option').each(function(node) {
       var input = node.one('input');
