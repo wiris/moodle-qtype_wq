@@ -143,8 +143,7 @@ class qtype_wq extends question_type {
             $PAGE->requires->js('/question/type/wq/js/display.js', false);
         } else if ($CFG->version > 2022041901) {
             // New moodle-standard way.
-            $PAGE->requires->yui_module('moodle-qtype_wq-qbank_editquestion-chooser', 
-                                        'M.qbank_qtype_wq.question_chooser.init', array());
+            $PAGE->requires->yui_module('moodle-qtype_wq-qbank_editquestion-chooser', 'M.qbankQtypeWq.questionChooser.init', array()); // @codingStandardsIgnoreLine
         } else {
             $PAGE->requires->yui_module('moodle-qtype_wq-question_chooser', 'M.qtype_wq.question_chooser.init');
         }

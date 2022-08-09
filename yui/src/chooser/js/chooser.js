@@ -1,10 +1,7 @@
 // Namespace for Wiris Quizzes.
-// @codingStandardsIgnoreStart
-M.qbank_qtype_wq = M.qbank_qtype_wq || {};
+M.qbankQtypeWq = M.qbankQtypeWq || {};
 // Question chooser class.
-M.qbank_qtype_wq.question_chooser = {
-  // @codingStandardsIgnoreEnd
-
+M.qbankQtypeWq.questionChooser = {
   /**
    * Array with all the real Wiris Quizzes questions.
    * */
@@ -18,8 +15,9 @@ M.qbank_qtype_wq.question_chooser = {
   /**
    * Moves all Wiris Quizzes questions under node_before and populates the array
    * this.wirisquestions.
+   * @param nodeBefore - Previous node.
    */
-  move_wiris_questions: function(node_before) { // @codingStandardsIgnoreLine
+  moveWirisQuestions: function(nodeBefore) {
 
     var wirisdivs = [];
     Y.all('div.option').each(function(node) {
@@ -29,10 +27,8 @@ M.qbank_qtype_wq.question_chooser = {
         input.getAttribute('value') &&
         input.getAttribute('value').indexOf('wiris') !== -1
       ) {
-        // @codingStandardsIgnoreStart
-        node_before.insert(node, 'after');
-        node_before = node;
-        // @codingStandardsIgnoreEnd
+        nodeBefore.insert(node, 'after');
+        nodeBefore = node;
         wirisdivs.push(node);
       }
     });
@@ -42,7 +38,7 @@ M.qbank_qtype_wq.question_chooser = {
    * Unused function. Join all Wiris Quizzes questions in a section after
    * QUESTIONS and before OTHER.
    * */
-  wiris_section: function() {
+  wirisSection: function() {
     var label = Y.one('label[for=qtype_qtype_wq]');
     label = label ? label : Y.one('label[for=item_qtype_wq]');
     if (label) {
