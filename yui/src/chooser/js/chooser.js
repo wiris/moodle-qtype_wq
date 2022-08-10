@@ -10,7 +10,7 @@ M.qbankQtypeWq.questionChooser = {
    * Start point.
    * */
   init: function() {
-    this.wiris_section();
+    this.wirisSection();
   },
   /**
    * Moves all Wiris Quizzes questions under node_before and populates the array
@@ -51,7 +51,7 @@ M.qbankQtypeWq.questionChooser = {
       container.insertBefore(wq, container.one('div.separator'));
       container.insertBefore(Y.Node.create('<div class="separator"/>'), wq);
       // Move all Wiris qtypes under title.
-      this.move_wiris_questions(wq);
+      this.moveWirisQuestions(wq);
     }
   },
 };
