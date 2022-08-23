@@ -55,7 +55,7 @@ M.qbankQtypeWq.questionChooser = {
       // Move all Wiris qtypes under title.
       this.moveWirisQuestions(wq);
     }
-  },
+  }
 };
 
 
