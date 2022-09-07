@@ -141,7 +141,7 @@ class qtype_wq extends question_type {
         if ($CFG->version < 2014051200) {
             // Backwards compatibility.
             $PAGE->requires->js('/question/type/wq/js/display.js', false);
-        } else if ($CFG->version > 2022041901) {
+        } else if ($CFG->version >= 2022041900) {
             // Moodle 4.0.2 and up.
             $PAGE->requires->yui_module('moodle-qtype_wq-question_chooser_qbank', 'M.qtype_wq.question_chooser.init', array()); // @codingStandardsIgnoreLine
         } else {
