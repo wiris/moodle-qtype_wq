@@ -14356,6 +14356,7 @@ com.wiris.quizzes.impl.ui.QuizzesStudioContext.prototype = {
 		try {
 			if(this.slot.getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH) {
 				var initialContent = this.slot.getInitialContent();
+				if(initialContent == null || initialContent == "") return false;
 				var mathml = com.wiris.util.xml.WXmlUtils.parseXML(initialContent);
 				var math = mathml.nodeType == Xml.Document?mathml.firstElement():mathml;
 				return math.get(com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.WRS_POSITIONABLE) == "false";
@@ -22089,7 +22090,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		if(com.wiris.quizzes.impl.HTMLTools.hasCasSessionParameter(session,parameter,name)) this.context.getQuestion().setProperty(com.wiris.quizzes.api.PropertyName.STUDENT_ANSWER_PARAMETER,"true"); else this.context.getQuestion().setProperty(com.wiris.quizzes.api.PropertyName.STUDENT_ANSWER_PARAMETER,"false");
 	}
 	,onError: function(error) {
-		haxe.Log.trace("Conversion to algorithm failed with error: " + error,{ fileName : "QuizzesStudioController.hx", lineNumber : 2893, className : "com.wiris.quizzes.impl.ui.controller.QuizzesStudioController", methodName : "onError"});
+		haxe.Log.trace("Conversion to algorithm failed with error: " + error,{ fileName : "QuizzesStudioController.hx", lineNumber : 2897, className : "com.wiris.quizzes.impl.ui.controller.QuizzesStudioController", methodName : "onError"});
 	}
 	,wrapAlgorithmWithCalcSession: function(algorithm) {
 		var lang = this.importCasSessionLang != null?this.importCasSessionLang:"en";
@@ -22361,7 +22362,11 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 	}
 	,isEmptyMathML: function(mathml) {
 		if(mathml == null || mathml == "") return true;
-		return com.wiris.util.xml.MathMLUtils.isEmptyMathML(com.wiris.util.xml.WXmlUtils.parseXML(mathml));
+		try {
+			return com.wiris.util.xml.MathMLUtils.isEmptyMathML(com.wiris.util.xml.WXmlUtils.safeParseXML(mathml));
+		} catch( t ) {
+			return false;
+		}
 	}
 	,getEvaluateTemplateMathML: function() {
 		return "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mi>" + com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.EVALUATE_KEYWORD) + "</mi><mfenced><mrow/></mfenced></math>";
