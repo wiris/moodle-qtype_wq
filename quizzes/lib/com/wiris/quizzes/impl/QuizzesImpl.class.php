@@ -1067,7 +1067,8 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		$r = $this->newGradeRequest($instance);
 		$qr = $r;
 		$qi = $instance;
-		com_wiris_quizzes_impl_QuizzesImpl::setVariables($html, $instance->question, $qi, $qr);
+		$qr->question = $this->deepCopyQuestion($qr->question);
+		com_wiris_quizzes_impl_QuizzesImpl::setVariables($html, $qr->question, $qi, $qr);
 		return $r;
 	}
 	public function newGradeRequest($instance) {
@@ -1118,6 +1119,9 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		}
 		return $this->newVariablesRequest($sb->b, $instance);
 	}
+	public function deepCopyQuestion($question) {
+		return $this->readQuestion($question->serialize());
+	}
 	public function newVariablesRequest($html, $instance) {
 		if($instance === null) {
 			throw new HException("The question instance cannot be null!");
@@ -1127,6 +1131,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		if($question === null) {
 			throw new HException("The question must be specified, either as a parameter" . " of this function or as a field of the question instance");
 		}
+		$question = $this->deepCopyQuestion($question);
 		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
 		$qr->question = $question;
 		$qr->userData = $qi->userData;
@@ -1232,6 +1237,11 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 									$n++;
 								}
 								unset($parts,$correctAnswer);
+							} else {
+								if(com_wiris_util_type_IntegerTools::isInt($after) && com_wiris_quizzes_impl_QuizzesImpl::containsCorrectAnswerWithCompoundName($qq, Std::parseInt($after))) {
+									$variables[$i1] = null;
+									$n++;
+								}
 							}
 						}
 						unset($after);
@@ -1258,12 +1268,26 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		}
 		return $variables;
 	}
+	static function containsCorrectAnswerWithCompoundName($q, $after) {
+		$it = $q->correctAnswers->iterator();
+		while($it->hasNext()) {
+			$id = $it->next()->id;
+			if($id !== null && StringTools::endsWith($id, "_c" . _hx_string_rec(($after - 1), ""))) {
+				return true;
+			}
+			unset($id);
+		}
+		return false;
+	}
 	static function setVariables($html, $q, $qi, $qr) {
 		$variables = null;
 		if($html === null) {
 			$variables = com_wiris_quizzes_impl_QuizzesImpl::extractQuestionInstanceVariableNames($qi);
 		} else {
 			$h = new com_wiris_quizzes_impl_HTMLTools();
+			$computedVariables = new Hash();
+			$html = $h->extractActionExpressions($html, $computedVariables);
+			$q->setAlgorithm(com_wiris_quizzes_impl_QuizzesImpl::addComputedVariablesToAlgorithm($q->getAlgorithm(), $computedVariables));
 			$variables = $h->extractVariableNames($html);
 			$variables = com_wiris_quizzes_impl_QuizzesImpl::removeAnswerVariables($variables, $q, $qi);
 		}
@@ -1272,5 +1296,28 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			$qr->variables($variables, com_wiris_quizzes_impl_MathContent::$TYPE_MATHML);
 		}
 	}
+	static $EMPTY_CALCME_SESSION;
+	static function addComputedVariablesToAlgorithm($algorithm, $computedVariables) {
+		$it = $computedVariables->keys();
+		if($it->hasNext() && $algorithm === null) {
+			$algorithm = com_wiris_quizzes_impl_QuizzesImpl::$EMPTY_CALCME_SESSION;
+		}
+		while($it->hasNext()) {
+			$name = $it->next();
+			$value = str_replace("#", "", str_replace("<mo>#</mo>", "", $computedVariables->get($name)));
+			if(_hx_index_of($value, "</mi>", null) !== -1) {
+				$auxiliarString = new _hx_array(array(_hx_substr($algorithm, 0, _hx_last_index_of($algorithm, "</group>", null)), _hx_substr($algorithm, _hx_last_index_of($algorithm, "</group>", null), null)));
+				$algorithm = $auxiliarString[0] . "<command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\">" . "<mi>" . $name . "</mi>" . "<mo>=</mo><mrow>" . $value . "</mrow></math></input></command>" . $auxiliarString[1];
+				unset($auxiliarString);
+			} else {
+				$auxiliarString = new _hx_array(array(_hx_substr($algorithm, 0, _hx_last_index_of($algorithm, "</group>", null)), _hx_substr($algorithm, _hx_last_index_of($algorithm, "</group>", null), null)));
+				$algorithm = $auxiliarString[0] . "<algorithm>" . $name . "=" . $value . "</algorithm>" . $auxiliarString[1];
+				unset($auxiliarString);
+			}
+			unset($value,$name);
+		}
+		return $algorithm;
+	}
 	function __toString() { return 'com.wiris.quizzes.impl.QuizzesImpl'; }
 }
+com_wiris_quizzes_impl_QuizzesImpl::$EMPTY_CALCME_SESSION = "<wiriscalc version=\"3.2\">\x0A" . "  <title>\x0A" . "    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\x0A" . "      <mtext></mtext>\x0A" . "    </math>\x0A" . "  </title>\x0A" . "  <session version=\"3.0\">\x0A" . "      <group>\x0A" . "        <command>\x0A" . "          <input>\x0A" . "            <math xmlns=\"http://www.w3.org/1998/Math/MathML\"/>\x0A" . "          </input>\x0A" . "        </command>\x0A" . "      </group>\x0A" . "  </session>\x0A" . "</wiriscalc>";
