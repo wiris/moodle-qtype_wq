@@ -1754,50 +1754,54 @@ class com_wiris_quizzes_impl_HTMLTools {
 				$mfencedMathMLActioNString = "<mi>" . $action . "</mi><mfenced>";
 				$paragraphActionString = $action . "(";
 				while(_hx_index_of($html, $bracketMathMLActionString, null) !== -1 || _hx_index_of($html, $mfencedMathMLActioNString, null) !== -1 || _hx_index_of($html, $paragraphActionString, null) !== -1) {
-					$numberOpenBrackets = 0;
-					$numberClosedBrackets = 0;
+					$numberOfOpenBrackets = 0;
+					$indexOfLastClosingBracket = 0;
 					if(_hx_index_of($html, $bracketMathMLActionString, null) !== -1) {
+						$numberOfClosedBrackets = 0;
 						{
 							$_g2 = _hx_index_of($html, $bracketMathMLActionString, null); $_g1 = _hx_last_index_of($html, "<mo>)</mo>", null) + 10;
 							while($_g2 < $_g1) {
 								$i = $_g2++;
 								if(_hx_char_at($html, $i) === "(") {
-									$numberOpenBrackets++;
+									$numberOfOpenBrackets++;
 								} else {
 									if(_hx_char_at($html, $i) === ")") {
-										$numberClosedBrackets++;
+										$numberOfClosedBrackets++;
 									}
 								}
-								if($numberOpenBrackets === $numberClosedBrackets && $numberOpenBrackets !== 0) {
-									$numberClosedBrackets = $i + 5;
+								if($numberOfOpenBrackets === $numberOfClosedBrackets && $numberOfOpenBrackets !== 0) {
+									$indexOfLastClosingBracket = $i + 5;
 									break;
 								}
 								unset($i);
 							}
 							unset($_g2,$_g1);
 						}
-						if(_hx_index_of($html, $bracketMathMLActionString, _hx_index_of($html, $bracketMathMLActionString, null) + 1) < $numberClosedBrackets && _hx_index_of($html, $bracketMathMLActionString, _hx_index_of($html, $bracketMathMLActionString, null) + 1) !== -1) {
+						if($numberOfOpenBrackets !== $numberOfClosedBrackets && $numberOfOpenBrackets !== 0 && $numberOfClosedBrackets !== 0) {
 							return $originalHtml;
 						}
-						$evaluateFullString = _hx_substr($html, _hx_index_of($html, $bracketMathMLActionString, null), $numberClosedBrackets - _hx_index_of($html, $bracketMathMLActionString, null) + 1);
+						if(_hx_index_of($html, $bracketMathMLActionString, _hx_index_of($html, $bracketMathMLActionString, null) + 1) < $indexOfLastClosingBracket && _hx_index_of($html, $bracketMathMLActionString, _hx_index_of($html, $bracketMathMLActionString, null) + 1) !== -1) {
+							return $originalHtml;
+						}
+						$evaluateFullString = _hx_substr($html, _hx_index_of($html, $bracketMathMLActionString, null), $indexOfLastClosingBracket - _hx_index_of($html, $bracketMathMLActionString, null) + 1);
 						$valueInsideEvaluate = _hx_substr($evaluateFullString, strlen($bracketMathMLActionString), _hx_last_index_of($evaluateFullString, "<mo>)</mo>", null) - strlen($bracketMathMLActionString));
 						$html = str_replace($evaluateFullString, "<mi>#_computed_variable_" . haxe_Md5::encode($evaluateFullString) . "</mi>", $html);
 						$key = "_computed_variable_" . haxe_Md5::encode($evaluateFullString);
 						if($variables !== null) {
 							$variables->set($key, $valueInsideEvaluate);
 						}
-						unset($valueInsideEvaluate,$key,$evaluateFullString);
+						unset($valueInsideEvaluate,$numberOfClosedBrackets,$key,$evaluateFullString);
 					} else {
 						if(_hx_index_of($html, $mfencedMathMLActioNString, null) !== -1) {
 							$auxiliarIndexOpenBracket = _hx_index_of($html, $mfencedMathMLActioNString, null);
 							$auxiliarIndexClosedBracket = _hx_index_of($html, "</mfenced>", _hx_index_of($html, $mfencedMathMLActioNString, null));
-							while($numberOpenBrackets !== $numberClosedBrackets || $numberOpenBrackets === 0) {
+							while($numberOfOpenBrackets !== $indexOfLastClosingBracket || $numberOfOpenBrackets === 0) {
 								if(_hx_index_of($html, "<mfenced>", $auxiliarIndexOpenBracket) < _hx_index_of($html, "</mfenced>", $auxiliarIndexClosedBracket) && _hx_index_of($html, "<mfenced>", $auxiliarIndexOpenBracket) !== -1) {
-									$numberOpenBrackets++;
+									$numberOfOpenBrackets++;
 									$auxiliarIndexOpenBracket = _hx_index_of($html, "<mfenced>", $auxiliarIndexOpenBracket) + 1;
 								}
 								if(_hx_index_of($html, "<mfenced>", $auxiliarIndexOpenBracket) > _hx_index_of($html, "</mfenced>", $auxiliarIndexClosedBracket) || _hx_index_of($html, "<mfenced>", $auxiliarIndexOpenBracket) === -1) {
-									$numberClosedBrackets++;
+									$indexOfLastClosingBracket++;
 									$auxiliarIndexClosedBracket = _hx_index_of($html, "</mfenced>", $auxiliarIndexClosedBracket) + 1;
 								}
 							}
@@ -1814,40 +1818,44 @@ class com_wiris_quizzes_impl_HTMLTools {
 							unset($valueInsideEvaluate,$key,$evaluateFullString,$auxiliarIndexOpenBracket,$auxiliarIndexClosedBracket);
 						} else {
 							if(_hx_index_of($html, $paragraphActionString, null) !== -1) {
+								$numberOfClosedBrackets = 0;
 								{
 									$_g2 = _hx_index_of($html, $paragraphActionString, null); $_g1 = _hx_last_index_of($html, ")", null) + 10;
 									while($_g2 < $_g1) {
 										$i = $_g2++;
 										if(_hx_char_at($html, $i) === "(") {
-											$numberOpenBrackets++;
+											$numberOfOpenBrackets++;
 										} else {
 											if(_hx_char_at($html, $i) === ")") {
-												$numberClosedBrackets++;
+												$numberOfClosedBrackets++;
 											}
 										}
-										if($numberOpenBrackets === $numberClosedBrackets && $numberOpenBrackets !== 0) {
-											$numberClosedBrackets = $i;
+										if($numberOfOpenBrackets === $numberOfClosedBrackets && $numberOfOpenBrackets !== 0) {
+											$indexOfLastClosingBracket = $i;
 											break;
 										}
 										unset($i);
 									}
 									unset($_g2,$_g1);
 								}
-								if(_hx_index_of($html, $paragraphActionString, _hx_index_of($html, $paragraphActionString, null) + 1) < $numberClosedBrackets && _hx_index_of($html, $paragraphActionString, _hx_index_of($html, $paragraphActionString, null) + 1) !== -1) {
+								if($numberOfOpenBrackets !== $numberOfClosedBrackets && $numberOfOpenBrackets !== 0 && $numberOfClosedBrackets !== 0) {
 									return $originalHtml;
 								}
-								$evaluateFullString = _hx_substr($html, _hx_index_of($html, $paragraphActionString, null), $numberClosedBrackets + 1 - _hx_index_of($html, $paragraphActionString, null));
+								if(_hx_index_of($html, $paragraphActionString, _hx_index_of($html, $paragraphActionString, null) + 1) < $indexOfLastClosingBracket && _hx_index_of($html, $paragraphActionString, _hx_index_of($html, $paragraphActionString, null) + 1) !== -1) {
+									return $originalHtml;
+								}
+								$evaluateFullString = _hx_substr($html, _hx_index_of($html, $paragraphActionString, null), $indexOfLastClosingBracket + 1 - _hx_index_of($html, $paragraphActionString, null));
 								$valueInsideEvaluate = _hx_substr($evaluateFullString, strlen($paragraphActionString), _hx_last_index_of($evaluateFullString, ")", null) - strlen($paragraphActionString));
 								$html = str_replace($evaluateFullString, "#_computed_variable_" . haxe_Md5::encode($evaluateFullString), $html);
 								$key = "_computed_variable_" . haxe_Md5::encode($evaluateFullString);
 								if($variables !== null) {
 									$variables->set($key, $valueInsideEvaluate);
 								}
-								unset($valueInsideEvaluate,$key,$evaluateFullString);
+								unset($valueInsideEvaluate,$numberOfClosedBrackets,$key,$evaluateFullString);
 							}
 						}
 					}
-					unset($numberOpenBrackets,$numberClosedBrackets);
+					unset($numberOfOpenBrackets,$indexOfLastClosingBracket);
 				}
 				unset($paragraphActionString,$mfencedMathMLActioNString,$bracketMathMLActionString,$action);
 			}
