@@ -2818,7 +2818,7 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		var r = this.newGradeRequest(instance);
 		var qr = r;
 		var qi = instance;
-		qr.question = this.deepCopyQuestion(qr.question);
+		qr.question = this.copyQuestion(qr.question);
 		com.wiris.quizzes.impl.QuizzesImpl.setVariables(html,qr.question,qi,qr);
 		return r;
 	}
@@ -2851,15 +2851,24 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		if(html != null) sb.b += Std.string(html);
 		return this.newVariablesRequest(sb.b,instance);
 	}
-	,deepCopyQuestion: function(question) {
-		return this.readQuestion(question.serialize());
+	,copyQuestion: function(question) {
+		var copy = this.newQuestion().getImpl();
+		var original = question.getImpl();
+		copy.id = original.id;
+		copy.localData = original.localData;
+		copy.assertions = original.assertions;
+		copy.slots = original.slots;
+		copy.correctAnswers = original.correctAnswers;
+		copy.options = original.options;
+		copy.wirisCasSession = original.wirisCasSession;
+		return copy;
 	}
 	,newVariablesRequest: function(html,instance) {
 		if(instance == null) throw "The question instance cannot be null!";
 		var qi = instance;
 		var question = qi.question;
 		if(question == null) throw "The question must be specified, either as a parameter" + " of this function or as a field of the question instance";
-		question = this.deepCopyQuestion(question);
+		question = this.copyQuestion(question);
 		var qr = new com.wiris.quizzes.impl.QuestionRequestImpl();
 		qr.question = question;
 		qr.userData = qi.userData;
@@ -20436,26 +20445,25 @@ com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.prototype = $extend
 		action.setParameter(com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.ACTION_PARAMETER_RANDOM_VARIABLES_CONTENT,this.getRandomVariablesCommand());
 		this.performAction(action);
 	}
-	,uniqueName: function(variableName,variablesList) {
+	,isNameDuplicated: function(variableName,variablesList) {
 		var j = 0;
 		var _g1 = 0, _g = variablesList.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			if(variablesList[i].getVariableName() == variableName && variableName != "") {
+			if(variablesList[i].getVariableName() == variableName && !(variableName == "")) {
 				j++;
-				if(j > 1) return false;
+				if(j > 1) return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	,updateVisibilityRow: function(row) {
 		row.setStatus(this.isVariableNameValid(row.getVariableName()),this.isMinValueValid(row.getMinValue()),this.isMaxValueValid(row.getMinValue(),row.getMaxValue()));
 		var _g1 = 0, _g = this.randomVariables.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			if(this.randomVariables[i].getVariableName() == "" && this.randomVariables[i].getMinValue() == "" && this.randomVariables[i].getMaxValue() == "") this.randomVariables[i].setStatus(com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE); else if(!this.uniqueName(this.randomVariables[i].getVariableName(),this.randomVariables)) this.randomVariables[i].setNameStatus(com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.DUPLICATE_NAME_ERROR); else this.randomVariables[i].setNameStatus(this.isVariableNameValid(this.randomVariables[i].getVariableName()));
+			if(this.randomVariables[i].getVariableName() == "" && this.randomVariables[i].getMinValue() == "" && this.randomVariables[i].getMaxValue() == "") this.randomVariables[i].setStatus(com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE); else if(this.isNameDuplicated(this.randomVariables[i].getVariableName(),this.randomVariables)) this.randomVariables[i].setNameStatus(com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.DUPLICATE_NAME_ERROR); else this.randomVariables[i].setNameStatus(this.isVariableNameValid(this.randomVariables[i].getVariableName()));
 		}
-		return;
 	}
 	,actionPerformed: function(e) {
 		var actionId = e.getAction().getId();
@@ -20474,7 +20482,7 @@ com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.prototype = $extend
 			var _g1 = 0, _g = this.randomVariables.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				if(this.randomVariables[i].getVariableName() == "" && this.randomVariables[i].getMinValue() == "" && this.randomVariables[i].getMaxValue() == "") this.randomVariables[i].setStatus(com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE); else if(!this.uniqueName(this.randomVariables[i].getVariableName(),this.randomVariables)) this.randomVariables[i].setNameStatus(com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.DUPLICATE_NAME_ERROR); else this.randomVariables[i].setNameStatus(this.isVariableNameValid(this.randomVariables[i].getVariableName()));
+				if(this.randomVariables[i].getVariableName() == "" && this.randomVariables[i].getMinValue() == "" && this.randomVariables[i].getMaxValue() == "") this.randomVariables[i].setStatus(com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE,com.wiris.util.ui.component.InputComponent.STATUS_INDETERMINATE); else if(this.isNameDuplicated(this.randomVariables[i].getVariableName(),this.randomVariables)) this.randomVariables[i].setNameStatus(com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.DUPLICATE_NAME_ERROR); else this.randomVariables[i].setNameStatus(this.isVariableNameValid(this.randomVariables[i].getVariableName()));
 			}
 		} else if(actionId == com.wiris.quizzes.impl.ui.component.RandomVariableRow.ACTION_RANDOM_VARIABLE_FIELD_CHANGED) {
 			var row = e.getSource();
@@ -20487,6 +20495,11 @@ com.wiris.quizzes.impl.ui.component.RandomVariablesComponent.prototype = $extend
 		var randomVar;
 		var reducedAlgorithm;
 		if(algorithm != null) {
+			if(algorithm.indexOf("</comment>") != -1 || algorithm.indexOf("</image>") != -1) return null;
+			var algorithmCopy = algorithm;
+			var command = new EReg("<command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"/></input></command>","g");
+			algorithmCopy = command.replace(algorithmCopy,"");
+			if(algorithmCopy.indexOf("</command>") != -1) return null;
 			var i;
 			var k = 0;
 			var m1 = new EReg("^\\s*([A-Za-z0-9_]+)\\s*(=)\\s*(random\\(\\s*(\\+*|\\-*|\\s*)([0-9]+)\\s*,\\s*(\\+*|\\-*|\\s*)([0-9]+)\\s*\\)\\s*)\\s*$|^\\s*([A-Za-z0-9_]+)\\s*(=)\\s*(random\\(\\s*(\\+*|\\-*|\\s*)([0-9]+)\\s*,\\s*(\\+*|\\-*|\\s*)([0-9]+)\\s*\\)\\s*\\;)\\s*$","");

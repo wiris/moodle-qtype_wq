@@ -1067,7 +1067,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		$r = $this->newGradeRequest($instance);
 		$qr = $r;
 		$qi = $instance;
-		$qr->question = $this->deepCopyQuestion($qr->question);
+		$qr->question = $this->copyQuestion($qr->question);
 		com_wiris_quizzes_impl_QuizzesImpl::setVariables($html, $qr->question, $qi, $qr);
 		return $r;
 	}
@@ -1119,8 +1119,17 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		}
 		return $this->newVariablesRequest($sb->b, $instance);
 	}
-	public function deepCopyQuestion($question) {
-		return $this->readQuestion($question->serialize());
+	public function copyQuestion($question) {
+		$copy = $this->newQuestion()->getImpl();
+		$original = $question->getImpl();
+		$copy->id = $original->id;
+		$copy->localData = $original->localData;
+		$copy->assertions = $original->assertions;
+		$copy->slots = $original->slots;
+		$copy->correctAnswers = $original->correctAnswers;
+		$copy->options = $original->options;
+		$copy->wirisCasSession = $original->wirisCasSession;
+		return $copy;
 	}
 	public function newVariablesRequest($html, $instance) {
 		if($instance === null) {
@@ -1131,7 +1140,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		if($question === null) {
 			throw new HException("The question must be specified, either as a parameter" . " of this function or as a field of the question instance");
 		}
-		$question = $this->deepCopyQuestion($question);
+		$question = $this->copyQuestion($question);
 		$qr = new com_wiris_quizzes_impl_QuestionRequestImpl();
 		$qr->question = $question;
 		$qr->userData = $qi->userData;
