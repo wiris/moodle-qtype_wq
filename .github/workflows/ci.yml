@@ -33,7 +33,7 @@ jobs:
           # Exclude Moodle+PHP incompatible versions
           # See: https://docs.moodle.org/dev/Moodle_and_PHP
           - moodle-branch: 'MOODLE_401_STABLE'
-            php: '7.4'
+            php: '7.3'
           - moodle-branch: 'MOODLE_39_STABLE'
             php: '8.0'
           - moodle-branch: 'MOODLE_310_STABLE'
