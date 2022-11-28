@@ -1741,6 +1741,35 @@ class com_wiris_quizzes_impl_HTMLTools {
 		}
 		return com_wiris_quizzes_impl_HTMLTools::toNativeArray($names);
 	}
+	public function addComputedVariablesToAlgorithm($algorithm, $computedVariables) {
+		$it = $computedVariables->keys();
+		if($it->hasNext() && $algorithm === null) {
+			$algorithm = com_wiris_quizzes_impl_HTMLTools::$EMPTY_CALCME_SESSION;
+		}
+		while($it->hasNext()) {
+			$name = $it->next();
+			$value = $computedVariables->get($name);
+			$isMathML = _hx_index_of($value, "<mi>", null) !== -1;
+			if($isMathML) {
+				$value = str_replace("<mo>#</mo>", "<mi>#</mi>", $value);
+				$value = $this->prepareFormulas("<math>" . $value . "</math>");
+				$value = _hx_substr($value, strlen("<math>"), null);
+				$value = _hx_substr($value, 0, strlen($value) - strlen("</math>"));
+			}
+			$value = str_replace("#", "", $value);
+			if($isMathML) {
+				$auxiliarString = new _hx_array(array(_hx_substr($algorithm, 0, _hx_last_index_of($algorithm, "</group>", null)), _hx_substr($algorithm, _hx_last_index_of($algorithm, "</group>", null), null)));
+				$algorithm = $auxiliarString[0] . "<command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\">" . "<mi>" . $name . "</mi>" . "<mo>=</mo><mrow>" . $value . "</mrow></math></input></command>" . $auxiliarString[1];
+				unset($auxiliarString);
+			} else {
+				$auxiliarString = new _hx_array(array(_hx_substr($algorithm, 0, _hx_last_index_of($algorithm, "</group>", null)), _hx_substr($algorithm, _hx_last_index_of($algorithm, "</group>", null), null)));
+				$algorithm = $auxiliarString[0] . "<algorithm>" . $name . "=" . $value . "</algorithm>" . $auxiliarString[1];
+				unset($auxiliarString);
+			}
+			unset($value,$name,$isMathML);
+		}
+		return $algorithm;
+	}
 	public function extractActionExpressions($html, $variables) {
 		$originalHtml = $html;
 		$html = com_wiris_util_xml_WXmlUtils::resolveEntities($html);
@@ -1759,7 +1788,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 					if(_hx_index_of($html, $bracketMathMLActionString, null) !== -1) {
 						$numberOfClosedBrackets = 0;
 						{
-							$_g2 = _hx_index_of($html, $bracketMathMLActionString, null); $_g1 = _hx_last_index_of($html, "<mo>)</mo>", null) + 10;
+							$_g2 = _hx_index_of($html, $bracketMathMLActionString, null); $_g1 = _hx_last_index_of($html, "<mo>)</mo>", null) + strlen("<mo>)</mo>");
 							while($_g2 < $_g1) {
 								$i = $_g2++;
 								if(_hx_char_at($html, $i) === "(") {
@@ -1770,7 +1799,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 									}
 								}
 								if($numberOfOpenBrackets === $numberOfClosedBrackets && $numberOfOpenBrackets !== 0) {
-									$indexOfLastClosingBracket = $i + 5;
+									$indexOfLastClosingBracket = $i + strlen("</mo>");
 									break;
 								}
 								unset($i);
@@ -1820,7 +1849,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 							if(_hx_index_of($html, $paragraphActionString, null) !== -1) {
 								$numberOfClosedBrackets = 0;
 								{
-									$_g2 = _hx_index_of($html, $paragraphActionString, null); $_g1 = _hx_last_index_of($html, ")", null) + 10;
+									$_g2 = _hx_index_of($html, $paragraphActionString, null); $_g1 = _hx_last_index_of($html, ")", null) + 1;
 									while($_g2 < $_g1) {
 										$i = $_g2++;
 										if(_hx_char_at($html, $i) === "(") {
@@ -1886,6 +1915,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 	static $NOT_A_SELECTOR = 0;
 	static $MROWS = "@math@mrow@msqrt@mstyle@merror@mpadded@mphantom@mtd@menclose@mscarry@msrow@";
 	static $MSUPS = "@msub@msup@msubsup@";
+	static $EMPTY_CALCME_SESSION;
 	static function toNativeArray($a) {
 		$n = new _hx_array(array());
 		$k = null;
@@ -2020,6 +2050,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLTools'; }
 }
+com_wiris_quizzes_impl_HTMLTools::$EMPTY_CALCME_SESSION = "<wiriscalc version=\"3.2\">\x0A" . "  <title>\x0A" . "    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\x0A" . "      <mtext></mtext>\x0A" . "    </math>\x0A" . "  </title>\x0A" . "  <session version=\"3.0\">\x0A" . "      <group>\x0A" . "        <command>\x0A" . "          <input>\x0A" . "            <math xmlns=\"http://www.w3.org/1998/Math/MathML\"/>\x0A" . "          </input>\x0A" . "        </command>\x0A" . "      </group>\x0A" . "  </session>\x0A" . "</wiriscalc>";
 function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer, &$answers, &$compound, &$h, &$i, &$i1, &$s) {
 	if($»this->isMathMLString($s)) {
 		return com_wiris_quizzes_impl_MathContent::$TYPE_MATHML;
