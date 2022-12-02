@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:10
+        image: postgres:12
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -19,15 +19,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.3', '7.4']
+        php: ['7.3', '7.4', '8.0']
         moodle-branch:
           [
             'MOODLE_39_STABLE',
             'MOODLE_310_STABLE',
             'MOODLE_311_STABLE',
             'MOODLE_400_STABLE',
+            'MOODLE_401_STABLE'
           ]
         database: [pgsql]
+        exclude:
+          # Exclude Moodle+PHP incompatible versions
+          # See: https://docs.moodle.org/dev/Moodle_and_PHP
+          - moodle-branch: 'MOODLE_401_STABLE'
+            php: '7.3'
+          - moodle-branch: 'MOODLE_39_STABLE'
+            php: '8.0'
+          - moodle-branch: 'MOODLE_310_STABLE'
+            php: '8.0'
 
     steps:
       - name: Check out repository code
