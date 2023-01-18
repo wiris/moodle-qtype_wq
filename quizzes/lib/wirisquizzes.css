@@ -221,6 +221,7 @@
 .wrsUI_app .wrsUI_calcMeComponent {
   display: flex;
   flex-direction: column;
+  direction: ltr;
 }
 .wrsUI_app .wrsUI_calcMeComponent .wrsUI_calc {
   flex-grow: 1;
@@ -504,6 +505,7 @@
   color: #1e6193;
 }
 .wrsUI_app .wrsUI_quizzesStudio {
+  direction: ltr;
   outline: 0;
   grid-template: 72px 1fr 76px/repeat(3, 1fr);
 }

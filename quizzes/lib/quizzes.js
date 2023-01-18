@@ -2057,32 +2057,6 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 	,getElementsToGradeFromAuthorAnswer: function(authorAnswer) {
 		return this.getElementsToGrade(authorAnswer.getValue(),authorAnswer.getComparison());
 	}
-	,syntacticAssertionToURL: function(a) {
-		var sb = new StringBuf();
-		if(a.getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH) sb.b += Std.string("Math"); else if(a.getName() == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC) sb.b += Std.string("Graphic"); else if(a.getName() == com.wiris.quizzes.api.assertion.SyntaxName.STRING) sb.b += Std.string("String");
-		if(a.parameters != null && a.parameters.length > 0) {
-			sb.b += Std.string("?");
-			var i;
-			var _g1 = 0, _g = a.parameters.length;
-			while(_g1 < _g) {
-				var i1 = _g1++;
-				var p = a.parameters[i1];
-				if(i1 > 0) sb.b += Std.string("&");
-				sb.b += Std.string(StringTools.urlEncode(p.name));
-				sb.b += Std.string("=");
-				sb.b += Std.string(StringTools.urlEncode(p.content));
-			}
-		}
-		return sb.b;
-	}
-	,getGrammarUrl: function(slot) {
-		var prefix = com.wiris.quizzes.api.Quizzes.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL);
-		prefix += "/grammar/";
-		var url = null;
-		if(slot.getSyntax() != null) url = prefix + this.syntacticAssertionToURL(slot.getSyntax());
-		if(url == null) url = prefix + "Math";
-		return url;
-	}
 	,getHttpObject: function(httpl,serviceUrl,service,postData) {
 		var http;
 		var config = com.wiris.quizzes.impl.QuizzesImpl.getInstance().getConfiguration();
@@ -3472,7 +3446,10 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 		this.cloneLastSlotUntilIndexAchieved(question,slots,index);
 		var slot = slots[index];
 		var elemValue = element.value;
-		if(elemValue != null || elemValue != "") instance.setSlotAnswer(slot,element.value);
+		if(elemValue != null || elemValue != "") {
+			elemValue = com.wiris.util.xml.WXmlUtils.htmlUnescape(elemValue);
+			instance.setSlotAnswer(slot,elemValue);
+		}
 		var component = this.uibuilder.newAnswerField(instance,slot);
 		if(readOnly) component.setReadOnly(readOnly);
 		component.addQuizzesFieldListener(new com.wiris.quizzes.FieldSynchronizer(element,instanceElement,instance,submitElements));
@@ -3647,8 +3624,8 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 					}
 				} catch( e ) {
 					com.wiris.quizzes.JsDomUtils.addClass(element,"wiriserrorprocessing");
-					haxe.Log.trace("An error occurred processing the field with class name " + className + " and index " + index + ".",{ fileName : "JsQuizzesFilter.hx", lineNumber : 252, className : "com.wiris.quizzes.JsQuizzesFilter", methodName : "filterFields"});
-					haxe.Log.trace(e,{ fileName : "JsQuizzesFilter.hx", lineNumber : 253, className : "com.wiris.quizzes.JsQuizzesFilter", methodName : "filterFields"});
+					haxe.Log.trace("An error occurred processing the field with class name " + className + " and index " + index + ".",{ fileName : "JsQuizzesFilter.hx", lineNumber : 253, className : "com.wiris.quizzes.JsQuizzesFilter", methodName : "filterFields"});
+					haxe.Log.trace(e,{ fileName : "JsQuizzesFilter.hx", lineNumber : 254, className : "com.wiris.quizzes.JsQuizzesFilter", methodName : "filterFields"});
 				}
 				element.style.display = "none";
 				com.wiris.quizzes.JsDomUtils.addClass(element,"wirisprocessed");
@@ -4011,7 +3988,8 @@ com.wiris.quizzes.api.Slot = $hxClasses["com.wiris.quizzes.api.Slot"] = function
 com.wiris.quizzes.api.Slot.__name__ = ["com","wiris","quizzes","api","Slot"];
 com.wiris.quizzes.api.Slot.__interfaces__ = [com.wiris.quizzes.api.Serializable];
 com.wiris.quizzes.api.Slot.prototype = {
-	copy: null
+	getGrammarUrl: null
+	,copy: null
 	,getAnswerFieldType: null
 	,setAnswerFieldType: null
 	,setInitialContent: null
@@ -12327,7 +12305,33 @@ com.wiris.quizzes.impl.SlotImpl.newWithQuestionCallback = function(question) {
 }
 com.wiris.quizzes.impl.SlotImpl.__super__ = com.wiris.util.xml.SerializableImpl;
 com.wiris.quizzes.impl.SlotImpl.prototype = $extend(com.wiris.util.xml.SerializableImpl.prototype,{
-	isSlotCompoundAnswer: function() {
+	syntacticAssertionToURL: function(a) {
+		var sb = new StringBuf();
+		if(a.getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH) sb.b += Std.string("Math"); else if(a.getName() == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC) sb.b += Std.string("Graphic"); else if(a.getName() == com.wiris.quizzes.api.assertion.SyntaxName.STRING) sb.b += Std.string("String");
+		if(a.parameters != null && a.parameters.length > 0) {
+			sb.b += Std.string("?");
+			var i;
+			var _g1 = 0, _g = a.parameters.length;
+			while(_g1 < _g) {
+				var i1 = _g1++;
+				var p = a.parameters[i1];
+				if(i1 > 0) sb.b += Std.string("&");
+				sb.b += Std.string(StringTools.urlEncode(p.name));
+				sb.b += Std.string("=");
+				sb.b += Std.string(StringTools.urlEncode(p.content));
+			}
+		}
+		return sb.b;
+	}
+	,getGrammarUrl: function() {
+		var prefix = com.wiris.quizzes.api.Quizzes.getInstance().getConfiguration().get(com.wiris.quizzes.api.ConfigurationKeys.SERVICE_URL);
+		prefix += "/grammar/";
+		var url = null;
+		if(this.syntax != null) url = prefix + this.syntacticAssertionToURL(this.syntax);
+		if(url == null) url = prefix + "Math";
+		return url;
+	}
+	,isSlotCompoundAnswer: function() {
 		return this.getProperty(com.wiris.quizzes.api.PropertyName.COMPOUND_ANSWER) == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE;
 	}
 	,removeProperty: function(name) {
@@ -13596,7 +13600,7 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 		}
 	}
 	,getGrammarUrl: function() {
-		var grammarUrl = com.wiris.quizzes.impl.QuizzesImpl.getInstance().getGrammarUrl(this.slot);
+		var grammarUrl = this.slot.getGrammarUrl();
 		grammarUrl += grammarUrl.indexOf("?") != -1?"&":"?";
 		grammarUrl += "reservedWords=true&measureUnits=true&json=true";
 		return grammarUrl;
@@ -14608,7 +14612,7 @@ com.wiris.quizzes.impl.ui.QuizzesStudioContext.prototype = {
 		return this.mathTypeParameters;
 	}
 	,getGrammarUrl: function() {
-		var grammarUrl = com.wiris.quizzes.impl.QuizzesImpl.getInstance().getGrammarUrl(this.slot);
+		var grammarUrl = this.slot.getGrammarUrl();
 		grammarUrl += grammarUrl.indexOf("?") != -1?"&":"?";
 		grammarUrl += "reservedWords=true&measureUnits=true&json=true";
 		return grammarUrl;
@@ -15272,7 +15276,7 @@ com.wiris.quizzes.impl.ui.component.AuthoringFieldMathTypeComponent.prototype = 
 		this.setParameters(parameters);
 	}
 	,getGrammarUrl: function() {
-		var grammarUrl = com.wiris.quizzes.impl.QuizzesImpl.getInstance().getGrammarUrl(this.slot);
+		var grammarUrl = this.slot.getGrammarUrl();
 		grammarUrl += grammarUrl.indexOf("?") != -1?"&":"?";
 		grammarUrl += "reservedWords=true&measureUnits=true&json=true";
 		return grammarUrl;
@@ -21684,7 +21688,7 @@ com.wiris.quizzes.impl.ui.component.ViewSourceActivity.prototype = $extend(com.w
 		if(slot.getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH) {
 			this.grammarUrl.setVisible(true);
 			this.reservedWords.setVisible(true);
-			this.grammarUrl.setValue(com.wiris.quizzes.impl.QuizzesImpl.getInstance().getGrammarUrl(slot));
+			this.grammarUrl.setValue(slot.getGrammarUrl());
 			this.reservedWords.setValue(reservedWords);
 		} else {
 			this.grammarUrl.setVisible(false);
