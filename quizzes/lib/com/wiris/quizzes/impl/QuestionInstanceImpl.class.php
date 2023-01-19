@@ -1355,7 +1355,7 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 		if($keyword === $this->question->getImpl()->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_STUDENT_ANSWER_PARAMETER_NAME)) {
 			$lang = com_wiris_quizzes_impl_CalcDocumentTools::casSessionLang($this->question->getAlgorithm());
 			if($lang !== null && !($lang === com_wiris_quizzes_impl_QuestionInstanceImpl::$DEF_ALGORITHM_LANGUAGE)) {
-				$keyword = com_wiris_quizzes_impl_QuizzesTranslator::getInstance($lang)->t($keyword);
+				$keyword = com_wiris_quizzes_impl_ui_QuizzesContext::getInstance()->getTranslatorFromLang($lang)->t($keyword);
 			}
 		}
 		return $keyword;
