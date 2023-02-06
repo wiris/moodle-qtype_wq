@@ -687,6 +687,12 @@
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_studioMainContainer .wrsUI_mainComponentMathtype .wrsUI_aux_mathTypeComponentWrapper .wrs_editor {
   min-height: 300px;
 }
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel .wrsUI_homeMainContentContainer {
+  width: 100%;
+  width: -moz-available;
+  width: -webkit-fill-available;
+  width: fill-available;
+}
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_list.wrsUI_activityList {
   cursor: pointer;
   background: #fff;

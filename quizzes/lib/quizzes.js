@@ -16481,7 +16481,7 @@ com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel = $hxClasses["com.wi
 	var welcomeDescription = com.wiris.util.ui.component.Label.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_WELCOME_DESCRIPTION_TEXT));
 	welcomeDescription.getStyle().setMargin(12,0,12,0);
 	var welcomeButtons = new com.wiris.util.ui.component.FlowPanel(com.wiris.util.ui.component.FlowPanel.DIRECTION_LEFT_TO_RIGHT);
-	var releaseNotes = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_RELEASE_NOTES_BUTTON_TEXT),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_PAGE_RELEASE_NOTES_BUTTON_URL,null,controller);
+	var releaseNotes = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_RELEASE_NOTES_BUTTON_TEXT),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_PAGE_RELEASE_NOTES_BUTTON_URL),null,controller);
 	releaseNotes.getStyle().setMargin(8,0,8,0);
 	var feedback = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_GIVE_US_FEEDBACK_BUTTON_TEXT),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_GIVE_US_YOUR_FEEDBACK_BUTTON_URL,null,controller);
 	feedback.getStyle().setMargin(8,0,8,0);
@@ -16503,7 +16503,7 @@ com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel = $hxClasses["com.wi
 	featureDescription1.getStyle().setMargin(12,0,12,0);
 	titleAndDescriptionFeaturePanel1.addComponent(featureHeader1);
 	titleAndDescriptionFeaturePanel1.addComponent(featureDescription1);
-	var featureLearnMore1 = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_LEARN_MORE_BUTTON_TEXT),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_LEARN_MORE_BUTTON_URL,null,controller);
+	var featureLearnMore1 = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_LEARN_MORE_BUTTON_TEXT),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_LEARN_MORE_BUTTON_URL),null,controller);
 	featureLearnMore1.addClass(com.wiris.util.ui.component.Button.CLASS_BUTTON_CONTAINED).addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_QUIZZES_BUTTON);
 	featureLearnMore1.getStyle().setMargin(8,0,8,0);
 	wrapperFeaturePanel1.addComponent(titleAndDescriptionFeaturePanel1,com.wiris.util.ui.component.BorderPanel.POSITION_NORTH);
@@ -16522,8 +16522,8 @@ com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel = $hxClasses["com.wi
 	titleAndDescriptionFeaturePanel2.addComponent(featureHeader2);
 	titleAndDescriptionFeaturePanel2.addComponent(featureDescription2);
 	var bottomButtons = new com.wiris.util.ui.component.BorderPanel(false);
-	var basicMode = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_BASIC_MODE_BUTTON_TEXT),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_BASIC_MODE_BUTTON_URL,null,controller);
-	var advancedMode = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ADVANCED_MODE_BUTTON_TEXT),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ADVANCED_MODE_BUTTON_URL,null,controller);
+	var basicMode = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_BASIC_MODE_BUTTON_TEXT),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_BASIC_MODE_BUTTON_URL),null,controller);
+	var advancedMode = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ADVANCED_MODE_BUTTON_TEXT),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ADVANCED_MODE_BUTTON_URL),null,controller);
 	basicMode.addClass(com.wiris.util.ui.component.Button.CLASS_BUTTON_CONTAINED).addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_QUIZZES_BUTTON);
 	basicMode.getStyle().setMargin(8,0,8,0);
 	advancedMode.addClass(com.wiris.util.ui.component.Button.CLASS_BUTTON_CONTAINED).addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_QUIZZES_BUTTON);
@@ -16539,19 +16539,19 @@ com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel = $hxClasses["com.wi
 	var trainingHeader = com.wiris.util.ui.component.Label.newHeaderWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_TRAINING_PANEL_HEADER_TEXT));
 	var trainingDescription = com.wiris.util.ui.component.Label.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_TRAINING_PANEL_TEXT));
 	trainingDescription.getStyle().setMargin(12,0,12,0);
-	var trainingButton = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ENROLL_ME_BUTTON_TEXT),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ENROLL_ME_BUTTON_URL,null,controller);
+	var trainingButton = com.wiris.util.ui.component.HyperlinkButton.newWithText(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ENROLL_ME_BUTTON_TEXT),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_ENROLL_ME_BUTTON_URL),null,controller);
 	trainingButton.addClass(com.wiris.util.ui.component.Button.CLASS_BUTTON_CONTAINED).addClass(com.wiris.quizzes.impl.ui.component.QuizzesStudioComponent.CLASS_QUIZZES_BUTTON);
 	trainingButton.getStyle().setMargin(8,0,8,0);
 	this.trainingPanel.addComponent(trainingHeader);
 	this.trainingPanel.addComponent(trainingDescription);
 	this.trainingPanel.addComponent(trainingButton);
 	this.actionsPanel = new com.wiris.util.ui.component.BorderPanel(false);
-	var contactUs = com.wiris.util.ui.component.HyperlinkButton.newWithTextAndIcon(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_CONTACT_US_BUTTON_TEXT),new com.wiris.util.ui.MaterialIcon("alternate_email"),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_CONTACT_US_BUTTON_URL,null,controller);
+	var contactUs = com.wiris.util.ui.component.HyperlinkButton.newWithTextAndIcon(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_CONTACT_US_BUTTON_TEXT),new com.wiris.util.ui.MaterialIcon("alternate_email"),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_CONTACT_US_BUTTON_URL),null,controller);
 	contactUs.addClass(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.CLASS_GETTING_STARTED_ABOUT_US_BUTTON);
 	contactUs.getStyle().setMargin(0,0,0,12);
-	var visitOurWebpage = com.wiris.util.ui.component.HyperlinkButton.newWithTextAndIcon(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_VISIT_OUR_WEBPAGE_BUTTON_TEXT),new com.wiris.util.ui.MaterialIcon("language"),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_VISIT_OUR_WEBPAGE_BUTTON_URL,null,controller);
+	var visitOurWebpage = com.wiris.util.ui.component.HyperlinkButton.newWithTextAndIcon(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_VISIT_OUR_WEBPAGE_BUTTON_TEXT),new com.wiris.util.ui.MaterialIcon("language"),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_VISIT_OUR_WEBPAGE_BUTTON_URL),null,controller);
 	visitOurWebpage.addClass(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.CLASS_GETTING_STARTED_ABOUT_US_BUTTON);
-	var reportAnIssue = com.wiris.util.ui.component.HyperlinkButton.newWithTextAndIcon(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_REPORT_AN_ISSUE_BUTTON_TEXT),new com.wiris.util.ui.MaterialIcon("bug_report"),com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_REPORT_AN_ISSUE_BUTTON_URL,null,controller);
+	var reportAnIssue = com.wiris.util.ui.component.HyperlinkButton.newWithTextAndIcon(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().t(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_REPORT_AN_ISSUE_BUTTON_TEXT),new com.wiris.util.ui.MaterialIcon("bug_report"),com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().buildUrl(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.HOME_GETTING_STARTED_REPORT_AN_ISSUE_BUTTON_URL),null,controller);
 	reportAnIssue.addClass(com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.CLASS_GETTING_STARTED_ABOUT_US_BUTTON);
 	reportAnIssue.getStyle().setMargin(0,21,0,0);
 	this.actionsPanel.addComponent(contactUs,com.wiris.util.ui.component.BorderPanel.POSITION_WEST);
@@ -16573,6 +16573,7 @@ com.wiris.quizzes.impl.ui.component.HomeGettingStartedPanel.prototype = $extend(
 });
 com.wiris.quizzes.impl.ui.component.HomeMainContentContainer = $hxClasses["com.wiris.quizzes.impl.ui.component.HomeMainContentContainer"] = function(controller) {
 	com.wiris.util.ui.component.FlowPanel.call(this,com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
+	this.addClass(com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.HOME_MAIN_CONTENT_CONTAINER_CLASS);
 	this.correctAnswerInitialContent = new com.wiris.util.ui.component.ToggleButtonsPanel();
 	var initialContent = com.wiris.util.ui.component.ToggleButton.newWithText(controller.t(com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.HOME_INITIAL_CONTENT_BUTTON_TEXT),com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.INITIAL_CONTENT_SELECTABLE_ID,new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.ACTION_INITIAL_CONTENT_SELECTED,com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.ACTION_INITIAL_CONTENT_SELECTED),controller);
 	initialContent.setId("initialContent");
@@ -22207,7 +22208,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 		if(com.wiris.quizzes.impl.HTMLTools.hasCasSessionParameter(session,parameter,name)) this.context.getQuestion().setProperty(com.wiris.quizzes.api.PropertyName.STUDENT_ANSWER_PARAMETER,"true"); else this.context.getQuestion().setProperty(com.wiris.quizzes.api.PropertyName.STUDENT_ANSWER_PARAMETER,"false");
 	}
 	,onError: function(error) {
-		haxe.Log.trace("Conversion to algorithm failed with error: " + error,{ fileName : "QuizzesStudioController.hx", lineNumber : 2901, className : "com.wiris.quizzes.impl.ui.controller.QuizzesStudioController", methodName : "onError"});
+		haxe.Log.trace("Conversion to algorithm failed with error: " + error,{ fileName : "QuizzesStudioController.hx", lineNumber : 2903, className : "com.wiris.quizzes.impl.ui.controller.QuizzesStudioController", methodName : "onError"});
 	}
 	,wrapAlgorithmWithCalcSession: function(algorithm) {
 		var lang = this.importCasSessionLang != null?this.importCasSessionLang:"en";
@@ -22389,6 +22390,7 @@ com.wiris.quizzes.impl.ui.controller.QuizzesStudioController.prototype = {
 			var question = com.wiris.quizzes.api.Quizzes.getInstance().readQuestion(fileContent);
 			var inputSlotId = this.context.getInputSlot().id;
 			var inputAuthorAnswerId = this.context.getInputAuthorAnswer().id;
+			if(this.context.getHomePageStatusGettingStarted() == com.wiris.quizzes.impl.ui.QuizzesStudioContext.HOME_PAGE_STATUS_SHOW_GETTING_STARTED) this.context.setHomePageStatusGettingStarted(com.wiris.quizzes.impl.ui.QuizzesStudioContext.HOME_PAGE_STATUS_SHOW_MAIN_CONTENT);
 			if(this.checkQuestionDeprecated(question,inputSlotId,inputAuthorAnswerId)) this.loadImportedQuestion(question,inputSlotId,inputAuthorAnswerId);
 		}
 	}
@@ -37056,6 +37058,9 @@ com.wiris.util.ui.component.Dialog.prototype = $extend(com.wiris.util.ui.compone
 	getMessageLabel: function() {
 		return this.message;
 	}
+	,getPrimarySlot: function() {
+		return this.primarySlot;
+	}
 	,getControlSlot: function() {
 		return this.controlSlot;
 	}
@@ -45159,6 +45164,7 @@ com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.HOME_CORRECT_ANSWER
 com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.HOME_INITIAL_CONTENT_DESCRIPTION_MATH = "quizzes_studio_home_initial_content_description_math";
 com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.HOME_INITIAL_CONTENT_DESCRIPTION_GRAPHIC = "quizzes_studio_home_initial_content_description_graphic";
 com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.HOME_INITIAL_CONTENT_DESCRIPTION_TEXT = "quizzes_studio_home_initial_content_description_text";
+com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.HOME_MAIN_CONTENT_CONTAINER_CLASS = "homeMainContentContainer";
 com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.ACTION_MAIN_CONTENT_CHANGED = "mainContentChanged";
 com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.ACTION_INITIAL_CONTENT_SELECTED = "initialContentSelected";
 com.wiris.quizzes.impl.ui.component.HomeMainContentContainer.ACTION_CORRECT_ANSWER_SELECTED = "correctAnswerSelected";
