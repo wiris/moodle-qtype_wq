@@ -1179,7 +1179,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 			$defname = $qq->defaultOption(com_wiris_quizzes_api_QuizzesConstants::$OPTION_STUDENT_ANSWER_PARAMETER_NAME);
 			if($defname === $name) {
 				$lang = com_wiris_quizzes_impl_CalcDocumentTools::casSessionLang($qq->getAlgorithm());
-				$name = com_wiris_quizzes_impl_ui_QuizzesContext::getInstance()->getTranslatorFromLang($lang)->t($name);
+				$name = com_wiris_quizzes_impl_QuizzesTranslator::getInstance($lang)->t($name);
 			}
 			$n = 0;
 			$i = null;
