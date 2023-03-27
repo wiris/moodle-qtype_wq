@@ -59,6 +59,7 @@ class com_wiris_quizzes_impl_QuizzesEnumUtils {
 			com_wiris_quizzes_impl_QuizzesEnumUtils::$comparisonNames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_ALL, com_wiris_quizzes_api_assertion_ComparisonName::$ANY_ANSWER);
 			com_wiris_quizzes_impl_QuizzesEnumUtils::$comparisonNames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_FUNCTION, com_wiris_quizzes_api_assertion_ComparisonName::$GRADING_FUNCTION);
 			com_wiris_quizzes_impl_QuizzesEnumUtils::$comparisonNames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_GRAPHIC, com_wiris_quizzes_api_assertion_ComparisonName::$GRAPHICALLY_EQUAL);
+			com_wiris_quizzes_impl_QuizzesEnumUtils::$comparisonNames->set(com_wiris_quizzes_impl_Assertion::$EQUIVALENT_SKETCH, com_wiris_quizzes_api_assertion_ComparisonName::$SKETCH_EQUAL);
 		}
 		return com_wiris_quizzes_impl_QuizzesEnumUtils::$comparisonNames;
 	}

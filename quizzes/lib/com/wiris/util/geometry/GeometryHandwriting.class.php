@@ -32,14 +32,14 @@ class com_wiris_util_geometry_GeometryHandwriting {
 					$_g3 = 0; $_g2 = $a2->length;
 					while($_g3 < $_g2) {
 						$j1 = $_g3++;
-						$a3 = $a2[$j1];
+						$a3 = com_wiris_util_json_JSon::getArray($a2[$j1]);
 						$s2 = new _hx_array(array());
 						$k = null;
 						{
 							$_g5 = 0; $_g4 = $a3->length;
 							while($_g5 < $_g4) {
 								$k1 = $_g5++;
-								$s2[$k1] = $a3[$k1];
+								$s2[$k1] = com_wiris_util_json_JSon::getFloat($a3[$k1]);
 								unset($k1);
 							}
 							unset($_g5,$_g4);

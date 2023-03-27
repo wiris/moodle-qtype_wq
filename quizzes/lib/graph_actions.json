@@ -208,6 +208,14 @@
     }
   },
   {
+    "id": "sketch",
+    "title": "tt_sketch",
+    "icon": {
+      "name": "hand",
+      "type": "svg"
+    }
+  },
+  {
     "id": "elements",
     "title": "tt_elements"
   },
@@ -241,6 +249,30 @@
   },
   {
     "id": "newRayFromPointThroughPoint",
+    "title": "tt_ray",
+    "icon": {
+      "name": "ray",
+      "type": "svg"
+    }
+  },
+  {
+    "id": "newLineParallelToLineThroughPoint",
+    "title": "tt_ray",
+    "icon": {
+      "name": "ray",
+      "type": "svg"
+    }
+  },
+  {
+    "id": "newLinePerpendicularToLineThroughPoint",
+    "title": "tt_ray",
+    "icon": {
+      "name": "ray",
+      "type": "svg"
+    }
+  },
+  {
+    "id": "midpointOfLineSegment",
     "title": "tt_ray",
     "icon": {
       "name": "ray",
