@@ -256,30 +256,6 @@
     }
   },
   {
-    "id": "newLineParallelToLineThroughPoint",
-    "title": "tt_ray",
-    "icon": {
-      "name": "ray",
-      "type": "svg"
-    }
-  },
-  {
-    "id": "newLinePerpendicularToLineThroughPoint",
-    "title": "tt_ray",
-    "icon": {
-      "name": "ray",
-      "type": "svg"
-    }
-  },
-  {
-    "id": "midpointOfLineSegment",
-    "title": "tt_ray",
-    "icon": {
-      "name": "ray",
-      "type": "svg"
-    }
-  },
-  {
     "id": "newVectorByPoints",
     "title": "tt_vector",
     "icon": {
