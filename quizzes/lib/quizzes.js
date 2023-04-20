@@ -16046,6 +16046,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent = $hxClasses["com.wiris.
 		this.parameters.set(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_DEFAULT_DISPLAY_SETTINGS,com.wiris.util.json.JSon.encode(defaultConfig));
 	}
 	if(this.parameters.exists(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_TOOLBAR_DEFINITION)) this.toolbarDefinition = com.wiris.util.ui.controller.ToolbarDefinition.deserialize(this.parameters.get(com.wiris.quizzes.impl.ui.component.GraphInputComponent.PARAM_TOOLBAR_DEFINITION));
+	this.pendingActions = new Hash();
 };
 com.wiris.quizzes.impl.ui.component.GraphInputComponent.__name__ = ["com","wiris","quizzes","impl","ui","component","GraphInputComponent"];
 com.wiris.quizzes.impl.ui.component.GraphInputComponent.__interfaces__ = [com.wiris.util.graphics.DisplayListener,com.wiris.util.ui.component.Field];
@@ -16082,7 +16083,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 		} catch( e ) {
 			if( js.Boot.__instanceof(e,com.wiris.system.Exception) ) {
 			} else throw(e);
-		}
+		} else this.pendingActions.set(action,params);
 	}
 	,activateMainAction: function() {
 		if(this.graph != null) this.graph.getGraphModel().activateMainAction();
@@ -16148,6 +16149,12 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 		this.graph.getGraphModel().getDisplay().addDisplayListener(this);
 		this.setGraphValue(this.value);
 		if(this.toolbarDefinition != null) this.graph.getGraphModel().updateGraphToolbar(this.toolbarDefinition);
+		var pendingAct = this.pendingActions.keys();
+		while(pendingAct.hasNext()) {
+			var name = pendingAct.next();
+			this.actionWithParams(name,this.pendingActions.get(name));
+		}
+		this.pendingActions = new Hash();
 		this.componentSet();
 	}
 	,updateGraphToolbar: function(definition) {
@@ -16165,6 +16172,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 		this.value = graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_STANDARD?com.wiris.quizzes.impl.ui.component.GraphInputComponent.EMPTY_GEOMETRY_FILE_GRAPH:graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_BAR_CHART?com.wiris.quizzes.impl.ui.component.GraphInputComponent.EMPTY_GEOMETRY_FILE_BAR_CHART:graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_LINE_CHART?com.wiris.quizzes.impl.ui.component.GraphInputComponent.EMPTY_GEOMETRY_FILE_LINE_CHART:graphMode == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_PIE_CHART?com.wiris.quizzes.impl.ui.component.GraphInputComponent.EMPTY_GEOMETRY_FILE_PIE_CHART:com.wiris.quizzes.impl.ui.component.GraphInputComponent.EMPTY_GEOMETRY_FILE_GRAPH;
 		this.setGraphValue(this.value);
 	}
+	,pendingActions: null
 	,graphMode: null
 	,toolbarDefinition: null
 	,value: null
@@ -20214,7 +20222,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesStudioHomeBottomBar.prototype = $exte
 		if(this.isVisible()) {
 			this.saveButton.setVisible(displaySaveAndCancel);
 			this.cancelButton.setVisible(displaySaveAndCancel);
-			this.testQuestionButton.setVisible(displayTest);
+			this.testQuestionButton.setVisible(displayTest && context.getHomePageStatusGettingStarted() != com.wiris.quizzes.impl.ui.QuizzesStudioContext.HOME_PAGE_STATUS_SHOW_GETTING_STARTED);
 		}
 	}
 	,saveButton: null
