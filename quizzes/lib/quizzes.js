@@ -21497,8 +21497,16 @@ com.wiris.quizzes.impl.ui.component.TestQuestionActivity.prototype = $extend(com
 	,copyCorrectAnswer: function(correctAnswer) {
 		this.studentAnswer.setStudentAnswer(correctAnswer);
 	}
+	,setGraphCustomToolbar: function(customToolbar) {
+		this.studentAnswer.setGraphCustomToolbar(customToolbar);
+	}
+	,setMathTypeParameters: function(grammarUrl,parameters) {
+		this.studentAnswer.setMathTypeParameters(grammarUrl,parameters);
+	}
 	,updateVisibility: function(context) {
+		this.setMathTypeParameters(context.getGrammarUrl(),context.getMathTypeParameters());
 		this.updateTestQuestion(context.getQuestionImpl(),context.getQuestionInstanceImpl(),context.getSlot(),context.getAuthorAnswer());
+		this.setGraphCustomToolbar(context.getSlot().getProperty(com.wiris.quizzes.api.PropertyName.GRAPH_TOOLBAR));
 		this.studentAnswer.setVisible(this.controller.getConfigurationKey("testQuestion/studentAnswer"));
 		this.correctAnswer.setVisible(this.controller.getConfigurationKey("testQuestion/correctAnswer"));
 		this.studentAnswerFeedback.setVisible(this.controller.getConfigurationKey("testQuestion/answerFeedback"));
@@ -37655,6 +37663,7 @@ com.wiris.util.ui.component.DrawingPanel = $hxClasses["com.wiris.util.ui.compone
 	this.canvasHeight = -1;
 	this.painting = false;
 	this.playing = false;
+	this.readOnly = false;
 	this.listeningToDisplayChanges = true;
 	this.listeners = new Array();
 	this.lineWidth = com.wiris.util.ui.component.DrawingPanel.DEFAULT_LINE_WIDTH;
@@ -37711,7 +37720,10 @@ com.wiris.util.ui.component.DrawingPanel.getScribblePolygon = function(stroke,mi
 }
 com.wiris.util.ui.component.DrawingPanel.__super__ = com.wiris.util.ui.component.BorderPanel;
 com.wiris.util.ui.component.DrawingPanel.prototype = $extend(com.wiris.util.ui.component.BorderPanel.prototype,{
-	fireDrawingStrokesChangedEvent: function() {
+	setReadOnly: function(readOnly) {
+		this.readOnly = readOnly;
+	}
+	,fireDrawingStrokesChangedEvent: function() {
 		var i = HxOverrides.iter(this.listeners);
 		this.listeningToDisplayChanges = false;
 		while(i.hasNext()) i.next().drawingStrokesChanged(this);
@@ -37723,7 +37735,7 @@ com.wiris.util.ui.component.DrawingPanel.prototype = $extend(com.wiris.util.ui.c
 		}
 	}
 	,updateEmptyStyle: function() {
-		if(this.strokes.length == 0 && this.emptyStyleShown) this.addClass(com.wiris.util.ui.component.DrawingPanel.CLASS_DRAWING_PANEL_EMPTY); else this.removeClass(com.wiris.util.ui.component.DrawingPanel.CLASS_DRAWING_PANEL_EMPTY);
+		if(this.strokes.length == 0 && this.emptyStyleShown && !this.readOnly) this.addClass(com.wiris.util.ui.component.DrawingPanel.CLASS_DRAWING_PANEL_EMPTY); else this.removeClass(com.wiris.util.ui.component.DrawingPanel.CLASS_DRAWING_PANEL_EMPTY);
 	}
 	,stateChanged: function(e) {
 		this.updateEmptyStyle();
@@ -37820,6 +37832,7 @@ com.wiris.util.ui.component.DrawingPanel.prototype = $extend(com.wiris.util.ui.c
 		e.preventDefault();
 	}
 	,touchPress: function(e) {
+		if(this.readOnly) return;
 		if(e.getTouches().length > 1) {
 			if(this.painting && e.getTouches().length == 2) {
 				this.painting = false;
@@ -37853,7 +37866,7 @@ com.wiris.util.ui.component.DrawingPanel.prototype = $extend(com.wiris.util.ui.c
 		}
 	}
 	,mousePress: function(e) {
-		if(e.getButton() != com.wiris.util.ui.interaction.MouseButtonCode.LEFT_BUTTON) return;
+		if(e.getButton() != com.wiris.util.ui.interaction.MouseButtonCode.LEFT_BUTTON || this.readOnly) return;
 		e.preventDefault();
 		this.startStroke();
 		this.addPoint([e.getX(),e.getY()]);
@@ -38020,6 +38033,7 @@ com.wiris.util.ui.component.DrawingPanel.prototype = $extend(com.wiris.util.ui.c
 	,undoPosition: null
 	,undoBuffer: null
 	,lastDeletedStrokes: null
+	,readOnly: null
 	,playing: null
 	,painting: null
 	,canvasHeight: null
