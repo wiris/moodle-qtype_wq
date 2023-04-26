@@ -13736,14 +13736,16 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 			}
 			var diff = com.wiris.util.type.Arrays.difference(parsedValueElementsIds,parsedInitialContentElementsIds);
 			var elementsToBeRemoved = com.wiris.util.type.Arrays.difference(diff,elementsToHandwrite);
-			var params = new Hash();
-			params.set("elements",elementsToHandwrite);
-			params.set("elementsToBeRemoved",elementsToBeRemoved);
-			this.getComponent().actionWithParams("elementsToHandwriting",params);
-			value = this.getComponent().getValue();
-			this.answerChanged();
-			this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID,com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID));
-			this.getComponent().activateMainAction();
+			if(elementsToHandwrite.length > 0 || elementsToBeRemoved.length > 0) {
+				var params = new Hash();
+				params.set("elements",elementsToHandwrite);
+				params.set("elementsToBeRemoved",elementsToBeRemoved);
+				this.getComponent().actionWithParams("elementsToHandwriting",params);
+				value = this.getComponent().getValue();
+				this.answerChanged();
+				this.performAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID,com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID));
+				this.getComponent().activateMainAction();
+			}
 		}
 		this.questionInstance.setSlotAnswer(this.slot,value);
 		this.changeState();
