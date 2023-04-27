@@ -16029,6 +16029,7 @@ com.wiris.util.graphics.DisplayListener.prototype = {
 	,__class__: com.wiris.util.graphics.DisplayListener
 }
 com.wiris.quizzes.impl.ui.component.GraphInputComponent = $hxClasses["com.wiris.quizzes.impl.ui.component.GraphInputComponent"] = function(parameters) {
+	this.readOnly = false;
 	com.wiris.util.ui.component.InputComponent.call(this);
 	this.addClass(com.wiris.quizzes.impl.ui.component.GraphInputComponent.CLASS_GRAPH_COMPONENT);
 	this.parameters = parameters;
@@ -16100,6 +16101,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 		}
 	}
 	,setReadOnly: function(readOnly) {
+		this.readOnly = readOnly;
 		if(this.graph != null) {
 			if(readOnly) this.graph.getGraphModel().enterViewOnly(true); else this.graph.getGraphModel().exitViewOnly();
 		}
@@ -16157,6 +16159,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 			this.actionWithParams(name,this.pendingActions.get(name));
 		}
 		this.pendingActions = new Hash();
+		if(this.readOnly) this.setReadOnly(true);
 		this.componentSet();
 	}
 	,updateGraphToolbar: function(definition) {
@@ -16176,6 +16179,7 @@ com.wiris.quizzes.impl.ui.component.GraphInputComponent.prototype = $extend(com.
 	}
 	,pendingActions: null
 	,graphMode: null
+	,readOnly: null
 	,toolbarDefinition: null
 	,value: null
 	,parameters: null
