@@ -38,6 +38,7 @@
 .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField {
   display: inline-block;
   width: auto;
+  height: auto;
 }
 .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField > input, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField > input {
   line-height: 25px;
