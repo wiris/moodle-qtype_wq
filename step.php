@@ -48,7 +48,7 @@ class qtype_wirisstep {
 
     public function load($step) {
         $notReadOnly = !($step instanceof question_attempt_step_read_only);
-        $notAdapterOfReadOnly = !($step instanceof GlobalQuestion_attempt_step_subquestion_adapter_wiris && $step->is_adapter_of_read_only());
+        $notAdapterOfReadOnly = !($step instanceof question_attempt_step_subquestion_adapter_wiris && $step->is_adapter_of_read_only());
         if ($notReadOnly && $notAdapterOfReadOnly) {
             $this->step = $step;
             // It is a regrade or the first attempt.
