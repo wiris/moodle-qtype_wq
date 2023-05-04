@@ -25,8 +25,6 @@
  * @author dani
  */
 
-use question_attempt_step_subquestion_adapter_wiris as GlobalQuestion_attempt_step_subquestion_adapter_wiris;
-
 /**
  * This class is useful for:
  *  - No intentar avaluar una pregunta si ha fallat en 3 intents seguits
