@@ -3469,7 +3469,7 @@ com.wiris.quizzes.JsQuizzesFilter.prototype = {
 		var slot = slots[index];
 		var elemValue = element.value;
 		if(elemValue != null || elemValue != "") {
-			elemValue = com.wiris.util.xml.WXmlUtils.htmlUnescape(elemValue);
+			if(elemValue.indexOf("&lt;math") != -1) elemValue = com.wiris.util.xml.WXmlUtils.htmlUnescape(elemValue);
 			instance.setSlotAnswer(slot,elemValue);
 		}
 		var component = this.uibuilder.newAnswerField(instance,slot);
@@ -13618,6 +13618,7 @@ com.wiris.quizzes.impl.ui.AnswerFieldImpl.prototype = $extend(com.wiris.util.ui.
 				this.component.getStyle().setWidth(280);
 				this.component.setChangeAction(new com.wiris.util.ui.Action(com.wiris.quizzes.impl.ui.AnswerFieldImpl.STUDENT_ANSWER_CHANGED_ACTION_ID,null));
 				this.component.setReadOnly(this.readOnly);
+				if(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().isForceLTR()) this.component.addClass(com.wiris.util.ui.component.TextField.CLASS_FORCE_LTR);
 			} else if(this.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR) {
 				this.component = new com.wiris.quizzes.impl.ui.component.MathTypePopupTextField(this.getMathtypeParameters(this.slot));
 				this.component.setReadOnly(this.readOnly);
@@ -14259,6 +14260,7 @@ com.wiris.quizzes.impl.ui.EmbeddedAuthoringField.prototype = $extend(com.wiris.u
 	,__class__: com.wiris.quizzes.impl.ui.EmbeddedAuthoringField
 });
 com.wiris.quizzes.impl.ui.QuizzesContext = $hxClasses["com.wiris.quizzes.impl.ui.QuizzesContext"] = function() {
+	this.forceLTR = false;
 	this.language = com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG;
 	this.graphLanguage = com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG;
 	this.translatorContainer = com.wiris.util.lang.WordsTranslatorContainer.newTranslatorContainerFromWords(new com.wiris.util.lang.Words("strings_quizzes",this.getAvailableLanguagesFromList(com.wiris.quizzes.impl.ui.QuizzesContext.AVAILABLE_LANGS)),com.wiris.quizzes.impl.ui.QuizzesContext.DEFAULT_LANG);
@@ -14271,7 +14273,13 @@ com.wiris.quizzes.impl.ui.QuizzesContext.getInstance = function() {
 	return com.wiris.quizzes.impl.ui.QuizzesContext.instance;
 }
 com.wiris.quizzes.impl.ui.QuizzesContext.prototype = {
-	buildUrl: function(url) {
+	isForceLTR: function() {
+		return this.forceLTR;
+	}
+	,isLanguageForceLTR: function(lang) {
+		return StringTools.startsWith(lang,"he");
+	}
+	,buildUrl: function(url) {
 		var hashPosition = url.indexOf("#");
 		var postHash = "";
 		if(hashPosition != -1) {
@@ -14293,6 +14301,7 @@ com.wiris.quizzes.impl.ui.QuizzesContext.prototype = {
 	,setLanguage: function(language) {
 		this.language = this.translatorContainer.getAvailableLang(language);
 		this.graphLanguage = this.graphTranslatorContainer.getAvailableLang(language);
+		this.forceLTR = this.isLanguageForceLTR(language);
 	}
 	,getLanguage: function() {
 		return this.language;
@@ -14312,6 +14321,7 @@ com.wiris.quizzes.impl.ui.QuizzesContext.prototype = {
 		while(i < available.length) available[i] = com.wiris.util.lang.WordsTranslatorContainer.normalizeLangString(available[i++]);
 		return available;
 	}
+	,forceLTR: null
 	,graphTranslatorContainer: null
 	,translatorContainer: null
 	,graphLanguage: null
@@ -18247,6 +18257,7 @@ com.wiris.quizzes.impl.ui.component.PopupTextField = $hxClasses["com.wiris.quizz
 	this.setModalWindow(this.createModalWindow());
 	this.addKeyListener(this);
 	this.addMouseListener(this);
+	if(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().isForceLTR()) this.addClass(com.wiris.util.ui.component.TextField.CLASS_FORCE_LTR);
 };
 com.wiris.quizzes.impl.ui.component.PopupTextField.__name__ = ["com","wiris","quizzes","impl","ui","component","PopupTextField"];
 com.wiris.quizzes.impl.ui.component.PopupTextField.__interfaces__ = [com.wiris.util.ui.interaction.MouseListener,com.wiris.util.ui.interaction.KeyListener,com.wiris.util.ui.interaction.ComponentListener,com.wiris.util.ui.interaction.ActionListener];
@@ -19267,6 +19278,7 @@ com.wiris.quizzes.impl.ui.component.QuizzesCompoundTextField.prototype = $extend
 		textField.getStyle().setWidth(280);
 		textField.setChangeAction(new com.wiris.util.ui.Action(this.changeActionId,"" + index));
 		textField.addActionListener(this);
+		if(com.wiris.quizzes.impl.ui.QuizzesContext.getInstance().isForceLTR()) textField.addClass(com.wiris.util.ui.component.TextField.CLASS_FORCE_LTR);
 		return textField;
 	}
 	,updateFieldsImpl: function(slot,instance,model) {
@@ -21395,7 +21407,7 @@ com.wiris.quizzes.impl.ui.component.StudentAnswerComparisonComponent.prototype =
 com.wiris.quizzes.impl.ui.component.StudentAnswerComponent = $hxClasses["com.wiris.quizzes.impl.ui.component.StudentAnswerComponent"] = function(controller) {
 	com.wiris.util.ui.component.FlowPanel.call(this,com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
 	this.addClass(com.wiris.quizzes.impl.ui.component.StudentAnswerComponent.CLASS_STUDENT_ANSWER);
-	this.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setMaxWidth(450).setMargin(0,0,24,0);
+	this.getStyle().setWidthWithUnit(100,com.wiris.util.ui.Style.SIZE_UNIT_PERCENT).setMinWidth(450).setMargin(0,24,24,24);
 	this.controller = controller;
 	this.label = com.wiris.util.ui.component.Label.newImportantWithText(controller.t(com.wiris.quizzes.impl.ui.component.StudentAnswerComponent.STUDENT_ANSWER_LABEL));
 	this.addComponent(this.label);
@@ -21407,7 +21419,7 @@ com.wiris.quizzes.impl.ui.component.StudentAnswerComponent.prototype = $extend(c
 	actionPerformed: function(e) {
 		var action = e.getAction();
 		var actionId = action.getId();
-		if("handOpened" == actionId) this.getStyle().setMaxWidth(800); else if("handClosed" == actionId) this.getStyle().setMaxWidth(450);
+		if("handOpened" == actionId) this.getStyle().setMaxWidth(800); else if("handClosed" == actionId) this.getStyle().setMaxWidth(com.wiris.util.ui.Style.SIZE_AUTO);
 	}
 	,isMathEditor: function() {
 		return this.answerField.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR || this.answerField.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR;
@@ -21445,7 +21457,7 @@ com.wiris.quizzes.impl.ui.component.StudentAnswerComponent.prototype = $extend(c
 				if(this.answerField.isCompoundAnswer() == com.wiris.quizzes.impl.LocalData.VALUE_OPENANSWER_COMPOUND_ANSWER_TRUE) this.answerField.getComponent().setEasyModalClose(true); else this.answerField.getComponent().setEasyModalClose(true);
 			} else this.answerField.getComponent().addActionListener(this);
 		}
-		this.getStyle().setMaxWidth(this.answerField.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_GRAPH_EDITOR?800:450);
+		this.getStyle().setMaxWidth(this.answerField.getFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_GRAPH_EDITOR?800:com.wiris.util.ui.Style.SIZE_AUTO);
 		this.removeAllComponents();
 		this.addComponent(this.label);
 		this.addComponent(this.answerField);
@@ -21524,12 +21536,11 @@ com.wiris.quizzes.impl.ui.component.TestQuestionActivity.prototype = $extend(com
 });
 com.wiris.quizzes.impl.ui.component.TestQuestionCorrectAnswerComponent = $hxClasses["com.wiris.quizzes.impl.ui.component.TestQuestionCorrectAnswerComponent"] = function(controller) {
 	com.wiris.util.ui.component.FlowPanel.call(this,com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
-	this.getStyle().setWidth(450);
+	this.getStyle().setMinWidth(450).setMargin(0,24,0,24);
 	this.label = com.wiris.util.ui.component.Label.newImportantWithText(controller.t(com.wiris.quizzes.impl.ui.component.TestQuestionCorrectAnswerComponent.CORRECT_ANSWER_LABEL));
 	var content = new com.wiris.util.ui.component.BorderPanel(false);
 	content.addClass(com.wiris.util.ui.component.Panel.CLASS_PANEL_CARD);
 	content.addClass(com.wiris.quizzes.impl.ui.component.TestQuestionCorrectAnswerComponent.CLASS_CORRECT_ANSWER);
-	content.getStyle().setWidth(450);
 	var loadingWrapper = new com.wiris.util.ui.component.FlowPanel(com.wiris.util.ui.component.FlowPanel.DIRECTION_TOP_TO_BOTTOM);
 	this.loadingCircle = com.wiris.util.ui.component.ProgressCircle.newIndeterminate();
 	this.loadingCircle.setVisible(false);
@@ -27602,6 +27613,7 @@ com.wiris.system.graphics.JsClientGraphicsContext = $hxClasses["com.wiris.system
 		this.metricsElement.appendChild(js.Lib.document.createTextNode("x"));
 		var metricsImgNode = js.Lib.document.createElement("img");
 		metricsImgNode.setAttribute("src","data:image/png;base64," + com.wiris.system.graphics.JsClientGraphicsContext.BASELINE_MARK_BASE64);
+		metricsImgNode.setAttribute("alt","");
 		metricsImgNode.style.height = "0";
 		metricsImgNode.style.width = "0";
 		this.metricsElement.appendChild(metricsImgNode);
@@ -45678,6 +45690,7 @@ com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_WITH_SUFFIX = "te
 com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_DISABLED = "textComponentDisabled";
 com.wiris.util.ui.component.TextComponent.CLASS_TEXT_COMPONENT_OUTLINED = "textComponentOutlined";
 com.wiris.util.ui.component.TextField.CLASS_TEXT_FIELD = "textField";
+com.wiris.util.ui.component.TextField.CLASS_FORCE_LTR = "forceLTR";
 com.wiris.util.ui.component.TextField.NO_SIZE = -1;
 com.wiris.quizzes.impl.ui.component.MathTextField.CLASS_MATH_TEXT_FIELD = "mathTextField";
 com.wiris.quizzes.impl.ui.component.PopupTextField.CLASS_POPUP_TEXT_FIELD = "popupTextField";

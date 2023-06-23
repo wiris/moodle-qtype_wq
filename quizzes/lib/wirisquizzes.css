@@ -897,6 +897,7 @@
 }
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_studentAnswer {
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: fit-content;
 }
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_textComponent.wrsUI_focused label {
   color: #077680;
