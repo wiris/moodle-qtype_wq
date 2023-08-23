@@ -43,6 +43,7 @@ class com_wiris_util_geometry_GeometryElementStyle {
 	static $FIXED = "fixed";
 	static $COLOR = "color";
 	static $FONT_SIZE = "font_size";
+	static $LABEL_VISIBILITY = "label_visibility";
 	static $VIEW_3D = "view_3D";
 	static $PIE_RADIUS = "pie_radius";
 	static $PIE_HEIGHT = "pie_height";

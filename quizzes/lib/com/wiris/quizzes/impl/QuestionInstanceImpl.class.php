@@ -1298,6 +1298,19 @@ class com_wiris_quizzes_impl_QuestionInstanceImpl extends com_wiris_util_xml_Ser
 			}
 		}
 	}
+	public function expandVariablesTextEval($text) {
+		$h = new com_wiris_quizzes_impl_HTMLTools();
+		$h->setPlotterLoadingSrc(com_wiris_quizzes_impl_QuizzesImpl::getInstance()->getResourceUrl("plotter_loading.png"));
+		$h->setProxyUrl(com_wiris_quizzes_impl_QuizzesImpl::getInstance()->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$PROXY_URL));
+		if($this->variables === null || $this->variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_TEXT_EVAL) === null) {
+			return $this->expandVariablesText($text);
+		} else {
+			$newvars = new Hash();
+			$this->addAllHashElements($this->variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_TEXT), $newvars);
+			$this->addAllHashElements($this->variables->get(com_wiris_quizzes_impl_MathContent::$TYPE_TEXT_EVAL), $newvars);
+			return $h->expandVariablesText($text, $newvars);
+		}
+	}
 	public function expandVariablesText($text) {
 		if($text === null) {
 			return null;

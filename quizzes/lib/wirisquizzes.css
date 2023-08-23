@@ -812,6 +812,24 @@
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_separatorRow .wrsUI_aux_dropdown_container {
   margin-left: 24px;
 }
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_separatorRowDisplay {
+  width: 400px;
+  display: flex;
+  margin-left: 8px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_separatorRowDisplay .wrsUI_label {
+  min-width: 150px;
+  font-weight: 400;
+  display: inline-flex;
+  color: black;
+  justify-content: flex-end !important;
+}
+.wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_separatorRowDisplay .wrsUI_aux_dropdown_container {
+  margin-left: 24px;
+  width: 200px;
+}
 .wrsUI_app .wrsUI_quizzesStudio .wrsUI_panel.wrsUI_correctAnswer {
   min-height: 60px;
   box-sizing: border-box;

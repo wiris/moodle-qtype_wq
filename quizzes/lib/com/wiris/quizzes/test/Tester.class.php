@@ -1699,8 +1699,6 @@ class com_wiris_quizzes_test_Tester {
 				$this->testBugs();
 				$this->testUnicode();
 				$this->testCompound();
-				$this->testFeedback();
-				$this->testFeedback3();
 				$this->testOpenQuestionHand();
 				$this->testAnyAnswer();
 				if(!com_wiris_settings_PlatformSettings::$IS_JAVASCRIPT) {

@@ -1184,7 +1184,19 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 								if($name === com_wiris_quizzes_impl_LocalData::$KEY_AUXILIARY_CAS_HIDE_FILE_MENU) {
 									return com_wiris_quizzes_impl_LocalData::$VALUE_AUXILIARY_CAS_HIDE_FILE_MENU_FALSE;
 								} else {
-									return null;
+									if($name === com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_LOCK_INITIAL_CONTENT) {
+										return "false";
+									} else {
+										if($name === com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_SHOW_NAME_IN_LABEL) {
+											return com_wiris_quizzes_impl_LocalData::$VALUE_ALWAYS;
+										} else {
+											if($name === com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_SHOW_VALUE_IN_LABEL) {
+												return com_wiris_quizzes_impl_LocalData::$VALUE_FOCUS;
+											} else {
+												return null;
+											}
+										}
+									}
 								}
 							}
 						}

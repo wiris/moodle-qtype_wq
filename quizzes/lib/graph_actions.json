@@ -460,6 +460,38 @@
     }
   },
   {
+    "id": "restoreInitialContent",
+    "title": "tt_restoreInitialContent",
+    "icon": {
+      "name": "refresh",
+      "type": "material"
+    }
+  },
+  {
+    "id": "showHiddenElements",
+    "title": "tt_showHiddenElements",
+    "icon": {
+      "name": "visibility",
+      "type": "material"
+    }
+  },
+  {
+    "id": "hideElement",
+    "title": "tt_hideElement",
+    "icon": {
+      "name": "visibility_off",
+      "type": "material"
+    }
+  },
+  {
+    "id": "hideLabel",
+    "title": "tt_hideElement",
+    "icon": {
+      "name": "visibility_off",
+      "type": "material"
+    }
+  },
+  {
     "id": "disposeDisplay",
     "title": "tt_closeDisplay",
     "icon": {

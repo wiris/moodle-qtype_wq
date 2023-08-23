@@ -558,6 +558,14 @@
 		"quizzes_studio_input_options_answer_input_method_lock_initial_content_label": "Lås opprinnelig innhold",
 		"quizzes_studio_input_options_answer_input_method_lock_initial_content_helper_text": "Ikke tillat studenten å endre svaret utenfor de tomme plassholdere som er igjen i opprinnelige innholdet. Hvis denne innstillinga er slått på vil studenten bare bli i stand til å fylle boksene i den opprinnelige innholdet.",
 
+		"quizzes_studio_input_options_answer_input_method_display_settings_label": "Display settings",
+		"quizzes_studio_input_options_answer_input_method_display_settings_label_name": " Visibility of labels' name",
+		"quizzes_studio_input_options_answer_input_method_display_settings_label_value": "Visibility of labels' value",
+		"quizzes_studio_input_options_answer_input_method_display_settings_helper_text": "Select the display setting of the labels' name and value. You can decide if the student sees the labels' value always, never or when they are focus.",
+		"always": "Always",
+		"focus": "Focus",
+		"never": "Never",
+
 		"quizzes_studio_home_random_variables_title": "Tilfeldige variabler",
 		"quizzes_studio_home_random_variables_title_basic_mode": "Grunnleggende modus",
 		"quizzes_studio_home_advanced_random_variables_button_text": "Avansert modus",
