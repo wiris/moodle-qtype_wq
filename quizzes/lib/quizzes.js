@@ -2340,7 +2340,7 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 						var isPlainTextField = s.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.TEXT_FIELD;
 						var isStringSyntax = s.getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.STRING;
 						var value = sepCA.content;
-						if(isPlainTextField || isStringSyntax) value = instance.expandVariablesTextEval(value); else value = instance.expandVariablesMathMLEval(value);
+						if(isPlainTextField || isStringSyntax) value = instance.expandVariablesText(value); else value = instance.expandVariablesMathMLEval(value);
 						sepCA.set(value);
 					}
 				}
@@ -2546,18 +2546,18 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 				var isTextFormat = ca.type == com.wiris.quizzes.impl.MathContent.TYPE_TEXT;
 				var hasMultiletterIdentifierInTextFormat = false;
 				if(isTextFormat) {
-					var words = ca.content.split(" ");
-					var defWords = new Array();
+					var splitByRegularSp = ca.content.split(" ");
+					var words = new Array();
+					var _g2 = 0;
+					while(_g2 < splitByRegularSp.length) {
+						var word = splitByRegularSp[_g2];
+						++_g2;
+						var splitByNbsp = word.split(com.wiris.system.Utf8.uchr(160));
+						words = words.concat(splitByNbsp);
+					}
 					var _g2 = 0;
 					while(_g2 < words.length) {
 						var word = words[_g2];
-						++_g2;
-						var splitByNbsp = word.split(com.wiris.system.Utf8.uchr(160));
-						defWords = defWords.concat(splitByNbsp);
-					}
-					var _g2 = 0;
-					while(_g2 < defWords.length) {
-						var word = defWords[_g2];
 						++_g2;
 						if(!StringTools.startsWith(word,"#") && word.length > 1) {
 							hasMultiletterIdentifierInTextFormat = true;
@@ -2565,7 +2565,7 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 						}
 					}
 				}
-				if(isPlainTextField || isStringSyntax || hasMultiletterIdentifierInTextFormat) value = qi.expandVariablesTextEval(value); else value = qi.expandVariablesMathMLEval(value);
+				if(isPlainTextField || isStringSyntax || hasMultiletterIdentifierInTextFormat) value = qi.expandVariablesText(value); else value = qi.expandVariablesMathMLEval(value);
 				qq.setCorrectAnswer(j1,value);
 			}
 		}
@@ -17289,12 +17289,22 @@ com.wiris.quizzes.impl.ui.component.InputMethodComponent.prototype = $extend(com
 		var auxiliaryVisible = this.controller.getConfigurationKey("inputOptions/answerInputMethod/auxiliaryInput") && (displayVisible || replaceVisible || textVisible);
 		this.auxiliaryInputContainer.setVisible(auxiliaryVisible);
 		this.lockContainer.setVisible(answerInputFieldVisible && context.isOptOpenAnswer() && (slot.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_MATH_EDITOR || slot.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.POPUP_MATH_EDITOR || slot.getAnswerFieldType() == com.wiris.quizzes.api.ui.AnswerFieldType.INLINE_GRAPH_EDITOR));
+		this.lockCheckbox.setSelected(context.isInitialContentLocked());
 		this.setInputMethod(com.wiris.quizzes.impl.QuizzesEnumUtils.string2answerFieldType(slot.getProperty(com.wiris.quizzes.api.PropertyName.ANSWER_FIELD_TYPE)));
 		this.setAuxiliaryInput(slot.getProperty(com.wiris.quizzes.api.PropertyName.SHOW_CAS),slot.getProperty(com.wiris.quizzes.api.PropertyName.SHOW_AUXILIARY_TEXT_INPUT),slot.getProperty(com.wiris.quizzes.api.PropertyName.AUXILIARY_CAS_HIDE_FILE_MENU));
-		this.lockCheckbox.setSelected(context.isInitialContentLocked());
-		this.displaySettingsContainer.setVisible(isGraphicSyntax);
+		if(context.getSlot().getSyntax().getParameter(com.wiris.quizzes.api.assertion.SyntaxParameterName.GRAPH_MODE) != null && context.getSlot().getSyntax().getParameter(com.wiris.quizzes.api.assertion.SyntaxParameterName.GRAPH_MODE) == com.wiris.quizzes.impl.Assertion.GRAPH_MODE_SKETCH) {
+			this.lockContainer.setVisible(false);
+			if(this.displayValueDropdown.getValue() == com.wiris.util.graphics.DisplaySettings.FOCUS) context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.GRAPH_SHOW_VALUE_IN_LABEL,com.wiris.util.graphics.DisplaySettings.NEVER);
+			if(this.displayNameDropdown.getValue() == com.wiris.util.graphics.DisplaySettings.FOCUS) context.getSlot().setProperty(com.wiris.quizzes.api.PropertyName.GRAPH_SHOW_NAME_IN_LABEL,com.wiris.util.graphics.DisplaySettings.ALWAYS);
+			this.displayValueDropdown.disableValue(com.wiris.util.graphics.DisplaySettings.FOCUS);
+			this.displayNameDropdown.disableValue(com.wiris.util.graphics.DisplaySettings.FOCUS);
+		} else {
+			this.displayValueDropdown.enableValue(com.wiris.util.graphics.DisplaySettings.FOCUS);
+			this.displayNameDropdown.enableValue(com.wiris.util.graphics.DisplaySettings.FOCUS);
+		}
 		this.displayNameDropdown.setValue(slot.getProperty(com.wiris.quizzes.api.PropertyName.GRAPH_SHOW_NAME_IN_LABEL));
 		this.displayValueDropdown.setValue(slot.getProperty(com.wiris.quizzes.api.PropertyName.GRAPH_SHOW_VALUE_IN_LABEL));
+		this.displaySettingsContainer.setVisible(isGraphicSyntax);
 	}
 	,controller: null
 	,replaceAuxiliaryExpansionController: null

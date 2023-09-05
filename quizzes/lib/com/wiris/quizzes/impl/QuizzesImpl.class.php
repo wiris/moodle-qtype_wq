@@ -398,7 +398,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 							$isStringSyntax = $s->getSyntax()->getName() == com_wiris_quizzes_api_assertion_SyntaxName::$STRING;
 							$value = $sepCA->content;
 							if($isPlainTextField || $isStringSyntax) {
-								$value = $instance->expandVariablesTextEval($value);
+								$value = $instance->expandVariablesText($value);
 							} else {
 								$value = $instance->expandVariablesMathMLEval($value);
 							}
@@ -682,23 +682,23 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 				$isTextFormat = $ca->type === com_wiris_quizzes_impl_MathContent::$TYPE_TEXT;
 				$hasMultiletterIdentifierInTextFormat = false;
 				if($isTextFormat) {
-					$words = _hx_explode(" ", $ca->content);
-					$defWords = new _hx_array(array());
+					$splitByRegularSp = _hx_explode(" ", $ca->content);
+					$words = new _hx_array(array());
 					{
 						$_g2 = 0;
-						while($_g2 < $words->length) {
-							$word = $words[$_g2];
+						while($_g2 < $splitByRegularSp->length) {
+							$word = $splitByRegularSp[$_g2];
 							++$_g2;
-							$splitByNbsp = _hx_explode(com_wiris_quizzes_impl_QuizzesImpl_0($this, $_g, $_g1, $_g2, $ca, $correctAnswers, $defWords, $hasMultiletterIdentifierInTextFormat, $i, $instance, $isPlainTextField, $isStringSyntax, $isTextFormat, $j, $j1, $q, $qa, $qi, $qq, $question, $slots, $syntax, $ua, $userAnswers, $uu, $value, $word, $words), $word);
-							$defWords = $defWords->concat($splitByNbsp);
+							$splitByNbsp = _hx_explode(com_wiris_quizzes_impl_QuizzesImpl_0($this, $_g, $_g1, $_g2, $ca, $correctAnswers, $hasMultiletterIdentifierInTextFormat, $i, $instance, $isPlainTextField, $isStringSyntax, $isTextFormat, $j, $j1, $q, $qa, $qi, $qq, $question, $slots, $splitByRegularSp, $syntax, $ua, $userAnswers, $uu, $value, $word, $words), $word);
+							$words = $words->concat($splitByNbsp);
 							unset($word,$splitByNbsp);
 						}
 						unset($_g2);
 					}
 					{
 						$_g2 = 0;
-						while($_g2 < $defWords->length) {
-							$word = $defWords[$_g2];
+						while($_g2 < $words->length) {
+							$word = $words[$_g2];
 							++$_g2;
 							if(!StringTools::startsWith($word, "#") && strlen($word) > 1) {
 								$hasMultiletterIdentifierInTextFormat = true;
@@ -708,10 +708,10 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 						}
 						unset($_g2);
 					}
-					unset($words,$defWords);
+					unset($words,$splitByRegularSp);
 				}
 				if($isPlainTextField || $isStringSyntax || $hasMultiletterIdentifierInTextFormat) {
-					$value = $qi->expandVariablesTextEval($value);
+					$value = $qi->expandVariablesText($value);
 				} else {
 					$value = $qi->expandVariablesMathMLEval($value);
 				}
@@ -1293,7 +1293,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.QuizzesImpl'; }
 }
-function com_wiris_quizzes_impl_QuizzesImpl_0(&$»this, &$_g, &$_g1, &$_g2, &$ca, &$correctAnswers, &$defWords, &$hasMultiletterIdentifierInTextFormat, &$i, &$instance, &$isPlainTextField, &$isStringSyntax, &$isTextFormat, &$j, &$j1, &$q, &$qa, &$qi, &$qq, &$question, &$slots, &$syntax, &$ua, &$userAnswers, &$uu, &$value, &$word, &$words) {
+function com_wiris_quizzes_impl_QuizzesImpl_0(&$»this, &$_g, &$_g1, &$_g2, &$ca, &$correctAnswers, &$hasMultiletterIdentifierInTextFormat, &$i, &$instance, &$isPlainTextField, &$isStringSyntax, &$isTextFormat, &$j, &$j1, &$q, &$qa, &$qi, &$qq, &$question, &$slots, &$splitByRegularSp, &$syntax, &$ua, &$userAnswers, &$uu, &$value, &$word, &$words) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(160);
