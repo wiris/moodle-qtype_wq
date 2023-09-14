@@ -2058,10 +2058,10 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		if(value.type == com.wiris.quizzes.impl.MathContent.TYPE_GEOMETRY_FILE) return "<img " + "src=\"" + com.wiris.quizzes.impl.QuizzesImpl.getInstance().getResourceUrl("plotter_loading.png") + "\" " + "alt=\"Plotter\" " + "class=\"wirisconstruction wirisgraphanimate\" " + "data-wirisconstruction=\"" + com.wiris.util.xml.WXmlUtils.htmlEscape(value.content) + "\"" + (initialContent != null && !(initialContent == "")?"data-wirisinitialcontent=\"" + com.wiris.util.xml.WXmlUtils.htmlEscape(initialContent) + "\"":"") + "/>";
 		return value.content;
 	}
-	,answerToFilterableValue: function(value) {
+	,answerToFilterableValue: function(value,initialContent) {
 		var mc = new com.wiris.quizzes.impl.MathContent();
 		mc.set(value);
-		return this.mathContentToFilterableValue(mc,null);
+		return this.mathContentToFilterableValue(mc,initialContent);
 	}
 	,getElementsToGrade: function(geometryFile,assertion) {
 		if(assertion.getParam(com.wiris.quizzes.impl.Assertion.PARAM_ELEMENTS_TO_GRADE) != null) {

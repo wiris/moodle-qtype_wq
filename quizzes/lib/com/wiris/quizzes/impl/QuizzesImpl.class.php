@@ -11,10 +11,10 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		}
 		return $value->content;
 	}
-	public function answerToFilterableValue($value) {
+	public function answerToFilterableValue($value, $initialContent) {
 		$mc = new com_wiris_quizzes_impl_MathContent();
 		$mc->set($value);
-		return $this->mathContentToFilterableValue($mc, null);
+		return $this->mathContentToFilterableValue($mc, $initialContent);
 	}
 	public function getElementsToGrade($geometryFile, $assertion) {
 		if($assertion->getParam(com_wiris_quizzes_impl_Assertion::$PARAM_ELEMENTS_TO_GRADE) !== null) {
