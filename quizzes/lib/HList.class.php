@@ -138,26 +138,26 @@ class HList implements IteratorAggregate{
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
-		else if(isset($this->�dynamics[$m]) && is_callable($this->�dynamics[$m]))
-			return call_user_func_array($this->�dynamics[$m], $a);
+		else if(isset($this->Â»dynamics[$m]) && is_callable($this->Â»dynamics[$m]))
+			return call_user_func_array($this->Â»dynamics[$m], $a);
 		else if('toString' == $m)
 			return $this->__toString();
 		else
-			throw new HException('Unable to call �'.$m.'�');
+			throw new HException('Unable to call Â«'.$m.'Â»');
 	}
 	function __toString() { return $this->toString(); }
 }
-function HList_0(&$�this) {
-	if($�this->q === null) {
+function HList_0(&$Â»this) {
+	if($Â»this->q === null) {
 		return null;
 	} else {
-		return $�this->q[0];
+		return $Â»this->q[0];
 	}
 }
-function HList_1(&$�this) {
-	if($�this->h === null) {
+function HList_1(&$Â»this) {
+	if($Â»this->h === null) {
 		return null;
 	} else {
-		return $�this->h[0];
+		return $Â»this->h[0];
 	}
 }

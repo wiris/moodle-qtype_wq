@@ -5,4 +5,4 @@ class com_wiris_quizzes_impl_ActionCommands {
 	static $COMMANDS;
 	function __toString() { return 'com.wiris.quizzes.impl.ActionCommands'; }
 }
-com_wiris_quizzes_impl_ActionCommands::$COMMANDS = new _hx_array(array("avalua", "vurdere", "bewerten", "αξιολογώ", "evaluate", "evalúa", "évaluer", "valutare", "evaluere", "avalie"));
+com_wiris_quizzes_impl_ActionCommands::$COMMANDS = new _hx_array(array("avalua", "vurdere", "bewerten", "Î±Î¾Î¹Î¿Î»Î¿Î³Ï", "evaluate", "evalÃºa", "Ã©valuer", "valutare", "evaluere", "avalie"));

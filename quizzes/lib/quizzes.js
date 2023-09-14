@@ -1247,23 +1247,24 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 	,setZoom: function(zoom) {
 		this.zoom = zoom;
 	}
-	,graphImpl: function(construction,container) {
+	,graphImpl: function(construction,initialContent,container) {
 		var _g = this;
 		if(this.graphJSLoaded() && container.parentNode != null) {
 			var graph = window.com.wiris.js.JsGraph.newInstance({ 
 				viewOnly: true,
 				allowAnimations: true
 			});
+			if(initialContent != null) graph.getGraphModel().getDisplay().setInitialContent(initialContent,true);
 			graph.setContent(construction);
 			graph.insertInto(container);
 		} else haxe.Timer.delay(function() {
-			_g.graphImpl(construction,container);
+			_g.graphImpl(construction,initialContent,container);
 		},100);
 	}
-	,graph: function(construction) {
+	,graph: function(construction,initialContent) {
 		if(!this.graphJSLoaded()) this.loadGraphJS();
 		var div = js.Lib.document.createElement("div");
-		this.graphImpl(construction,div);
+		this.graphImpl(construction,initialContent,div);
 		return div;
 	}
 	,plotJS: function(construction,container,width,height) {
@@ -1387,7 +1388,7 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 		},100);
 	}
 	,unescapeIfNecessary: function(s) {
-		if(s.indexOf("<") == -1 && s.indexOf(">") == -1 && s.indexOf("\"") == -1 && (s.indexOf("&lt;") != -1 || s.indexOf("&gt;") != -1 || s.indexOf("&quot;") != -1)) return com.wiris.util.xml.WXmlUtils.htmlUnescape(s);
+		if(s != null && s.indexOf("<") == -1 && s.indexOf(">") == -1 && s.indexOf("\"") == -1 && (s.indexOf("&lt;") != -1 || s.indexOf("&gt;") != -1 || s.indexOf("&quot;") != -1)) return com.wiris.util.xml.WXmlUtils.htmlUnescape(s);
 		return s;
 	}
 	,filterConstructions: function(root) {
@@ -1396,10 +1397,11 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 		while(n >= 0) {
 			var imgTag = plotters[n];
 			var construction = imgTag.getAttribute("data-wirisconstruction");
+			var initialContent = imgTag.getAttribute("data-wirisinitialcontent");
 			var width = imgTag.getAttribute("data-wiriswidth");
 			var height = imgTag.getAttribute("data-wirisheight");
 			var canvas;
-			if(imgTag.className.indexOf("wirisgraphanimate") > -1) canvas = this.graph(this.unescapeIfNecessary(construction)); else canvas = this.plot(this.unescapeIfNecessary(construction),width,height);
+			if(imgTag.className.indexOf("wirisgraphanimate") > -1) canvas = this.graph(this.unescapeIfNecessary(construction),this.unescapeIfNecessary(initialContent)); else canvas = this.plot(this.unescapeIfNecessary(construction),width,height);
 			imgTag.parentNode.replaceChild(canvas,imgTag);
 			n--;
 		}
@@ -1434,7 +1436,7 @@ com.wiris.quizzes.HxMathViewer.prototype = {
 		return container;
 	}
 	,renderCorrectAnswer: function(instance,slot,authorAnswer) {
-		if(slot.getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC) return this.graph(authorAnswer.getValue()); else {
+		if(slot.getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.GRAPHIC) return this.graph(authorAnswer.getValue(),slot.getInitialContent()); else {
 			var value = authorAnswer.getValue();
 			var valueExpanded = instance.expandVariablesMathML(value);
 			return this.render(valueExpanded);
@@ -2052,14 +2054,14 @@ com.wiris.quizzes.impl.QuizzesImpl.setVariables = function(html,q,qi,qr) {
 }
 com.wiris.quizzes.impl.QuizzesImpl.__super__ = com.wiris.quizzes.api.Quizzes;
 com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Quizzes.prototype,{
-	mathContentToFilterableValue: function(value) {
-		if(value.type == com.wiris.quizzes.impl.MathContent.TYPE_GEOMETRY_FILE) return "<img " + "src=\"" + com.wiris.quizzes.impl.QuizzesImpl.getInstance().getResourceUrl("plotter_loading.png") + "\" " + "alt=\"Plotter\" " + "class=\"wirisconstruction wirisgraphanimate\" " + "data-wirisconstruction=\"" + com.wiris.util.xml.WXmlUtils.htmlEscape(value.content) + "\"" + "/>";
+	mathContentToFilterableValue: function(value,initialContent) {
+		if(value.type == com.wiris.quizzes.impl.MathContent.TYPE_GEOMETRY_FILE) return "<img " + "src=\"" + com.wiris.quizzes.impl.QuizzesImpl.getInstance().getResourceUrl("plotter_loading.png") + "\" " + "alt=\"Plotter\" " + "class=\"wirisconstruction wirisgraphanimate\" " + "data-wirisconstruction=\"" + com.wiris.util.xml.WXmlUtils.htmlEscape(value.content) + "\"" + (initialContent != null && !(initialContent == "")?"data-wirisinitialcontent=\"" + com.wiris.util.xml.WXmlUtils.htmlEscape(initialContent) + "\"":"") + "/>";
 		return value.content;
 	}
 	,answerToFilterableValue: function(value) {
 		var mc = new com.wiris.quizzes.impl.MathContent();
 		mc.set(value);
-		return this.mathContentToFilterableValue(mc);
+		return this.mathContentToFilterableValue(mc,null);
 	}
 	,getElementsToGrade: function(geometryFile,assertion) {
 		if(assertion.getParam(com.wiris.quizzes.impl.Assertion.PARAM_ELEMENTS_TO_GRADE) != null) {
@@ -5098,7 +5100,7 @@ com.wiris.quizzes.impl.AuthorAnswerImpl.prototype = $extend(com.wiris.util.xml.S
 		this.question.id = null;
 	}
 	,getFilterableValue: function() {
-		return com.wiris.quizzes.impl.QuizzesImpl.getInstance().mathContentToFilterableValue(this.value);
+		return com.wiris.quizzes.impl.QuizzesImpl.getInstance().mathContentToFilterableValue(this.value,this.slot.getInitialContent());
 	}
 	,getValue: function() {
 		return this.value.content;
@@ -8387,12 +8389,10 @@ com.wiris.quizzes.impl.HTMLTools.prototype = {
 	,__class__: com.wiris.quizzes.impl.HTMLTools
 }
 com.wiris.quizzes.impl.HandwritingConstraints = $hxClasses["com.wiris.quizzes.impl.HandwritingConstraints"] = function() {
-	if(com.wiris.quizzes.impl.HandwritingConstraints.all_symbols == null) com.wiris.quizzes.impl.HandwritingConstraints.all_symbols = com.wiris.quizzes.impl.HandwritingConstraints.ALL_SYMBOLS_STRING.split(" ");
-	if(com.wiris.quizzes.impl.HandwritingConstraints.symbol_conflicts == null) com.wiris.quizzes.impl.HandwritingConstraints.symbol_conflicts = [["x","X","×","χ"],[".",",","·"],["2","z","Z"],["5","s","S","$"],["1",",","|","'"],["i","j",":",";"],["y","4","Y"],["p","P","ρ"],["c","C","(","⊂"],["0","o","O","°"],["Δ","A"],["B","β"],["∃","3"],["9","q","g"],["9","a"],["v","V","∨","ν"],["r","σ"],["t","+"],["∈","E","ε"],["n","h"],["k","K","κ"],["u","U","∪"],["w","W","ω"],["d","∂","δ"],["∂","a"],["∅","θ","Θ"],["∩","n","η"],["Λ","∧","^"],["ψ","Ψ"],["∅","φ","Φ"],["Π","π","∏"],["ζ","ξ"],["ζ","3","z"],["⏜","^","~","-"]];
+	if(com.wiris.quizzes.impl.HandwritingConstraints.symbol_conflicts == null) com.wiris.quizzes.impl.HandwritingConstraints.symbol_conflicts = [[com.wiris.system.Utf8.uchr(120),com.wiris.system.Utf8.uchr(88),com.wiris.system.Utf8.uchr(215),com.wiris.system.Utf8.uchr(967)],[com.wiris.system.Utf8.uchr(46),com.wiris.system.Utf8.uchr(44),com.wiris.system.Utf8.uchr(183)],[com.wiris.system.Utf8.uchr(50),com.wiris.system.Utf8.uchr(122),com.wiris.system.Utf8.uchr(90)],[com.wiris.system.Utf8.uchr(53),com.wiris.system.Utf8.uchr(115),com.wiris.system.Utf8.uchr(83),com.wiris.system.Utf8.uchr(36)],[com.wiris.system.Utf8.uchr(49),com.wiris.system.Utf8.uchr(44),com.wiris.system.Utf8.uchr(124),com.wiris.system.Utf8.uchr(39)],[com.wiris.system.Utf8.uchr(105),com.wiris.system.Utf8.uchr(106),com.wiris.system.Utf8.uchr(58),com.wiris.system.Utf8.uchr(59)],[com.wiris.system.Utf8.uchr(121),com.wiris.system.Utf8.uchr(52),com.wiris.system.Utf8.uchr(89)],[com.wiris.system.Utf8.uchr(112),com.wiris.system.Utf8.uchr(80),com.wiris.system.Utf8.uchr(961)],[com.wiris.system.Utf8.uchr(99),com.wiris.system.Utf8.uchr(67),com.wiris.system.Utf8.uchr(40),com.wiris.system.Utf8.uchr(8834)],[com.wiris.system.Utf8.uchr(48),com.wiris.system.Utf8.uchr(111),com.wiris.system.Utf8.uchr(79),com.wiris.system.Utf8.uchr(176)],[com.wiris.system.Utf8.uchr(916),com.wiris.system.Utf8.uchr(65)],[com.wiris.system.Utf8.uchr(66),com.wiris.system.Utf8.uchr(946)],[com.wiris.system.Utf8.uchr(8707),com.wiris.system.Utf8.uchr(51)],[com.wiris.system.Utf8.uchr(57),com.wiris.system.Utf8.uchr(113),com.wiris.system.Utf8.uchr(103)],[com.wiris.system.Utf8.uchr(57),com.wiris.system.Utf8.uchr(97)],[com.wiris.system.Utf8.uchr(118),com.wiris.system.Utf8.uchr(86),com.wiris.system.Utf8.uchr(8744),com.wiris.system.Utf8.uchr(957)],[com.wiris.system.Utf8.uchr(114),com.wiris.system.Utf8.uchr(963)],[com.wiris.system.Utf8.uchr(116),com.wiris.system.Utf8.uchr(43)],[com.wiris.system.Utf8.uchr(8712),com.wiris.system.Utf8.uchr(69),com.wiris.system.Utf8.uchr(949)],[com.wiris.system.Utf8.uchr(110),com.wiris.system.Utf8.uchr(104)],[com.wiris.system.Utf8.uchr(107),com.wiris.system.Utf8.uchr(75),com.wiris.system.Utf8.uchr(954)],[com.wiris.system.Utf8.uchr(117),com.wiris.system.Utf8.uchr(85),com.wiris.system.Utf8.uchr(8746)],[com.wiris.system.Utf8.uchr(119),com.wiris.system.Utf8.uchr(87),com.wiris.system.Utf8.uchr(969)],[com.wiris.system.Utf8.uchr(100),com.wiris.system.Utf8.uchr(8706),com.wiris.system.Utf8.uchr(948)],[com.wiris.system.Utf8.uchr(8706),com.wiris.system.Utf8.uchr(97)],[com.wiris.system.Utf8.uchr(8709),com.wiris.system.Utf8.uchr(952),com.wiris.system.Utf8.uchr(920)],[com.wiris.system.Utf8.uchr(8745),com.wiris.system.Utf8.uchr(110),com.wiris.system.Utf8.uchr(951)],[com.wiris.system.Utf8.uchr(923),com.wiris.system.Utf8.uchr(8743),com.wiris.system.Utf8.uchr(94)],[com.wiris.system.Utf8.uchr(968),com.wiris.system.Utf8.uchr(936)],[com.wiris.system.Utf8.uchr(8709),com.wiris.system.Utf8.uchr(966),com.wiris.system.Utf8.uchr(934)],[com.wiris.system.Utf8.uchr(928),com.wiris.system.Utf8.uchr(960),com.wiris.system.Utf8.uchr(8719)],[com.wiris.system.Utf8.uchr(950),com.wiris.system.Utf8.uchr(958)],[com.wiris.system.Utf8.uchr(950),com.wiris.system.Utf8.uchr(51),com.wiris.system.Utf8.uchr(122)],[com.wiris.system.Utf8.uchr(9180),com.wiris.system.Utf8.uchr(94),com.wiris.system.Utf8.uchr(126),com.wiris.system.Utf8.uchr(45)]];
 	if(com.wiris.quizzes.impl.HandwritingConstraints.symbol_default_excluded == null) com.wiris.quizzes.impl.HandwritingConstraints.symbol_default_excluded = [["sin","cos","tan","log"]];
 };
 com.wiris.quizzes.impl.HandwritingConstraints.__name__ = ["com","wiris","quizzes","impl","HandwritingConstraints"];
-com.wiris.quizzes.impl.HandwritingConstraints.all_symbols = null;
 com.wiris.quizzes.impl.HandwritingConstraints.symbol_conflicts = null;
 com.wiris.quizzes.impl.HandwritingConstraints.symbol_default_excluded = null;
 com.wiris.quizzes.impl.HandwritingConstraints.readHandwritingConstraints = function(json) {
@@ -8455,10 +8455,10 @@ com.wiris.quizzes.impl.HandwritingConstraints.prototype = {
 				}
 			}
 		}
-		var _g1 = 0, _g = com.wiris.quizzes.impl.HandwritingConstraints.all_symbols.length;
+		var _g1 = 0, _g = com.wiris.quizzes.impl.HandwritingConstraints.ALL_SYMBOLS.length;
 		while(_g1 < _g) {
 			var i1 = _g1++;
-			if(!com.wiris.system.ArrayEx.contains(blocked,com.wiris.quizzes.impl.HandwritingConstraints.all_symbols[i1])) h.symbols.push(com.wiris.quizzes.impl.HandwritingConstraints.all_symbols[i1]);
+			if(!com.wiris.system.ArrayEx.contains(blocked,com.wiris.quizzes.impl.HandwritingConstraints.ALL_SYMBOLS[i1])) h.symbols.push(com.wiris.quizzes.impl.HandwritingConstraints.ALL_SYMBOLS[i1]);
 		}
 		return h;
 	}
@@ -10770,7 +10770,7 @@ com.wiris.quizzes.impl.QuestionInstanceImpl.prototype = $extend(com.wiris.util.x
 		this.userData.randomSeed = seed;
 	}
 	,parseTextBoolean: function(text) {
-		var trues = ["true","cierto","cert","tÃµene","ziur","vrai","wahr","vero","waar","verdadeiro","certo"];
+		var trues = ["true","cierto","cert","t" + com.wiris.system.Utf8.uchr(245) + "ene","ziur","vrai","wahr","vero","waar","verdadeiro","certo"];
 		var i;
 		var _g1 = 0, _g = trues.length;
 		while(_g1 < _g) {
@@ -45283,7 +45283,7 @@ com.wiris.quizzes.impl.Assertion.equivalent = [com.wiris.quizzes.impl.Assertion.
 com.wiris.quizzes.impl.Assertion.structure = [com.wiris.quizzes.impl.Assertion.CHECK_SYMBOLIC,com.wiris.quizzes.impl.Assertion.CHECK_SCIENTIFIC_NOTATION,com.wiris.quizzes.impl.Assertion.CHECK_DECIMAL_NOTATION];
 com.wiris.quizzes.impl.Assertion.checks = [com.wiris.quizzes.impl.Assertion.CHECK_SIMPLIFIED,com.wiris.quizzes.impl.Assertion.CHECK_EXPANDED,com.wiris.quizzes.impl.Assertion.CHECK_FACTORIZED,com.wiris.quizzes.impl.Assertion.CHECK_RATIONALIZED,com.wiris.quizzes.impl.Assertion.CHECK_NO_COMMON_FACTOR,com.wiris.quizzes.impl.Assertion.CHECK_MINIMAL_RADICANDS,com.wiris.quizzes.impl.Assertion.CHECK_DIVISIBLE,com.wiris.quizzes.impl.Assertion.CHECK_COMMON_DENOMINATOR,com.wiris.quizzes.impl.Assertion.CHECK_UNIT,com.wiris.quizzes.impl.Assertion.CHECK_UNIT_LITERAL,com.wiris.quizzes.impl.Assertion.CHECK_PRECISION,com.wiris.quizzes.impl.Assertion.CHECK_NO_SUPERFLUOUS,com.wiris.quizzes.impl.Assertion.CHECK_COLOR,com.wiris.quizzes.impl.Assertion.CHECK_LINESTYLE,com.wiris.quizzes.impl.Assertion.CHECK_EQUIVALENT_UNITS];
 com.wiris.quizzes.impl.Assertion.BASIC_UNITS_LIST = "m, s, g, A, K, mol, cd, rad, sr, h, min, l, N, Pa, Hz, W, J, C, V, " + com.wiris.system.Utf8.uchr(937) + ", F, S, Wb, b, H, T, lx, lm, Gy, Bq, Sv, kat";
-com.wiris.quizzes.impl.Assertion.CURRENCY_UNITS_LIST = "$, " + com.wiris.system.Utf8.uchr(165) + ", " + com.wiris.system.Utf8.uchr(8364) + ", " + com.wiris.system.Utf8.uchr(163) + ", kr, Fr, " + com.wiris.system.Utf8.uchr(8361) + ", " + com.wiris.system.Utf8.uchr(8377) + ", руб, BTC";
+com.wiris.quizzes.impl.Assertion.CURRENCY_UNITS_LIST = "$, " + com.wiris.system.Utf8.uchr(165) + ", " + com.wiris.system.Utf8.uchr(8364) + ", " + com.wiris.system.Utf8.uchr(163) + ", kr, Fr, " + com.wiris.system.Utf8.uchr(8361) + ", " + com.wiris.system.Utf8.uchr(8377) + ", " + com.wiris.system.Utf8.uchr(1056) + com.wiris.system.Utf8.uchr(1091) + com.wiris.system.Utf8.uchr(1073) + ", BTC";
 com.wiris.quizzes.impl.Assertion.ANGLE_UNITS_LIST = com.wiris.system.Utf8.uchr(176) + ", ', \"";
 com.wiris.quizzes.impl.Assertion.PERCENT_UNITS_LIST = "%, " + com.wiris.system.Utf8.uchr(8240);
 com.wiris.quizzes.impl.Assertion.ALL_UNITS_LIST = com.wiris.quizzes.impl.Assertion.ANGLE_UNITS_LIST + ", " + com.wiris.quizzes.impl.Assertion.BASIC_UNITS_LIST + ", " + com.wiris.quizzes.impl.Assertion.PERCENT_UNITS_LIST + ", " + com.wiris.quizzes.impl.Assertion.CURRENCY_UNITS_LIST;
@@ -45362,7 +45362,7 @@ com.wiris.quizzes.impl.HTMLTools.NOT_A_SELECTOR = 0;
 com.wiris.quizzes.impl.HTMLTools.MROWS = "@math@mrow@msqrt@mstyle@merror@mpadded@mphantom@mtd@menclose@mscarry@msrow@";
 com.wiris.quizzes.impl.HTMLTools.MSUPS = "@msub@msup@msubsup@";
 com.wiris.quizzes.impl.HTMLTools.EMPTY_CALCME_SESSION = "<wiriscalc version=\"3.2\">\n" + "  <title>\n" + "    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n" + "      <mtext></mtext>\n" + "    </math>\n" + "  </title>\n" + "  <session version=\"3.0\">\n" + "      <group>\n" + "        <command>\n" + "          <input>\n" + "            <math xmlns=\"http://www.w3.org/1998/Math/MathML\"/>\n" + "          </input>\n" + "        </command>\n" + "      </group>\n" + "  </session>\n" + "</wiriscalc>";
-com.wiris.quizzes.impl.HandwritingConstraints.ALL_SYMBOLS_STRING = "0 1 2 3 4 5 6 7 8 9 a A α b B β c C . · , ; ... : cos cm d D dm δ Δ ÷ / e " + "E ξ = ≈ ∃ f F ∀ g G γ Γ ≥ > h H i I ∈ ∞ ∫ j J k K κ l L λ Λ ≤ lim log " + "{ [ ( < m M μ n N η ≠ o O p P ρ φ Φ π Π ψ Ψ ± ′ q Q r R → } ] ) s S σ Σ " + "sin √ ∑ ∏ t T τ tan θ Θ u U v V ν w W ω Ω x X χ × y Y z Z ζ frac | - ! " + "+ ~ ^ ° € $ £ % ‰ ∂ ∇ ε ∅ ∪ ∩ ⊂ ⊃ ⊆ ⊇ ℙ ℕ ℤ ℚ ℂ ℝ 𝕀 ⇒ ⏜ ∧ ∨ #";
+com.wiris.quizzes.impl.HandwritingConstraints.ALL_SYMBOLS = [com.wiris.system.Utf8.uchr(48),com.wiris.system.Utf8.uchr(49),com.wiris.system.Utf8.uchr(50),com.wiris.system.Utf8.uchr(51),com.wiris.system.Utf8.uchr(52),com.wiris.system.Utf8.uchr(53),com.wiris.system.Utf8.uchr(54),com.wiris.system.Utf8.uchr(55),com.wiris.system.Utf8.uchr(56),com.wiris.system.Utf8.uchr(57),com.wiris.system.Utf8.uchr(97),com.wiris.system.Utf8.uchr(65),com.wiris.system.Utf8.uchr(945),com.wiris.system.Utf8.uchr(98),com.wiris.system.Utf8.uchr(66),com.wiris.system.Utf8.uchr(946),com.wiris.system.Utf8.uchr(99),com.wiris.system.Utf8.uchr(67),com.wiris.system.Utf8.uchr(46),com.wiris.system.Utf8.uchr(183),com.wiris.system.Utf8.uchr(44),com.wiris.system.Utf8.uchr(59),com.wiris.system.Utf8.uchr(46),com.wiris.system.Utf8.uchr(58),com.wiris.system.Utf8.uchr(100),com.wiris.system.Utf8.uchr(68),com.wiris.system.Utf8.uchr(948),com.wiris.system.Utf8.uchr(916),com.wiris.system.Utf8.uchr(247),com.wiris.system.Utf8.uchr(47),com.wiris.system.Utf8.uchr(101),com.wiris.system.Utf8.uchr(69),com.wiris.system.Utf8.uchr(958),com.wiris.system.Utf8.uchr(61),com.wiris.system.Utf8.uchr(8776),com.wiris.system.Utf8.uchr(8707),com.wiris.system.Utf8.uchr(102),com.wiris.system.Utf8.uchr(70),com.wiris.system.Utf8.uchr(8704),com.wiris.system.Utf8.uchr(103),com.wiris.system.Utf8.uchr(71),com.wiris.system.Utf8.uchr(947),com.wiris.system.Utf8.uchr(915),com.wiris.system.Utf8.uchr(8805),com.wiris.system.Utf8.uchr(62),com.wiris.system.Utf8.uchr(104),com.wiris.system.Utf8.uchr(72),com.wiris.system.Utf8.uchr(105),com.wiris.system.Utf8.uchr(73),com.wiris.system.Utf8.uchr(8712),com.wiris.system.Utf8.uchr(8734),com.wiris.system.Utf8.uchr(8747),com.wiris.system.Utf8.uchr(106),com.wiris.system.Utf8.uchr(74),com.wiris.system.Utf8.uchr(107),com.wiris.system.Utf8.uchr(75),com.wiris.system.Utf8.uchr(954),com.wiris.system.Utf8.uchr(108),com.wiris.system.Utf8.uchr(76),com.wiris.system.Utf8.uchr(955),com.wiris.system.Utf8.uchr(923),com.wiris.system.Utf8.uchr(8804),com.wiris.system.Utf8.uchr(123),com.wiris.system.Utf8.uchr(91),com.wiris.system.Utf8.uchr(40),com.wiris.system.Utf8.uchr(60),com.wiris.system.Utf8.uchr(109),com.wiris.system.Utf8.uchr(77),com.wiris.system.Utf8.uchr(956),com.wiris.system.Utf8.uchr(110),com.wiris.system.Utf8.uchr(78),com.wiris.system.Utf8.uchr(951),com.wiris.system.Utf8.uchr(8800),com.wiris.system.Utf8.uchr(111),com.wiris.system.Utf8.uchr(79),com.wiris.system.Utf8.uchr(112),com.wiris.system.Utf8.uchr(80),com.wiris.system.Utf8.uchr(961),com.wiris.system.Utf8.uchr(966),com.wiris.system.Utf8.uchr(934),com.wiris.system.Utf8.uchr(960),com.wiris.system.Utf8.uchr(928),com.wiris.system.Utf8.uchr(968),com.wiris.system.Utf8.uchr(936),com.wiris.system.Utf8.uchr(177),com.wiris.system.Utf8.uchr(8242),com.wiris.system.Utf8.uchr(113),com.wiris.system.Utf8.uchr(81),com.wiris.system.Utf8.uchr(114),com.wiris.system.Utf8.uchr(82),com.wiris.system.Utf8.uchr(8594),com.wiris.system.Utf8.uchr(125),com.wiris.system.Utf8.uchr(93),com.wiris.system.Utf8.uchr(41),com.wiris.system.Utf8.uchr(115),com.wiris.system.Utf8.uchr(83),com.wiris.system.Utf8.uchr(963),com.wiris.system.Utf8.uchr(931),com.wiris.system.Utf8.uchr(8730),com.wiris.system.Utf8.uchr(8721),com.wiris.system.Utf8.uchr(8719),com.wiris.system.Utf8.uchr(116),com.wiris.system.Utf8.uchr(84),com.wiris.system.Utf8.uchr(964),com.wiris.system.Utf8.uchr(952),com.wiris.system.Utf8.uchr(920),com.wiris.system.Utf8.uchr(117),com.wiris.system.Utf8.uchr(85),com.wiris.system.Utf8.uchr(118),com.wiris.system.Utf8.uchr(86),com.wiris.system.Utf8.uchr(957),com.wiris.system.Utf8.uchr(119),com.wiris.system.Utf8.uchr(87),com.wiris.system.Utf8.uchr(969),com.wiris.system.Utf8.uchr(937),com.wiris.system.Utf8.uchr(120),com.wiris.system.Utf8.uchr(88),com.wiris.system.Utf8.uchr(967),com.wiris.system.Utf8.uchr(215),com.wiris.system.Utf8.uchr(121),com.wiris.system.Utf8.uchr(89),com.wiris.system.Utf8.uchr(122),com.wiris.system.Utf8.uchr(90),com.wiris.system.Utf8.uchr(950),com.wiris.system.Utf8.uchr(124),com.wiris.system.Utf8.uchr(45),com.wiris.system.Utf8.uchr(33),com.wiris.system.Utf8.uchr(43),com.wiris.system.Utf8.uchr(126),com.wiris.system.Utf8.uchr(94),com.wiris.system.Utf8.uchr(176),com.wiris.system.Utf8.uchr(8364),com.wiris.system.Utf8.uchr(36),com.wiris.system.Utf8.uchr(163),com.wiris.system.Utf8.uchr(37),com.wiris.system.Utf8.uchr(8240),com.wiris.system.Utf8.uchr(8706),com.wiris.system.Utf8.uchr(8711),com.wiris.system.Utf8.uchr(949),com.wiris.system.Utf8.uchr(8709),com.wiris.system.Utf8.uchr(8746),com.wiris.system.Utf8.uchr(8745),com.wiris.system.Utf8.uchr(8834),com.wiris.system.Utf8.uchr(8835),com.wiris.system.Utf8.uchr(8838),com.wiris.system.Utf8.uchr(8839),com.wiris.system.Utf8.uchr(8473),com.wiris.system.Utf8.uchr(8469),com.wiris.system.Utf8.uchr(8484),com.wiris.system.Utf8.uchr(8474),com.wiris.system.Utf8.uchr(8450),com.wiris.system.Utf8.uchr(8477),com.wiris.system.Utf8.uchr(120128),com.wiris.system.Utf8.uchr(8658),com.wiris.system.Utf8.uchr(9180),com.wiris.system.Utf8.uchr(8743),com.wiris.system.Utf8.uchr(8744),com.wiris.system.Utf8.uchr(35),"...","cos","cm","dm","lim","log","sin","tan","frac"];
 com.wiris.quizzes.impl.HandwritingConstraints.GENERAL = "General";
 com.wiris.quizzes.impl.HandwritingConstraints.FRACTIONS = "Fraction";
 com.wiris.quizzes.impl.HandwritingConstraints.BIGOPERATORS = "BigOperator";

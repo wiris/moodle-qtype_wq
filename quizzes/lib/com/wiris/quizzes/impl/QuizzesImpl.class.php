@@ -5,16 +5,16 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
 	}}
-	public function mathContentToFilterableValue($value) {
+	public function mathContentToFilterableValue($value, $initialContent) {
 		if($value->type === com_wiris_quizzes_impl_MathContent::$TYPE_GEOMETRY_FILE) {
-			return "<img " . "src=\"" . com_wiris_quizzes_impl_QuizzesImpl::getInstance()->getResourceUrl("plotter_loading.png") . "\" " . "alt=\"Plotter\" " . "class=\"wirisconstruction wirisgraphanimate\" " . "data-wirisconstruction=\"" . com_wiris_util_xml_WXmlUtils::htmlEscape($value->content) . "\"" . "/>";
+			return "<img " . "src=\"" . com_wiris_quizzes_impl_QuizzesImpl::getInstance()->getResourceUrl("plotter_loading.png") . "\" " . "alt=\"Plotter\" " . "class=\"wirisconstruction wirisgraphanimate\" " . "data-wirisconstruction=\"" . com_wiris_util_xml_WXmlUtils::htmlEscape($value->content) . "\"" . (com_wiris_quizzes_impl_QuizzesImpl_0($this, $initialContent, $value)) . "/>";
 		}
 		return $value->content;
 	}
 	public function answerToFilterableValue($value) {
 		$mc = new com_wiris_quizzes_impl_MathContent();
 		$mc->set($value);
-		return $this->mathContentToFilterableValue($mc);
+		return $this->mathContentToFilterableValue($mc, null);
 	}
 	public function getElementsToGrade($geometryFile, $assertion) {
 		if($assertion->getParam(com_wiris_quizzes_impl_Assertion::$PARAM_ELEMENTS_TO_GRADE) !== null) {
@@ -689,7 +689,7 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 						while($_g2 < $splitByRegularSp->length) {
 							$word = $splitByRegularSp[$_g2];
 							++$_g2;
-							$splitByNbsp = _hx_explode(com_wiris_quizzes_impl_QuizzesImpl_0($this, $_g, $_g1, $_g2, $ca, $correctAnswers, $hasMultiletterIdentifierInTextFormat, $i, $instance, $isPlainTextField, $isStringSyntax, $isTextFormat, $j, $j1, $q, $qa, $qi, $qq, $question, $slots, $splitByRegularSp, $syntax, $ua, $userAnswers, $uu, $value, $word, $words), $word);
+							$splitByNbsp = _hx_explode(com_wiris_quizzes_impl_QuizzesImpl_1($this, $_g, $_g1, $_g2, $ca, $correctAnswers, $hasMultiletterIdentifierInTextFormat, $i, $instance, $isPlainTextField, $isStringSyntax, $isTextFormat, $j, $j1, $q, $qa, $qi, $qq, $question, $slots, $splitByRegularSp, $syntax, $ua, $userAnswers, $uu, $value, $word, $words), $word);
 							$words = $words->concat($splitByNbsp);
 							unset($word,$splitByNbsp);
 						}
@@ -1172,12 +1172,12 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
-		else if(isset($this->»dynamics[$m]) && is_callable($this->»dynamics[$m]))
-			return call_user_func_array($this->»dynamics[$m], $a);
+		else if(isset($this->Â»dynamics[$m]) && is_callable($this->Â»dynamics[$m]))
+			return call_user_func_array($this->Â»dynamics[$m], $a);
 		else if('toString' == $m)
 			return $this->__toString();
 		else
-			throw new HException('Unable to call «'.$m.'»');
+			throw new HException('Unable to call Â«'.$m.'Â»');
 	}
 	static $singleton = null;
 	static function getInstance() {
@@ -1293,7 +1293,14 @@ class com_wiris_quizzes_impl_QuizzesImpl extends com_wiris_quizzes_api_Quizzes {
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.QuizzesImpl'; }
 }
-function com_wiris_quizzes_impl_QuizzesImpl_0(&$»this, &$_g, &$_g1, &$_g2, &$ca, &$correctAnswers, &$hasMultiletterIdentifierInTextFormat, &$i, &$instance, &$isPlainTextField, &$isStringSyntax, &$isTextFormat, &$j, &$j1, &$q, &$qa, &$qi, &$qq, &$question, &$slots, &$splitByRegularSp, &$syntax, &$ua, &$userAnswers, &$uu, &$value, &$word, &$words) {
+function com_wiris_quizzes_impl_QuizzesImpl_0(&$Â»this, &$initialContent, &$value) {
+	if($initialContent !== null && !($initialContent === "")) {
+		return "data-wirisinitialcontent=\"" . com_wiris_util_xml_WXmlUtils::htmlEscape($initialContent) . "\"";
+	} else {
+		return "";
+	}
+}
+function com_wiris_quizzes_impl_QuizzesImpl_1(&$Â»this, &$_g, &$_g1, &$_g2, &$ca, &$correctAnswers, &$hasMultiletterIdentifierInTextFormat, &$i, &$instance, &$isPlainTextField, &$isStringSyntax, &$isTextFormat, &$j, &$j1, &$q, &$qa, &$qi, &$qq, &$question, &$slots, &$splitByRegularSp, &$syntax, &$ua, &$userAnswers, &$uu, &$value, &$word, &$words) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(160);
