@@ -174,6 +174,9 @@ class com_wiris_quizzes_impl_QuizzesEnumUtils {
 			com_wiris_quizzes_impl_QuizzesEnumUtils::$propertyNames->set(com_wiris_quizzes_impl_LocalData::$KEY_OPENANSWER_GRAPH_TOOLBAR, com_wiris_quizzes_api_PropertyName::$GRAPH_TOOLBAR);
 			com_wiris_quizzes_impl_QuizzesEnumUtils::$propertyNames->set(com_wiris_quizzes_impl_LocalData::$KEY_AUXILIARY_CAS_HIDE_FILE_MENU, com_wiris_quizzes_api_PropertyName::$AUXILIARY_CAS_HIDE_FILE_MENU);
 			com_wiris_quizzes_impl_QuizzesEnumUtils::$propertyNames->set(com_wiris_quizzes_impl_LocalData::$KEY_ELEMENTS_TO_HANDWRITE, com_wiris_quizzes_api_PropertyName::$ELEMENTS_TO_HANDWRITE);
+			com_wiris_quizzes_impl_QuizzesEnumUtils::$propertyNames->set(com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_LOCK_INITIAL_CONTENT, com_wiris_quizzes_api_PropertyName::$GRAPH_LOCK_INITIAL_CONTENT);
+			com_wiris_quizzes_impl_QuizzesEnumUtils::$propertyNames->set(com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_SHOW_NAME_IN_LABEL, com_wiris_quizzes_api_PropertyName::$GRAPH_SHOW_NAME_IN_LABEL);
+			com_wiris_quizzes_impl_QuizzesEnumUtils::$propertyNames->set(com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_SHOW_VALUE_IN_LABEL, com_wiris_quizzes_api_PropertyName::$GRAPH_SHOW_VALUE_IN_LABEL);
 		}
 		return com_wiris_quizzes_impl_QuizzesEnumUtils::$propertyNames;
 	}

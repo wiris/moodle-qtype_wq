@@ -96,6 +96,9 @@
 		"tt_download": "Descarregar",
 		"tt_settingsSection": "Configuració",
 		"tt_settings": "Configuració",
+		"tt_showHiddenElements": "Mostrar elements ocults",
+		"tt_hideElement": "Amagar element",
+		"tt_restoreInitialContent": "Restaurar",
 
 		"tt_view": "Flotant",
 		"tt_maximize": "Maximitzar",

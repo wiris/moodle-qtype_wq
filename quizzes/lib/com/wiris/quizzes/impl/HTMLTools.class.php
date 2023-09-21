@@ -1158,8 +1158,8 @@ class com_wiris_quizzes_impl_HTMLTools {
 									$itemSelector = $this->isPartOfMatrixVectorOrList($formula, $value, $posFormula);
 									try {
 										$value = $this->selectElementOfArray($value, $itemSelector, $formula, $posFormula);
-									}catch(Exception $»e) {
-										$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+									}catch(Exception $Â»e) {
+										$_ex_ = ($Â»e instanceof HException) ? $Â»e->e : $Â»e;
 										$t = $_ex_;
 										{
 											$itemSelector = com_wiris_quizzes_impl_HTMLTools::$NOT_A_SELECTOR;
@@ -1276,7 +1276,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 				$outOfBounds = $iniWant === -1;
 				$iniWant += strlen("<mrow>");
 				$k = 0;
-				while($k < $positionToBeWritten->»a[0] - 1 && !$outOfBounds) {
+				while($k < $positionToBeWritten->Â»a[0] - 1 && !$outOfBounds) {
 					$iniWant = _hx_index_of($value, $this->separator, $iniWant + 1);
 					$outOfBounds = $iniWant === -1;
 					$k++;
@@ -1301,7 +1301,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		$rowFinish = (($itemSelector === com_wiris_quizzes_impl_HTMLTools::$SELECTOR_2D) ? "</mtr>" : "</mrow>");
 		$endWant = _hx_index_of($value, $rowFinish, null);
 		$k = 0;
-		while($k < $positionToBeWritten->»a[0] - 1 && !$outOfBounds) {
+		while($k < $positionToBeWritten->Â»a[0] - 1 && !$outOfBounds) {
 			$iniWant = _hx_index_of($value, $rowStart, $iniWant + 1);
 			$endWant = _hx_index_of($value, $rowFinish, $endWant + 1);
 			$outOfBounds = $iniWant === -1 || $endWant === -1;
@@ -1323,7 +1323,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		$elementStart = com_wiris_quizzes_impl_HTMLTools_16($this, $iniWant, $itemSelector, $outOfBounds, $positionToBeWritten, $rowFinish, $rowStart, $value);
 		$elementFinish = com_wiris_quizzes_impl_HTMLTools_17($this, $elementStart, $iniWant, $itemSelector, $outOfBounds, $positionToBeWritten, $rowFinish, $rowStart, $value);
 		$k = 0;
-		while($k < $positionToBeWritten->»a[0] - 1 && !$outOfBounds) {
+		while($k < $positionToBeWritten->Â»a[0] - 1 && !$outOfBounds) {
 			$iniWant = _hx_index_of($value, $rowStart, $iniWant + 1);
 			$outOfBounds = $iniWant === -1;
 			$k++;
@@ -1333,7 +1333,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		$iniWant = (($itemSelector === com_wiris_quizzes_impl_HTMLTools::$SELECTOR_2D) ? _hx_index_of($value, $elementStart, $iniWant) : $this->minValue(_hx_index_of($value, $elementStart, $iniWant), $this->minValue(_hx_index_of($value, "<mn>", $iniWant), _hx_index_of($value, "<mi>", $iniWant))));
 		$outOfBounds = $iniWant === -1;
 		$k = 0;
-		while($k < $positionToBeWritten->»a[1] - 1 && !$outOfBounds) {
+		while($k < $positionToBeWritten->Â»a[1] - 1 && !$outOfBounds) {
 			$iniWant = _hx_index_of($value, $elementStart, $iniWant + 1);
 			$outOfBounds = $iniWant === -1;
 			$k++;
@@ -1432,8 +1432,8 @@ class com_wiris_quizzes_impl_HTMLTools {
 					$itemSelector = $this->isPartOfMatrixVectorOrList($formula, $value, $pos);
 					try {
 						$value = $this->selectElementOfArray($value, $itemSelector, $formula, $pos);
-					}catch(Exception $»e) {
-						$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+					}catch(Exception $Â»e) {
+						$_ex_ = ($Â»e instanceof HException) ? $Â»e->e : $Â»e;
 						$t = $_ex_;
 						{
 							$itemSelector = com_wiris_quizzes_impl_HTMLTools::$NOT_A_SELECTOR;
@@ -1673,10 +1673,10 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $this->replaceVariablesInsideHTML($text, $textvariables, com_wiris_quizzes_impl_MathContent::$TYPE_TEXT, false);
 	}
 	public function encodeMathML($html) {
-		$opentag = "Â«";
-		$closetag = "Â»";
-		$quote = "Â¨";
-		$amp = "Â§";
+		$opentag = "Ã‚Â«";
+		$closetag = "Ã‚Â»";
+		$quote = "Ã‚Â¨";
+		$amp = "Ã‚Â§";
 		$start = null;
 		$end = 0;
 		while(($start = _hx_index_of($html, "<math", $end)) !== -1) {
@@ -1694,10 +1694,10 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $html;
 	}
 	public function decodeMathML($html) {
-		$opentag = "Â«";
-		$closetag = "Â»";
-		$quote = "Â¨";
-		$amp = "Â§";
+		$opentag = "Ã‚Â«";
+		$closetag = "Ã‚Â»";
+		$quote = "Ã‚Â¨";
+		$amp = "Ã‚Â§";
 		$closemath = $opentag . "/math" . $closetag;
 		$start = null;
 		$end = 0;
@@ -1716,7 +1716,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $html;
 	}
 	public function isMathMLEncoded($html) {
-		$opentag = "Â«";
+		$opentag = "Ã‚Â«";
 		return _hx_index_of($html, $opentag . "math", null) !== -1;
 	}
 	public function extractVariableNames($html) {
@@ -1898,12 +1898,12 @@ class com_wiris_quizzes_impl_HTMLTools {
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
-		else if(isset($this->»dynamics[$m]) && is_callable($this->»dynamics[$m]))
-			return call_user_func_array($this->»dynamics[$m], $a);
+		else if(isset($this->Â»dynamics[$m]) && is_callable($this->Â»dynamics[$m]))
+			return call_user_func_array($this->Â»dynamics[$m], $a);
 		else if('toString' == $m)
 			return $this->__toString();
 		else
-			throw new HException('Unable to call «'.$m.'»');
+			throw new HException('Unable to call Â«'.$m.'Â»');
 	}
 	static $POSITION_NONE = -1;
 	static $POSITION_ONLY_TEXT = 1;
@@ -2046,109 +2046,109 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $src;
 	}
 	static function getEmptyCalcMeSession() {
-		return "<wiriscalc version=\"3.1\"><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>UntitledÂ calc</mtext></math></title><properties><property name=\"lang\">en</property><property name=\"precision\">4</property><property name=\"use_degrees\">false</property></properties><session version=\"3.0\" lang=\"en\"><task><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>SheetÂ 1</mtext></math></title><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"/></input></command></group></task></session></wiriscalc>";
+		return "<wiriscalc version=\"3.1\"><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>UntitledÃ‚Â calc</mtext></math></title><properties><property name=\"lang\">en</property><property name=\"precision\">4</property><property name=\"use_degrees\">false</property></properties><session version=\"3.0\" lang=\"en\"><task><title><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>SheetÃ‚Â 1</mtext></math></title><group><command><input><math xmlns=\"http://www.w3.org/1998/Math/MathML\"/></input></command></group></task></session></wiriscalc>";
 	}
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLTools'; }
 }
 com_wiris_quizzes_impl_HTMLTools::$EMPTY_CALCME_SESSION = "<wiriscalc version=\"3.2\">\x0A" . "  <title>\x0A" . "    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\x0A" . "      <mtext></mtext>\x0A" . "    </math>\x0A" . "  </title>\x0A" . "  <session version=\"3.0\">\x0A" . "      <group>\x0A" . "        <command>\x0A" . "          <input>\x0A" . "            <math xmlns=\"http://www.w3.org/1998/Math/MathML\"/>\x0A" . "          </input>\x0A" . "        </command>\x0A" . "      </group>\x0A" . "  </session>\x0A" . "</wiriscalc>";
-function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer, &$answers, &$compound, &$h, &$i, &$i1, &$s) {
-	if($»this->isMathMLString($s)) {
+function com_wiris_quizzes_impl_HTMLTools_0(&$Â»this, &$_g, &$_g1, &$a, &$answer, &$answers, &$compound, &$h, &$i, &$i1, &$s) {
+	if($Â»this->isMathMLString($s)) {
 		return com_wiris_quizzes_impl_MathContent::$TYPE_MATHML;
 	} else {
 		return com_wiris_quizzes_impl_MathContent::$TYPE_TEXT;
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_1(&$»this, &$close, &$e, &$i, &$it, &$n, &$open, &$sb, &$separators) {
+function com_wiris_quizzes_impl_HTMLTools_1(&$Â»this, &$close, &$e, &$i, &$it, &$n, &$open, &$sb, &$separators) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(haxe_Utf8::charCodeAt($separators, com_wiris_quizzes_impl_HTMLTools_21($close, $e, $i, $it, $n, $open, $s, $sb, $separators)));
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_2(&$»this, &$mathml, &$root) {
+function com_wiris_quizzes_impl_HTMLTools_2(&$Â»this, &$mathml, &$root) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(160);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_3(&$»this, &$c, &$children, &$elem, &$index, &$it, &$mis, &$mitexts, &$text, &$words) {
+function com_wiris_quizzes_impl_HTMLTools_3(&$Â»this, &$c, &$children, &$elem, &$index, &$it, &$mis, &$mitexts, &$text, &$words) {
 	if($index < $children->length) {
 		return $children[$index];
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_4(&$»this, &$c, &$children, &$elem, &$first, &$index, &$it, &$words) {
+function com_wiris_quizzes_impl_HTMLTools_4(&$Â»this, &$c, &$children, &$elem, &$first, &$index, &$it, &$words) {
 	if($index < $children->length) {
 		return $children[$index];
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_5(&$»this, &$c, &$children, &$elem, &$first, &$index, &$it, &$mns, &$num, &$words) {
+function com_wiris_quizzes_impl_HTMLTools_5(&$Â»this, &$c, &$children, &$elem, &$first, &$index, &$it, &$mns, &$num, &$words) {
 	if($index < $children->length) {
 		return $children[$index];
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_6(&$»this, &$c, &$children, &$elem, &$index, &$it, &$words) {
+function com_wiris_quizzes_impl_HTMLTools_6(&$Â»this, &$c, &$children, &$elem, &$index, &$it, &$words) {
 	if($index < $children->length) {
 		return $children[$index];
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_7(&$»this, &$allowedTags, &$beginformula, &$end, &$formula, &$lasttag, &$omittedcontent, &$pos2, &$spacepos, &$stack, &$start, &$tag, &$text, &$trimmedTag) {
+function com_wiris_quizzes_impl_HTMLTools_7(&$Â»this, &$allowedTags, &$beginformula, &$end, &$formula, &$lasttag, &$omittedcontent, &$pos2, &$spacepos, &$stack, &$start, &$tag, &$text, &$trimmedTag) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(160);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_8(&$»this, &$c, &$i, &$mathml, &$n, &$text, &$token) {
+function com_wiris_quizzes_impl_HTMLTools_8(&$Â»this, &$c, &$i, &$mathml, &$n, &$text, &$token) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar($c);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_9(&$»this, &$_g, &$c, &$i, &$j, &$j1, &$m, &$mathml, &$n, &$text, &$tok, &$token, &$tokens) {
+function com_wiris_quizzes_impl_HTMLTools_9(&$Â»this, &$_g, &$c, &$i, &$j, &$j1, &$m, &$mathml, &$n, &$text, &$tok, &$token, &$tokens) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar(haxe_Utf8::charCodeAt($tok, $j1));
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_10(&$»this, &$c, &$i, &$mathml, &$n, &$text, &$token) {
+function com_wiris_quizzes_impl_HTMLTools_10(&$Â»this, &$c, &$i, &$mathml, &$n, &$text, &$token) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar($c);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_11(&$»this, &$appendpos, &$character, &$firstchar, &$formula, &$initag, &$length, &$parentpos, &$parenttag, &$parenttagname, &$pos, &$start, &$text) {
+function com_wiris_quizzes_impl_HTMLTools_11(&$Â»this, &$appendpos, &$character, &$firstchar, &$formula, &$initag, &$length, &$parentpos, &$parenttag, &$parenttagname, &$pos, &$start, &$text) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar($character);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_12(&$»this, &$appendpos, &$character, &$contentpos, &$end, &$firstchar, &$formula, &$initag, &$length, &$nextpos, &$nexttag, &$nexttaglength, &$nexttagname, &$parentpos, &$parenttag, &$parenttagname, &$pos, &$speciallength, &$specialtag, &$start, &$text, &$toappend) {
+function com_wiris_quizzes_impl_HTMLTools_12(&$Â»this, &$appendpos, &$character, &$contentpos, &$end, &$firstchar, &$formula, &$initag, &$length, &$nextpos, &$nexttag, &$nexttaglength, &$nexttagname, &$parentpos, &$parenttag, &$parenttagname, &$pos, &$speciallength, &$specialtag, &$start, &$text, &$toappend) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar($character);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_13(&$»this, &$c, &$end, &$html, &$name, &$pos) {
+function com_wiris_quizzes_impl_HTMLTools_13(&$Â»this, &$c, &$end, &$html, &$name, &$pos) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar($c);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_14(&$»this, &$c, &$end, &$html, &$name, &$pos) {
+function com_wiris_quizzes_impl_HTMLTools_14(&$Â»this, &$c, &$end, &$html, &$name, &$pos) {
 	{
 		$s = new haxe_Utf8(null);
 		$s->addChar($c);
 		return $s->toString();
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_15(&$»this, &$block, &$blockFromStartToEndWant, &$endWant, &$iniWant, &$isVector, &$itemSelector, &$k, &$outOfBounds, &$positionToBeWritten, &$rowFinish, &$rowStart, &$value) {
+function com_wiris_quizzes_impl_HTMLTools_15(&$Â»this, &$block, &$blockFromStartToEndWant, &$endWant, &$iniWant, &$isVector, &$itemSelector, &$k, &$outOfBounds, &$positionToBeWritten, &$rowFinish, &$rowStart, &$value) {
 	if($itemSelector === com_wiris_quizzes_impl_HTMLTools::$SELECTOR_2D) {
 		return "<mrow><mfenced><mtable>" . $block . "</mtable></mfenced></mrow>";
 	} else {
@@ -2159,21 +2159,21 @@ function com_wiris_quizzes_impl_HTMLTools_15(&$»this, &$block, &$blockFromStartT
 		}
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_16(&$»this, &$iniWant, &$itemSelector, &$outOfBounds, &$positionToBeWritten, &$rowFinish, &$rowStart, &$value) {
+function com_wiris_quizzes_impl_HTMLTools_16(&$Â»this, &$iniWant, &$itemSelector, &$outOfBounds, &$positionToBeWritten, &$rowFinish, &$rowStart, &$value) {
 	if($itemSelector === com_wiris_quizzes_impl_HTMLTools::$SELECTOR_2D) {
 		return "<mtd>";
 	} else {
-		return $»this->separator;
+		return $Â»this->separator;
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_17(&$»this, &$elementStart, &$iniWant, &$itemSelector, &$outOfBounds, &$positionToBeWritten, &$rowFinish, &$rowStart, &$value) {
+function com_wiris_quizzes_impl_HTMLTools_17(&$Â»this, &$elementStart, &$iniWant, &$itemSelector, &$outOfBounds, &$positionToBeWritten, &$rowFinish, &$rowStart, &$value) {
 	if($itemSelector === com_wiris_quizzes_impl_HTMLTools::$SELECTOR_2D) {
 		return "</mtd>";
 	} else {
-		return $»this->separator;
+		return $Â»this->separator;
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_18(&$»this, &$after, &$before, &$closeTag1, &$closeTag2, &$formula, &$formula1, &$formula2, &$isAnnotation, &$itemSelector, &$openTag1, &$openTag2, &$placeholder, &$pos, &$space, &$splittag, &$tag1, &$value) {
+function com_wiris_quizzes_impl_HTMLTools_18(&$Â»this, &$after, &$before, &$closeTag1, &$closeTag2, &$formula, &$formula1, &$formula2, &$isAnnotation, &$itemSelector, &$openTag1, &$openTag2, &$placeholder, &$pos, &$space, &$splittag, &$tag1, &$value) {
 	if($space !== -1) {
 		return " " . _hx_substr($tag1, $space + 1, strlen($tag1) - 1 - ($space + 1));
 	} else {

@@ -121,7 +121,13 @@
               "id": "redo"
             },
             {
+              "id": "showHiddenElements"
+            },
+            {
               "id": "deleteAll"
+            },
+            {
+              "id": "restoreInitialContent"
             }
           ]
         },
@@ -205,6 +211,9 @@
           "items": [
             {
               "id": "deleteElement"
+            },
+            {
+              "id": "hideElement"
             }
           ]
         }
@@ -292,6 +301,9 @@
           "items": [
             {
               "id": "deleteLabel"
+            },
+            {
+              "id": "hideLabel"
             }
           ]
         }

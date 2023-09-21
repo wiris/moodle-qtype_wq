@@ -49,8 +49,8 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 				$content = $s->read();
 				$ini = com_wiris_util_sys_IniFile::newIniFileFromString($content);
 				$this->setAll($ini->getProperties());
-			}catch(Exception $»e) {
-				$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+			}catch(Exception $Â»e) {
+				$_ex_ = ($Â»e instanceof HException) ? $Â»e->e : $Â»e;
 				$e = $_ex_;
 				{
 					throw new HException("Could not read the configuration file \"" . com_wiris_quizzes_impl_ConfigurationImpl::$DEF_DIST_CONFIG_FILE . "\".");
@@ -77,8 +77,8 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 							unset($value,$i1);
 						}
 					}
-				}catch(Exception $»e) {
-					$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+				}catch(Exception $Â»e) {
+					$_ex_ = ($Â»e instanceof HException) ? $Â»e->e : $Â»e;
 					$e2 = $_ex_;
 					{
 						throw new HException("Could not find the Configuration class \"" . $className . "\".");
@@ -90,8 +90,8 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 				try {
 					$ini = com_wiris_util_sys_IniFile::newIniFileFromFilename($file);
 					$this->setAll($ini->getProperties());
-				}catch(Exception $»e) {
-					$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
+				}catch(Exception $Â»e) {
+					$_ex_ = ($Â»e instanceof HException) ? $Â»e->e : $Â»e;
 					$e2 = $_ex_;
 					{
 						throw new HException("Could not read configuration file \"" . $file . "\".");
@@ -180,12 +180,12 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
-		else if(isset($this->»dynamics[$m]) && is_callable($this->»dynamics[$m]))
-			return call_user_func_array($this->»dynamics[$m], $a);
+		else if(isset($this->Â»dynamics[$m]) && is_callable($this->Â»dynamics[$m]))
+			return call_user_func_array($this->Â»dynamics[$m], $a);
 		else if('toString' == $m)
 			return $this->__toString();
 		else
-			throw new HException('Unable to call «'.$m.'»');
+			throw new HException('Unable to call Â«'.$m.'Â»');
 	}
 	static $CONFIG_FILE = "quizzes.configuration.file";
 	static $DEF_CONFIG_FILE = "configuration.ini";
@@ -235,7 +235,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_QUIZZES_LOGGING_LEVEL = "WARNING";
 	static $DEF_QUIZZES_TRACKING_ENABLED = "true";
 	static $config = null;
-	static function thisLock() { $»args = func_get_args(); return call_user_func_array(self::$thisLock, $»args); }
+	static function thisLock() { $Â»args = func_get_args(); return call_user_func_array(self::$thisLock, $Â»args); }
 	static $thisLock;
 	static $isHttps = false;
 	static function getInstance() {

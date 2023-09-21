@@ -1421,10 +1421,10 @@ md-elevation-transition {
 }
 
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer {
-  background: url("decoration/drawing_panel_empty.svg?v=4.8.2") center center no-repeat;
+  background: url("decoration/drawing_panel_empty.svg?v=4.9.0") center center no-repeat;
 }
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer canvas {
-  background: url("decoration/drawing_panel_grid.png?v=4.8.2");
+  background: url("decoration/drawing_panel_grid.png?v=4.9.0");
 }
 .wrsUI_app .wrsUI_drawingPanel .wrsUI_aux_canvasContainer {
   position: absolute;
@@ -2102,7 +2102,7 @@ md-elevation-transition {
   box-sizing: border-box;
   padding: 8px;
   justify-content: space-between !important;
-  width: calc(100% - (24px * var(--indentation-level)));
+  width: calc(100% - 24px * var(--indentation-level));
 }
 .wrsUI_app .wrsUI_list > .wrsUI_panel > .wrsUI_label {
   margin-right: 16px;
@@ -2533,7 +2533,7 @@ md-elevation-transition {
 }
 .wrsUI_app .wrsUI_radioButton .wrsUI_radioButtonText .wrsUI_label {
   cursor: pointer;
-  color: black;
+  color: rgb(0, 0, 0);
   line-height: 20px;
   font-weight: 400;
   font-size: 14px;
@@ -2769,7 +2769,7 @@ md-elevation-transition {
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-  color: black;
+  color: rgb(0, 0, 0);
 }
 .wrsUI_app .wrsUI_checkBox .wrsUI_checkBoxHelperText .wrsUI_label {
   cursor: pointer;
@@ -3108,7 +3108,7 @@ md-elevation-transition {
 }
 .wrsUI_app .wrsUI_slider .wrsUI_aux_sliderWrapper .wrsUI_aux_sliderRange {
   background: #077670;
-  width: calc((var(--slider-width) / var(--slider-max)) * (var(--slider-value) - var(--slider-min)));
+  width: calc(var(--slider-width) / var(--slider-max) * (var(--slider-value) - var(--slider-min)));
   height: 2px;
   border-radius: 2px;
 }
@@ -3120,7 +3120,7 @@ md-elevation-transition {
   cursor: pointer;
   position: absolute;
   top: -1px;
-  left: calc((var(--slider-width) / var(--slider-max)) * (var(--slider-value) - var(--slider-min)) - 5px);
+  left: calc(var(--slider-width) / var(--slider-max) * (var(--slider-value) - var(--slider-min)) - 5px);
 }
 .wrsUI_app .wrsUI_slider .wrsUI_aux_sliderWrapper .wrsUI_aux_sliderHandle:focus {
   box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);

@@ -96,6 +96,9 @@
 		"tt_download": "Download",
 		"tt_settingsSection": "Ρυθμίσεις",
 		"tt_settings": "Ρυθμίσεις",
+		"tt_showHiddenElements": "Εμφάνιση κρυμμένων στοιχείων",
+		"tt_hideElement": "Απόκρυψη στοιχείου",
+		"tt_restoreInitialContent": "Επαναφορά",
 
 		"tt_view": "Floating",
 		"tt_maximize": "Μεγέθυνση",
