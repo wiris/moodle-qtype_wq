@@ -96,9 +96,9 @@
 		"tt_download": "Download",
 		"tt_settingsSection": "Einstellungen",
 		"tt_settings": "Einstellungen",
-		"tt_showHiddenElements": "Show hidden elements",
-		"tt_hideElement": "Hide element",
-		"tt_restoreInitialContent": "Restore",
+		"tt_showHiddenElements": "Ausgeblendete Elemente anzeigen",
+		"tt_hideElement": "Element ausblenden",
+		"tt_restoreInitialContent": "Wiederherstellen",
 
 		"tt_view": "Floating",
 		"tt_maximize": "Maximieren",

@@ -22,6 +22,8 @@ class com_wiris_util_geometry_GeometryElementStyle {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static function __meta__() { $»args = func_get_args(); return call_user_func_array(self::$__meta__, $»args); }
+	static $__meta__;
 	static $REFER = "ref";
 	static $PARENT = "ref_parent";
 	static $STROKE = "stroke";
@@ -35,6 +37,7 @@ class com_wiris_util_geometry_GeometryElementStyle {
 	static $POINT_SIZE = "point_size";
 	static $POINT_STYLE = "point_style";
 	static $LABEL = "label";
+	static $LABEL_VISIBILITY = "label_visibility";
 	static $LABEL_COLOR = "label_color";
 	static $LABEL_BOLD = "label_bold";
 	static $LABEL_ITALIC = "label_italic";
@@ -43,7 +46,6 @@ class com_wiris_util_geometry_GeometryElementStyle {
 	static $FIXED = "fixed";
 	static $COLOR = "color";
 	static $FONT_SIZE = "font_size";
-	static $LABEL_VISIBILITY = "label_visibility";
 	static $VIEW_3D = "view_3D";
 	static $PIE_RADIUS = "pie_radius";
 	static $PIE_HEIGHT = "pie_height";
@@ -77,3 +79,4 @@ class com_wiris_util_geometry_GeometryElementStyle {
 	}
 	function __toString() { return 'com.wiris.util.geometry.GeometryElementStyle'; }
 }
+com_wiris_util_geometry_GeometryElementStyle::$__meta__ = _hx_anonymous(array("statics" => _hx_anonymous(array("LABEL" => _hx_anonymous(array("Deprecated" => null))))));
