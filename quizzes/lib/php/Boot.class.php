@@ -377,6 +377,10 @@ function _hx_has_field($o, $field) {
 }
 
 function _hx_index_of($s, $value, $startIndex = null) {
+	if ($s == null || $value == null) {
+		return -1;
+	}
+
 	if ($startIndex == null) {
 		$x = strpos($s, $value);
 	} else {
@@ -415,6 +419,11 @@ function _hx_is_numeric($v)
 }
 
 function _hx_last_index_of($s, $value, $startIndex = null) {
+
+	if ($s == null || $value == null) {
+		return -1;
+	}
+
 	if ($startIndex == null) {
 		$x = strrpos($s, $value);
 	} else {
