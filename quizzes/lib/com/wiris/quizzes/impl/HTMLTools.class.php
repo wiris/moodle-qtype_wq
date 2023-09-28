@@ -1673,20 +1673,16 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $this->replaceVariablesInsideHTML($text, $textvariables, com_wiris_quizzes_impl_MathContent::$TYPE_TEXT, false);
 	}
 	public function encodeMathML($html) {
-		$opentag = "Â«";
-		$closetag = "Â»";
-		$quote = "Â¨";
-		$amp = "Â§";
 		$start = null;
 		$end = 0;
 		while(($start = _hx_index_of($html, "<math", $end)) !== -1) {
 			$closemath = "</math>";
 			$end = _hx_index_of($html, $closemath, $start) + strlen($closemath);
 			$formula = _hx_substr($html, $start, $end - $start);
-			$formula = str_replace("<", $opentag, $formula);
-			$formula = str_replace(">", $closetag, $formula);
-			$formula = str_replace("\"", $quote, $formula);
-			$formula = str_replace("&", $amp, $formula);
+			$formula = str_replace("<", com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_LT, $formula);
+			$formula = str_replace(">", com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_GT, $formula);
+			$formula = str_replace("\"", com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_QUOT, $formula);
+			$formula = str_replace("&", com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_AMP, $formula);
 			$html = _hx_substr($html, 0, $start) . $formula . _hx_substr($html, $end, null);
 			$end = $start + strlen($formula);
 			unset($formula,$closemath);
@@ -1694,21 +1690,17 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $html;
 	}
 	public function decodeMathML($html) {
-		$opentag = "Â«";
-		$closetag = "Â»";
-		$quote = "Â¨";
-		$amp = "Â§";
-		$closemath = $opentag . "/math" . $closetag;
+		$closemath = com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_LT . "/math" . com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_GT;
 		$start = null;
 		$end = 0;
-		while(($start = _hx_index_of($html, $opentag . "math", $end)) !== -1) {
+		while(($start = _hx_index_of($html, com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_LT . "math", $end)) !== -1) {
 			$end = _hx_index_of($html, $closemath, $start) + strlen($closemath);
 			$formula = _hx_substr($html, $start, $end - $start);
 			$formula = com_wiris_util_xml_WXmlUtils::htmlUnescape($formula);
-			$formula = str_replace($opentag, "<", $formula);
-			$formula = str_replace($closetag, ">", $formula);
-			$formula = str_replace($quote, "\"", $formula);
-			$formula = str_replace($amp, "&", $formula);
+			$formula = str_replace(com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_LT, "<", $formula);
+			$formula = str_replace(com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_GT, ">", $formula);
+			$formula = str_replace(com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_QUOT, "\"", $formula);
+			$formula = str_replace(com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_AMP, "&", $formula);
 			$html = _hx_substr($html, 0, $start) . $formula . _hx_substr($html, $end, null);
 			$end = $start + strlen($formula);
 			unset($formula);
@@ -1716,8 +1708,7 @@ class com_wiris_quizzes_impl_HTMLTools {
 		return $html;
 	}
 	public function isMathMLEncoded($html) {
-		$opentag = "Â«";
-		return _hx_index_of($html, $opentag . "math", null) !== -1;
+		return _hx_index_of($html, com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_LT . "math", null) !== -1;
 	}
 	public function extractVariableNames($html) {
 		if($this->isMathMLEncoded($html)) {
@@ -1947,6 +1938,10 @@ class com_wiris_quizzes_impl_HTMLTools {
 			}
 		}
 	}
+	static $SAFE_MATHML_LT;
+	static $SAFE_MATHML_GT;
+	static $SAFE_MATHML_QUOT;
+	static $SAFE_MATHML_AMP;
 	static function encodeUnicodeChars($mathml) {
 		$sb = new StringBuf();
 		$i = null;
@@ -2051,6 +2046,10 @@ class com_wiris_quizzes_impl_HTMLTools {
 	function __toString() { return 'com.wiris.quizzes.impl.HTMLTools'; }
 }
 com_wiris_quizzes_impl_HTMLTools::$EMPTY_CALCME_SESSION = "<wiriscalc version=\"3.2\">\x0A" . "  <title>\x0A" . "    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\x0A" . "      <mtext></mtext>\x0A" . "    </math>\x0A" . "  </title>\x0A" . "  <session version=\"3.0\">\x0A" . "      <group>\x0A" . "        <command>\x0A" . "          <input>\x0A" . "            <math xmlns=\"http://www.w3.org/1998/Math/MathML\"/>\x0A" . "          </input>\x0A" . "        </command>\x0A" . "      </group>\x0A" . "  </session>\x0A" . "</wiriscalc>";
+com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_LT = com_wiris_quizzes_impl_HTMLTools_21();
+com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_GT = com_wiris_quizzes_impl_HTMLTools_22();
+com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_QUOT = com_wiris_quizzes_impl_HTMLTools_23();
+com_wiris_quizzes_impl_HTMLTools::$SAFE_MATHML_AMP = com_wiris_quizzes_impl_HTMLTools_24();
 function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer, &$answers, &$compound, &$h, &$i, &$i1, &$s) {
 	if($»this->isMathMLString($s)) {
 		return com_wiris_quizzes_impl_MathContent::$TYPE_MATHML;
@@ -2061,7 +2060,7 @@ function com_wiris_quizzes_impl_HTMLTools_0(&$»this, &$_g, &$_g1, &$a, &$answer
 function com_wiris_quizzes_impl_HTMLTools_1(&$»this, &$close, &$e, &$i, &$it, &$n, &$open, &$sb, &$separators) {
 	{
 		$s = new haxe_Utf8(null);
-		$s->addChar(haxe_Utf8::charCodeAt($separators, com_wiris_quizzes_impl_HTMLTools_21($close, $e, $i, $it, $n, $open, $s, $sb, $separators)));
+		$s->addChar(haxe_Utf8::charCodeAt($separators, com_wiris_quizzes_impl_HTMLTools_25($close, $e, $i, $it, $n, $open, $s, $sb, $separators)));
 		return $s->toString();
 	}
 }
@@ -2194,7 +2193,35 @@ function com_wiris_quizzes_impl_HTMLTools_20(&$centerBaseline, &$crossOriginEnab
 		return $proxyUrl . "?service=render&";
 	}
 }
-function com_wiris_quizzes_impl_HTMLTools_21(&$close, &$e, &$i, &$it, &$n, &$open, &$s, &$sb, &$separators) {
+function com_wiris_quizzes_impl_HTMLTools_21() {
+	{
+		$s = new haxe_Utf8(null);
+		$s->addChar(171);
+		return $s->toString();
+	}
+}
+function com_wiris_quizzes_impl_HTMLTools_22() {
+	{
+		$s = new haxe_Utf8(null);
+		$s->addChar(187);
+		return $s->toString();
+	}
+}
+function com_wiris_quizzes_impl_HTMLTools_23() {
+	{
+		$s = new haxe_Utf8(null);
+		$s->addChar(168);
+		return $s->toString();
+	}
+}
+function com_wiris_quizzes_impl_HTMLTools_24() {
+	{
+		$s = new haxe_Utf8(null);
+		$s->addChar(167);
+		return $s->toString();
+	}
+}
+function com_wiris_quizzes_impl_HTMLTools_25(&$close, &$e, &$i, &$it, &$n, &$open, &$s, &$sb, &$separators) {
 	if($i < $n) {
 		return $i;
 	} else {
