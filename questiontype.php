@@ -118,7 +118,7 @@ class qtype_wq extends question_type {
         $question->penalty = &$question->base->penalty;
         $question->stamp = &$question->base->stamp;
         $question->version = &$question->base->version;
-        $question->hidden = &$question->base->hidden;
+        $question->status = &$question->base->status;
         $question->timecreated = &$question->base->timecreated;
         $question->timemodified = &$question->base->timemodified;
         $question->createdby = &$question->base->createdby;
