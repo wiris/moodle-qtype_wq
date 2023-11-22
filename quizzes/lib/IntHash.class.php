@@ -6,6 +6,7 @@ class IntHash implements IteratorAggregate{
 		$this->h = array();
 	}}
 	
+	#[\ReturnTypeWillChange]
 	public function getIterator() {
 		return $this->iterator();
 	}

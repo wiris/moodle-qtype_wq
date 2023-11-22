@@ -1193,7 +1193,11 @@ class com_wiris_quizzes_impl_QuestionImpl extends com_wiris_quizzes_impl_Questio
 											if($name === com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_SHOW_VALUE_IN_LABEL) {
 												return com_wiris_quizzes_impl_LocalData::$VALUE_FOCUS;
 											} else {
-												return null;
+												if($name === com_wiris_quizzes_impl_LocalData::$KEY_GRAPH_MAGNETIC_GRID) {
+													return com_wiris_quizzes_impl_LocalData::$VALUE_SNAP;
+												} else {
+													return null;
+												}
 											}
 										}
 									}

@@ -157,7 +157,7 @@
 		"downloadText": "Select a size to download the plotter as a square PNG image.",
 		"downloadHelperText": "Square Image (1:1)",
 		"downloadErrorText": "Size must be a whole number.",
-		"confirm": "Confirm",
+		"confirm": "confirm",
 		"cancel": "annuleren",
 		"sizeInPixels": "Size in pixels",
 		"insertANumber": "Insert a number",

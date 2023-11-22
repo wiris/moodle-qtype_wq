@@ -10,6 +10,7 @@ class com_wiris_quizzes_api_PropertyName extends Enum {
 	public static $COMPOUND_ANSWER_GRADE_DISTRIBUTION;
 	public static $ELEMENTS_TO_HANDWRITE;
 	public static $GRAPH_LOCK_INITIAL_CONTENT;
+	public static $GRAPH_MAGNETIC_GRID;
 	public static $GRAPH_SHOW_NAME_IN_LABEL;
 	public static $GRAPH_SHOW_VALUE_IN_LABEL;
 	public static $GRAPH_TOOLBAR;
@@ -19,7 +20,7 @@ class com_wiris_quizzes_api_PropertyName extends Enum {
 	public static $STUDENT_ANSWER_PARAMETER;
 	public static $STUDENT_ANSWER_PARAMETER_NAME;
 	public static $USER_ID;
-	public static $__constructors = array(2 => 'ANSWER_FIELD_TYPE', 10 => 'AUXILIARY_CAS_HIDE_FILE_MENU', 9 => 'AUXILIARY_TEXT', 7 => 'CAS_SESSION', 3 => 'COMPOUND_ANSWER', 4 => 'COMPOUND_ANSWER_GRADE', 5 => 'COMPOUND_ANSWER_GRADE_DISTRIBUTION', 14 => 'ELEMENTS_TO_HANDWRITE', 15 => 'GRAPH_LOCK_INITIAL_CONTENT', 16 => 'GRAPH_SHOW_NAME_IN_LABEL', 17 => 'GRAPH_SHOW_VALUE_IN_LABEL', 12 => 'GRAPH_TOOLBAR', 13 => 'HANDWRITING_CONSTRAINTS', 8 => 'SHOW_AUXILIARY_TEXT_INPUT', 6 => 'SHOW_CAS', 0 => 'STUDENT_ANSWER_PARAMETER', 1 => 'STUDENT_ANSWER_PARAMETER_NAME', 11 => 'USER_ID');
+	public static $__constructors = array(2 => 'ANSWER_FIELD_TYPE', 10 => 'AUXILIARY_CAS_HIDE_FILE_MENU', 9 => 'AUXILIARY_TEXT', 7 => 'CAS_SESSION', 3 => 'COMPOUND_ANSWER', 4 => 'COMPOUND_ANSWER_GRADE', 5 => 'COMPOUND_ANSWER_GRADE_DISTRIBUTION', 14 => 'ELEMENTS_TO_HANDWRITE', 15 => 'GRAPH_LOCK_INITIAL_CONTENT', 18 => 'GRAPH_MAGNETIC_GRID', 16 => 'GRAPH_SHOW_NAME_IN_LABEL', 17 => 'GRAPH_SHOW_VALUE_IN_LABEL', 12 => 'GRAPH_TOOLBAR', 13 => 'HANDWRITING_CONSTRAINTS', 8 => 'SHOW_AUXILIARY_TEXT_INPUT', 6 => 'SHOW_CAS', 0 => 'STUDENT_ANSWER_PARAMETER', 1 => 'STUDENT_ANSWER_PARAMETER_NAME', 11 => 'USER_ID');
 	}
 com_wiris_quizzes_api_PropertyName::$ANSWER_FIELD_TYPE = new com_wiris_quizzes_api_PropertyName("ANSWER_FIELD_TYPE", 2);
 com_wiris_quizzes_api_PropertyName::$AUXILIARY_CAS_HIDE_FILE_MENU = new com_wiris_quizzes_api_PropertyName("AUXILIARY_CAS_HIDE_FILE_MENU", 10);
@@ -30,6 +31,7 @@ com_wiris_quizzes_api_PropertyName::$COMPOUND_ANSWER_GRADE = new com_wiris_quizz
 com_wiris_quizzes_api_PropertyName::$COMPOUND_ANSWER_GRADE_DISTRIBUTION = new com_wiris_quizzes_api_PropertyName("COMPOUND_ANSWER_GRADE_DISTRIBUTION", 5);
 com_wiris_quizzes_api_PropertyName::$ELEMENTS_TO_HANDWRITE = new com_wiris_quizzes_api_PropertyName("ELEMENTS_TO_HANDWRITE", 14);
 com_wiris_quizzes_api_PropertyName::$GRAPH_LOCK_INITIAL_CONTENT = new com_wiris_quizzes_api_PropertyName("GRAPH_LOCK_INITIAL_CONTENT", 15);
+com_wiris_quizzes_api_PropertyName::$GRAPH_MAGNETIC_GRID = new com_wiris_quizzes_api_PropertyName("GRAPH_MAGNETIC_GRID", 18);
 com_wiris_quizzes_api_PropertyName::$GRAPH_SHOW_NAME_IN_LABEL = new com_wiris_quizzes_api_PropertyName("GRAPH_SHOW_NAME_IN_LABEL", 16);
 com_wiris_quizzes_api_PropertyName::$GRAPH_SHOW_VALUE_IN_LABEL = new com_wiris_quizzes_api_PropertyName("GRAPH_SHOW_VALUE_IN_LABEL", 17);
 com_wiris_quizzes_api_PropertyName::$GRAPH_TOOLBAR = new com_wiris_quizzes_api_PropertyName("GRAPH_TOOLBAR", 12);

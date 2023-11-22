@@ -40,6 +40,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 		$this->set(com_wiris_quizzes_api_ConfigurationKeys::$TELEMETRY_TOKEN, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_TELEMETRY_TOKEN);
 		$this->set(com_wiris_quizzes_api_ConfigurationKeys::$QUIZZES_LOGGING_LEVEL, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_QUIZZES_LOGGING_LEVEL);
 		$this->set(com_wiris_quizzes_api_ConfigurationKeys::$QUIZZES_TRACKING_ENABLED, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_QUIZZES_TRACKING_ENABLED);
+		$this->set(com_wiris_quizzes_api_ConfigurationKeys::$GRAPH_TRACK_INSTANCES, com_wiris_quizzes_impl_ConfigurationImpl::$DEF_GRAPH_TRACK_INSTANCES);
 		if(!com_wiris_settings_PlatformSettings::$IS_JAVASCRIPT) {
 			try {
 				$s = com_wiris_system_Storage::newStorage(com_wiris_quizzes_impl_ConfigurationImpl::$DEF_DIST_CONFIG_FILE);
@@ -234,6 +235,7 @@ class com_wiris_quizzes_impl_ConfigurationImpl implements com_wiris_quizzes_api_
 	static $DEF_TELEMETRY_TOKEN = "1lt1OnlX3898VauysJ1nr5ODR8CNfVmB80KGxSSt";
 	static $DEF_QUIZZES_LOGGING_LEVEL = "WARNING";
 	static $DEF_QUIZZES_TRACKING_ENABLED = "true";
+	static $DEF_GRAPH_TRACK_INSTANCES = "true";
 	static $config = null;
 	static function thisLock() { $»args = func_get_args(); return call_user_func_array(self::$thisLock, $»args); }
 	static $thisLock;
