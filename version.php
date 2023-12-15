@@ -16,10 +16,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023092202;
+$plugin->version = 2023121900;
 $plugin->requires = 2015111600; // Moodle 3.0.
-$plugin->release = '4.9.2';
-$plugin->maturity = MATURITY_STABLE;
+$plugin->release = '4.10.0';
+$plugin->maturity = MATURITY_BETA;
 $plugin->component = 'qtype_wq';
 $plugin->dependencies = array (
      'filter_wiris' => ANY_VERSION
