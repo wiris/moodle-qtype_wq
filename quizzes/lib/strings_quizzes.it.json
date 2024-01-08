@@ -566,11 +566,11 @@
 		"focus": "Focus",
 		"never": "Mai",
 
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Magnetic grid settings",
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Select the magnetic grid option for the student answer field.",
-		"force": "Force",
-		"snap": "Snap",
-		"disabled": "Disabled",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Impostazioni griglia magnetica",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Seleziona l’opzione per la griglia magnetica per il campo di risposta dello studente.",
+		"force": "Forza",
+		"snap": "Allinea",
+		"disabled": "Disattivato",
 
 		"quizzes_studio_home_random_variables_title": "Variabili casuali",
 		"quizzes_studio_home_random_variables_title_basic_mode": "Modalità di base",
@@ -627,7 +627,7 @@
 		"quizzes_demo_sketch_title_menu" : "Schizzo",
 		"home_getting_started_documentation_button_text" : "Documentazione", 
 
-		"close_mathtype_popup" : "Close MathType"
+		"close_mathtype_popup" : "Chiudi MathType"
 	}
 }
 

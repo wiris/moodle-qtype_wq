@@ -566,11 +566,11 @@
 		"focus": "I fokus",
 		"never": "Aldri",
 
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Magnetic grid settings",
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Select the magnetic grid option for the student answer field.",
-		"force": "Force",
-		"snap": "Snap",
-		"disabled": "Disabled",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Innstillinger for magnetisk rutenett",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Velg det magnetiske rutenettalternativet for elevens svarfelt.",
+		"force": "Kraft",
+		"snap": "Øyeblikksbilde",
+		"disabled": "Deaktivert",
 
 		"quizzes_studio_home_random_variables_title": "Tilfeldige variabler",
 		"quizzes_studio_home_random_variables_title_basic_mode": "Grunnleggende modus",
@@ -627,7 +627,7 @@
 		"quizzes_demo_sketch_title_menu" : "Skissere",
 		"home_getting_started_documentation_button_text" : "Dokumentasjon", 
 
-		"close_mathtype_popup" : "Close MathType"
+		"close_mathtype_popup" : "Lukk MathType"
 	}
 }
 

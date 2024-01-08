@@ -566,11 +566,11 @@
 		"focus": "I fokus",
 		"never": "Aldrig",
 
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Magnetic grid settings",
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Select the magnetic grid option for the student answer field.",
-		"force": "Force",
-		"snap": "Snap",
-		"disabled": "Disabled",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Indstillinger for magnetisk gitter",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Vælg en indstilling for magnetisk gitter til feltet med den studerendes svar.",
+		"force": "Gennemtving",
+		"snap": "Fastgør",
+		"disabled": "Deaktiveret",
 
 		"quizzes_studio_home_random_variables_title": "Vilkårlige variabler",
 		"quizzes_studio_home_random_variables_title_basic_mode": "Grundlæggende tilstand",
@@ -627,7 +627,7 @@
 		"quizzes_demo_sketch_title_menu" : "Skitse",
 		"home_getting_started_documentation_button_text" : "Dokumentation", 
 
-		"close_mathtype_popup" : "Close MathType"
+		"close_mathtype_popup" : "Luk MathType"
 	}
 }
 

@@ -566,11 +566,11 @@
 		"focus": "Enfocar",
 		"never": "Mai",
 
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Magnetic grid settings",
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Select the magnetic grid option for the student answer field.",
-		"force": "Force",
-		"snap": "Snap",
-		"disabled": "Disabled",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Configuració de la malla magnètica",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Selecciona l’opció de la malla magnètica per afegir-la al camp de resposta de l’estudiant.",
+		"force": "Forçar",
+		"snap": "Alinear",
+		"disabled": "Desactivat",
 
 		"quizzes_studio_home_random_variables_title": "Variables aleatòries",
 		"quizzes_studio_home_random_variables_title_basic_mode": "Mode bàsic",

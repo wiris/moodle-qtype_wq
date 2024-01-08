@@ -566,11 +566,11 @@
 		"focus": "В центре внимания",
 		"never": "Никогда",
 
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Magnetic grid settings",
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Select the magnetic grid option for the student answer field.",
-		"force": "Force",
-		"snap": "Snap",
-		"disabled": "Disabled",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Настройки магнитной сетки",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Выберите вариант магнитной сетки для поля ответа учащегося.",
+		"force": "Применить",
+		"snap": "Снимок",
+		"disabled": "Отключено",
 
 		"quizzes_studio_home_random_variables_title": "Случайные переменные",
 		"quizzes_studio_home_random_variables_title_basic_mode": "Основной режим",
@@ -627,7 +627,7 @@
 		"quizzes_demo_sketch_title_menu" : "Эскиз",
 		"home_getting_started_documentation_button_text" : "Документация", 
 
-		"close_mathtype_popup" : "Close MathType"
+		"close_mathtype_popup" : "Закрыть MathType"
 	}
 }
 

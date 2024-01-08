@@ -566,11 +566,11 @@
 		"focus": "Enfocar",
 		"never": "Nunca",
 
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Magnetic grid settings",
-		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Select the magnetic grid option for the student answer field.",
-		"force": "Force",
-		"snap": "Snap",
-		"disabled": "Disabled",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "Ajustes de cuadrícula magnética",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "Selecciona la opción de cuadrícula magnética para el campo de respuesta de los alumnos.",
+		"force": "Forzar",
+		"snap": "Ajustar",
+		"disabled": "Desactivada",
 
 		"quizzes_studio_home_random_variables_title": "Variables aleatorias",
 		"quizzes_studio_home_random_variables_title_basic_mode": "Modo básico",
