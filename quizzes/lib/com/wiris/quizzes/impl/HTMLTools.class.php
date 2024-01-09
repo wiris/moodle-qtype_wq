@@ -1223,7 +1223,9 @@ class com_wiris_quizzes_impl_HTMLTools {
 						}
 					}
 					$token = _hx_substr($token, 0, $pos) . $value . _hx_substr($token, $pos + strlen($placeholder), null);
-					$pos += strlen($value);
+					if($value !== null) {
+						$pos += strlen($value);
+					}
 					unset($value);
 				} else {
 					$pos++;

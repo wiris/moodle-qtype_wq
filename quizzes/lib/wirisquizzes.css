@@ -64,6 +64,21 @@
 .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentCorrect::after, .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentWarning::after, .wrsUI_app.wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentError::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentCorrect::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentWarning::after, .wrsUI_app .wrsUI_quizzesAnswerField.wrsUI_quizzesEmbeddedAnswerField .wrsUI_inputComponent.wrsUI_textField.wrsUI_popupTextField.wrsUI_inputComponentError::after {
   right: 23px;
 }
+.wrsUI_app.wrsUI_quizzesAnswerField .wrsUI_aux_window > .wrsUI_aux_windowContent.wrsUI_movable > .wrsUI_aux_titleBar, .wrsUI_app .wrsUI_quizzesAnswerField .wrsUI_aux_window > .wrsUI_aux_windowContent.wrsUI_movable > .wrsUI_aux_titleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 20px;
+  font-size: 15px;
+  background: #077680;
+  color: white;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField .wrsUI_aux_window > .wrsUI_aux_windowContent.wrsUI_movable > .wrsUI_aux_titleBar > .wrsUI_aux_titleBar_buttons > .wrsUI_button > .wrsUI_aux_icon, .wrsUI_app .wrsUI_quizzesAnswerField .wrsUI_aux_window > .wrsUI_aux_windowContent.wrsUI_movable > .wrsUI_aux_titleBar > .wrsUI_aux_titleBar_buttons > .wrsUI_button > .wrsUI_aux_icon {
+  color: white;
+}
+.wrsUI_app.wrsUI_quizzesAnswerField .wrsUI_aux_window > .wrsUI_aux_windowContent.wrsUI_resizable > .wrsUI_button_resize_bar > .wrsUI_bottom_right_resizer, .wrsUI_app .wrsUI_quizzesAnswerField .wrsUI_aux_window > .wrsUI_aux_windowContent.wrsUI_resizable > .wrsUI_button_resize_bar > .wrsUI_bottom_right_resizer {
+  color: #077680;
+}
 
 .wrsUI_app.wrsUI_quizzesAuthoringField {
   background: transparent !important;

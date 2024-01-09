@@ -566,6 +566,12 @@
 		"focus": "关注",
 		"never": "从不",
 
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label": "磁栅设置",
+		"quizzes_studio_input_options_answer_input_method_magnetic_grid_label_text": "为学生答案字段选择磁栅选项。",
+		"force": "力",
+		"snap": "快照",
+		"disabled": "已禁用",
+
 		"quizzes_studio_home_random_variables_title": "随机变量",
 		"quizzes_studio_home_random_variables_title_basic_mode": "基本模式",
 		"quizzes_studio_home_advanced_random_variables_button_text": "高级模式",
@@ -619,7 +625,9 @@
 		"quizzes_studio_home_correct_answer_description_sketch_paragraph_2": "请使用“测试该问题”按钮查看学生界面。",
 		"quizzes_studio_test_question_student_answer_feedback_assertion_equivalent_sketch_label" : "等效草图",
 		"quizzes_demo_sketch_title_menu" : "草图",
-		"home_getting_started_documentation_button_text" : "文档"
+		"home_getting_started_documentation_button_text" : "文档", 
+
+		"close_mathtype_popup" : "关闭MathType"
 	}
 }
 
