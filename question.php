@@ -17,7 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/wq/quizzes/quizzes.php');
 
-class qtype_wq_question extends question_graded_automatically {
+class qtype_wq_question extends question_graded_automatically
+{
     /**
      * @var question_definition
      *   The base question.
@@ -44,7 +45,8 @@ class qtype_wq_question extends question_graded_automatically {
      */
     public $auxiliartextfieldlines = 10;
 
-    public function __construct(question_definition $base = null) {
+    public function __construct(question_definition $base = null)
+    {
         $this->base = $base;
     }
     /**
@@ -56,7 +58,8 @@ class qtype_wq_question extends question_graded_automatically {
      * @param int $variant
      *   The random seed to be used in this question.
      * **/
-    public function start_attempt(question_attempt_step $step, $variant) {
+    public function start_attempt(question_attempt_step $step, $variant)
+    {
         global $USER;
         $this->base->start_attempt($step, $variant);
 
@@ -90,7 +93,8 @@ class qtype_wq_question extends question_graded_automatically {
      * instance form the saved XML and updates the plotter image cache if
      * necessary.
      * **/
-    public function apply_attempt_state(question_attempt_step $step) {
+    public function apply_attempt_state(question_attempt_step $step)
+    {
         $this->base->apply_attempt_state($step);
         // Recover the questioninstance variable saved on start_attempt().
         $xml = $step->get_qt_var('_qi');
@@ -116,16 +120,18 @@ class qtype_wq_question extends question_graded_automatically {
             $response = $this->call_wiris_service($request);
             $this->wirisquestioninstance->update($response);
             // Save the result.
-             $step->set_qt_var('_qi', $this->wirisquestioninstance->serialize());
+            $step->set_qt_var('_qi', $this->wirisquestioninstance->serialize());
         }
     }
 
-    public function get_question_summary() {
+    public function get_question_summary()
+    {
         $text = $this->base->get_question_summary();
         return $this->expand_variables_text($text);
     }
 
-    public function get_num_variants() {
+    public function get_num_variants()
+    {
         if ($this->wirisquestion->getAlgorithm() != null) {
             return 65536;
         } else {
@@ -133,23 +139,28 @@ class qtype_wq_question extends question_graded_automatically {
         }
     }
 
-    public function get_min_fraction() {
+    public function get_min_fraction()
+    {
         return $this->base->get_min_fraction();
     }
 
-    public function get_max_fraction() {
+    public function get_max_fraction()
+    {
         return $this->base->get_max_fraction();
     }
 
-    public function clear_wrong_from_response(array $response) {
+    public function clear_wrong_from_response(array $response)
+    {
         return $this->base->clear_wrong_from_response($response);
     }
 
-    public function get_num_parts_right(array $response) {
+    public function get_num_parts_right(array $response)
+    {
         return $this->base->get_num_parts_right($response);
     }
 
-    public function get_expected_data() {
+    public function get_expected_data()
+    {
         $expected = $this->base->get_expected_data();
         $expected['_sqi'] = PARAM_RAW_TRIMMED;
         $expected['auxiliar_text'] = question_attempt::PARAM_RAW_FILES;
@@ -157,15 +168,18 @@ class qtype_wq_question extends question_graded_automatically {
         return $expected;
     }
 
-    public function get_correct_response() {
+    public function get_correct_response()
+    {
         return $this->base->get_correct_response();
     }
 
-    public function prepare_simulated_post_data($simulatedresponse) {
+    public function prepare_simulated_post_data($simulatedresponse)
+    {
         return $this->base->prepare_simulated_post_data($simulatedresponse);
     }
 
-    public function format_text($text, $format, $qa, $component, $filearea, $itemid, $clean = false) {
+    public function format_text($text, $format, $qa, $component, $filearea, $itemid, $clean = false)
+    {
         if ($format == FORMAT_PLAIN) {
             $text = $this->base->format_text($text, $format, $qa, $component, $filearea, $itemid, $clean);
             $format = FORMAT_HTML;
@@ -174,14 +188,16 @@ class qtype_wq_question extends question_graded_automatically {
         return $this->base->format_text($text, $format, $qa, $component, $filearea, $itemid, $clean);
     }
 
-    public function expand_variables($text) {
+    public function expand_variables($text)
+    {
         if (isset($this->wirisquestioninstance)) {
             $text = $this->wirisquestioninstance->expandVariables($text);
         }
         return $this->filtercodes_compatibility($text);
     }
 
-    private function filtercodes_compatibility($text) {
+    private function filtercodes_compatibility($text)
+    {
         $configfiltercodes = get_config('qtype_wq', 'filtercodes_compatibility');
         if (isset($configfiltercodes) && $configfiltercodes == '1') {
             $text = str_replace('[{', '[[{', $text);
@@ -190,25 +206,29 @@ class qtype_wq_question extends question_graded_automatically {
         return $text;
     }
 
-    public function expand_variables_text($text) {
+    public function expand_variables_text($text)
+    {
         if (isset($this->wirisquestioninstance)) {
             $text = $this->wirisquestioninstance->expandVariablesText($text);
         }
         return $text;
     }
 
-    public function expand_variables_mathml($text) {
+    public function expand_variables_mathml($text)
+    {
         if (isset($this->wirisquestioninstance)) {
             $text = $this->wirisquestioninstance->expandVariablesMathML($text);
         }
         return $text;
     }
 
-    public function html_to_text($text, $format) {
+    public function html_to_text($text, $format)
+    {
         return $this->base->html_to_text($text, $format);
     }
 
-    public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
+    public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload)
+    {
         if ($component == 'question' && $filearea == 'response_auxiliar_text') {
             // Response attachments visible if the question has them.
             return true;
@@ -220,73 +240,92 @@ class qtype_wq_question extends question_graded_automatically {
     /**
      * question_response_answer_comparer interface.
      * **/
-    public function compare_response_with_answer(array $response, question_answer $answer) {
+    public function compare_response_with_answer(array $response, question_answer $answer)
+    {
         return $this->base->compare_response_with_answer($response, $answer);
     }
-    public function get_answers() {
+    public function get_answers()
+    {
         return $this->base->get_answers();
     }
     /**
      * question_manually_gradable interface
      * **/
-    public function is_complete_response(array $response) {
+    public function is_complete_response(array $response)
+    {
         return $this->base->is_complete_response($response);
     }
 
-    public function is_same_response(array $prevresponse, array $newresponse) {
+    public function is_same_response(array $prevresponse, array $newresponse)
+    {
         $baseresponse = $this->base->is_same_response($prevresponse, $newresponse);
         $sqicompare = ((empty($newresponse['_sqi']) && empty($prevresponse['_sqi'])) || (!empty($prevresponse['_sqi']) &&
             !empty($newresponse['_sqi']) && $newresponse['_sqi'] == $prevresponse['_sqi']));
         $auxiliarcompare = ((empty($newresponse['auxiliar_text']) && empty($prevresponse['auxiliar_text'])) ||
             (!empty($prevresponse['auxiliar_text']) &&
-            !empty($newresponse['auxiliar_text']) && $newresponse['auxiliar_text'] == $prevresponse['auxiliar_text']));
+                !empty($newresponse['auxiliar_text']) && $newresponse['auxiliar_text'] == $prevresponse['auxiliar_text']));
         return $baseresponse && $sqicompare && $auxiliarcompare;
-
     }
 
-    public function summarise_response(array $response) {
+    public function summarise_response(array $response)
+    {
         $text = $this->base->summarise_response($response);
         $text = $this->expand_variables_text($text);
         return $text;
     }
 
-    public function classify_response(array $response) {
+    public function classify_response(array $response)
+    {
         return $this->base->classify_response($response);
     }
     /**
      * question_automatically_gradable interface
      * **/
-    public function is_gradable_response(array $response) {
+    public function is_gradable_response(array $response)
+    {
         return $this->base->is_gradable_response($response);
     }
 
-    public function get_validation_error(array $response) {
+    public function get_validation_error(array $response)
+    {
         return $this->base->get_validation_error($response);
     }
 
-    public function grade_response(array $response) {
+    public function grade_response(array $response)
+    {
         return $this->base->grade_response($response);
     }
 
-    public function get_hint($hintnumber, question_attempt $qa) {
+    public function get_hint($hintnumber, question_attempt $qa)
+    {
         return $this->base->get_hint($hintnumber, $qa);
     }
 
-    public function get_right_answer_summary() {
+    public function get_right_answer_summary()
+    {
         $text = $this->base->get_right_answer_summary();
         return $this->expand_variables_text($text);
     }
-    public function format_hint(question_hint $hint, question_attempt $qa) {
-        return $this->format_text($hint->hint, $hint->hintformat, $qa,
-                'question', 'hint', $hint->id);
+    public function format_hint(question_hint $hint, question_attempt $qa)
+    {
+        return $this->format_text(
+            $hint->hint,
+            $hint->hintformat,
+            $qa,
+            'question',
+            'hint',
+            $hint->id
+        );
     }
     /**
      * interface question_automatically_gradable_with_countback
      * **/
-    public function compute_final_grade($responses, $totaltries) {
+    public function compute_final_grade($responses, $totaltries)
+    {
         return $this->base->compute_final_grade($responses, $totaltries);
     }
-    public function make_behaviour(question_attempt $qa, $preferredbehaviour) {
+    public function make_behaviour(question_attempt $qa, $preferredbehaviour)
+    {
         return $this->base->make_behaviour($qa, $preferredbehaviour);
     }
 
@@ -298,7 +337,8 @@ class qtype_wq_question extends question_graded_automatically {
      * @return All the text of the question in a single string so Wiris Quizzes
      * can extract the variable placeholders.
      */
-    public function join_all_text() {
+    public function join_all_text()
+    {
         // Question text and general feedback.
         $text = $this->questiontext . ' ' . $this->generalfeedback;
         // Hints.
@@ -312,7 +352,8 @@ class qtype_wq_question extends question_graded_automatically {
     /**
      * @return String Return all the question text without feedback texts.
      */
-    public function join_question_text() {
+    public function join_question_text()
+    {
         $text = $this->questiontext;
         foreach ($this->hints as $hint) {
             $text .= ' ' . $hint->hint;
@@ -325,18 +366,26 @@ class qtype_wq_question extends question_graded_automatically {
      * @return String Return the general feedback text in a single string so Wiris
      * quizzes can extract the variable placeholders.
      */
-    public function join_feedback_text() {
+    public function join_feedback_text()
+    {
         return $this->generalfeedback;
     }
 
-    public function call_wiris_service($request) {
+    public function call_wiris_service($request)
+    {
         global $COURSE;
         global $USER;
+        global $CFG;
 
         $builder = com_wiris_quizzes_api_Quizzes::getInstance();
         $metaproperty = ((!empty($COURSE) ? $COURSE->id : '') . '/' . (!empty($question) ? $question->id : ''));
+
+        // Add meta properties
         $request->addMetaProperty('questionref', $metaproperty);
         $request->addMetaProperty('userref', (!empty($USER) ? $USER->id : ''));
+        $request->addMetaProperty('qtype', $this->qtype->name());
+        $request->addMetaProperty('wqversion', $builder->getConfiguration()->get(com_wiris_quizzes_api_ConfigurationKeys::$VERSION));
+        $request->addMetaProperty('moodleversion', explode(' ', $CFG->release)[0]);
 
         $service = $builder->getQuizzesService();
 
