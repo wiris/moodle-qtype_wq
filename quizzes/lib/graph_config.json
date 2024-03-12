@@ -34,18 +34,6 @@
                   "id": "newRayFromPointThroughPoint"
                 },
                 {
-                  "id": "midpointOfLineSegment"
-                },
-                {
-                  "id": "mediatrixOfLineSegment"
-                },
-                {
-                  "id": "newLineParallelToLineThroughPoint"
-                },
-                {
-                  "id": "newLinePerpendicularToLineThroughPoint"
-                },
-                {
                   "id": "newVectorByPoints"
                 },
                 {
