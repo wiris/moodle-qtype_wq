@@ -119,6 +119,42 @@ class qtype_wirisstep {
         }
     }
 
+    public function set_var_in_answer_cache(string $name, string $value, string $answer) {
+        $this->put_answer_in_cache($answer);
+
+        $hash = md5($answer);
+        $this->set_var('_' . substr($hash, 0, 6) . $name, $value, true);
+    }
+
+    public function get_var_in_answer_cache(string $name, string $answer) {
+        $responsehash = md5($answer);
+
+        $data = $this->get_var('_' . substr($responsehash, 0, 6) . $name);
+
+        if (empty($data)) {
+            $data = $this->get_var($name);
+        }
+
+        return $data;
+    }
+
+    public function put_answer_in_cache(string $answer) {
+        if ($this->is_answer_cached($answer)) {
+            return;
+        }
+
+        $hash = md5($answer);
+        $cache = $this->get_var('_response_hash') ?? '';
+
+        $this->set_var('_response_hash', $cache ? ($cache . ',' . $hash) : $hash, true);
+    }
+
+    public function is_answer_cached(string $answer): bool {
+        $cachedresponses = $this->get_var('_response_hash') ?? '';
+        $responsehash = md5($answer);
+        return str_contains($cachedresponses, $responsehash);
+    }
+
     private function trim_name(string $name) {
         while ($this->get_name_length($name) > 32) {
             $name = substr($name, 0, -1);
