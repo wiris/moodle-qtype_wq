@@ -153,7 +153,7 @@ class qtype_wirisstep {
         $cachedresponses = $this->get_var('_response_hash') ?? '';
         $responsehash = md5($answer);
 
-        return strpos($cachedresponses, $responsehash) !== false || strpos($cachedresponses, $responsehash) == 0;
+        return strpos($cachedresponses, $responsehash) !== false;
     }
 
     private function trim_name(string $name) {
