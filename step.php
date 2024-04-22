@@ -33,11 +33,13 @@
  *    l'step és read-only.
  * **/
 
+ defined('MOODLE_INTERNAL') || die();
+
 class qtype_wirisstep {
     const MAX_ATTEMPS_SHORTANSWER_WIRIS = 2;
 
     private $step;
-    private $step_id;
+    private $stepid;
     private $extraprefix;
 
     public function __construct() {
@@ -45,9 +47,11 @@ class qtype_wirisstep {
     }
 
     public function load($step) {
-        $notReadOnly = !($step instanceof question_attempt_step_read_only);
-        $notAdapterOfReadOnly = !($step instanceof question_attempt_step_subquestion_adapter_wiris && $step->is_adapter_of_read_only());
-        if ($notReadOnly && $notAdapterOfReadOnly) {
+        $notreadonly = !($step instanceof question_attempt_step_read_only);
+        $notadapterofreadonly = 
+            !($step instanceof question_attempt_step_subquestion_adapter_wiris && $step->is_adapter_of_read_only());
+        
+        if ($notreadonly && $notadapterofreadonly) {
             $this->step = $step;
             // It is a regrade or the first attempt.
             try {
@@ -58,16 +62,17 @@ class qtype_wirisstep {
                 $this->step = null;
             }
         }
+        
         $s = var_export($step, true);
         if (isset($step->get_id)) {
             // Moodle 2.3 or superior.
-            $this->step_id = $step->get_id();
+            $this->stepid = $step->get_id();
         } else {
             // Moodle 2.2.
             if (preg_match("/'id' *=> *'(.*)'/", $s, $matches)) {
-                $this->step_id = $matches[1];
+                $this->stepid = $matches[1];
             } else {
-                $this->step_id = 0;
+                $this->stepid = 0;
             }
         }
         if (preg_match("/'extraprefix' *=> *'(.*)'/", $s, $matches)) {
@@ -93,7 +98,7 @@ class qtype_wirisstep {
             return;
         }
 
-        if (!isset($this->step_id) || $this->step_id == 0) {
+        if (!isset($this->stepid) || $this->stepid == 0) {
             // It doees not exist, do not even try to find in the db.
             return null;
         }
@@ -102,10 +107,10 @@ class qtype_wirisstep {
 
         $name = $this->get_step_var_internal($name, $subquesbool);
 
-        $gc = $DB->get_record('question_attempt_step_data', array('attemptstepid' => $this->step_id, 'name' => $name), 'value');
+        $gc = $DB->get_record('question_attempt_step_data', array('attemptstepid' => $this->stepid, 'name' => $name), 'value');
         if ($gc == null) {
             $gc = new stdClass();
-            $gc->attemptstepid = $this->step_id;
+            $gc->attemptstepid = $this->stepid;
             $gc->name = $name;
             $gc->value = $value;
             $DB->insert_record('question_attempt_step_data', $gc);
@@ -114,7 +119,7 @@ class qtype_wirisstep {
                 'question_attempt_step_data',
                 'value',
                 $value,
-                array('attemptstepid' => $this->step_id, 'name' => $name)
+                array('attemptstepid' => $this->stepid, 'name' => $name)
             );
         }
     }
@@ -193,7 +198,7 @@ class qtype_wirisstep {
             return $value;
         }
 
-        if (!isset($this->step_id) || $this->step_id == 0) {
+        if (!isset($this->stepid) || $this->stepid == 0) {
             // It doees not exist, do not even try to find in the db.
             return null;
         }
@@ -202,7 +207,7 @@ class qtype_wirisstep {
 
         $name = $this->get_step_var_internal($name, $subquesbool);
 
-        $gc = $DB->get_record('question_attempt_step_data', array('attemptstepid' => $this->step_id, 'name' => $name), 'value');
+        $gc = $DB->get_record('question_attempt_step_data', array('attemptstepid' => $this->stepid, 'name' => $name), 'value');
         if ($gc == null) {
             $r = null;
         } else {

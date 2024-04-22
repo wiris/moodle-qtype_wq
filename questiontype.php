@@ -100,7 +100,7 @@ class qtype_wq extends question_type {
 
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         global $CFG;
-        
+
         $this->base->initialise_question_instance($question->base, $questiondata);
 
         $question->id = &$question->base->id;
