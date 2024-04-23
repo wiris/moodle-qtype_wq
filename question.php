@@ -47,7 +47,7 @@ class qtype_wq_question extends question_graded_automatically {
     public function __construct(question_definition $base = null) {
         $this->base = $base;
     }
-    
+
     /**
      * Initializes Wiris Quizzes question calling the service in order to get the value
      * of the variables to render the question.
