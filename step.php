@@ -33,7 +33,7 @@
  *    l'step és read-only.
  * **/
 
- defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die();
 
 class qtype_wirisstep {
     const MAX_ATTEMPS_SHORTANSWER_WIRIS = 2;
@@ -48,9 +48,9 @@ class qtype_wirisstep {
 
     public function load($step) {
         $notreadonly = !($step instanceof question_attempt_step_read_only);
-        $notadapterofreadonly = 
+        $notadapterofreadonly =
             !($step instanceof question_attempt_step_subquestion_adapter_wiris && $step->is_adapter_of_read_only());
-        
+
         if ($notreadonly && $notadapterofreadonly) {
             $this->step = $step;
             // It is a regrade or the first attempt.
@@ -62,7 +62,7 @@ class qtype_wirisstep {
                 $this->step = null;
             }
         }
-        
+
         $s = var_export($step, true);
         if (isset($step->get_id)) {
             // Moodle 2.3 or superior.

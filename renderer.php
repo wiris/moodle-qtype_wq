@@ -123,18 +123,27 @@ class qtype_wq_renderer extends qtype_renderer {
         if (method_exists($responseoutput, 'set_displayoptions')) {
             // Moodle 4.1.2 and up require this.
             $responseoutput->set_displayoptions($options);
-        }        
+        }
         if (!$step->has_qt_var('auxiliar_text') && empty($options->readonly)) {
             // Auxiliar text has never been filled.
             $step = new question_attempt_step();
         }
         if (empty($options->readonly)) {
-            $auxiliartext = $responseoutput->response_area_input('auxiliar_text', $qa,
-                    $step, $question->auxiliartextfieldlines, $options->context);
-
+            $auxiliartext = $responseoutput->response_area_input(
+                'auxiliar_text',
+                $qa,
+                $step,
+                $question->auxiliartextfieldlines,
+                $options->context
+            );
         } else {
-            $auxiliartext = $responseoutput->response_area_read_only('auxiliar_text', $qa,
-                    $step, $question->auxiliartextfieldlines, $options->context);
+            $auxiliartext = $responseoutput->response_area_read_only(
+                'auxiliar_text',
+                $qa,
+                $step,
+                $question->auxiliartextfieldlines,
+                $options->context
+            );
         }
 
         $result .= html_writer::tag('div', $auxiliartext);
@@ -176,16 +185,24 @@ class qtype_wq_auxiliar_text_renderer extends qtype_essay_format_editorfilepicke
      * Rewrite the auxiliar_text field response. To create the proper URL's for auxiliar_text
      * qt variable.
      */
-    protected function prepare_response($name, question_attempt $qa,
-            question_attempt_step $step, $context) {
+    protected function prepare_response(
+        $name,
+        question_attempt $qa,
+        question_attempt_step $step,
+        $context
+    ) {
         if (!$step->has_qt_var($name)) {
             return '';
         }
 
         $formatoptions = new stdClass();
         $formatoptions->para = false;
-        $text = $qa->rewrite_response_pluginfile_urls($step->get_qt_var($name),
-                $context->id, 'auxiliar_text', $step);
+        $text = $qa->rewrite_response_pluginfile_urls(
+            $step->get_qt_var($name),
+            $context->id,
+            'auxiliar_text',
+            $step
+        );
         return format_text($text, $step->get_qt_var($name), $formatoptions);
     }
 }
