@@ -91,7 +91,7 @@ class qtype_wirisstep {
      * @throws dml_exception
      */
     public function set_var($name, $value, $subquesbool = true) {
-        $name = $this->trim_name($name);
+        $name = $this->trim_name($name, $subquesbool);
 
         if ($subquesbool && $this->step != null) {
             $this->step->set_qt_var($name, $value);
@@ -161,19 +161,18 @@ class qtype_wirisstep {
         return strpos($cachedresponses, $responsehash) !== false;
     }
 
-    private function trim_name(string $name) {
-        while ($this->get_name_length($name) > 32) {
+    private function trim_name(string $name, bool $subquesbool) {
+        while ($this->get_name_length($name, $subquesbool) > 32) {
             $name = substr($name, 0, -1);
         }
-
         return $name;
     }
 
-    private function get_name_length(string $name) {
+    private function get_name_length(string $name, bool $subquesbool) {
         return strlen(
             $this->step instanceof question_attempt_step_subquestion_adapter ?
                 $this->step->add_prefix($name) :
-                $name
+                $this->get_step_var_internal($name, $subquesbool)
         );
     }
 
@@ -191,7 +190,7 @@ class qtype_wirisstep {
      * @return null
      */
     public function get_var($name, $subquesbool = true) {
-        $name = $this->trim_name($name);
+        $name = $this->trim_name($name, $subquesbool);
 
         if ($subquesbool && $this->step != null) {
             $value = $this->step->get_qt_var($name);
