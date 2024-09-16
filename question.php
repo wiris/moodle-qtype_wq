@@ -384,7 +384,7 @@ class qtype_wq_question extends question_graded_automatically {
             }
 
             if ($islogmodeenabled) {
-                error_log('WirisQuizzes error ' . $e->__toString());
+                error_log('WIRISQUIZZES SERVER ERROR --- REQUEST: --- ' . $request->serialize());
             }
 
             throw new moodle_exception('wirisquestionincorrect', 'qtype_wq', $link, $a, '');
