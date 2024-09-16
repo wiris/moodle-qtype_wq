@@ -391,4 +391,12 @@ class qtype_wq_question extends question_graded_automatically {
         }
         return $response;
     }
+
+
+    public function update_attempt_state_data_for_new_version(
+        question_attempt_step $oldstep,
+        question_definition $otherversion
+    ) {
+        return $this->base->update_attempt_state_data_for_new_version($oldstep, $otherversion->base);
+    }
 }
