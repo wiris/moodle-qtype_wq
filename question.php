@@ -357,6 +357,7 @@ class qtype_wq_question extends question_graded_automatically {
         $service = $builder->getQuizzesService();
 
         $isdebugmodeenabled = get_config('qtype_wq', 'debug_mode_enabled') == '1';
+        $islogmodeenabled = get_config('qtype_wq', 'log_server_errors') == '1'; 
 
         if ($isdebugmodeenabled) {
             // @codingStandardsIgnoreLine
@@ -380,6 +381,10 @@ class qtype_wq_question extends question_graded_automatically {
             if ($isdebugmodeenabled) {
                 // @codingStandardsIgnoreLine
                 print_object($e);
+            }
+
+            if ($islogmodeenabled) {
+                error_log('WirisQuizzes error ' . $e->__toString());
             }
 
             throw new moodle_exception('wirisquestionincorrect', 'qtype_wq', $link, $a, '');
