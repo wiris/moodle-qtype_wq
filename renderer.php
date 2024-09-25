@@ -203,6 +203,6 @@ class qtype_wq_auxiliar_text_renderer extends qtype_essay_format_editorfilepicke
             'auxiliar_text',
             $step
         );
-        return format_text($text, $step->get_qt_var($name), $formatoptions);
+        return format_text($text, FORMAT_MOODLE, $formatoptions);
     }
 }
