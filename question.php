@@ -404,4 +404,8 @@ class qtype_wq_question extends question_graded_automatically {
     ) {
         return $this->base->update_attempt_state_data_for_new_version($oldstep, $otherversion->base);
     }
+
+    public function validate_can_regrade_with_other_version(question_definition $otherversion): ?string {
+        return $this->base->validate_can_regrade_with_other_version($otherversion->base);
+    }
 }
