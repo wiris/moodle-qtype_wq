@@ -217,7 +217,7 @@ class qtype_wirisstep {
     }
 
     private function get_step_var_internal($name, $subquesbool) {
-        if ($subquesbool && strlen($this->extraprefix) > 0) {
+        if ($subquesbool && isset($this->extraprefix) && strlen($this->extraprefix) > 0) {
             // The prefix is needed when it is a subquestion of a cloze
             // (multianswer) question type.
             if (substr($name, 0, 2) === '!_') {
