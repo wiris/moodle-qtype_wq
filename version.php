@@ -22,5 +22,5 @@ $plugin->release = '4.11.4';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->component = 'qtype_wq';
 $plugin->dependencies = array(
-     'filter_wiris' => ANY_VERSION
+     'filter_wiris' => 2024100700
 );
