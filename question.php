@@ -172,6 +172,7 @@ class qtype_wq_question extends question_graded_automatically {
             $format = FORMAT_HTML;
         }
         $text = $this->expand_variables($text);
+
         return $this->base->format_text($text, $format, $qa, $component, $filearea, $itemid, $clean);
     }
 
@@ -384,6 +385,7 @@ class qtype_wq_question extends question_graded_automatically {
             }
 
             if ($islogmodeenabled) {
+                // @codingStandardsIgnoreLine
                 error_log('WIRISQUIZZES SERVER ERROR --- REQUEST: --- ' . $request->serialize());
             }
 
