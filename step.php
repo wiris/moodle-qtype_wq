@@ -36,9 +36,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 class qtype_wirisstep {
-    const MAX_ATTEMPS_SHORTANSWER_WIRIS = 2;
+    const MAX_ATTEMPS_SHORTANSWER_WIRIS = 5;
 
-    private $step;
+    private ?question_attempt_step $step;
     private $stepid;
     private $extraprefix;
 
@@ -183,13 +183,8 @@ class qtype_wirisstep {
             $DB = $this->get_db();
         }
     }
-    /**
-     *
-     * @param type $name
-     * @param type $subquesbool whether the variable is from the subquestion or the parent (only cloze).
-     * @return null
-     */
-    public function get_var($name, $subquesbool = true) {
+
+    public function get_var(string $name, bool $subquesbool = true) {
         $name = $this->trim_name($name, $subquesbool);
 
         if ($subquesbool && $this->step != null) {
@@ -256,17 +251,38 @@ class qtype_wirisstep {
         if (is_null($c)) {
             return false;
         }
-        return $c >= self::MAX_ATTEMPS_SHORTANSWER_WIRIS;
+
+        $isreached = $c >= self::MAX_ATTEMPS_SHORTANSWER_WIRIS;
+
+        $islogmodeenabled = get_config('qtype_wq', 'log_server_errors') == '1'; 
+        if ($islogmodeenabled) {
+            $errormessage = 'WIRISQUIZZES ATTEMPT LIMIT REACHED FOR STEP WITH ID ' . 
+             ($this->step != null ? $this->step->get_id() : $this->stepid);
+            // @codingStandardsIgnoreLine
+            error_log($errormessage);            
+        }
+        
+        return $isreached;
     }
 
     /**
      * Increment number of failed attempts
      */
-    public function inc_attempts() {
+    public function inc_attempts(moodle_exception $e) {
         $c = $this->get_var('_gc', false);
         if (is_null($c)) {
             $c = 0;
         }
+
+        $islogmodeenabled = get_config('qtype_wq', 'log_server_errors') == '1'; 
+        if ($islogmodeenabled) {
+            $errormessage = 'WIRISQUIZZES ATTEMPT ERROR --- INCREASING ATTEMPT COUNT TO ' . ($c + 1) . ' FOR STEP WITH ID ' . 
+             ($this->step != null ? $this->step->get_id() : $this->stepid) . PHP_EOL .
+             'EXCEPTION: ' . $e->getMessage();
+            // @codingStandardsIgnoreLine
+            error_log($errormessage);            
+        }
+
         $this->set_var('_gc', $c + 1, false);
     }
 
