@@ -183,12 +183,7 @@ class qtype_wirisstep {
             $DB = $this->get_db();
         }
     }
-    /**
-     *
-     * @param type $name
-     * @param type $subquesbool whether the variable is from the subquestion or the parent (only cloze).
-     * @return null
-     */
+
     public function get_var(string $name, bool $subquesbool = true) {
         $name = $this->trim_name($name, $subquesbool);
 
@@ -259,9 +254,7 @@ class qtype_wirisstep {
 
         $isreached = $c >= self::MAX_ATTEMPS_SHORTANSWER_WIRIS;
 
-
         $islogmodeenabled = get_config('qtype_wq', 'log_server_errors') == '1'; 
-
         if ($islogmodeenabled) {
             $errormessage = 'WIRISQUIZZES ATTEMPT LIMIT REACHED FOR STEP WITH ID ' . 
              ($this->step != null ? $this->step->get_id() : $this->stepid);
@@ -282,7 +275,6 @@ class qtype_wirisstep {
         }
 
         $islogmodeenabled = get_config('qtype_wq', 'log_server_errors') == '1'; 
-
         if ($islogmodeenabled) {
             $errormessage = 'WIRISQUIZZES ATTEMPT ERROR --- INCREASING ATTEMPT COUNT TO ' . ($c + 1) . ' FOR STEP WITH ID ' . 
              ($this->step != null ? $this->step->get_id() : $this->stepid) . PHP_EOL .
