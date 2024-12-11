@@ -17,15 +17,7 @@
 
 /*
  * Class used to store information in the question attempt step data
- */
-
-/**
- * Description of step
  *
- * @author dani
- */
-
-/**
  * This class is useful for:
  *  - No intentar avaluar una pregunta si ha fallat en 3 intents seguits
  *    en les mateixes condicions. Útil en exàmens.
@@ -38,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_wirisstep {
     const MAX_ATTEMPS_SHORTANSWER_WIRIS = 5;
 
-    private ?question_attempt_step $step;
+    /** @var ?question_attempt_step */
+    private $step;
     private $stepid;
     private $extraprefix;
 
