@@ -68,7 +68,10 @@ class qtype_wq_edit_form extends question_edit_form {
                 if (empty($wiris)) {
                     // Corrupted question.
                     $corruptwarning =
-                        $mform->createElement('html', '<div class="wiriscorruptquestionedit">' . get_string('corruptquestion_edit', 'qtype_wq') . '</div');
+                        $mform->createElement(
+                            'html',
+                            '<div class="wiriscorruptquestionedit">' . get_string('corruptquestion_edit', 'qtype_wq') . '</div>'
+                        );
                     $mform->insertElementBefore($corruptwarning, 'generalheader');
                     $program = '<question/>';
                 } else {
