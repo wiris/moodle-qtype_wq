@@ -107,4 +107,4 @@ $string['filtercodes_compatibility_enabled'] = 'Compatibilidad con el filtro Fil
 $string['filtercodes_compatibility_enabled_help'] = 'El filtro Filter Codes no es compatible con WirisQuizzes por defecto cuando la opción "Escape Tags" está activada. Esta opción de WirisQuizzes soluciona estos problemas. No se debe activar excepto en dicha situación.';
 
 $string['corruptquestion_edit'] = 'AVISO: Esta pregunta ha sido corrompida y se ha perdido su información matemática. Hemos tratado de recuperar todo lo posible, pero debes reescribir el algoritmo de CalcMe si tu pregunta tenía uno y que vuelvas a guardar las opciones de entrada y validación personalizadas. Contacta con tu administrador para más detalles.';
-$string['corruptquestion_attempt'] = 'La pregunta {a->questionname} ha sido corrompida y no se ha podido cargar. Por favor, contacta con tus profesores para que la puedan arreglar.';
+$string['corruptquestion_attempt'] = 'La pregunta {$a->questionname} ha sido corrompida y no se ha podido cargar. Por favor, contacta con tus profesores para que la puedan arreglar.';
