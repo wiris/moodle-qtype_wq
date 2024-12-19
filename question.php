@@ -46,7 +46,7 @@ class qtype_wq_question extends question_graded_automatically {
 
     /**
      * @var bool
-     * Whether this question is corrupt and its wirisquestion was removed from the database. 
+     * Whether this question is corrupt and its wirisquestion was removed from the database.
      */
     public $corrupt = false;
 
@@ -371,7 +371,7 @@ class qtype_wq_question extends question_graded_automatically {
         $service = $builder->getQuizzesService();
 
         $isdebugmodeenabled = get_config('qtype_wq', 'debug_mode_enabled') == '1';
-        $islogmodeenabled = get_config('qtype_wq', 'log_server_errors') == '1'; 
+        $islogmodeenabled = get_config('qtype_wq', 'log_server_errors') == '1';
 
         if ($isdebugmodeenabled) {
             // @codingStandardsIgnoreLine

@@ -97,4 +97,4 @@ $string['privacy:metadata:qtype_wq:xml'] = 'Wiris Quizzes Question XML';
 $string['auxiliar_text'] = 'Escriviu un raonament opcional per a la vostra resposta:';
 
 $string['corruptquestion_edit'] = 'AVÍS: Aquesta pregunta ha sigut corrompuda i se n\' perdut la informació matemàtica. Hem intentat refer tot el què hem pogut, però cal que reescriguis de nou l\'algorisme de CalcMe si la teva pregunta en tenia un, i que tornis a desar les opcions d\'entrada i validació personalitzades. Contacta amb el teu administrador per a més detalls.';
-$string['corruptquestion_attempt'] = 'La pregunta {a->questionname} ha sigut corrompuda i no s\'ha pogut carregar. Si us plau, contacta amb els teus professors perquè ho puguin arreglar.';
+$string['corruptquestion_attempt'] = 'La pregunta {$a->questionname} ha sigut corrompuda i no s\'ha pogut carregar. Si us plau, contacta amb els teus professors perquè ho puguin arreglar.';

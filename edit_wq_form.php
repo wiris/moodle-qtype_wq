@@ -55,10 +55,10 @@ class qtype_wq_edit_form extends question_edit_form {
         $mform->addElement('hidden', 'wirislang', current_language(), array('class' => 'wirislang'));
         $mform->setType('wirislang', PARAM_TEXT);
 
-        // TODO: Delete this if when all questions are wq!
         if (isset($this->question->wirisquestion)) {
             $program = $this->question->wirisquestion->serialize();
         } else {
+            // If the wirisquestion is not already loaded in memory, load it from the DB directly.
             if (empty($this->question->id)) {
                 // New question.
                 $program = '<question/>';
@@ -66,12 +66,16 @@ class qtype_wq_edit_form extends question_edit_form {
                 // Existing question.
                 $wiris = $DB->get_record('qtype_wq', array('question' => $this->question->id));
                 if (empty($wiris)) {
-                    // Corrupted question
-                    $corruptwarning = $mform->createElement('html', '<div class="wiriscorruptquestionedit">' . get_string('corruptquestion_edit', 'qtype_wq') .'</div');
+                    // Corrupted question.
+                    $corruptwarning =
+                        $mform->createElement(
+                            'html',
+                            '<div class="wiriscorruptquestionedit">' . get_string('corruptquestion_edit', 'qtype_wq') . '</div>'
+                        );
                     $mform->insertElementBefore($corruptwarning, 'generalheader');
                     $program = '<question/>';
                 } else {
-                    // Happy path
+                    // Question found in the DB.
                     $program = $wiris->xml;
                 }
             }
@@ -90,7 +94,6 @@ class qtype_wq_edit_form extends question_edit_form {
         $defaultvalues = array();
         $defaultvalues['wirisquestion'] = $program;
         $mform->setDefaults($defaultvalues);
-
     }
     public function set_data($question) {
         $this->base->set_data($question);

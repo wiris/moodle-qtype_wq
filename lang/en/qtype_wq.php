@@ -17,7 +17,7 @@
 $string['wq'] = 'Wiris Quizzes';
 $string['pluginname'] = 'Wiris Quizzes';
 $string['access_provider_enabled'] = 'Access control';
-$string['access_provider_enabled_help'] = 'If enabled ony authenticated users can access Wiris services.';
+$string['access_provider_enabled_help'] = 'If enabled, only authenticated users can access Wiris services.';
 $string['pluginnamesummary'] = '';
 $string['wq_help'] = 'Generic Wiris Quizzes Help';
 $string['editingwq'] = 'Editing a generic Wiris Quizzes question';
