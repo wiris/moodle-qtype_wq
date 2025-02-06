@@ -2831,7 +2831,7 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		var r = this.newGradeRequest(instance);
 		var qr = r;
 		var qi = instance;
-		qr.question = this.cloneQuestion(qr.question);
+		qr.question = this.shallowCopyQuestion(qr.question);
 		com.wiris.quizzes.impl.QuizzesImpl.setVariables(html,qr.question,qi,qr);
 		return r;
 	}
@@ -2865,16 +2865,12 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		if(html != null) sb.b += Std.string(html);
 		return this.newVariablesRequest(sb.b,instance);
 	}
-	,sanitizeForQuizzesService: function(question) {
-		var slots = question.getSlots();
-		var _g = 0;
-		while(_g < slots.length) {
-			var slot = slots[_g];
-			++_g;
-			if(slot.getSyntax().getName() == com.wiris.quizzes.api.assertion.SyntaxName.MATH_MULTISTEP) slot.setSyntax(com.wiris.quizzes.api.assertion.SyntaxName.MATH);
-		}
+	,shallowCopyQuestion: function(question) {
+		var copy = new com.wiris.quizzes.impl.QuestionImpl();
+		copy.importQuestion(question.getImpl());
+		return copy;
 	}
-	,cloneQuestion: function(question) {
+	,deepCopyQuestion: function(question) {
 		var serialized = question.serialize();
 		return this.readQuestion(serialized);
 	}
@@ -2883,12 +2879,11 @@ com.wiris.quizzes.impl.QuizzesImpl.prototype = $extend(com.wiris.quizzes.api.Qui
 		var qi = instance;
 		var question = qi.question;
 		if(question == null) throw "The question must be specified, either as a parameter" + " of this function or as a field of the question instance";
-		question = this.cloneQuestion(question);
+		question = this.shallowCopyQuestion(question);
 		var qr = new com.wiris.quizzes.impl.QuestionRequestImpl();
 		qr.question = question;
 		qr.userData = qi.userData;
 		com.wiris.quizzes.impl.QuizzesImpl.setVariables(html,question,qi,qr);
-		this.sanitizeForQuizzesService(question);
 		return qr;
 	}
 	,readQuestionInstance: function(xml,q) {
