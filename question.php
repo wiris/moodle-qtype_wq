@@ -217,7 +217,9 @@ class qtype_wq_question extends question_graded_automatically {
      */
     private function mathjax_compatibility($text) {
         return preg_replace_callback('/<math.*?<\/math>/s',
-            fn ($matches) => $this->mathml_to_safe($matches[0]),
+            function ($matches) { 
+                return $this->mathml_to_safe($matches[0]); 
+            },
             $text
         );
     }
