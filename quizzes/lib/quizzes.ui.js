@@ -25066,7 +25066,7 @@ const MathMultiStepAnswerField = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__s
 const _sfc_main = /* @__PURE__ */ defineComponent$1({
   __name: "AnswerField",
   props: {
-    "modelValue": { required: true },
+    "modelValue": {},
     "modelModifiers": {}
   },
   emits: ["update:modelValue"],
