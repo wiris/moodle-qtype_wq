@@ -56,6 +56,7 @@ class _hx_array implements ArrayAccess, IteratorAggregate {
 		return new _hx_array_iterator($this->»a);
 	}
 
+	#[\ReturnTypeWillChange]
 	function getIterator() {
 		return $this->iterator();
 	}
@@ -137,15 +138,18 @@ class _hx_array implements ArrayAccess, IteratorAggregate {
 	}
 
 	// ArrayAccess methods:
+	#[\ReturnTypeWillChange]	
 	function offsetExists($offset) {
 		return isset($this->»a[$offset]);
 	}
 
+	#[\ReturnTypeWillChange]
 	function offsetGet($offset) {
 		if(isset($this->»a[$offset])) return $this->»a[$offset];
 		return null;
 	}
 
+	#[\ReturnTypeWillChange]
 	function offsetSet($offset, $value) {
 		if($this->length <= $offset) {
 			$this->»a = array_merge($this->»a, array_fill(0, $offset+1-$this->length, null));
@@ -154,6 +158,7 @@ class _hx_array implements ArrayAccess, IteratorAggregate {
 		return $this->»a[$offset] = $value;
 	}
 
+	#[\ReturnTypeWillChange]
 	function offsetUnset($offset) {
 		return $this->removeAt($offset);
 	}
@@ -167,28 +172,34 @@ class _hx_array_iterator implements Iterator {
 		$this->»i = 0;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function next() {
 		if(!$this->hasNext()) return null;
 		return $this->»a[$this->»i++];
 	}
 
+	#[\ReturnTypeWillChange]
 	public function hasNext() {
 		return $this->»i < count($this->»a);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function current() {
 		if (!$this->hasNext()) return false;
 		return $this->»a[$this->»i];
 	}
 
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->»i;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function valid() {
 		return $this->current() !== false;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function rewind() {
 		$this->»i = 0;
 	}
@@ -218,7 +229,7 @@ function _hx_char_at($o, $i) { $c = substr($o, $i, 1); return FALSE === $c ? '' 
 
 function _hx_char_code_at($s, $pos) {
 	if($pos < 0 || $pos >= strlen($s)) return null;
-	return ord($s{$pos});
+	return ord($s[$pos]);
 }
 
 function _hx_deref($o) { return $o; }
@@ -246,11 +257,11 @@ function _hx_mod($x, $y) {
 	}
 	if (!is_nan($x) && !is_nan($y) && !is_finite($y) && is_finite($x)) {
 		return $x;
-	} 
+	}
 	return fmod($x, $y);
 }
 
-function _hx_error_handler($errno, $errmsg, $filename, $linenum, $vars) {
+function _hx_error_handler($errno, $errmsg, $filename, $linenum, $vars = '') {
 	$msg = $errmsg . ' (errno: ' . $errno . ') in ' . $filename . ' at line #' . $linenum;
 	$e = new HException($msg, $errmsg, $errno, _hx_anonymous(array('fileName' => 'Boot.hx', 'lineNumber' => __LINE__, 'className' => 'php.Boot', 'methodName' => '_hx_error_handler')));
 	$e->setFile($filename);
@@ -366,7 +377,15 @@ function _hx_has_field($o, $field) {
 }
 
 function _hx_index_of($s, $value, $startIndex = null) {
-	$x = strpos($s, $value, $startIndex);
+	if ($s == null || $value == null) {
+		return -1;
+	}
+
+	if ($startIndex == null) {
+		$x = strpos($s, $value);
+	} else {
+		$x = strpos($s, $value, $startIndex);
+	}
 	if($x === false)
 		return -1;
 	else
@@ -400,7 +419,17 @@ function _hx_is_numeric($v)
 }
 
 function _hx_last_index_of($s, $value, $startIndex = null) {
-	$x = strrpos($s, $value, $startIndex === null ? null : strlen($s) - $startIndex);
+
+	if ($s == null || $value == null) {
+		return -1;
+	}
+
+	if ($startIndex == null) {
+		$x = strrpos($s, $value);
+	} else {
+		$x = strrpos($s, $value, strlen($s) - $startIndex);
+	}
+
 	if($x === false)
 		return -1;
 	else
@@ -420,6 +449,7 @@ class _hx_list_iterator implements Iterator {
 		$this->rewind();
 	}
 
+	#[\ReturnTypeWillChange]
 	public function next() {
 		if($this->»h == null) return null;
 		$this->»counter++;
@@ -428,23 +458,28 @@ class _hx_list_iterator implements Iterator {
 		return $x;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function hasNext() {
 		return $this->»h != null;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function current() {
 		if (!$this->hasNext()) return null;
 		return $this->»h[0];
 	}
-
+	
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->»counter;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function valid() {
 		return $this->current() !== null;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function rewind() {
 		$this->»counter = -1;
 		$this->»h = $this->»list->h;
@@ -576,12 +611,12 @@ function _hx_string_rec($o, $s) {
 		}
 	}
 	if(is_string($o)) {
-		if(_hx_is_lambda($o)) return '«function»';
+		if(_hx_is_lambda($o)) return '»function»';
 //		if(strlen($s) > 0)    return '"' . str_replace('"', '\"', $o) . '"';
 		else                  return $o;
 	}
 	if(is_array($o)) {
-		if(is_callable($o)) return '«function»';
+		if(is_callable($o)) return '»function»';
 		$str = '[';
 		$s .= "	";
 		$first = true;
@@ -662,7 +697,7 @@ class _hx_anonymous extends stdClass {
 		$b = '{ ';
 		$properties = $rfl->getProperties();
 		$first = true;
-		while(list(, $prop) = each($properties)) {
+		foreach ($properties as $prop) {
 			if($first)
 				$first = false;
 			else
@@ -735,7 +770,7 @@ class _hx_enum extends _hx_type {}
 class _hx_interface extends _hx_type {}
 
 class HException extends Exception {
-	public function __construct($e, $message = null, $code = null, $p = null) {
+	public function __construct($e, $message = null, $code = 0, $p = null) {
 		$message = _hx_string_rec($e, '') . $message;
 		parent::__construct($message,$code);
 		$this->e = $e;
@@ -781,7 +816,12 @@ class Enum {
 	}
 }
 
-error_reporting(E_ALL & ~E_STRICT);
+if (PHP_VERSION_ID >= 70400) {
+  error_reporting(E_ALL);
+}
+else {
+  error_reporting(E_ALL & ~E_STRICT);
+}
 set_error_handler('_hx_error_handler', E_ALL);
 set_exception_handler('_hx_exception_handler');
 
@@ -831,13 +871,13 @@ if(!file_exists($_hx_autload_cache_file)) {
 					$t = 3;
 				} else
 					continue;
-				$qname = ($bn == 'HList' && empty($pack)) ? 'List' : join(array_merge($pack, array($bn)), '.');
+				$qname = ($bn == 'HList' && empty($pack)) ? 'List' : join('.', array_merge($pack, array($bn)));
 				$_hx_types_array[] = array(
 					'path' => $p,
 					'name' => $prefix . $bn,
 					'type' => $t,
 					'qname' => $qname,
-					'phpname' => join(array_merge($pack, array($prefix . $bn)), '_')
+					'phpname' => join('_', array_merge($pack, array($prefix . $bn)))
 				);
 			} else if(is_dir($p))
 				_hx_build_paths($p, $_hx_types_array, array_merge($pack, array($f)), $prefix);
