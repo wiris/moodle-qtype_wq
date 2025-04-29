@@ -611,17 +611,17 @@ md-elevation-transition {
   padding: 0 16px;
 }
 .wrsUI_app .wrsUI_button.wrsUI_buttonContained > .wrsUI_aux_ripple {
-  background: rgb(168.1428571429, 193.2857142857, 205.8571428571);
+  background: #a8c1ce;
 }
 .wrsUI_app .wrsUI_button.wrsUI_buttonContained:not(:disabled):hover:not(.wrsUI_focused) {
-  background: rgb(119.2857142857, 158.5714285714, 178.2142857143);
+  background: #779fb2;
 }
 .wrsUI_app .wrsUI_button.wrsUI_buttonContained:not(:disabled):active {
   box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
-  background: rgb(135.5714285714, 170.1428571429, 187.4285714286);
+  background: #88aabb;
 }
 .wrsUI_app .wrsUI_button.wrsUI_buttonContained.wrsUI_focused {
-  background: rgb(135.5714285714, 170.1428571429, 187.4285714286);
+  background: #88aabb;
 }
 .wrsUI_app .wrsUI_button.wrsUI_buttonIcon.wrsUI_buttonText {
   padding: 0 16px 0 9px;
@@ -1191,7 +1191,7 @@ md-elevation-transition {
   background: rgba(103, 147, 169, 0.3);
 }
 .wrsUI_app .wrsUI_button.wrsUI_selected.wrsUI_buttonContained {
-  background: rgb(168.1428571429, 193.2857142857, 205.8571428571);
+  background: #a8c1ce;
   box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
@@ -1421,10 +1421,10 @@ md-elevation-transition {
 }
 
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer {
-  background: url("decoration/drawing_panel_empty.svg?v=dev") center center no-repeat;
+  background: url("decoration/drawing_panel_empty.svg?v=4.13.0") center center no-repeat;
 }
 .wrsUI_app .wrsUI_drawingPanel.wrsUI_drawingPanelEmpty .wrsUI_aux_canvasContainer canvas {
-  background: url("decoration/drawing_panel_grid.png?v=dev");
+  background: url("decoration/drawing_panel_grid.png?v=4.13.0");
 }
 .wrsUI_app .wrsUI_drawingPanel .wrsUI_aux_canvasContainer {
   position: absolute;
@@ -3117,10 +3117,10 @@ md-elevation-transition {
   position: absolute;
 }
 .wrsUI_app .wrsUI_label.wrsUI_hyperlinkLabel:hover {
-  background: rgba(191.25, 191.25, 191.25, 0.25);
+  background: rgba(191, 191, 191, 0.25);
 }
 .wrsUI_app .wrsUI_label.wrsUI_hyperlinkLabel.wrsUI_focused {
-  background: rgba(191.25, 191.25, 191.25, 0.25);
+  background: rgba(191, 191, 191, 0.25);
   outline: -webkit-focus-ring-color auto 1px;
 }
 
@@ -3129,10 +3129,10 @@ md-elevation-transition {
   color: #6793a9;
 }
 .wrsUI_app .wrsUI_label.wrsUI_actionLabel:hover {
-  background: rgba(191.25, 191.25, 191.25, 0.25);
+  background: rgba(191, 191, 191, 0.25);
 }
 .wrsUI_app .wrsUI_label.wrsUI_actionLabel.wrsUI_focused {
-  background: rgba(191.25, 191.25, 191.25, 0.25);
+  background: rgba(191, 191, 191, 0.25);
   outline: -webkit-focus-ring-color auto 1px;
 }
 
