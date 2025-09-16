@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:12
         env:
           POSTGRES_USER: "postgres"
           POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -45,7 +45,9 @@ jobs:
           - moodle-branch: "MOODLE_404_STABLE"
             php: "8.0"
           - moodle-branch: "MOODLE_404_STABLE"
-            php: "8.2"
+            php: "8.3"
+          - moodle-branch: "MOODLE_404_STABLE"
+            php: "8.4"
           - moodle-branch: "MOODLE_405_STABLE"
             php: "7.4"
           - moodle-branch: "MOODLE_405_STABLE"
@@ -57,6 +59,12 @@ jobs:
           - moodle-branch: "MOODLE_500_STABLE"
             php: "8.0"
           - moodle-branch: "MOODLE_500_STABLE"
+            php: "8.1"
+          - moodle-branch: "MOODLE_501_STABLE"
+            php: "7.4"
+          - moodle-branch: "MOODLE_501_STABLE"
+            php: "8.0"
+          - moodle-branch: "MOODLE_501_STABLE"
             php: "8.1"
           - moodle-branch: "main"
         include:
