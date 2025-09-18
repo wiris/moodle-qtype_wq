@@ -1,4 +1,4 @@
-@javascript @mod_quiz
+@javascript @mod_quiz @wqmdl-108
 Feature: Teacher can preview the whole quiz
     In order to verify rendering of WIRIS questions
     As a teacher

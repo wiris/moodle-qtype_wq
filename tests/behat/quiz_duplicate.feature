@@ -1,4 +1,4 @@
-@javascript @qtype_wq
+@javascript @qtype_wq @wqmdl-283
 Feature: Duplicate a quiz and verify both instances exist while Question bank remains unchanged
     In order to reuse a WIRIS quiz setup
     As a teacher

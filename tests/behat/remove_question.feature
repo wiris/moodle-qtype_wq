@@ -1,4 +1,4 @@
-@javascript @qtype_wq
+@javascript @qtype_wq @wqmdl-284
 Feature: Delete a question from the quiz; original stays in the Question bank
     In order to change the quiz line-up safely
     As a teacher

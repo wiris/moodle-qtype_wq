@@ -1,4 +1,4 @@
-@javascript @qtype_wq 
+@javascript @qtype_wq @wqmdl-282
 Feature: Delete the quiz activity; Question bank remains intact
     In order to retire a quiz without losing questions
     As a teacher

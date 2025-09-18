@@ -1,4 +1,4 @@
-@javascript @qtype_wq @mod_quiz 
+@javascript @qtype_wq @mod_quiz @wqmdl-40
 Feature: Backup a quiz with all Wiris question types (except cloze)
     In order to ensure backup compatibility
     As an admin
