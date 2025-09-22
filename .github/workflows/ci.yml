@@ -3,6 +3,19 @@ name: Moodle Plugin CI
 # Automatically triggered on push to main branch, on pull requests, and daily at 6:00 UTC.
 on:
   workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Behat tags to run (optional, e.g. @mytag)'
+        required: false
+        default: ''
+      moodle_branch:
+        description: 'Moodle branch (optional, overrides matrix)'
+        required: false
+        default: ''
+      php:
+        description: 'PHP version (optional, overrides matrix)'
+        required: false
+        default: ''
   push:
     branches:
       - main
