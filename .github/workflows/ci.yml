@@ -177,7 +177,7 @@ jobs:
         run: |
           case "${{ matrix.moodle_branch }}" in
             "MOODLE_401_STABLE"|"MOODLE_402_STABLE"|"MOODLE_403_STABLE"|"MOODLE_404_STABLE"|"MOODLE_405_STABLE"|"MOODLE_500_STABLE"|"main")
-              TAG="@studentwiris"
+              TAG="@qtype_wq"
               ;;
           esac
           moodle-plugin-ci behat --tags=$TAG --profile ${{ matrix.browser }} --auto-rerun=2 --verbose -vvv
