@@ -47,8 +47,6 @@ jobs:
             php: "7.4"
           - moodle_branch: "MOODLE_500_STABLE"
             php: "7.4"
-          - moodle_branch: "main"
-            php: "7.4"
 
 
           - moodle_branch: "MOODLE_404_STABLE"
@@ -57,17 +55,11 @@ jobs:
             php: "8.0"
           - moodle_branch: "MOODLE_500_STABLE"
             php: "8.0"
-          - moodle_branch: "main"
-            php: "8.0"
 
           - moodle_branch: "MOODLE_500_STABLE"
             php: "8.1"
-          - moodle_branch: "main"
-            php: "8.1"
 
           - moodle_branch: "MOODLE_401_STABLE"
-            php: "8.2"
-          - moodle_branch: "main"
             php: "8.2"
 
           - moodle_branch: "MOODLE_401_STABLE"
@@ -75,8 +67,6 @@ jobs:
           - moodle_branch: "MOODLE_402_STABLE"
             php: "8.3"
           - moodle_branch: "MOODLE_403_STABLE"
-            php: "8.3"
-          - moodle_branch: "main"
             php: "8.3"
 
           - moodle_branch: "MOODLE_401_STABLE"
@@ -90,7 +80,7 @@ jobs:
           - moodle_branch: "MOODLE_405_STABLE"
             php: "8.4"
 
-
+          - moodle_branch: "main"
 
 
         include:
@@ -156,61 +146,36 @@ jobs:
           COVERAGE: false
           CODECHECKER_IGNORE_PATHS: classes/privacy,ignore,node_modules,integration,render
           PHPUNIT_IGNORE_PATHS: classes/privacy,ignore,node_modules,integration,render
+          
+      # 3. Install filter
+      - name: Add Wiris filter
+        run: |
+          moodle-plugin-ci add-plugin wiris/moodle-filter_wiris
 
-      # 3. Install Atto MathType plugin for specific Moodle branches.
-      - name: Add MathType plugin for Atto
-        if: ${{ contains(fromJson('["MOODLE_401_STABLE", "MOODLE_402_STABLE", "MOODLE_403_STABLE", "MOODLE_404_STABLE", "MOODLE_405_STABLE"]'), matrix.moodle_branch) }}
-        id: install-plugin-atto
-        continue-on-error: true
-        run: |
-          moodle-plugin-ci add-plugin --branch ${{ env.BRANCH_NAME }} wiris/moodle-atto_wiris
-      - name: Add MathType plugin for Atto using the main branch
-        if: ${{ contains(fromJson('["MOODLE_401_STABLE", "MOODLE_402_STABLE", "MOODLE_403_STABLE", "MOODLE_404_STABLE", "MOODLE_405_STABLE"]'), matrix.moodle_branch) && steps.install-plugin-atto.outcome != 'success' }}
-        run: |
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-atto_wiris
-
-      # 5. Install Wiris Quizzes plugin.
-      - name: Add Wiris Quizzes plugin
-        id: install-plugin-quizzes
-        if: ${{ always() }}
-        continue-on-error: true
-        run: |
-          moodle-plugin-ci add-plugin --branch ${{ env.BRANCH_NAME }} wiris/moodle-qtype_wq
-      - name: Add Wiris Quizzes plugin using the main branch
-        if: ${{ steps.install-plugin-quizzes.outcome != 'success' }}
-        run: |
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_wq
-
-      # 6. Install plugin and configure DB.
+      # 4. Install plugin and configure DB.
       - name: Install moodle-plugin-ci
         run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle_branch }}
 
-      # 7. Run PHPUnit tests.
+      # 5. Run PHPUnit tests.
       - name: PHPUnit tests
         if: ${{ always() }}
         run: moodle-plugin-ci phpunit ./plugin
         continue-on-error: true
 
-      # 7.1 Run Moodle code validation.
+      # 5.1 Run Moodle code validation.
       - name: Validating
         if: ${{ always() }}
         run: moodle-plugin-ci validate ./plugin
         continue-on-error: true
 
-      # 8. Run Behat tests.
+      # 6. Run Behat tests.
       - name: Behat features for ( ${{ matrix.moodle_branch }} on PHP ${{ matrix.php }} )
         id: behat
         run: |
           case "${{ matrix.moodle_branch }}" in
-            "MOODLE_38_STABLE"|"MOODLE_39_STABLE"|"MOODLE_311_STABLE")
-              TAG="@3.x_filter${{ github.event.inputs.tags }}"
-              ;;
-            "MOODLE_400_STABLE")
-              TAG="@4.0_filter${{ github.event.inputs.tags }}"
-              ;;
             "MOODLE_401_STABLE"|"MOODLE_402_STABLE"|"MOODLE_403_STABLE"|"MOODLE_404_STABLE"|"MOODLE_405_STABLE")
               TAG="@4.x_filter${{ github.event.inputs.tags }}"
               ;;
@@ -223,7 +188,7 @@ jobs:
           esac
           moodle-plugin-ci behat --tags=$TAG --profile ${{ matrix.browser }} --auto-rerun=2 --verbose -vvv
 
-      # 8.1 Upload Behat fail dumps when errors occur.
+      # 6.1 Upload Behat fail dumps when errors occur.
       - name: Upload Behat Faildump
         if: ${{ failure() && steps.behat.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
