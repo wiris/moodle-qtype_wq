@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:17
         env:
           POSTGRES_USER: "postgres"
           POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -146,7 +146,7 @@ jobs:
           COVERAGE: false
           CODECHECKER_IGNORE_PATHS: classes/privacy,ignore,node_modules,integration,render
           PHPUNIT_IGNORE_PATHS: classes/privacy,ignore,node_modules,integration,render
-          
+
       # 3. Install filter
       - name: Add Wiris filter
         run: |
