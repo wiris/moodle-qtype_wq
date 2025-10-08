@@ -150,7 +150,7 @@ jobs:
       # 3. Install filter
       - name: Add Wiris filter
         run: |
-          moodle-plugin-ci add-plugin --branch fix/wq-ci-errors wiris/moodle-filter_wiris
+          moodle-plugin-ci add-plugin wiris/moodle-filter_wiris
 
       # 4. Install plugin and configure DB.
       - name: Install moodle-plugin-ci
