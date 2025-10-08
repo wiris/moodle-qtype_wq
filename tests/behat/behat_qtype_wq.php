@@ -1,6 +1,4 @@
 <?php
-// filepath: /home/oriol/projects/Moodle filters/moodle-qtype_wq/tests/behat/behat_qtype_wq.php
-<?php
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
