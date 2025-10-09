@@ -63,6 +63,7 @@ Scenario: Admin can backup a quiz with all Wiris qtypes (except cloze)
     And I click on "Backup" "link"
     When I press "Jump to final step"
     When I click on "restore page" "link"
+    #TODO: no troba el text
     Then I should see "Process pending"
     #Then I should see "The backup file was successfully created"
 
@@ -75,6 +76,7 @@ Scenario: Admin duplicates a quiz using the action menu
     And I turn editing mode on
     # Open the action menu of the existing quiz and choose Duplicate
     And I open the action menu for "Wiris Quiz" "Quiz"
+    #TODO: no troba l'action menu
     When I choose "Duplicate" in the open action menu
     # Verify there are now two quiz activities on the page
     Then I should see "2" elements matching ".activity.modtype_quiz"
