@@ -167,12 +167,12 @@ jobs:
       - name: Add Wiris Quizzes plugin using the main branch
         if: ${{ steps.install-plugin-quizzes.outcome != 'success' }}
         run: |
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_truefalsewiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_shortanswerwiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_multichoicewiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_multianswerwiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_matchwiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_essaywiris
+          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_truefalsewiris
+          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_shortanswerwiris
+          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_multichoicewiris
+          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_multianswerwiris
+          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_matchwiris
+          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_essaywiris
       # 4. Install plugin and configure DB.
       - name: Install moodle-plugin-ci
         run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
