@@ -71,7 +71,7 @@ Scenario: Admin can backup a quiz with all Wiris qtypes (except cloze)
 
 Scenario: Admin duplicates a quiz using the action menu
     Given I log in as "admin"
-    And I am on "WIRIS bank" course homepage
+    And I am on "Course 1" course homepage
     And I turn editing mode on
     # Open the action menu of the existing quiz and choose Duplicate
     And I open the action menu for "Wiris Quiz" "Quiz"
