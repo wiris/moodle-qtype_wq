@@ -1,4 +1,4 @@
-@javascript @core_question @wqmdl-177
+@javascript @core_question @qtype_wq @wqmdl-177
 Feature: Teacher can preview each question from the Question bank
     In order to verify individual WIRIS question rendering
     As a teacher
