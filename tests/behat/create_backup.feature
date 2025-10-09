@@ -29,7 +29,7 @@ Background:
     # truefalsewiris requires a True/False 'correctanswer'
     And the following "questions" exist:
         | questioncategory | qtype            | name                  | questiontext                    | defaultmark | correctanswer |
-        | WIRIS bank       | truefalsewiris   | TF WIRIS – sky color  | <p>The daytime sky is blue.</p> | 1.0         | 1             |
+        | WIRIS bank       | truefalsewiris   | TF WIRIS| <p>The daytime sky is blue.</p> | 1.0         | 1             |
 
     # multichoicewiris needs at least two answers and fractions
     And the following "questions" exist:
@@ -48,7 +48,7 @@ Background:
 
     And quiz "Wiris Quiz" contains the following questions:
         | question              | page |
-        | TF WIRIS – sky color  | 1    |
+        | TF WIRIS| 1    |
         | Multichoice Wiris     | 1    |
         | Essay Wiris           | 1    |
         | Match Wiris           | 1    |
