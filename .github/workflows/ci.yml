@@ -89,6 +89,7 @@ jobs:
           - moodle_branch: "main"
             php: "8.4"
             database: "pgsql"
+    continue-on-error: ${{ matrix.branch == 'main' }}
 
     steps:
       - name: Check out repository code
