@@ -29,6 +29,86 @@ require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 class behat_wq_base extends behat_base {
 
     /**
+     * @BeforeStep
+     */
+    public function beforeStep($event) {
+        // Enable verbose mode if environment variable is set
+        if (getenv('BEHAT_VERBOSE') || getenv('BEHAT_DEBUG')) {
+            $this->getSession()->getDriver()->maximizeWindow();
+        }
+    }
+
+    /**
+     * @AfterStep
+     */
+    public function afterStep($event) {
+        // Capture additional debug information on step failure
+        if (getenv('BEHAT_DEBUG') && !$event->getTestResult()->isPassed()) {
+            $this->captureDebugInformation($event);
+        }
+    }
+
+    /**
+     * Capture comprehensive debug information when a step fails
+     */
+    protected function captureDebugInformation($event) {
+        try {
+            $session = $this->getSession();
+            $page = $session->getPage();
+            
+            // Capture current URL
+            echo "\n=== DEBUG INFO ===\n";
+            echo "Current URL: " . $session->getCurrentUrl() . "\n";
+            
+            // Capture page title
+            $title = $page->find('css', 'title');
+            if ($title) {
+                echo "Page Title: " . $title->getText() . "\n";
+            }
+            
+            // Capture page source
+            echo "=== FULL PAGE HTML ===\n";
+            echo $session->getPage()->getContent() . "\n";
+            echo "=== END PAGE HTML ===\n";
+            
+            // Capture JavaScript errors from browser console
+            if (method_exists($session->getDriver(), 'getWebDriverSession')) {
+                try {
+                    $logs = $session->getDriver()->getWebDriverSession()->log('browser');
+                    if (!empty($logs)) {
+                        echo "=== BROWSER CONSOLE LOGS ===\n";
+                        foreach ($logs as $log) {
+                            echo "[{$log['level']}] {$log['message']}\n";
+                        }
+                        echo "=== END CONSOLE LOGS ===\n";
+                    }
+                } catch (Exception $e) {
+                    echo "Could not capture browser logs: " . $e->getMessage() . "\n";
+                }
+            }
+            
+            // Capture visible form elements and their values
+            $forms = $page->findAll('css', 'form');
+            if (!empty($forms)) {
+                echo "=== FORM ELEMENTS ===\n";
+                foreach ($forms as $form) {
+                    $inputs = $form->findAll('css', 'input, select, textarea');
+                    foreach ($inputs as $input) {
+                        $name = $input->getAttribute('name') ?: $input->getAttribute('id') ?: 'unnamed';
+                        $value = $input->getValue();
+                        $type = $input->getAttribute('type') ?: $input->getTagName();
+                        echo "Form element: {$name} (type: {$type}) = '{$value}'\n";
+                    }
+                }
+                echo "=== END FORM ELEMENTS ===\n";
+            }
+            
+        } catch (Exception $e) {
+            echo "Error capturing debug information: " . $e->getMessage() . "\n";
+        }
+    }
+
+    /**
      * @Then I choose the question type :questiontypename
      */
     public function i_choose_the_question_type($questiontypename) {
@@ -101,7 +181,20 @@ class behat_wq_base extends behat_base {
         $session = $this->getSession();
         $readonly = $session->getPage()->find('css', '.wrsUI_readOnly');
         if (empty($readonly)) {
-            throw new Exception('Readonly field not found.');
+            // Provide more verbose error information
+            $currentUrl = $session->getCurrentUrl();
+            $pageContent = $session->getPage()->getContent();
+            $allInputs = $session->getPage()->findAll('css', 'input');
+            
+            $errorMsg = "Readonly field not found.\n";
+            $errorMsg .= "Current URL: {$currentUrl}\n";
+            $errorMsg .= "Found " . count($allInputs) . " input elements on the page.\n";
+            
+            if (getenv('BEHAT_DEBUG')) {
+                $errorMsg .= "Full page content:\n" . $pageContent . "\n";
+            }
+            
+            throw new Exception($errorMsg);
         }
     }
 
@@ -121,9 +214,22 @@ class behat_wq_base extends behat_base {
      */
     public function feedback_should_exist() {
         $session = $this->getSession();
-        $readonly = $session->getPage()->find('css', '.feedback');
-        if (empty($readonly)) {
-            throw new Exception('Readonly field not found.');
+        $feedback = $session->getPage()->find('css', '.feedback');
+        if (empty($feedback)) {
+            // Provide more verbose error information
+            $currentUrl = $session->getCurrentUrl();
+            $allElements = $session->getPage()->findAll('css', '[class*="feedback"]');
+            
+            $errorMsg = "Feedback element not found.\n";
+            $errorMsg .= "Current URL: {$currentUrl}\n";
+            $errorMsg .= "Found " . count($allElements) . " elements with 'feedback' in class name.\n";
+            
+            if (getenv('BEHAT_DEBUG')) {
+                $pageContent = $session->getPage()->getContent();
+                $errorMsg .= "Full page content:\n" . $pageContent . "\n";
+            }
+            
+            throw new Exception($errorMsg);
         }
     }
 
@@ -132,9 +238,22 @@ class behat_wq_base extends behat_base {
      */
     public function generalfeedback_should_exist() {
         $session = $this->getSession();
-        $readonly = $session->getPage()->find('css', '.generalfeedback');
-        if (empty($readonly)) {
-            throw new Exception('Readonly field not found.');
+        $generalfeedback = $session->getPage()->find('css', '.generalfeedback');
+        if (empty($generalfeedback)) {
+            // Provide more verbose error information
+            $currentUrl = $session->getCurrentUrl();
+            $allElements = $session->getPage()->findAll('css', '[class*="feedback"]');
+            
+            $errorMsg = "General feedback element not found.\n";
+            $errorMsg .= "Current URL: {$currentUrl}\n";
+            $errorMsg .= "Found " . count($allElements) . " elements with 'feedback' in class name.\n";
+            
+            if (getenv('BEHAT_DEBUG')) {
+                $pageContent = $session->getPage()->getContent();
+                $errorMsg .= "Full page content:\n" . $pageContent . "\n";
+            }
+            
+            throw new Exception($errorMsg);
         }
     }
 
