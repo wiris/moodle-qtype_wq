@@ -154,11 +154,6 @@ jobs:
           COVERAGE: false
           CODECHECKER_IGNORE_PATHS: classes/privacy,ignore,node_modules,integration,render
           PHPUNIT_IGNORE_PATHS: classes/privacy,ignore,node_modules,integration,render
-          # Enable verbose behat output and debugging
-          BEHAT_VERBOSE: true
-          BEHAT_DEBUG: true
-          MOODLE_BEHAT_DEFAULT_DRIVER: selenium
-          MOODLE_BEHAT_XTRACE: true
 
       # 3. Install filter
       - name: Add Wiris filter
@@ -192,15 +187,6 @@ jobs:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle_branch }}
 
-      # 4.1 Configure Behat for enhanced verbose output
-      - name: Configure Behat for verbose output
-        run: |
-          # Set additional environment variables for debugging
-          echo "BEHAT_VERBOSE=1" >> $GITHUB_ENV
-          echo "BEHAT_DEBUG=1" >> $GITHUB_ENV
-          echo "MOODLE_BEHAT_WDHOST=http://127.0.0.1:4444/wd/hub" >> $GITHUB_ENV
-          echo "MOODLE_BEHAT_SELENIUM_VNC=1" >> $GITHUB_ENV
-
       # 5. Run PHPUnit tests.
       - name: PHPUnit tests
         if: ${{ always() }}
@@ -222,11 +208,7 @@ jobs:
               TAG="@qtype_wq"
               ;;
           esac
-          # Set additional environment variables for verbose output
-          export BEHAT_VERBOSE=1
-          export BEHAT_DEBUG=1
-          # Run behat with maximum verbosity and detailed formatting
-          moodle-plugin-ci behat --tags=$TAG --profile ${{ matrix.browser }} --auto-rerun=2 --verbose -vvv --format=pretty --format=html --out=/tmp/behat_report.html --stop-on-failure
+          moodle-plugin-ci behat --tags=$TAG --profile ${{ matrix.browser }} --auto-rerun=2 --verbose -vvv
 
       # 6.1 Upload Behat fail dumps when errors occur.
       - name: Upload Behat Faildump
@@ -237,44 +219,4 @@ jobs:
           path: ${{ github.workspace }}/moodledata/behat_dump
           retention-days: 1
           if-no-files-found: ignore
-
-      # 6.2 Upload detailed Behat HTML report when errors occur
-      - name: Upload Behat HTML Report
-        if: ${{ failure() && steps.behat.outcome == 'failure' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: Behat HTML Report (${{ matrix.php }}, ${{ matrix.moodle_branch }}, ${{ matrix.browser }})
-          path: /tmp/behat_report.html
-          retention-days: 7
-          if-no-files-found: ignore
-
-      # 6.3 Upload browser logs and screenshots when errors occur
-      - name: Upload Browser Logs and Screenshots
-        if: ${{ failure() && steps.behat.outcome == 'failure' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: Browser Logs and Screenshots (${{ matrix.php }}, ${{ matrix.moodle_branch }}, ${{ matrix.browser }})
-          path: |
-            ${{ github.workspace }}/moodledata/behat_dump/**/*.png
-            ${{ github.workspace }}/moodledata/behat_dump/**/*.html
-            ${{ github.workspace }}/moodledata/behat_dump/**/*.log
-          retention-days: 7
-          if-no-files-found: ignore
-
-      # 6.4 Display full page HTML content on failure for debugging
-      - name: Display Last Page HTML Content
-        if: ${{ failure() && steps.behat.outcome == 'failure' }}
-        run: |
-          echo "=== DISPLAYING LAST CAPTURED HTML CONTENT ==="
-          if [ -f "${{ github.workspace }}/moodledata/behat_dump/last_page.html" ]; then
-            echo "Last page HTML content:"
-            cat "${{ github.workspace }}/moodledata/behat_dump/last_page.html"
-          else
-            echo "No last_page.html found, checking for other HTML files..."
-            find "${{ github.workspace }}/moodledata/behat_dump" -name "*.html" -type f | head -5 | while read file; do
-              echo "=== Content of $file ==="
-              cat "$file"
-              echo "=== End of $file ==="
-            done
-          fi
 

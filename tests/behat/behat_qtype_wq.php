@@ -17,28 +17,7 @@ class behat_qtype_wq extends behat_base {
         // Find the action menu button for the specified element
         $xpath = "//div[contains(@class, '{$elementtype}') and contains(., '{$identifier}')]//button[contains(@class, 'action-menu-trigger')]";
         
-        try {
-            $this->execute('behat_general::i_click_on', [$xpath, 'xpath_element']);
-        } catch (Exception $e) {
-            // Provide verbose error information
-            if (getenv('BEHAT_DEBUG')) {
-                $session = $this->getSession();
-                $currentUrl = $session->getCurrentUrl();
-                $pageContent = $session->getPage()->getContent();
-                $allMenus = $session->getPage()->findAll('css', '[class*="action-menu"]');
-                
-                $errorMsg = "Failed to open action menu for {$elementtype} '{$identifier}'.\n";
-                $errorMsg .= "Current URL: {$currentUrl}\n";
-                $errorMsg .= "XPath used: {$xpath}\n";
-                $errorMsg .= "Found " . count($allMenus) . " elements with 'action-menu' in class name.\n";
-                $errorMsg .= "Original error: " . $e->getMessage() . "\n";
-                $errorMsg .= "Full page content:\n" . $pageContent . "\n";
-                
-                throw new Exception($errorMsg);
-            } else {
-                throw $e;
-            }
-        }
+        $this->execute('behat_general::i_click_on', [$xpath, 'xpath_element']);
     }
 
     /**
@@ -55,15 +34,10 @@ class behat_qtype_wq extends behat_base {
             $session = $this->getSession();
             $currentUrl = $session->getCurrentUrl();
             
-            $errorMsg = "Expected {$expectedcount} elements matching '{$selector}', but found " . count($elements);
-            $errorMsg .= "\nCurrent URL: {$currentUrl}";
-            
-            if (getenv('BEHAT_DEBUG')) {
-                $pageContent = $session->getPage()->getContent();
-                $errorMsg .= "\nFull page content:\n" . $pageContent;
-            }
-            
-            throw new Exception($errorMsg);
+            throw new Exception(
+                "Expected {$expectedcount} elements matching '{$selector}', but found " . count($elements) . 
+                ". Current URL: {$currentUrl}"
+            );
         }
     }
 }
