@@ -1,7 +1,21 @@
-name: Moodle Plugin CI
+name: Moodle qtype wq CI
 
 # Automatically triggered on push to main branch, on pull requests
-on: ['push', 'pull_request']
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Add additional test tags. It needs "&&" to concatenate and a leading @. Example: "&&@mtmoodle-x"'
+        required: false
+        default: ""
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "**"
+  schedule:
+    - cron: "0 6 * * *"
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,16 +34,14 @@ jobs:
       fail-fast: false
 
       matrix:
-        php: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+        php: ["7.3", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
         moodle_branch:
           [
+            "MOODLE_39_STABLE",
             "MOODLE_401_STABLE",
-            "MOODLE_402_STABLE",
-            "MOODLE_403_STABLE",
-            "MOODLE_404_STABLE",
             "MOODLE_405_STABLE",
             "MOODLE_500_STABLE",
-            "MOODLE_501_STABLE",
+            "MOODLE_501_STABLE",  
             "main",
           ]
         database: [pgsql]
@@ -38,12 +50,16 @@ jobs:
           # Exclude Moodle+PHP incompatible versions
           # See: https://docs.moodle.org/dev/Moodle_and_PHP
 
-          - moodle_branch: "MOODLE_402_STABLE"
-            php: "7.4"
-          - moodle_branch: "MOODLE_403_STABLE"
-            php: "7.4"
-          - moodle_branch: "MOODLE_404_STABLE"
-            php: "7.4"
+          - moodle_branch: "MOODLE_401_STABLE"
+            php: "7.3"
+          - moodle_branch: "MOODLE_405_STABLE"
+            php: "7.3"
+          - moodle_branch: "MOODLE_500_STABLE"
+            php: "7.3"
+          - moodle_branch: "MOODLE_501_STABLE"
+            php: "7.3"
+
+
           - moodle_branch: "MOODLE_405_STABLE"
             php: "7.4"
           - moodle_branch: "MOODLE_500_STABLE"
@@ -52,7 +68,7 @@ jobs:
             php: "7.4"
 
 
-          - moodle_branch: "MOODLE_404_STABLE"
+          - moodle_branch: "MOODLE_39_STABLE"
             php: "8.0"
           - moodle_branch: "MOODLE_405_STABLE"
             php: "8.0"
@@ -61,28 +77,26 @@ jobs:
           - moodle_branch: "MOODLE_501_STABLE"
             php: "8.0"
 
+          - moodle_branch: "MOODLE_39_STABLE"
+            php: "8.1"
           - moodle_branch: "MOODLE_500_STABLE"
             php: "8.1"
           - moodle_branch: "MOODLE_501_STABLE"
             php: "8.1"
 
+          - moodle_branch: "MOODLE_39_STABLE"
+            php: "8.2"
           - moodle_branch: "MOODLE_401_STABLE"
             php: "8.2"
 
+          - moodle_branch: "MOODLE_39_STABLE"
+            php: "8.3"
           - moodle_branch: "MOODLE_401_STABLE"
-            php: "8.3"
-          - moodle_branch: "MOODLE_402_STABLE"
-            php: "8.3"
-          - moodle_branch: "MOODLE_403_STABLE"
             php: "8.3"
 
+          - moodle_branch: "MOODLE_39_STABLE"
+            php: "8.4"
           - moodle_branch: "MOODLE_401_STABLE"
-            php: "8.4"
-          - moodle_branch: "MOODLE_402_STABLE"
-            php: "8.4"
-          - moodle_branch: "MOODLE_403_STABLE"
-            php: "8.4"
-          - moodle_branch: "MOODLE_404_STABLE"
             php: "8.4"
           - moodle_branch: "MOODLE_405_STABLE"
             php: "8.4"
