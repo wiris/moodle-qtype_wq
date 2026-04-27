@@ -1,4 +1,5 @@
 * @wiris/squad-wirisquizzes
 
 # Haxe source code — requires Integrations team review
-/quizzes/lti/ @wiris/mathtype-integrations-squad
+
+/quizzes/lti/ @wiris/squad-mathtype-integrations
