@@ -7,3 +7,5 @@ class haxe_Md5 {
 	}
 	function __toString() { return 'haxe.Md5'; }
 }
+
+// Test
