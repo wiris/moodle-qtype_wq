@@ -351,3 +351,4 @@ function Xml_1($child) {
 		return $child->nodeType == Xml::$Element;
 	}
 }
+// This is a test
