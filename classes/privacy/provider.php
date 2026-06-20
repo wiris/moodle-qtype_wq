@@ -27,14 +27,15 @@ namespace qtype_wq\privacy;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
-use core_privacy\local\request\deletion_criteria;
-use core_privacy\local\request\helper;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\writer;
 
 class provider implements
     // This plugin stores personal data.
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider {
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\core_userlist_provider {
 
     // This trait must be included to provide the relevant polyfill for the metadata provider.
     // All required methods must start with an underscore.
@@ -246,4 +247,49 @@ class provider implements
             $records->close();
         }
     }
+
+    /**
+     * Get the list of users within a specific context.
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     * @return void
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        global $CFG;
+        $context = $userlist->get_context();
+        if(!$context instanceof \context_user) {
+            return;
+        }
+
+        $params = ['contextid' => $context->instanceid];
+        $sql = "SELECT q.createdby userid 
+                    FROM {question_categories} qc";
+
+        if ($CFG->version >= 2022041900) {
+            $sql .= " INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                          INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                          INNER JOIN {question} q ON q.id = qv.questionid
+                          INNER JOIN {qtype_wq} wq ON q.id = wq.question";
+        } else {
+            $sql .= " INNER JOIN {question} q ON qc.id = q.category
+                          INNER JOIN {qtype_wq} wq ON q.id = wq.question";
+        }
+
+        $sql .= " WHERE qc.contextid = :contextid ";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     * @return void
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if ($context instanceof \context_user) {
+            static::_delete_data_for_user($context->instanceid);
+        }
+    }
 }
+
