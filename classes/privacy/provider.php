@@ -26,14 +26,17 @@ namespace qtype_wq\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\deletion_criteria;
 use core_privacy\local\request\helper;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 
 class provider implements
     // This plugin stores personal data.
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\plugin\provider {
 
     // This trait must be included to provide the relevant polyfill for the metadata provider.
@@ -47,7 +50,7 @@ class provider implements
      * @param collection $items a reference to the collection to use to store the metadata.
      * @return collection the updated collection of metadata items.
      */
-    public static function _get_metadata(collection $items) { // @codingStandardsIgnoreLine
+    public static function get_metadata(collection $items): collection { // @codingStandardsIgnoreLine
         $items->add_database_table(
             'qtype_wq',
             [
@@ -66,7 +69,7 @@ class provider implements
      * @param int $userid the userid.
      * @return contextlist the list of contexts containing user info for the user.
      */
-    public static function _get_contexts_for_userid($userid) { // @codingStandardsIgnoreLine
+    public static function get_contexts_for_userid($userid): contextlist { // @codingStandardsIgnoreLine
         global $CFG;
 
         // Fetch all Wiris Quizzes question types.
@@ -99,7 +102,7 @@ class provider implements
      *
      * @param approved_contextlist $contextlist a list of contexts approved for export.
      */
-    public static function _export_user_data(approved_contextlist $contextlist) { // @codingStandardsIgnoreLine
+    public static function export_user_data(approved_contextlist $contextlist) { // @codingStandardsIgnoreLine
         global $DB;
         global $CFG;
 
@@ -171,7 +174,7 @@ class provider implements
      *
      * @param \context $context the context to delete in.
      */
-    public static function _delete_data_for_all_users_in_context(\context $context) { // @codingStandardsIgnoreLine
+    public static function delete_data_for_all_users_in_context(\context $context) { // @codingStandardsIgnoreLine
         global $DB;
         global $CFG;
 
@@ -211,7 +214,7 @@ class provider implements
      *
      * @param approved_contextlist $contextlist a list of contexts approved for deletion.
      */
-    public static function _delete_data_for_user(approved_contextlist $contextlist) { // @codingStandardsIgnoreLine
+    public static function delete_data_for_user(approved_contextlist $contextlist) { // @codingStandardsIgnoreLine
         global $DB;
         global $CFG;
 
@@ -246,4 +249,72 @@ class provider implements
             $records->close();
         }
     }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) { // @codingStandardsIgnoreLine
+        global $CFG;
+        $context = $userlist->get_context();
+
+        $sql = "SELECT q.createdby
+                FROM {question_categories} qc";
+
+        if ($CFG->version >= 2022041900) {
+            $sql .= " INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                      INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                      INNER JOIN {question} q ON q.id = qv.questionid";
+        } else {
+            $sql .= " INNER JOIN {question} q ON qc.id = q.category";
+        }
+
+        $sql .= " INNER JOIN {qtype_wq} wq ON q.id = wq.question
+                  WHERE qc.contextid = :contextid";
+
+        $params = ['contextid' => $context->id];
+        $userlist->add_from_sql('createdby', $sql, $params);
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) { // @codingStandardsIgnoreLine
+        global $DB, $CFG;
+        $context = $userlist->get_context();
+
+        $userids = $userlist->get_userids();
+        if (empty($userids)) {
+            return;
+        }
+
+        list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+        $sql = "SELECT wq.id
+                FROM {question_categories} qc";
+
+        if ($CFG->version >= 2022041900) {
+            $sql .= " INNER JOIN {question_bank_entries} qbe ON qbe.questioncategoryid = qc.id
+                      INNER JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+                      INNER JOIN {question} q ON q.id = qv.questionid
+                      INNER JOIN {qtype_wq} wq ON q.id = wq.question";
+        } else {
+            $sql .= " INNER JOIN {question} q ON qc.id = q.category
+                      INNER JOIN {qtype_wq} wq ON q.id = wq.question";
+        }
+
+        $sql .= " WHERE qc.contextid = :contextid AND q.createdby {$usersql}";
+
+        $params = ['contextid' => $context->id] + $userparams;
+
+        $records = $DB->get_recordset_sql($sql, $params);
+        foreach ($records as $record) {
+            $DB->delete_records('qtype_wq', ['id' => $record->id]);
+        }
+        $records->close();
+    }
 }
+
