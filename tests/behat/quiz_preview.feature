@@ -58,7 +58,7 @@ Feature: Teacher can preview the whole quiz
         | questioncategory | qtype            | name        | questiontext                                            | defaultmark |
         | WIRIS bank       | multianswerwiris | Cloze Wiris | <p>The speed of light symbol is {1:SHORTANSWER:=c}.</p> | 1.0         |
 
-    And quiz "Wiris Quiz" contains the following questions:
+    And quiz "Wiris Quiz" contains the following Wiris questions:
         | question              | page |
         | TF WIRIS – sky color  | 1    |
         | Multichoice Wiris     | 1    |

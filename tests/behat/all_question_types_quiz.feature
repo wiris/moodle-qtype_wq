@@ -52,7 +52,7 @@ Feature: All Question Types Quiz end-to-end regression
         And the following "questions" exist:
             | questioncategory | qtype            | name        | questiontext                                              | defaultmark |
             | WIRIS bank       | multianswerwiris | Cloze WIRIS | <p>The speed of light symbol is {1:SHORTANSWER:=c}.</p>   | 1.0         |
-        And quiz "WIRIS Quiz" contains the following questions:
+        And quiz "WIRIS Quiz" contains the following Wiris questions:
             | question    | page |
             | TF WIRIS    | 1    |
             | MC WIRIS    | 2    |

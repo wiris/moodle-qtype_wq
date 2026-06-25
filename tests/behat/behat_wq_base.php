@@ -216,6 +216,72 @@ class behat_wq_base extends behat_base {
     }
 
     /**
+     * Adds existing questions from the question bank to a quiz, resolving each
+     * question by name but only matching top-level (parent = 0) questions.
+     *
+     * Mirrors the core "quiz ... contains the following questions:" step but is
+     * safe for Wiris Cloze (multianswerwiris) questions. A Cloze stores its
+     * embedded sub-questions as separate question records that copy the parent's
+     * name and (on Moodle 4.x) carry their own question_bank_entries rows, so the
+     * core step — which looks questions up by name with MUST_EXIST — raises a
+     * dml_multiple_records_exception there. Filtering on parent = 0 selects the
+     * Cloze itself and keeps the behaviour identical for every other qtype.
+     *
+     * @Given /^quiz "([^"]*)" contains the following Wiris questions:$/
+     */
+    public function quiz_contains_the_following_wiris_questions($quizname, TableNode $data) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+        $quiz = $DB->get_record('quiz', array('name' => $quizname), '*', MUST_EXIST);
+
+        $lastpage = 0;
+        foreach ($data->getHash() as $questiondata) {
+            if (!array_key_exists('question', $questiondata) || !array_key_exists('page', $questiondata)) {
+                throw new \Exception('When adding questions to a quiz, the "question" and "page" columns are required.');
+            }
+
+            // Resolve the question by name, restricting to top-level questions so a
+            // Cloze does not collide with its identically named sub-questions.
+            $sql = 'SELECT q.id AS id, q.qtype AS qtype, qv.version AS version
+                      FROM {question} q
+                      JOIN {question_versions} qv ON qv.questionid = q.id
+                      JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+                     WHERE q.name = :name AND q.parent = 0
+                  ORDER BY qv.version DESC';
+            $records = $DB->get_records_sql($sql, array('name' => $questiondata['question']));
+            if (empty($records)) {
+                throw new \Exception('Question "' . $questiondata['question'] .
+                    '" not found in the question bank.');
+            }
+            $question = reset($records);
+
+            $page = clean_param($questiondata['page'], PARAM_INT);
+            if ($page < $lastpage || $page > $lastpage + 1) {
+                throw new \Exception('Invalid page number "' . $questiondata['page'] .
+                    '" for question "' . $questiondata['question'] . '".');
+            }
+            $lastpage = $page;
+
+            if (!array_key_exists('maxmark', $questiondata) || $questiondata['maxmark'] === '') {
+                $maxmark = null;
+            } else {
+                $maxmark = clean_param($questiondata['maxmark'], PARAM_LOCALISEDFLOAT);
+            }
+
+            quiz_add_quiz_question($question->id, $quiz, $page, $maxmark);
+        }
+
+        // Keep the quiz grade totals consistent, like the core step does.
+        if (class_exists('\\mod_quiz\\quiz_settings')) {
+            $quizobj = \mod_quiz\quiz_settings::create($quiz->id);
+            if (method_exists($quizobj, 'get_grade_calculator')) {
+                $quizobj->get_grade_calculator()->recompute_quiz_sumgrades();
+            }
+        }
+    }
+
+    /**
      * JavaScript guard that swallows only RequireJS "mismatch" errors raised by
      * the Wiris Quizzes UMD bundle and drains any orphaned anonymous define().
      */
