@@ -1,7 +1,18 @@
 name: Moodle Plugin CI
 
-# Automatically triggered on push to main branch, on pull requests
-on: ['push', 'pull_request']
+# Triggered on push/PR, nightly on a schedule, and on manual dispatch.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "**"
+  schedule:
+    # Daily full-matrix run (06:00 UTC) so the whole WirisQuizzes suite is
+    # exercised against every supported Moodle/PHP combination, not just on PRs.
+    - cron: "0 6 * * *"
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,16 +31,13 @@ jobs:
       fail-fast: false
 
       matrix:
-        php: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+        php: ["8.1", "8.2", "8.3", "8.4"]
         moodle_branch:
           [
-            "MOODLE_401_STABLE",
-            "MOODLE_402_STABLE",
-            "MOODLE_403_STABLE",
-            "MOODLE_404_STABLE",
             "MOODLE_405_STABLE",
             "MOODLE_500_STABLE",
-            "MOODLE_501_STABLE",
+            "MOODLE_501_STABLE",  
+            "MOODLE_502_STABLE",
             "main",
           ]
         database: [pgsql]
@@ -38,54 +46,25 @@ jobs:
           # Exclude Moodle+PHP incompatible versions
           # See: https://docs.moodle.org/dev/Moodle_and_PHP
 
-          - moodle_branch: "MOODLE_402_STABLE"
-            php: "7.4"
-          - moodle_branch: "MOODLE_403_STABLE"
-            php: "7.4"
-          - moodle_branch: "MOODLE_404_STABLE"
-            php: "7.4"
-          - moodle_branch: "MOODLE_405_STABLE"
-            php: "7.4"
-          - moodle_branch: "MOODLE_500_STABLE"
-            php: "7.4"
-          - moodle_branch: "MOODLE_501_STABLE"
-            php: "7.4"
-
-
-          - moodle_branch: "MOODLE_404_STABLE"
-            php: "8.0"
-          - moodle_branch: "MOODLE_405_STABLE"
-            php: "8.0"
-          - moodle_branch: "MOODLE_500_STABLE"
-            php: "8.0"
-          - moodle_branch: "MOODLE_501_STABLE"
-            php: "8.0"
-
           - moodle_branch: "MOODLE_500_STABLE"
             php: "8.1"
           - moodle_branch: "MOODLE_501_STABLE"
             php: "8.1"
 
-          - moodle_branch: "MOODLE_401_STABLE"
+          - moodle_branch: "MOODLE_405_STABLE"
+            php: "8.4"
+
+          # Moodle 5.2 requires PHP 8.3+.
+          - moodle_branch: "MOODLE_502_STABLE"
+            php: "7.3"
+          - moodle_branch: "MOODLE_502_STABLE"
+            php: "7.4"
+          - moodle_branch: "MOODLE_502_STABLE"
+            php: "8.0"
+          - moodle_branch: "MOODLE_502_STABLE"
+            php: "8.1"
+          - moodle_branch: "MOODLE_502_STABLE"
             php: "8.2"
-
-          - moodle_branch: "MOODLE_401_STABLE"
-            php: "8.3"
-          - moodle_branch: "MOODLE_402_STABLE"
-            php: "8.3"
-          - moodle_branch: "MOODLE_403_STABLE"
-            php: "8.3"
-
-          - moodle_branch: "MOODLE_401_STABLE"
-            php: "8.4"
-          - moodle_branch: "MOODLE_402_STABLE"
-            php: "8.4"
-          - moodle_branch: "MOODLE_403_STABLE"
-            php: "8.4"
-          - moodle_branch: "MOODLE_404_STABLE"
-            php: "8.4"
-          - moodle_branch: "MOODLE_405_STABLE"
-            php: "8.4"
 
           - moodle_branch: "main"
 
@@ -96,7 +75,8 @@ jobs:
           - moodle_branch: "main"
             php: "8.4"
             database: "pgsql"
-    continue-on-error: ${{ matrix.branch == 'main' }}
+            browser: "chrome"
+    continue-on-error: ${{ matrix.moodle_branch == 'main' }}
 
     steps:
       - name: Check out repository code
@@ -159,27 +139,30 @@ jobs:
       - name: Add Wiris filter
         run: |
           moodle-plugin-ci add-plugin wiris/moodle-filter_wiris
-      # 3.5. Install Wiris Quizzes plugin.
-      - name: Add Wiris Quizzes plugin
-        id: install-plugin-quizzes
-        if: ${{ always() }}
-        continue-on-error: true
+      # 3.5. Install the sibling Wiris Quizzes plugins. qtype_wq is the umbrella
+      # plugin and pulls in every WIRIS question type so the whole suite runs here.
+      # Each sibling is taken from the current branch when that branch exists in its
+      # repo, otherwise from main. This is done per-plugin (rather than all-or-
+      # nothing with a single fallback step) so a branch that only exists in some
+      # repos can no longer drop the remaining plugins - every required qtype is
+      # always installed.
+      - name: Add Wiris Quizzes plugins
         run: |
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_truefalsewiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_shortanswerwiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_multichoicewiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_multianswerwiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_matchwiris
-          moodle-plugin-ci add-plugin --branch test/rework-e2e-tests wiris/moodle-qtype_essaywiris
-      - name: Add Wiris Quizzes plugin using the main branch
-        if: ${{ steps.install-plugin-quizzes.outcome != 'success' }}
-        run: |
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_truefalsewiris
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_shortanswerwiris
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_multichoicewiris
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_multianswerwiris
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_matchwiris
-          moodle-plugin-ci add-plugin --branch main wiris/moodle-qtype_essaywiris
+          add_wiris_plugin() {
+            local repo="$1"
+            if moodle-plugin-ci add-plugin --branch "${BRANCH_NAME}" "$repo"; then
+              echo "Added $repo from branch '${BRANCH_NAME}'."
+            else
+              echo "Branch '${BRANCH_NAME}' not found for $repo; falling back to main."
+              moodle-plugin-ci add-plugin --branch main "$repo"
+            fi
+          }
+          add_wiris_plugin wiris/moodle-qtype_truefalsewiris
+          add_wiris_plugin wiris/moodle-qtype_shortanswerwiris
+          add_wiris_plugin wiris/moodle-qtype_multichoicewiris
+          add_wiris_plugin wiris/moodle-qtype_multianswerwiris
+          add_wiris_plugin wiris/moodle-qtype_matchwiris
+          add_wiris_plugin wiris/moodle-qtype_essaywiris
       # 4. Install plugin and configure DB.
       - name: Install moodle-plugin-ci
         run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
@@ -204,8 +187,10 @@ jobs:
         id: behat
         run: |
           case "${{ matrix.moodle_branch }}" in
-            "MOODLE_401_STABLE"|"MOODLE_402_STABLE"|"MOODLE_403_STABLE"|"MOODLE_404_STABLE"|"MOODLE_405_STABLE"|"MOODLE_500_STABLE"|"MOODLE_501_STABLE"|"main")
-              TAG="@qtype_wq"
+            "MOODLE_401_STABLE"|"MOODLE_402_STABLE"|"MOODLE_403_STABLE"|"MOODLE_404_STABLE"|"MOODLE_405_STABLE"|"MOODLE_500_STABLE"|"MOODLE_501_STABLE"|"MOODLE_502_STABLE"|"main")
+              # qtype_wq installs every sibling WIRIS qtype, so it runs the whole
+              # WirisQuizzes suite via the shared umbrella tag.
+              TAG="@wq"
               ;;
           esac
           moodle-plugin-ci behat --tags=$TAG --profile ${{ matrix.browser }} --auto-rerun=2 --verbose -vvv
