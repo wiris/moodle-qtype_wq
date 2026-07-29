@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @wq @javascript @teacher @duplicate @regression
+@qtype @qtype_wq @mod_quiz @wq @javascript @teacher @duplicate @regression
 Feature: Duplicate a quiz and verify both instances exist while Question bank remains unchanged
     In order to reuse a WIRIS quiz setup
     As a teacher

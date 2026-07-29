@@ -1,4 +1,4 @@
-@qtype_wq @qtype_essaywiris @mod_quiz @wq @javascript @teacher @manualgrading @regression
+@qtype @qtype_wq @qtype_essaywiris @mod_quiz @wq @javascript @teacher @manualgrading @regression
 Feature: Manually grade an Essay (WIRIS) attempt
     In order to award marks for free-text answers
     As a teacher

@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @wq @javascript @student @review @regression
+@qtype @qtype_wq @mod_quiz @wq @javascript @student @review @regression
 Feature: Student reviews a finished WIRIS attempt
     In order to understand how my answers were graded
     As a student

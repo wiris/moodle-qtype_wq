@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @wq @javascript @teacher @preview @regression
+@qtype @qtype_wq @mod_quiz @wq @javascript @teacher @preview @regression
 Feature: Teacher can preview the whole quiz
     In order to verify rendering of WIRIS questions
     As a teacher

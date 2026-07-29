@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @wq @javascript @teacher @questionbank @regression
+@qtype qtype_wq @mod_quiz @wq @javascript @teacher @questionbank @regression
 Feature: Delete a question from the quiz; original stays in the Question bank
     In order to change the quiz line-up safely
     As a teacher

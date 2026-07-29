@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @core_backup @wq @javascript @regression @smoke
+@qtype @qtype_wq @mod_quiz @core_backup @wq @javascript @regression @smoke
 Feature: All Question Types Quiz end-to-end regression
     In order to trust WirisQuizzes across the whole quiz lifecycle
     As the WirisQuizzes team

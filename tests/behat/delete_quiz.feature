@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @wq @javascript @teacher @questionbank @regression
+@qtype @qtype_wq @mod_quiz @wq @javascript @teacher @questionbank @regression
 Feature: Delete the quiz activity; Question bank remains intact
     In order to retire a quiz without losing questions
     As a teacher

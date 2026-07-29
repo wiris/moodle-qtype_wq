@@ -1,4 +1,4 @@
-@qtype_wq @wq @admin @smoke @install
+@qtype @qtype_wq @wq @admin @smoke @install
 Feature: WirisQuizzes installation and status page
     In order to confirm WirisQuizzes is installed and reporting its status
     As an administrator
