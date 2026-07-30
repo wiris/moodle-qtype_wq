@@ -1,4 +1,4 @@
-@qtype_wq @core_question @wq @javascript @teacher @preview @questionbank @regression
+@qtype @qtype_wq @core_question @wq @javascript @teacher @preview @questionbank @regression
 Feature: Teacher can preview each question from the Question bank
     In order to verify individual WIRIS question rendering
     As a teacher

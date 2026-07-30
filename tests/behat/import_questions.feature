@@ -1,4 +1,4 @@
-@qtype_wq @qtype_multianswerwiris @core_question @wq @javascript @teacher @import @regression @_file_upload
+@qtype @qtype_wq @qtype_multianswerwiris @core_question @wq @javascript @teacher @import @regression @_file_upload
 Feature: Import a WIRIS question from Moodle XML
     In order to reuse WIRIS questions exported from another site
     As a teacher

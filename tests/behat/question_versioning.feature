@@ -1,4 +1,4 @@
-@qtype_wq @core_question @mod_quiz @wq @javascript @teacher @versioning @regression
+@qtype @qtype_wq @core_question @mod_quiz @wq @javascript @teacher @versioning @regression
 Feature: Question versioning for WIRIS questions
     In order to improve a WIRIS question without losing its history or graded attempts
     As a teacher

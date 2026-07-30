@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @wq @javascript @teacher @regrade @regression
+@qtype @qtype_wq @mod_quiz @wq @javascript @teacher @regrade @regression
 Feature: Regrade a quiz with a WIRIS question
     In order to fix marks after changing a question
     As a teacher

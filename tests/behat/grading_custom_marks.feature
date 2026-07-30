@@ -1,4 +1,4 @@
-@qtype_wq @mod_quiz @wq @javascript @student @grading @regression
+@qtype  @qtype_wq @mod_quiz @wq @javascript @student @grading @regression
 Feature: Custom maximum grade and partial marks for WIRIS questions
     In order to score quizzes on a custom scale
     As a teacher

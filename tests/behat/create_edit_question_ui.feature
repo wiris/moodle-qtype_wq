@@ -1,4 +1,4 @@
-@qtype_wq @core_question @wq @javascript @teacher @questionbank @smoke
+@qtype @qtype_wq @core_question @wq @javascript @teacher @questionbank @smoke
 Feature: Create and edit a WIRIS question through the edit form
     In order to author WIRIS questions in the browser
     As a teacher

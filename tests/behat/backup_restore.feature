@@ -1,4 +1,4 @@
-@qtype_wq @core_backup @mod_quiz @wq @javascript @teacher @backuprestore @regression
+@qtype @qtype_wq @core_backup @mod_quiz @wq @javascript @teacher @backuprestore @regression
 Feature: Backup and restore a quiz with every WIRIS question type
     In order to move courses between sites without losing WIRIS content
     As a teacher
