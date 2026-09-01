@@ -125,7 +125,7 @@ class com_wiris_quizzes_service_ServiceRouter {
 					$post = false;
 				} else {
 					if(!com_wiris_quizzes_service_ServiceRouter::$router->exists($service)) {
-						$res->sendError(400, "Service \"" . $service . "\" not found.");
+						$res->sendError(400, "Invalid service.");
 						return;
 					} else {
 						$url = com_wiris_quizzes_service_ServiceRouter::$router->get($service);
