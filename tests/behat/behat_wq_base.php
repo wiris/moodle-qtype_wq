@@ -153,18 +153,25 @@ class behat_wq_base extends behat_base {
     }
 
     /**
-     * Checks that TinyMCE initialized an editor on the initial quiz attempt load.
+     * Waits for TinyMCE to initialize on the initial quiz attempt load.
      *
      * @Then TinyMCE should be initialized on the first quiz attempt load
      */
     public function tinymce_should_be_initialized_on_the_first_quiz_attempt_load() {
-        $initialized = $this->getSession()->evaluateScript(<<<'JS'
-        return !!(document.querySelector('textarea[name$="_answer"]') &&
-            document.querySelector('.tox-tinymce iframe'));
-        JS
-        );
-
-        if (!$initialized) {
+        try {
+            $this->spin(
+                function($context) {
+                    return $context->getSession()->evaluateScript(<<<'JS'
+                    return !!(document.querySelector('textarea[name$="_answer"]') &&
+                        document.querySelector('.tox-tinymce iframe'));
+                    JS
+                    );
+                },
+                false,
+                self::get_extended_timeout(),
+                new Exception('TinyMCE did not initialize on first attempt.')
+            );
+        } catch (Exception $exception) {
             $diagnostics = $this->getSession()->evaluateScript(<<<'JS'
             return JSON.stringify({
                 readyState: document.readyState,
@@ -186,7 +193,7 @@ class behat_wq_base extends behat_base {
             });
             JS
             );
-            throw new Exception('TinyMCE did not initialize on first attempt: ' . $diagnostics);
+            throw new Exception('TinyMCE did not initialize on first attempt: ' . $diagnostics, 0, $exception);
         }
     }
 
