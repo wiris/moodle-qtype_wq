@@ -38,6 +38,7 @@ jobs:
             "MOODLE_500_STABLE",
             "MOODLE_501_STABLE",  
             "MOODLE_502_STABLE",
+            "MOODLE_503_STABLE",
             "main",
           ]
         database: [pgsql]
@@ -64,6 +65,12 @@ jobs:
           - moodle_branch: "MOODLE_502_STABLE"
             php: "8.1"
           - moodle_branch: "MOODLE_502_STABLE"
+            php: "8.2"
+
+          # Moodle 5.3 is supported only on PHP 8.3 and 8.4.
+          - moodle_branch: "MOODLE_503_STABLE"
+            php: "8.1"
+          - moodle_branch: "MOODLE_503_STABLE"
             php: "8.2"
 
           - moodle_branch: "main"
@@ -187,7 +194,7 @@ jobs:
         id: behat
         run: |
           case "${{ matrix.moodle_branch }}" in
-            "MOODLE_401_STABLE"|"MOODLE_402_STABLE"|"MOODLE_403_STABLE"|"MOODLE_404_STABLE"|"MOODLE_405_STABLE"|"MOODLE_500_STABLE"|"MOODLE_501_STABLE"|"MOODLE_502_STABLE"|"main")
+            "MOODLE_401_STABLE"|"MOODLE_402_STABLE"|"MOODLE_403_STABLE"|"MOODLE_404_STABLE"|"MOODLE_405_STABLE"|"MOODLE_500_STABLE"|"MOODLE_501_STABLE"|"MOODLE_502_STABLE"|"MOODLE_503_STABLE"|"main")
               # qtype_wq installs every sibling WIRIS qtype, so it runs the whole
               # WirisQuizzes suite via the shared umbrella tag.
               TAG="@wq"
