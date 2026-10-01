@@ -153,6 +153,51 @@ class behat_wq_base extends behat_base {
     }
 
     /**
+     * Waits for TinyMCE to initialize on the initial quiz attempt load.
+     *
+     * @Then TinyMCE should be initialized on the first quiz attempt load
+     */
+    public function tinymce_should_be_initialized_on_the_first_quiz_attempt_load() {
+        try {
+            $this->spin(
+                function($context) {
+                    return $context->getSession()->evaluateScript(<<<'JS'
+                    return !!(document.querySelector('textarea[name$="_answer"]') &&
+                        document.querySelector('.tox-tinymce iframe'));
+                    JS
+                    );
+                },
+                false,
+                self::get_extended_timeout(),
+                new Exception('TinyMCE did not initialize on first attempt.')
+            );
+        } catch (Exception $exception) {
+            $diagnostics = $this->getSession()->evaluateScript(<<<'JS'
+            return JSON.stringify({
+                readyState: document.readyState,
+                tinyType: typeof window.tinymce,
+                tinyKeys: window.tinymce ? Object.keys(window.tinymce).slice(0, 20) : [],
+                tinyEditors: window.tinymce ? typeof window.tinymce.editors : null,
+                tinyInit: window.tinymce ? typeof window.tinymce.init : null,
+                upperTiny: typeof window.tinyMCE,
+                iframeCount: document.querySelectorAll("iframe").length,
+                toxCount: document.querySelectorAll(".tox-tinymce").length,
+                serviceEntries: performance.getEntriesByType("resource").filter(function(entry) {
+                    return entry.name.indexOf("question/type/wq/quizzes/service.php") >= 0;
+                }).map(function(entry) {
+                    return {duration: entry.duration, size: entry.decodedBodySize, status: entry.responseStatus};
+                }),
+                serviceScripts: Array.prototype.filter.call(document.scripts, function(script) {
+                    return script.src.indexOf("question/type/wq/quizzes/service.php") >= 0;
+                }).map(function(script) { return {async: script.async, readyState: script.readyState}; })
+            });
+            JS
+            );
+            throw new Exception('TinyMCE did not initialize on first attempt: ' . $diagnostics, 0, $exception);
+        }
+    }
+
+    /**
      * Neutralises the Wiris Quizzes editor RequireJS conflict.
      *
      * The Wiris Quizzes client library (quizzes.js, loaded with a plain <script>

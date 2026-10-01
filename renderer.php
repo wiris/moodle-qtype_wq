@@ -60,8 +60,21 @@ class qtype_wq_renderer extends qtype_renderer {
     }
 
     protected function add_javascript() {
+        // Defer the large Quizzes bundle so it cannot block Moodle's TinyMCE startup.
         // Add javascript to launch editor and quizzes.
-        $this->page->requires->js('/question/type/wq/quizzes/service.php?name=quizzes.js&service=resource', false);
+        $serviceurl = new moodle_url('/question/type/wq/quizzes/service.php', [
+            'name' => 'quizzes.js',
+            'service' => 'resource',
+        ]);
+        $serviceurl = json_encode($serviceurl->out(false));
+        $jscode = 'if (!window.wqQuizzesServiceRequested) {' .
+            'window.wqQuizzesServiceRequested = true;' .
+            'var script = document.createElement("script");' .
+            'script.async = true;' .
+            'script.src = ' . $serviceurl . ';' .
+            'document.head.appendChild(script);' .
+            '}';
+        $this->page->requires->js_init_code($jscode, true);
     }
     protected function question(question_attempt $qa) {
         // Add question definition.
