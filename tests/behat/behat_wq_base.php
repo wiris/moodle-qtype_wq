@@ -31,6 +31,87 @@ use Behat\Gherkin\Node\TableNode;
 class behat_wq_base extends behat_base {
 
     /**
+     * Checks that a response carrying an obsolete incoming SID cannot reset a newer browser session.
+     *
+     * @Then the WIRIS :service service does not replace an obsolete session cookie
+     * @param string $service The resource or echo service to exercise.
+     */
+    public function the_wiris_service_does_not_replace_an_obsolete_session_cookie($service) {
+        global $CFG;
+
+        [$client, $body] = $this->request_wiris_service($service);
+        if ($client->errno || $client->info['http_code'] !== 200 || empty($body)) {
+            throw new Exception('The WIRIS service did not return a successful response.');
+        }
+        $cookiename = 'MoodleSession' . $CFG->sessioncookie;
+        foreach ($client->get_raw_response() as $header) {
+            if (preg_match('/^Set-Cookie:\s*' . preg_quote($cookiename, '/') . '=/i', $header)) {
+                throw new Exception('The WIRIS service replaced the Moodle session cookie.');
+            }
+        }
+    }
+
+    /**
+     * Confirms that the service still checks the incoming session when access control is enabled.
+     *
+     * @Then the WIRIS :service service rejects an obsolete session cookie
+     * @param string $service The resource or echo service to exercise.
+     */
+    public function the_wiris_service_rejects_an_obsolete_session_cookie($service) {
+        [$client] = $this->request_wiris_service($service);
+        $headers = array_change_key_case($client->getResponse(), CASE_LOWER);
+        $location = parse_url($headers['location'] ?? '', PHP_URL_PATH);
+        if ($client->errno || $client->info['http_code'] !== 303 || !str_ends_with($location ?? '', '/login/index.php')) {
+            throw new Exception('The protected WIRIS service did not redirect an obsolete session to login.');
+        }
+    }
+
+    /**
+     * Confirms that filtering response cookies does not discard a valid incoming login.
+     *
+     * @Then the authenticated WIRIS :service service is available
+     * @param string $service The resource or echo service to exercise.
+     */
+    public function the_authenticated_wiris_service_is_available($service) {
+        global $CFG;
+
+        $cookie = $this->getSession()->getCookie('MoodleSession' . $CFG->sessioncookie);
+        if (empty($cookie)) {
+            throw new Exception('The browser has no authenticated Moodle session cookie.');
+        }
+        [$client, $body] = $this->request_wiris_service($service, $cookie);
+        if ($client->errno || $client->info['http_code'] !== 200 || empty($body)) {
+            throw new Exception('The protected WIRIS service did not accept the authenticated session.');
+        }
+    }
+
+    /**
+     * Requests a service with an obsolete SID unless an authenticated SID is supplied.
+     *
+     * @param string $service The resource or echo service to exercise.
+     * @param string|null $cookie A valid session cookie, if testing authenticated access.
+     * @return array The HTTP client and response body, without exposing cookie values.
+     */
+    private function request_wiris_service($service, $cookie = null) {
+        global $CFG;
+
+        $params = ['service' => $service];
+        if ($service === 'resource') {
+            $params['name'] = 'quizzes.js';
+        } else if ($service === 'echo') {
+            $params['data'] = 'WIRIS session regression';
+        } else {
+            throw new coding_exception('Unsupported service in the session regression test.');
+        }
+        $url = new moodle_url($CFG->behat_wwwroot . '/question/type/wq/quizzes/service.php', $params);
+        $cookiename = 'MoodleSession' . $CFG->sessioncookie;
+        $client = new curl();
+        $client->setHeader('Cookie: ' . $cookiename . '=' . ($cookie ?? bin2hex(random_bytes(16))));
+        $body = $client->get($url->out(false), [], ['CURLOPT_FOLLOWLOCATION' => false, 'CURLOPT_TIMEOUT' => 30]);
+        return [$client, $body];
+    }
+
+    /**
      * @Then I choose the question type :questiontypename
      */
     public function i_choose_the_question_type($questiontypename) {
@@ -198,69 +279,6 @@ class behat_wq_base extends behat_base {
     }
 
     /**
-     * Neutralises the Wiris Quizzes editor RequireJS conflict.
-     *
-     * The Wiris Quizzes client library (quizzes.js, loaded with a plain <script>
-     * tag through quizzes/service.php) is a UMD bundle. On a page that uses
-     * RequireJS (every Moodle page) it detects `define.amd` and registers an
-     * anonymous `define()` that RequireJS cannot match to a module name. The
-     * orphaned anonymous define stays queued and makes the next genuine
-     * `require([...])` call (for instance Moodle's TinyMCE helper used to set the
-     * "Question text" field) throw a "Mismatched anonymous define() module"
-     * error. Because Moodle Behat fails on any JavaScript error, the affected
-     * scenario aborts before the functionality under test is even reached.
-     *
-     * This helper installs a narrowly scoped guard that swallows ONLY RequireJS
-     * `mismatch` errors and rethrows everything else, so real JavaScript errors
-     * keep failing the test. It also defensively drains any anonymous define that
-     * is already queued. Global JavaScript error detection is NOT disabled.
-     *
-     * Revert plan: once the Wiris Quizzes bundle no longer pollutes the AMD
-     * loader (e.g. it temporarily unsets `define.amd` around its own <script>
-     * load), delete this helper, the `I add a ... Wiris question ...` step and the
-     * standalone step below, and use Moodle's core
-     * `I add a "..." question filling the form with:` step directly.
-     *
-     * @When I work around the Wiris Quizzes editor AMD conflict
-     */
-    public function i_work_around_the_wiris_quizzes_editor_amd_conflict() {
-        if (!$this->running_javascript()) {
-            return;
-        }
-        $this->execute_script(self::WIRIS_AMD_GUARD_JS);
-    }
-
-    /**
-     * Adds a Wiris Quizzes question through the question bank UI.
-     *
-     * Mirrors Moodle's core `behat_core_question::i_add_a_question_filling_the_form_with()`
-     * but installs the Wiris Quizzes AMD guard (see
-     * {@see i_work_around_the_wiris_quizzes_editor_amd_conflict()}) right after the
-     * edit form is opened and before Moodle sets the TinyMCE "Question text"
-     * field. This is required because the core step performs type selection and
-     * form filling in a single step, leaving no place to insert the workaround.
-     *
-     * @When /^I add a "(?P<questiontypename>(?:[^"]|\\")*)" Wiris question filling the form with:$/
-     * @param string $questiontypename The question type name as shown in the chooser.
-     * @param TableNode $questiondata The data to fill the question type form.
-     */
-    public function i_add_a_wiris_question_filling_the_form_with($questiontypename, TableNode $questiondata) {
-        // Click on create question.
-        $this->execute('behat_forms::press_button', get_string('createnewquestion', 'question'));
-
-        // Select the question type and open the edit form (mirrors core finish_adding_question).
-        $this->execute('behat_forms::i_set_the_field_to', [$this->escape($questiontypename), 1]);
-        $this->execute('behat_general::i_click_on', ['.submitbutton', 'css_element']);
-
-        // Neutralise the Wiris Quizzes editor AMD conflict on the freshly loaded edit form.
-        $this->i_work_around_the_wiris_quizzes_editor_amd_conflict();
-
-        // Fill the form and save.
-        $this->execute('behat_forms::i_set_the_following_fields_to_these_values', [$questiondata]);
-        $this->execute('behat_forms::press_button', 'id_submitbutton');
-    }
-
-    /**
      * Adds existing questions from the question bank to a quiz, resolving each
      * question by name but only matching top-level (parent = 0) questions.
      *
@@ -325,43 +343,4 @@ class behat_wq_base extends behat_base {
             }
         }
     }
-
-    /**
-     * JavaScript guard that swallows only RequireJS "mismatch" errors raised by
-     * the Wiris Quizzes UMD bundle and drains any orphaned anonymous define().
-     */
-    const WIRIS_AMD_GUARD_JS = <<<'JS'
-(function() {
-    try {
-        var r = window.requirejs || window.require;
-        if (!r) {
-            return;
-        }
-        // Swallow ONLY RequireJS "Mismatched anonymous define()" errors caused by
-        // the Wiris Quizzes editor UMD bundle. Every other error keeps throwing.
-        var guard = function(err) {
-            if (err && err.requireType === 'mismatch') {
-                return;
-            }
-            throw err;
-        };
-        if (window.requirejs) {
-            window.requirejs.onError = guard;
-        }
-        if (window.require) {
-            window.require.onError = guard;
-        }
-        // Defensively drop any anonymous define() already queued in the context.
-        if (r.s && r.s.contexts && r.s.contexts._) {
-            var ctx = r.s.contexts._;
-            if (ctx.defQueue && ctx.defQueue.length) {
-                ctx.defQueue.length = 0;
-            }
-            ctx.defQueueMap = {};
-        }
-    } catch (e) {
-        // Never let the guard itself break a scenario.
-    }
-})();
-JS;
 }

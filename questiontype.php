@@ -164,10 +164,9 @@ class qtype_wq extends question_type {
     }
 
     public function display_question_editing_page($mform, $question, $wizardnow) {
-        // This method is used to load tiny_mce.js before quizzes.js.
         parent::display_question_editing_page($mform, $question, $wizardnow);
         global $PAGE;
-        $PAGE->requires->js('/question/type/wq/quizzes/service.php?name=quizzes.js&service=resource');
+        \qtype_wq\quizzes_loader::load($PAGE);
     }
 
     public function export_to_xml($question, qformat_xml $format, $extra = null) {

@@ -2,13 +2,7 @@
 Feature: Create and edit a WIRIS question through the edit form
     In order to author WIRIS questions in the browser
     As a teacher
-    I want the WIRIS edit form to load and save despite the Wiris Quizzes editor AMD conflict
-
-    # This feature is the in-suite proof of the JavaScript-error workaround
-    # documented in E2E_TEST_PLAN.md (section 2). The "... Wiris question filling
-    # the form with:" step installs the AMD guard between opening the edit form and
-    # setting the TinyMCE "Question text" field; the edit scenario installs the
-    # guard explicitly via the standalone step.
+    I want the WIRIS edit form and TinyMCE to load and save
 
     Background:
         Given the "wiris" filter is "on"
@@ -28,7 +22,7 @@ Feature: Create and edit a WIRIS question through the edit form
 
     Scenario: Teacher creates an Essay (WIRIS) question through the edit form
         Given I am on the "Course 1" "core_question > course question bank" page logged in as "teacher1"
-        When I add a "Essay - science" Wiris question filling the form with:
+        When I add a "Essay - science" question filling the form with:
             | Question name | UI Essay WIRIS               |
             | Question text | Explain why the sky is blue. |
         Then I should see "UI Essay WIRIS"
@@ -39,7 +33,6 @@ Feature: Create and edit a WIRIS question through the edit form
             | WIRIS bank       | essaywiris | Editable ES | <p>Original text.</p> | 1.0         |
         And I am on the "Course 1" "core_question > course question bank" page logged in as "teacher1"
         When I choose "Edit question" action for "Editable ES" in the question bank
-        And I work around the Wiris Quizzes editor AMD conflict
         And I set the field "Question name" to "Editable ES renamed"
         And I set the field "Question text" to "<p>Updated essay prompt.</p>"
         And I press "id_submitbutton"
