@@ -77,14 +77,16 @@ Feature: All Question Types Quiz end-to-end regression
         And I click on "True" "radio"
         And I click on "Next page" "button"
         # Multiple choice, Short answer and Matching inputs are exercised in depth by
-        # their own student.feature files (the Short answer field is a MathType overlay
-        # that is not keyboard-reachable); here we render and traverse them.
+        # their own student and input-options features; here we initialize and traverse them.
         And I click on "Next page" "button"
+        And I wait until the WIRIS answer fields are ready
         And I click on "Next page" "button"
+        And the TinyMCE editor for "Answer" should be initialized
         And I set the field "Answer" to "Energy equals mass times c squared."
         And I click on "Next page" "button"
         And I click on "Next page" "button"
-        And I set the field with xpath "//div[contains(@class,'formulation')]//input[@type='text']" to "c"
+        And I wait until the WIRIS answer fields are ready
+        And I set the field with xpath "//div[contains(@class,'formulation')]//div[contains(@class,'wrsUI_textField')]/input[@type='text']" to "c"
         And I click on "Finish attempt ..." "link"
         And I press "Submit all and finish"
         And I click on "Submit all and finish" "button" in the "Submit all your answers and finish?" "dialogue"
@@ -110,7 +112,9 @@ Feature: All Question Types Quiz end-to-end regression
             | Schema | Course short name | C1_RESTORED    |
         And I should see "WIRIS Restored"
         # 9. The restored quiz keeps every question and the student attempt.
-        And I am on the "WIRIS Restored" "core_question > course question bank" page
+        And I am on "WIRIS Restored" course homepage
+        And I follow "WIRIS Quiz"
+        And I follow "Questions"
         And I should see "TF WIRIS"
         And I should see "Cloze WIRIS"
         And I am on "WIRIS Restored" course homepage

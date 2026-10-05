@@ -33,6 +33,7 @@ Feature: Create and edit a WIRIS question through the edit form
             | WIRIS bank       | essaywiris | Editable ES | <p>Original text.</p> | 1.0         |
         And I am on the "Course 1" "core_question > course question bank" page logged in as "teacher1"
         When I choose "Edit question" action for "Editable ES" in the question bank
+        And the TinyMCE editor for "Question text" should be initialized
         And I set the field "Question name" to "Editable ES renamed"
         And I set the field "Question text" to "<p>Updated essay prompt.</p>"
         And I press "id_submitbutton"

@@ -73,6 +73,7 @@ Scenario: Teacher previews the quiz and sees all questions
     And I follow "Wiris Quiz"
     When I click on "Preview" "button"
     Then I should see "The daytime sky is blue."
+    And the TinyMCE editor for "Answer" in the "Explain E = mc^2 in words" question should be initialized
     And I should see "2 + 2 = ?"
     And I should see "Explain E = mc^2 in words"
     And I should see "Match the pairs"

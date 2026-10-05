@@ -234,48 +234,121 @@ class behat_wq_base extends behat_base {
     }
 
     /**
-     * Waits for TinyMCE to initialize on the initial quiz attempt load.
+     * Waits for every editable WIRIS answer on the current page, including embedded answers.
+     *
+     * The filter marks originals as processed before MathType and Graph finish loading.
+     * Check each generated sibling and its asynchronous components as well.
+     *
+     * @When I wait until the WIRIS answer fields are ready
+     */
+    public function i_wait_until_the_wiris_answer_fields_are_ready() {
+        $script = <<<'JS'
+            return (function() {
+                var fields = Array.from(document.querySelectorAll('.wirisanswerfield:not(.wirisreadonly)'));
+                var pending = [];
+                var error = null;
+                function visible(element) {
+                    var style = getComputedStyle(element);
+                    return element.getClientRects().length > 0 && style.visibility !== 'hidden' &&
+                        style.display !== 'none';
+                }
+                fields.forEach(function(field) {
+                    var name = field.id || field.name || 'unnamed answer';
+                    if (field.classList.contains('wiriserrorprocessing')) {
+                        error = 'WIRIS failed to process ' + name;
+                        return;
+                    }
+                    if (!field.classList.contains('wirisprocessed')) {
+                        pending.push(name + ': not processed');
+                        return;
+                    }
+                    var widget = field.previousElementSibling;
+                    if (!widget || !widget.matches('.wrsUI_quizzesAnswerField, .wrsUI_quizzesEmbeddedAnswerField') ||
+                            !visible(widget)) {
+                        pending.push(name + ': generated answer field not visible');
+                        return;
+                    }
+                    var controls = widget.querySelectorAll('input:not([type="hidden"]), ' +
+                        '.wrsUI_aux_mathTypeComponentWrapper, .wrsUI_aux_graphComponentWrapper');
+                    if (!Array.from(controls).some(visible)) {
+                        pending.push(name + ': editable control not visible');
+                    }
+                    widget.querySelectorAll('.wrsUI_aux_mathTypeComponentWrapper, ' +
+                        '.wrsUI_aux_graphComponentWrapper').forEach(function(component) {
+                        // Popup components only need to initialize once the popup is opened.
+                        if (visible(component) && getComputedStyle(component).opacity !== '1') {
+                            pending.push(name + ': equation or graph still loading');
+                        }
+                    });
+                });
+                if (!fields.length) {
+                    pending.push('No editable WIRIS answer fields found');
+                }
+                return {ready: fields.length > 0 && pending.length === 0 && !error, error: error, pending: pending};
+            }());
+            JS;
+
+        $deadline = microtime(true) + self::get_extended_timeout();
+        do {
+            // Let browser exceptions and alerts fail immediately rather than retrying them in spin().
+            $status = $this->getSession()->evaluateScript($script);
+            if ($status['error']) {
+                throw new Exception($status['error']);
+            }
+            if ($status['ready']) {
+                return;
+            }
+            usleep(100000);
+        } while (microtime(true) < $deadline);
+
+        throw new Exception('WIRIS answer fields did not become ready: ' . implode('; ', $status['pending']));
+    }
+
+    /**
+     * Confirms that the field's own TinyMCE instance has initialized.
+     *
+     * Moodle's Behat hooks already wait for Tiny's pending initialization. The
+     * textarea marker is set after tinyMCE.init(), unlike the form wrapper's marker.
+     *
+     * @Then the TinyMCE editor for :field should be initialized
+     * @Then the TinyMCE editor for :field in the :question question should be initialized
+     * @param string $field The field label, name or id.
+     * @param string|null $question Optional question text when several fields share a label.
+     */
+    public function the_tinymce_editor_for_should_be_initialized($field, $question = null) {
+        $node = $question === null ? $this->find_field($field) :
+            $this->get_node_in_container('field', $field, 'question', $question);
+        $id = json_encode($node->getAttribute('id'));
+        $script = <<<'JS'
+            return (function(id) {
+                var target = document.getElementById(id);
+                var tiny = window.tinyMCE;
+                var editor = tiny && typeof tiny.get === 'function' && tiny.get(id);
+                var container = editor && editor.getContainer();
+                var iframe = container && container.querySelector('iframe');
+                var initialized = target && target.matches('textarea[data-fieldtype="editor"]');
+                return {
+                    ready: !!(initialized && editor && editor.getElement() === target && iframe && iframe.isConnected),
+                    fieldId: id,
+                    fieldType: target && target.getAttribute('data-fieldtype'),
+                    hasInstance: !!editor,
+                    hasIframe: !!iframe
+                };
+            })(
+            JS;
+        $status = $this->getSession()->evaluateScript($script . $id . ');');
+        if (!$status['ready']) {
+            throw new Exception('TinyMCE is not initialized for "' . $field . '": ' . json_encode($status));
+        }
+    }
+
+    /**
+     * Keeps the existing Essay regression step available to older companion branches.
      *
      * @Then TinyMCE should be initialized on the first quiz attempt load
      */
     public function tinymce_should_be_initialized_on_the_first_quiz_attempt_load() {
-        try {
-            $this->spin(
-                function($context) {
-                    return $context->getSession()->evaluateScript(<<<'JS'
-                    return !!(document.querySelector('textarea[name$="_answer"]') &&
-                        document.querySelector('.tox-tinymce iframe'));
-                    JS
-                    );
-                },
-                false,
-                self::get_extended_timeout(),
-                new Exception('TinyMCE did not initialize on first attempt.')
-            );
-        } catch (Exception $exception) {
-            $diagnostics = $this->getSession()->evaluateScript(<<<'JS'
-            return JSON.stringify({
-                readyState: document.readyState,
-                tinyType: typeof window.tinymce,
-                tinyKeys: window.tinymce ? Object.keys(window.tinymce).slice(0, 20) : [],
-                tinyEditors: window.tinymce ? typeof window.tinymce.editors : null,
-                tinyInit: window.tinymce ? typeof window.tinymce.init : null,
-                upperTiny: typeof window.tinyMCE,
-                iframeCount: document.querySelectorAll("iframe").length,
-                toxCount: document.querySelectorAll(".tox-tinymce").length,
-                serviceEntries: performance.getEntriesByType("resource").filter(function(entry) {
-                    return entry.name.indexOf("question/type/wq/quizzes/service.php") >= 0;
-                }).map(function(entry) {
-                    return {duration: entry.duration, size: entry.decodedBodySize, status: entry.responseStatus};
-                }),
-                serviceScripts: Array.prototype.filter.call(document.scripts, function(script) {
-                    return script.src.indexOf("question/type/wq/quizzes/service.php") >= 0;
-                }).map(function(script) { return {async: script.async, readyState: script.readyState}; })
-            });
-            JS
-            );
-            throw new Exception('TinyMCE did not initialize on first attempt: ' . $diagnostics, 0, $exception);
-        }
+        $this->the_tinymce_editor_for_should_be_initialized('Answer');
     }
 
     /**

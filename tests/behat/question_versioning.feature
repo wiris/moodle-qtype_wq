@@ -39,6 +39,7 @@ Feature: Question versioning for WIRIS questions
     Scenario: Editing a WIRIS question creates a new version recorded in its history
         Given I am on the "Course 1" "core_question > course question bank" page logged in as "teacher1"
         When I choose "Edit question" action for "TF WIRIS" in the question bank
+        And the TinyMCE editor for "Question text" should be initialized
         And I set the field "Question name" to "TF WIRIS v2"
         And I set the field "Question text" to "<p>The daytime sky is blue (revised).</p>"
         And I press "id_submitbutton"
@@ -60,6 +61,7 @@ Feature: Question versioning for WIRIS questions
         # Teacher edits the question, which creates version 2 because it is in use.
         And I am on the "Course 1" "core_question > course question bank" page logged in as "teacher1"
         When I choose "Edit question" action for "TF WIRIS" in the question bank
+        And the TinyMCE editor for "Question text" should be initialized
         And I set the field "Question text" to "<p>The daytime sky is blue (v2).</p>"
         And I press "id_submitbutton"
         # The previously graded attempt against version 1 is unchanged.
