@@ -33,6 +33,7 @@ Feature: Manually grade an Essay (WIRIS) attempt
         # Student submits a free-text answer that needs manual grading.
         And I am on the "WIRIS Quiz" "mod_quiz > View" page logged in as "student1"
         And I press "Attempt quiz"
+        And the TinyMCE editor for "Answer" should be initialized
         And I set the field "Answer" to "Energy equals mass times the speed of light squared."
         And I click on "Finish attempt ..." "link"
         And I press "Submit all and finish"

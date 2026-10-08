@@ -60,8 +60,7 @@ class qtype_wq_renderer extends qtype_renderer {
     }
 
     protected function add_javascript() {
-        // Add javascript to launch editor and quizzes.
-        $this->page->requires->js('/question/type/wq/quizzes/service.php?name=quizzes.js&service=resource', false);
+        \qtype_wq\quizzes_loader::load($this->page);
     }
     protected function question(question_attempt $qa) {
         // Add question definition.

@@ -81,3 +81,4 @@ Scenario: Duplicate the quiz from the course page
     And I click on "Wiris Quiz (copy)" "link" in the "region-main" "region"
     And I click on "Preview" "button"
     Then I should see "The daytime sky is blue."
+    And the TinyMCE editor for "Answer" in the "Explain E = mc^2 in words" question should be initialized

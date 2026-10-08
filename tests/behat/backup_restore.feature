@@ -52,7 +52,7 @@ Feature: Backup and restore a quiz with every WIRIS question type
             | Match WIRIS | 1    |
             | Cloze WIRIS | 1    |
 
-    Scenario: Restore a course quiz and verify every WIRIS question is preserved and editable
+    Scenario: Restore a course quiz and verify every WIRIS question is preserved
         Given I log in as "admin"
         And I am on "Course 1" course homepage
         When I backup "Course 1" course using this options:
@@ -61,8 +61,10 @@ Feature: Backup and restore a quiz with every WIRIS question type
             | Schema | Course name       | WIRIS Restored |
             | Schema | Course short name | C1_RESTORED    |
         Then I should see "WIRIS Restored"
-        # Questions are restored into the new course's question bank.
-        And I am on the "WIRIS Restored" "core_question > course question bank" page
+        # Inspect the restored quiz: its bank can differ from the course's default bank.
+        And I am on "WIRIS Restored" course homepage
+        And I follow "WIRIS Quiz"
+        And I follow "Questions"
         And I should see "TF WIRIS"
         And I should see "MC WIRIS"
         And I should see "SA WIRIS"

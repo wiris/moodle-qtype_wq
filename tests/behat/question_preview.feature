@@ -83,6 +83,7 @@ Scenario: Preview Essay WIRIS from the Question bank
     Given I log in as "teacher1"
     When I am on the "Essay Wiris" "core_question > preview" page
     Then I should see "Explain E = mc^2 in words"
+    And the TinyMCE editor for "Answer" should be initialized
 
 Scenario: Preview Match WIRIS from the Question bank
     Given I log in as "teacher1"
@@ -93,6 +94,7 @@ Scenario: Preview Short answer WIRIS from the Question bank
     Given I log in as "teacher1"
     When I am on the "SA Wiris" "core_question > preview" page
     Then I should see "Type the energy symbol word."
+    And I wait until the WIRIS answer fields are ready
 
 # Cloze (multianswer) previews are exercised through the whole-quiz preview
 # (quiz_preview.feature). Previewing a Cloze question on its own from the bank is

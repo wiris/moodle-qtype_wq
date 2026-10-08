@@ -15,3 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once(dirname(__FILE__) . '/../../../config.php'); // @codingStandardsIgnoreLine
+
+// A background service request may arrive with a SID invalidated by a later login.
+// Keep reading the incoming session for access checks, but never let its response
+// replace the browser's newer session. Login and logout pages manage that cookie.
+if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'service.php') {
+    global $CFG;
+    $sessioncookiename = 'MoodleSession' . $CFG->sessioncookie;
+    header_register_callback(static function() use ($sessioncookiename) {
+        $cookieheaders = [];
+        foreach (headers_list() as $header) {
+            if (preg_match('/^Set-Cookie:\s*([^=]+)=/i', $header, $matches)) {
+                if ($matches[1] !== $sessioncookiename) {
+                    $cookieheaders[] = $header;
+                }
+            }
+        }
+        header_remove('Set-Cookie');
+        foreach ($cookieheaders as $header) {
+            header($header, false);
+        }
+    });
+}

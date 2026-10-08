@@ -202,9 +202,9 @@ jobs:
           esac
           moodle-plugin-ci behat --tags=$TAG --profile ${{ matrix.browser }} --auto-rerun=2 --verbose -vvv
 
-      # 6.1 Upload Behat fail dumps when errors occur.
+      # 6.1 Keep fail dumps even when --auto-rerun recovers the failed scenario.
       - name: Upload Behat Faildump
-        if: ${{ failure() && steps.behat.outcome == 'failure' }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: Behat Faildump (${{ matrix.php }}, ${{ matrix.moodle_branch }}, ${{ matrix.browser }})
